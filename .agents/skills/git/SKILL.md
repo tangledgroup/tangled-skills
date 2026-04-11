@@ -1,212 +1,153 @@
 ---
 name: git
-description: Manage version-controlled projects with Git - essential commands for daily development workflows including staging, committing, branching, merging, and remote synchronization
+description: A skill for using Git version control system to track changes, collaborate, and manage code repositories. Use when working with Git repositories, managing branches, or collaborating on code projects.
 version: "0.2.0"
 author: Your Name <email@example.com>
 license: MIT
 tags:
   - version-control
-  - git
-  - source-code-management
   - collaboration
+  - repository
+  - branching
 category: version-control
-required_environment_variables: []
 ---
 
-# Git Basic
+# Git Version Control Skill
 
-Essential Git commands for daily version control workflows. Use this skill for common operations like staging changes, committing, branching, merging, and syncing with remote repositories.
+A comprehensive skill for using Git, the distributed version control system. This skill covers basic to advanced Git operations including branching, merging, rebasing, and collaboration workflows.
 
 ## When to Use
 
-- Initialize new repositories or clone existing ones
-- Stage and commit code changes
-- Create and switch between branches
-- Merge or rebase branches
-- Push/pull changes to/from remote repositories
-- View commit history and diffs
-- Reset or revert unwanted changes
+- Initialize a new Git repository or clone an existing one
+- Track changes to files with commits
+- Create and manage branches for features or fixes
+- Merge or rebase branches to integrate changes
+- Collaborate with teams using remote repositories
+- Resolve merge conflicts
+- Undo or modify previous commits
+- Share changes with `push` and update with `pull`
 
-## Setup
+## Quick Start
 
-```bash
-# Configure your identity (required once)
-git config --global user.name "Your Name"
-git config --global user.email "you@example.com"
-
-# Optional: Set default editor
-git config --global core.editor "code --wait"  # VS Code
-git config --global core.editor "nvim"         # Neovim
-```
-
-## Usage
-
-### Initialize or Clone Repository
+### Initialize or Clone a Repository
 
 ```bash
-# Create new repository in current directory
-git init
+# Create new repository
+git init my-project
+cd my-project
 
 # Clone existing repository
 git clone https://github.com/user/repo.git
-git clone git@github.com:user/repo.git  # SSH
 ```
 
-### Stage and Commit Changes
+See [Repository Basics](references/01-repository-basics.md) for detailed setup instructions.
+
+### Basic Workflow
 
 ```bash
-# See what changed
+# Check status
 git status
 
-# Stage specific files
-git add file1.txt src/module.js
-
-# Stage all changes in tracked files
+# Add files to staging
+git add <file>
 git add .
 
-# Commit staged changes
-git commit -m "Add feature X"
+# Commit changes
+git commit -m "Description of changes"
 
-# Or skip staging (tracked files only)
-git commit -am "Fix bug Y"
+# Push to remote
+git push origin main
 ```
 
-### View History and Diffs
+See [Basic Operations](references/02-basic-operations.md) for detailed commands.
+
+### Branching and Merging
 
 ```bash
-# Recent commits
-git log --oneline -10
-
-# With file changes
-git log -p -5
-
-# Changes since last commit
-git diff
-
-# Staged changes (ready to commit)
-git diff --staged
-```
-
-### Branch Operations
-
-```bash
-# List branches (* = current)
-git branch
-
 # Create and switch to new branch
-git switch -c feature-branch
+git checkout -b feature-name
 
-# Switch to existing branch
-git switch main
+# Or use git switch (Git 2.23+)
+git switch -c feature-name
 
-# Create branch without switching
-git branch bugfix-123
-
-# Delete merged branch
-git branch -d old-feature
-```
-
-### Merge Changes
-
-```bash
 # Merge branch into current
-git merge feature-branch
+git merge feature-name
 
-# Fast-forward only (no merge commit)
-git merge --ff-only feature-branch
-
-# Abort merge in progress
-git merge --abort
-```
-
-### Rebase Branches
-
-```bash
-# Rebase current branch onto main
-git switch feature-branch
+# Rebase instead of merge
 git rebase main
-
-# Interactive rebase (last 5 commits)
-git rebase -i HEAD~5
-
-# Abort if conflicts occur
-git rebase --abort
-
-# Continue after resolving conflicts
-git add <resolved-files>
-git rebase --continue
 ```
 
-### Sync with Remote
+See [Branching and Merging](references/03-branching-merging.md) for workflows and conflict resolution.
+
+### Remote Collaboration
 
 ```bash
-# Fetch latest changes (doesn't modify working directory)
+# Fetch updates without merging
 git fetch origin
 
-# Pull and merge remote changes
+# Pull and merge in one step
 git pull origin main
 
-# Push current branch to remote
-git push origin feature-branch
-
-# Push all branches
-git push --all origin
-
-# Force push (use carefully!)
-git push --force-with-lease origin main
+# Push branch to remote
+git push origin feature-name
 ```
 
-### Reset and Restore
-
-```bash
-# Unstage file but keep changes
-git restore --staged file.txt
-
-# Discard unstaged changes
-git restore file.txt
-
-# Soft reset (keep changes staged)
-git reset --soft HEAD~1
-
-# Mixed reset (keep changes unstaged)
-git reset HEAD~1
-
-# Hard reset (discard all changes - dangerous!)
-git reset --hard HEAD~1
-```
-
-### Checkout Files or Commits
-
-```bash
-# Checkout file from another branch
-git checkout main -- path/to/file.txt
-
-# View commit without switching
-git show commit-hash
-
-# Create branch at specific commit
-git switch -c new-branch commit-hash
-```
+See [Remote Operations](references/04-remote-operations.md) for collaboration patterns.
 
 ## Reference Files
 
-- `{baseDir}/references/01-git-setup-and-init.md` - Initial configuration and repository setup
-- `{baseDir}/references/02-git-staging-and-committing.md` - Staging area, commits, and messages
-- `{baseDir}/references/03-git-branching.md` - Branch creation, switching, and management
-- `{baseDir}/references/04-git-merging.md` - Merge strategies and conflict resolution
-- `{baseDir}/references/05-git-rebase.md` - Interactive rebasing and history rewriting
-- `{baseDir}/references/06-git-remote-operations.md` - Clone, fetch, pull, push workflows
-- `{baseDir}/references/07-git-reset-and-restore.md` - Undoing changes safely
-- `{baseDir}/references/08-git-log-and-diff.md` - Viewing history and comparing changes
-- `{baseDir}/references/09-git-stash.md` - Temporarily saving work in progress
-- `{baseDir}/references/10-git-tags.md` - Version tagging and releases
-- `{baseDir}/references/11-git-workflows.md` - Common branching workflows (Git Flow, GitHub Flow)
-- `{baseDir}/references/12-git-troubleshooting.md` - Common issues and solutions
+- [`references/01-repository-basics.md`](references/01-repository-basics.md) - Initialize, clone, and configure repositories
+- [`references/02-basic-operations.md`](references/02-basic-operations.md) - Add, commit, status, diff, log commands
+- [`references/03-branching-merging.md`](references/03-branching-merging.md) - Branch management, merge, rebase, and conflict resolution
+- [`references/04-remote-operations.md`](references/04-remote-operations.md) - Clone, fetch, pull, push, and remote management
+- [`references/05-history-manipulation.md`](references/05-history-manipulation.md) - Reset, revert, cherry-pick, and reflog
+- [`references/06-advanced-topics.md`](references/06-advanced-topics.md) - Stash, tags, blame, bisect, and submodules
+
+**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/git/`). All paths are relative to this directory.
+
+## Common Patterns
+
+### Feature Branch Workflow
+```bash
+# Create feature branch from main
+git checkout main
+git pull origin main
+git checkout -b feature/my-feature
+
+# Work on feature, commit changes
+git add .
+git commit -m "Add feature"
+
+# Push and create pull request
+git push origin feature/my-feature
+```
+
+### Quick Fix Workflow
+```bash
+# Save work in progress
+git stash
+
+# Switch to main, pull latest
+git checkout main
+git pull origin main
+
+# Make fix, commit, push
+git checkout -b fix/quick-fix
+# ... make changes ...
+git add . && git commit -m "Fix issue"
+git push origin fix/quick-fix
+```
+
+See [Branching and Merging](references/03-branching-merging.md) for more workflows.
 
 ## Troubleshooting
 
-- **Merge conflicts**: Edit conflicted files, remove markers, `git add`, then `git commit`
-- **Wrong branch**: Switch with `git switch correct-branch` before committing
-- **Need to undo commit**: Use `git reset --soft HEAD~1` to keep changes staged
-- **Messy history**: Interactive rebase with `git rebase -i HEAD~n` to squash/amend
-- **Lost work**: Check reflog: `git reflog` to find lost commits
+| Problem | Solution |
+|---------|----------|
+| Wrong commit message | `git commit --amend -m "New message"` |
+| Accidentally committed wrong files | `git reset HEAD^` or see [History Manipulation](references/05-history-manipulation.md) |
+| Merge conflicts | Edit conflicted files, `git add <file>`, then `git merge --continue` |
+| Need to undo last commit | `git reset --soft HEAD~1` (keeps changes) or `git reset --hard HEAD~1` (discards) |
+| Lost a branch | Check `git reflog` for recovery |
+
+For detailed troubleshooting, see [History Manipulation](references/05-history-manipulation.md).
