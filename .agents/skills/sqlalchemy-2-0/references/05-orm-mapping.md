@@ -632,9 +632,69 @@ class User(Base):
 7. **Choose appropriate inheritance strategy** for your use case
 8. **Document complex relationships** with comments
 
+## Async Support with AsyncAttrs
+
+For async applications, mix `AsyncAttrs` into your base class to enable awaitable attribute access:
+
+```python
+from __future__ import annotations
+from typing import List
+from sqlalchemy.ext.asyncio import AsyncAttrs
+from sqlalchemy.orm import DeclarativeBase, Mapped, relationship
+
+class Base(AsyncAttrs, DeclarativeBase):
+    """Base class with async support"""
+    pass
+
+class User(Base):
+    __tablename__ = "users"
+    
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str]
+    posts: Mapped[List["Post"]] = relationship()
+
+class Post(Base):
+    __tablename__ = "posts"
+    
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str]
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+```
+
+### Using AsyncAttrs
+
+The `AsyncAttrs` mixin provides the `awaitable_attrs` accessor for loading relationships without implicit IO:
+
+```python
+async def load_user_with_posts():
+    async with AsyncSessionLocal() as session:
+        user = await session.get(User, 1)
+        
+        # Load relationship explicitly (prevents implicit lazy loading)
+        for post in await user.awaitable_attrs.posts:
+            print(post.title)
+```
+
+### Benefits of AsyncAttrs
+
+1. **Prevents Implicit IO**: No accidental lazy loading that would fail in async context
+2. **Type-Safe**: Works with Python 2.0 style type annotations
+3. **Simple API**: Just prefix attribute access with `awaitable_attrs`
+4. **Added in 2.0.13**: Available in all recent SQLAlchemy 2.0 versions
+
+### Alternative Approaches
+
+If not using AsyncAttrs, you must use:
+- **Eager loading** (`selectinload`, `joinedload`)
+- **Write-only relationships** (`lazy="write_only"`)
+- **Explicit refresh** for specific attributes
+
+See [AsyncIO Support](07-orm-asyncio.md) for complete async patterns.
+
 ## Next Steps
 
 - [ORM Session](06-orm-session.md) - Using the Session for persistence
 - [ORM Relationships](08-orm-relationships.md) - Advanced relationship patterns
 - [ORM Querying](09-orm-querying.md) - Querying mapped objects
 - [Hybrid Attributes](10-orm-hybrid-attributes.md) - Property expressions
+- [AsyncIO Support](07-orm-asyncio.md) - Complete async/await guide

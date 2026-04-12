@@ -179,10 +179,25 @@ See [Core Querying](references/04-core-querying.md) for complete query guide.
 ### Async Operations
 
 ```python
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.orm import DeclarativeBase, AsyncAttrs
 
-async_engine = create_async_engine("postgresql+asyncpg://user:pass@localhost/db")
-AsyncSessionLocal = async_sessionmaker(async_engine, class_=AsyncSession)
+# Models with AsyncAttrs support
+class Base(AsyncAttrs, DeclarativeBase):
+    pass
+
+async_engine = create_async_engine(
+    "postgresql+asyncpg://user:pass@localhost/db",
+    echo=True,
+    pool_size=20,
+    pool_pre_ping=True
+)
+
+AsyncSessionLocal = async_sessionmaker(
+    async_engine, 
+    class_=AsyncSession,
+    expire_on_commit=False  # Recommended for async
+)
 
 async def get_users():
     async with AsyncSessionLocal() as session:
@@ -193,7 +208,13 @@ async def get_users():
         return users
 ```
 
-See [AsyncIO Support](references/07-orm-asyncio.md) for async patterns.
+See [AsyncIO Support](references/07-orm-asyncio.md) for comprehensive async patterns including:
+- Async engine and session configuration
+- Preventing implicit IO with AsyncAttrs and eager loading
+- Running sync code under asyncio with run_sync()
+- Events with async engines and sessions
+- Async scoped sessions for task-local management
+- Streaming results and result set API
 
 ## Reference Files
 
