@@ -133,6 +133,7 @@ SolidJS reactivity is built on signals, which track dependencies and update only
 - [`references/03-control-flow.md`](references/03-control-flow.md) - Show, For, Index, Portal, ErrorBoundary, Suspense
 - [`references/04-state-management.md`](references/04-state-management.md) - Stores API, Context, state patterns
 - [`references/05-advanced-patterns.md`](references/05-advanced-patterns.md) - Custom hooks, optimization, SSR, hydration
+- [`references/06-build-less-setup.md`](references/06-build-less-setup.md) - HyperScript (h) and Tagged Templates (html) for build-less browser setups
 
 ## Common Patterns
 
@@ -247,13 +248,31 @@ function UserDisplay() {
 - Batch signal updates in the same tick for better performance
 - Use `<Suspense>` boundaries to manage async data loading gracefully
 
+## Build-Less Browser Setup
+
+SolidJS can be used without any build tools by importing directly from a CDN:
+
+```html
+<script type="module">
+  import { render, createSignal } from "https://esm.sh/solid-js";
+  import h from "https://esm.sh/solid-js/h";           // HyperScript
+  // or import html from "https://esm.sh/solid-js/html";  // Tagged templates
+</script>
+```
+
+See [Build-Less Setup](references/06-build-less-setup.md) for comprehensive guide on:
+- HyperScript (`solid-js/h`) - Function-based API
+- Tagged Template Literals (`solid-js/html`) - HTML-like syntax
+- Complete working examples and best practices
+
 ## Ecosystem
 
 ### Official Packages
 
 - `solid-js` - Core framework
 - `solid-js/web` - DOM rendering and hydration
-- `solid-js/html` - SSR primitives
+- `solid-js/h` - HyperScript for build-less environments
+- `solid-js/html` - Tagged template literals for build-less environments
 - `solid-js/store` - Store utilities (included in solid-js)
 - `@solidjs/router` - Client-side routing
 - `@solidjs/start` - Full-stack framework with SSR
