@@ -1,7 +1,7 @@
 ---
 name: write-skill
 description: Generate fine-grained agent skills from minimal prompts, complex requirements, URL documentation crawling, and directory analysis. Uses available agent tools to research and create spec-compliant skills.
-version: "0.3.0"
+version: "0.4.0"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
@@ -94,42 +94,241 @@ ls -la ./target-directory
 
 ### 2. URL Research (If URLs Provided)
 
-When user provides documentation URLs, crawl using **bash/curl as primary method**:
+When user provides documentation URLs, perform **comprehensive domain crawling** to discover all related pages. Use **bash/curl as primary method** with systematic exploration strategies.
 
-**Preferred: bash with curl**
+#### 2a. Extract Base Domain
+
+First, extract the base domain from the provided URL to identify same-domain/subdomain URLs:
+
 ```bash
-# Fetch main page
-curl -s "https://docs.example.com"
+# Extract base domain (e.g., "docs.example.com" from "https://docs.example.com/guide")
+BASE_URL="https://docs.example.com/guide"
+BASE_DOMAIN=$(echo "$BASE_URL" | sed -E 's|^https?://||' | sed -E 's|/.*||')
+echo "Crawling domain: $BASE_DOMAIN"
 
-# Extract links and follow recursively (respect robots.txt)
-curl -s "https://docs.example.com/guide" | grep -oP 'href="\K[^"]*'
+# For subdomain matching (include *.example.com)
+ROOT_DOMAIN=$(echo "$BASE_DOMAIN" | grep -oP '(?<=[.])[^.]+\.[^.]+$' || echo "$BASE_DOMAIN")
+echo "Root domain pattern: *.$ROOT_DOMAIN or $BASE_DOMAIN"
+```
 
-# Handle pagination or multi-page docs
-for page in 1 2 3; do
-  curl -s "https://docs.example.com/api?page=$page"
+#### 2b. Breadth-First Search (BFS) - Wide Coverage
+
+**Use BFS when:** User wants comprehensive coverage of all documentation pages at similar depth levels.
+
+**Strategy:** Discover all links from current level before going deeper. Good for mapping entire documentation structure.
+
+```bash
+#!/bin/bash
+# BFS Crawler: Explore all pages at each depth level before going deeper
+
+BASE_URL="https://docs.example.com"
+BASE_DOMAIN=$(echo "$BASE_URL" | sed -E 's|^https?://||' | sed -E 's|/.*||')
+MAX_DEPTH=3
+MAX_PAGES=50
+VISITED_FILE="/tmp/bfs_visited_$$"
+QUEUE_FILE="/tmp/bfs_queue_$$"
+RESULTS_DIR="/tmp/bfs_results_$$"
+
+mkdir -p "$RESULTS_DIR"
+touch "$VISITED_FILE" "$QUEUE_FILE"
+
+# Initialize queue with base URL
+echo "$BASE_URL|0" >> "$QUEUE_FILE"  # URL|depth
+
+crawl_bfs() {
+    local page_count=0
+    
+    while [ -s "$QUEUE_FILE" ] && [ $page_count -lt $MAX_PAGES ]; do
+        # Dequeue first item (FIFO for BFS)
+        current=$(head -1 "$QUEUE_FILE")
+        sed -i '1d' "$QUEUE_FILE"
+        
+        url=$(echo "$current" | cut -d'|' -f1)
+        depth=$(echo "$current" | cut -d'|' -f2)
+        
+        # Skip if exceeds max depth
+        [ $depth -ge $MAX_DEPTH ] && continue
+        
+        # Skip if already visited
+        grep -qF "$url" "$VISITED_FILE" 2>/dev/null && continue
+        echo "$url" >> "$VISITED_FILE"
+        
+        # Check if URL is from same domain
+        url_domain=$(echo "$url" | sed -E 's|^https?://||' | sed -E 's|/.*||')
+        if ! echo "$url_domain" | grep -qE "(^$BASE_DOMAIN$|^[^.]+\.${BASE_DOMAIN#.*})"; then
+            continue  # Skip external domains
+        fi
+        
+        echo "[BFS Depth $depth] Fetching: $url"
+        
+        # Fetch and save content
+        curl -sL "$url" > "$RESULTS_DIR/$(echo "$url" | sed 's|[^a-zA-Z0-9]|_|g').html" 2>/dev/null
+        page_count=$((page_count + 1))
+        
+        # Extract same-domain links and add to queue
+        curl -sL "$url" 2>/dev/null | grep -oP 'href="\K[^"]*' | while read -r link; do
+            # Convert relative to absolute URLs
+            if [[ "$link" == http* ]]; then
+                full_url="$link"
+            elif [[ "$link" == /* ]]; then
+                full_url="https://$url_domain$link"
+            else
+                full_url="https://$url_domain$link"
+            fi
+            
+            # Only queue same-domain URLs not yet visited
+            link_domain=$(echo "$full_url" | sed -E 's|^https?://||' | sed -E 's|/.*||')
+            if echo "$link_domain" | grep -qE "(^$BASE_DOMAIN$|^[^.]+\.${BASE_DOMAIN#.*})"; then
+                if ! grep -qF "$full_url" "$VISITED_FILE" 2>/dev/null; then
+                    new_depth=$((depth + 1))
+                    echo "$full_url|$new_depth" >> "$QUEUE_FILE"
+                fi
+            fi
+        done
+        
+        # Rate limiting: respect robots.txt and be polite
+        sleep 0.5
+    done
+    
+    echo "BFS complete: $page_count pages crawled"
+}
+
+crawl_bfs
+```
+
+**BFS Benefits:**
+- Discovers documentation structure breadth-first
+- Finds all top-level sections before diving deep
+- Good for understanding overall documentation organization
+- Prevents getting stuck in deep rabbit holes
+
+#### 2c. Depth-First Search (DFS) - Deep Exploration
+
+**Use DFS when:** User wants complete coverage of specific topic branches, following related content deeply.
+
+**Strategy:** Follow each link chain to its fullest depth before backtracking. Good for comprehensive topic coverage.
+
+```bash
+#!/bin/bash
+# DFS Crawler: Explore each branch deeply before moving to next
+
+BASE_URL="https://docs.example.com/guide"
+BASE_DOMAIN=$(echo "$BASE_URL" | sed -E 's|^https?://||' | sed -E 's|/.*||')
+MAX_DEPTH=5
+MAX_PAGES=100
+VISITED_FILE="/tmp/dfs_visited_$$"
+RESULTS_DIR="/tmp/dfs_results_$$"
+
+mkdir -p "$RESULTS_DIR"
+touch "$VISITED_FILE"
+
+crawl_dfs() {
+    local url="$1"
+    local depth="${2:-0}"
+    local page_count=$(wc -l < "$VISITED_FILE")
+    
+    # Stop conditions
+    [ $depth -ge $MAX_DEPTH ] && return
+    [ $page_count -ge $MAX_PAGES ] && return
+    
+    # Skip if already visited
+    grep -qF "$url" "$VISITED_FILE" 2>/dev/null && return
+    echo "$url" >> "$VISITED_FILE"
+    
+    # Check if URL is from same domain
+    url_domain=$(echo "$url" | sed -E 's|^https?://||' | sed -E 's|/.*||')
+    if ! echo "$url_domain" | grep -qE "(^$BASE_DOMAIN$|^[^.]+\.${BASE_DOMAIN#.*})"; then
+        return  # Skip external domains
+    fi
+    
+    echo "[DFS Depth $depth] Fetching: $url"
+    
+    # Fetch and save content
+    curl -sL "$url" > "$RESULTS_DIR/$(echo "$url" | sed 's|[^a-zA-Z0-9]|_|g').html" 2>/dev/null
+    
+    # Extract same-domain links
+    local links=$(curl -sL "$url" 2>/dev/null | grep -oP 'href="\K[^"]*')
+    
+    # Process links in reverse order (so first link is processed first in recursion)
+    echo "$links" | tac | while read -r link; do
+        # Convert relative to absolute URLs
+        if [[ "$link" == http* ]]; then
+            full_url="$link"
+        elif [[ "$link" == /* ]]; then
+            full_url="https://$url_domain$link"
+        else
+            full_url="https://$url_domain$link"
+        fi
+        
+        # Only recurse into same-domain URLs
+        link_domain=$(echo "$full_url" | sed -E 's|^https?://||' | sed -E 's|/.*||')
+        if echo "$link_domain" | grep -qE "(^$BASE_DOMAIN$|^[^.]+\.${BASE_DOMAIN#.*})"; then
+            if ! grep -qF "$full_url" "$VISITED_FILE" 2>/dev/null; then
+                new_depth=$((depth + 1))
+                crawl_dfs "$full_url" $new_depth
+            fi
+        fi
+    done
+    
+    # Rate limiting
+    sleep 0.3
+}
+
+crawl_dfs "$BASE_URL" 0
+echo "DFS complete: $(wc -l < "$VISITED_FILE") pages crawled"
+```
+
+**DFS Benefits:**
+- Follows topic threads to completion
+- Captures deeply nested documentation
+- Good for tutorials with sequential pages
+- Ensures complete coverage of specific branches
+
+#### 2d. Hybrid Approach (Recommended)
+
+**Use hybrid when:** Best results - combine BFS for structure discovery with DFS for deep topic coverage.
+
+```bash
+#!/bin/bash
+# HYBRID Crawler: BFS for top-level, DFS for important sections
+
+BASE_URL="https://docs.example.com"
+BASE_DOMAIN=$(echo "$BASE_URL" | sed -E 's|^https?://||' | sed -E 's|/.*||')
+VISITED_FILE="/tmp/hybrid_visited_$$"
+RESULTS_DIR="/tmp/hybrid_results_$$"
+
+mkdir -p "$RESULTS_DIR"
+touch "$VISITED_FILE"
+
+# Phase 1: BFS to discover main sections (depth 0-2)
+echo "=== Phase 1: BFS for structure discovery ==="
+# ... (use BFS code from above with MAX_DEPTH=2)
+
+# Phase 2: DFS into important sections
+echo "=== Phase 2: DFS for deep coverage ==="
+# Identify key sections from BFS results
+for section in /guide /api /tutorial /examples; do
+    if [ -f "$RESULTS_DIR/*$section*" ]; then
+        echo "Deep diving into: $section"
+        # ... (use DFS code from above starting from section URL)
+    fi
 done
-
-# Check robots.txt before crawling
-curl -s "https://docs.example.com/robots.txt"
 ```
 
 **HTML to Markdown Conversion** (when crawling HTML pages):
 ```bash
-# Fetch HTML content
-curl -sL "https://docs.example.com/guide" > /tmp/fetched_content.html
-
-# Convert to clean markdown if pandoc available
-if [ -n "$PANDOC_CMD" ]; then
-  # Pandoc preserves structure: headings, lists, tables, code blocks
-  $PANDOC_CMD -f html -t markdown --wrap=auto /tmp/fetched_content.html > /tmp/converted_content.md
-  # Use the clean markdown for LLM processing
-  cat /tmp/converted_content.md
-else
-  # Fallback: basic HTML tag stripping (loses some structure)
-  # NOTE: Installing pandoc or pandoc-bin improves conversion quality significantly
-  sed 's/<[^>]*>//g' /tmp/fetched_content.html | tr -s ' \n' > /tmp/converted_content.txt
-  cat /tmp/converted_content.txt
-fi
+# Batch convert all crawled HTML files to markdown
+for html_file in "$RESULTS_DIR"/*.html; do
+    basename=$(basename "$html_file" .html)
+    
+    if [ -n "$PANDOC_CMD" ]; then
+        # Pandoc preserves structure: headings, lists, tables, code blocks
+        $PANDOC_CMD -f html -t markdown --wrap=auto "$html_file" > "$RESULTS_DIR/${basename}.md" 2>/dev/null
+    else
+        # Fallback: basic HTML tag stripping (loses some structure)
+        sed 's/<[^>]*>//g' "$html_file" | tr -s ' \n' > "$RESULTS_DIR/${basename}.txt"
+    fi
+done
 ```
 
 **Benefits of pandoc conversion:**
@@ -138,18 +337,62 @@ fi
 - Handles complex layouts better than text extraction
 - Converts HTML entities properly
 
+#### 2e. Robots.txt and Rate Limiting
+
+**Always check robots.txt before crawling:**
+```bash
+# Check if crawling is allowed
+ROBOTS_URL="https://$BASE_DOMAIN/robots.txt"
+curl -s "$ROBOTS_URL" > /tmp/robots.txt
+
+# Parse disallow rules (simple check)
+if grep -q "Disallow: /" /tmp/robots.txt; then
+    echo "WARNING: Site disallows crawling entire site"
+elif grep -q "Disallow:" /tmp/robots.txt; then
+    echo "NOTE: Some paths are disallowed:"
+    grep "Disallow:" /tmp/robots.txt
+fi
+
+# Check for crawl-delay
+crawl_delay=$(grep -oP 'Crawl-delay:\s*\K[0-9]+' /tmp/robots.txt || echo "1")
+echo "Using crawl delay: ${crawl_delay}s"
+```
+
+**Rate limiting best practices:**
+```bash
+# Be polite: add delays between requests
+sleep 0.5  # Between BFS level requests
+sleep 0.3  # Between DFS recursive calls
+
+# Respect Crawl-delay from robots.txt
+crawl_delay=$(grep -oP 'Crawl-delay:\s*\K[0-9.]+' /tmp/robots.txt 2>/dev/null || echo "0.5")
+sleep "$crawl_delay"
+```
+
 **Alternative: web_search/web_fetch tools (if available)**
 ```
-web_search: "service-name API documentation examples"
+web_search: "service-name API documentation examples site:docs.example.com"
 web_fetch: "https://docs.example.com/guide"
 ```
 
-**Priority order:**
-1. Try bash/curl first (most reliable)
+**Priority order for crawling:**
+1. Try bash/curl with BFS+DFS hybrid approach (most comprehensive)
 2. Fall back to web_search/web_fetch if curl fails
 3. Never skip research just because specialized tools missing
 
-### 2b. PDF Document Processing (If PDFs Encountered)
+### 2f. What to Extract from Crawled Content
+
+From all crawled pages, extract:
+- Command syntax and examples
+- Configuration patterns (YAML, JSON, env vars)
+- Authentication methods and required credentials
+- Rate limits and constraints
+- Error handling patterns
+- Troubleshooting guides
+- API endpoints and usage examples
+- Best practices and recommendations
+
+### 3. PDF Document Processing (If PDFs Encountered)
 
 When URLs point to PDF documents or local PDFs are provided, extract text with layout preservation:
 
@@ -231,7 +474,7 @@ fi
 - Error handling patterns
 - Troubleshooting guides
 
-### 3. Directory Analysis (If Paths Provided)
+### 4. Directory Analysis (If Paths Provided)
 
 When user provides directories to analyze, use **bash commands as primary method**:
 
@@ -271,7 +514,7 @@ Read file: ./project/README.md
 - Configuration templates
 - Helper scripts and utilities
 
-### 4. Auto-Detection Heuristics
+### 5. Auto-Detection Heuristics
 
 Apply these patterns when analyzing content:
 
@@ -285,7 +528,7 @@ Apply these patterns when analyzing content:
 | Shell scripts, Makefiles | Helper workflows | Document commands in references/ |
 | Rate limit headers/docs | API constraints | Add notes to SKILL.md |
 
-### 5. Auto-Detect Simple vs Complex Skills
+### 6. Auto-Detect Simple vs Complex Skills
 
 Before generating, estimate the total content size. This determines whether to create a **simple skill** (single file) or **complex skill** (multi-file with references).
 
@@ -299,7 +542,7 @@ Before generating, estimate the total content size. This determines whether to c
 3. If 3+ major topics OR estimated output > 400 lines → use complex structure
 4. Otherwise → use simple structure
 
-### 5a. Simple Skills Structure
+### 6a. Simple Skills Structure
 
 For focused, single-task skills (< 400 lines):
 
@@ -360,7 +603,7 @@ required_environment_variables:
 - Keep focused on one specific task or workflow
 - No progressive disclosure required
 
-### 5b. Complex Skills Structure
+### 6b. Complex Skills Structure
 
 For multi-topic, extensive knowledge areas (> 400 lines):
 
@@ -451,37 +694,58 @@ See [Core Concepts](references/01-core-concepts.md) for detailed explanation.
 
 **Note:** Generated skills use `references/` directory only (for complex skills). Reference files should be numbered with 2-digit prefixes (`01-`, `02-`, etc.) for consistent ordering. Do not create `scripts/` or `templates/` directories.
 
-### 6. Validation Checklist
+### 7. Validation Checklist
 
-Before finalizing, verify:
+Before finalizing a skill, verify all items apply:
 
-**For all skills:**
-- [ ] Name matches intended directory name (lowercase, hyphens only)
-- [ ] Name matches regex: `^[a-z0-9]+(-[a-z0-9]+)*$`
-- [ ] Description is 1-1024 characters
-- [ ] Description includes both WHAT and WHEN
-- [ ] `license: MIT` is present
+**Frontmatter (Required for All Skills):**
+- [ ] `name` matches parent directory exactly (lowercase, hyphens only)
+- [ ] `name` passes regex: `^[a-z0-9]+(-[a-z0-9]+)*$`
+- [ ] `description` is 1-1024 characters
+- [ ] `description` uses third person (no "I", "you", "we")
+- [ ] `description` includes both WHAT the skill does and WHEN to use it
+- [ ] No XML tags in any frontmatter values
+- [ ] `license: MIT` is present (or user-specified license)
 - [ ] `author: Your Name <email@example.com>` is present (unless user specified otherwise)
-- [ ] `version: "0.2.0"` is present
-- [ ] No XML tags in YAML frontmatter
-- [ ] HTML content converted to clean markdown when pandoc available
-- [ ] PDF content properly extracted using best available method
-- [ ] Optional tool detection completed and logged
+- [ ] `version: "0.x.0"` is present (e.g., `"0.2.0"`)
+- [ ] `tags:` array includes relevant keywords (auto-generated or user-specified)
+- [ ] `category:` field specifies skill category (e.g., `tooling`, `development`, `devops`)
+- [ ] Compatibility lists target platforms (if applicable for hermes filtering)
 
-**For simple skills (< 400 lines):**
+**Structure (Simple Skills < 400 lines):**
 - [ ] All content inline in SKILL.md (no references directory)
 - [ ] Focused on one specific task or workflow
 - [ ] Total line count under 400 lines
+- [ ] No unnecessary sections or empty headings
 
-**For complex skills (> 400 lines):**
-- [ ] Reference files organized in `references/` only (no scripts/templates)
-- [ ] **Reference files use numbered prefixes** (`01-`, `02-`, `03-`) for consistent ordering
-- [ ] Reference files use lowercase with hyphens (e.g., `api-reference.md`)
-- [ ] SKILL.md acts as overview + navigation hub (under 500 lines)
-- [ ] Detailed content moved to references/ files
-- [ ] Relative links used in main file: `[Topic](references/01-topic.md)`
-- [ ] Each reference file focused on one topic (200-400 lines ideal)
+**Structure (Complex Skills > 400 lines):**
+- [ ] Main SKILL.md acts as overview + navigation hub (under 500 lines)
+- [ ] Reference files organized in `references/` directory only (no scripts/templates)
+- [ ] Reference files use numbered prefixes (`01-`, `02-`, `03-`) for consistent ordering
+- [ ] Reference files use lowercase with hyphens (e.g., `api-reference.md` not `API_Reference.md`)
+- [ ] All relative links resolve correctly: `[Topic](references/01-topic.md)`
+- [ ] Each reference file focused on single topic (200-400 lines ideal)
 - [ ] Progressive disclosure applied (high-level in SKILL.md, details in references/)
+- [ ] Complex skills have clear navigation with descriptive link text
+
+**Content Quality (Required for All Skills):**
+- [ ] Third-person throughout entire document (Claude requirement)
+- [ ] Actionable instructions with concrete examples
+- [ ] Clear trigger conditions in "When to Use" section
+- [ ] No marketing fluff or vague statements
+- [ ] Code snippets are complete, valid, and tested
+- [ ] Configuration patterns shown with real values (not placeholders like `<your-key>`)
+- [ ] Error handling and troubleshooting included where relevant
+- [ ] Dependencies and prerequisites clearly documented
+
+**Content Processing (If URL/Directory Research Performed):**
+- [ ] HTML content converted to clean markdown when pandoc available
+- [ ] PDF content properly extracted using best available method (pdftotext > ghostscript > strings)
+- [ ] Optional tool detection completed and logged (pandoc, poppler-utils, ghostscript)
+- [ ] robots.txt checked before crawling domains
+- [ ] Rate limiting applied during URL fetching (respect crawl-delay)
+- [ ] Same-domain/subdomain URLs discovered using BFS/DFS strategies
+- [ ] Extracted content organized into logical reference files
 
 ## Interaction Examples
 
@@ -498,18 +762,25 @@ Agent (with write-skill):
 5. Validates and presents for review
 ```
 
-### Example 2: With URL Research
+### Example 2: With URL Research (BFS Crawling)
 
 ```
 User: "Create a skill for GitHub Actions. Check https://docs.github.com/en/actions"
 
 Agent:
 1. Tests bash/curl availability (preferred)
-2. Crawls with curl:
-   - curl -s "https://docs.github.com/en/actions"
-   - Extracts workflow examples, action syntax, CI patterns
-3. Discovers required env vars (GH_TOKEN, etc.)
-4. Generates complete skill with references/ containing docs
+2. Extracts base domain: docs.github.com
+3. Runs BFS crawl (depth 0-2) to discover all /en/actions/* pages:
+   - Discovers: /actions, /actions/quickstart, /actions/reference, etc.
+   - Follows same-domain links only (*.docs.github.com)
+   - Fetches ~50 related pages across documentation
+4. Runs DFS on key sections (/actions/reference/) for deep coverage
+5. Converts all HTML to markdown (pandoc if available)
+6. Discovers required env vars (GH_TOKEN, etc.)
+7. Generates complete skill with references/ containing organized docs:
+   - references/01-quickstart.md
+   - references/02-workflow-syntax.md  
+   - references/03-api-reference.md
 ```
 
 ### Example 3: With Directory Analysis
@@ -527,7 +798,30 @@ Agent:
    - required_environment_variables from analysis
 ```
 
-### Example 4: Complex Requirements
+### Example 4: Comprehensive Domain Crawling (Hybrid BFS+DFS)
+
+```
+User: "Create a skill for Kubernetes. Crawl all docs at https://kubernetes.io/docs/"
+
+Agent:
+1. Extracts base domain: kubernetes.io
+2. Phase 1 - BFS (depth 0-2): Discovers main documentation structure
+   - /docs/concepts/, /docs/tasks/, /docs/reference/, /docs/tutorials/
+   - Fetches all top-level sections (~30 pages)
+3. Phase 2 - DFS: Deep dives into critical sections
+   - Deep crawl of /docs/reference/kubernetes-api/ (all API objects)
+   - Deep crawl of /docs/tasks/ (all task guides)
+   - Follows subdomains: *.kubernetes.io
+4. Respects robots.txt and rate limits (crawl-delay: 1s)
+5. Converts all HTML to clean markdown
+6. Generates comprehensive skill with organized references:
+   - references/01-core-concepts.md
+   - references/02-api-reference.md (from deep API crawl)
+   - references/03-common-tasks.md
+   - references/04-troubleshooting.md
+```
+
+### Example 5: Complex Requirements
 
 ```
 User: "I need a skill that:
@@ -586,6 +880,21 @@ Generated skills are created in `.agents/skills/<skill-name>/`:
 14. **Relative links in main file** - Use `[Topic](references/01-topic.md)` format
 15. **Optional conversion tools** - pandoc/pandoc-bin and poppler-utils/ghostscript improve content processing but are not required
 16. **Tool detection is non-blocking** - Skill always works, just better with optional tools installed
+17. **Third-person descriptions** - Use third person throughout (Claude requirement)
+18. **No XML in frontmatter** - Never include XML tags in YAML frontmatter values
+19. **Cross-platform awareness** - Generate skills compatible with pi, opencode, claude, and hermes
+
+## Cross-Platform Notes
+
+Generated skills should be compatible across these platforms:
+
+**pi:** Implements Agent Skills standard with lenient validation; warns on violations but loads skill anyway.
+
+**opencode:** Strict validation; skills with missing `description` are not loaded. Unknown frontmatter fields ignored.
+
+**claude:** Requires third-person descriptions; rejects XML tags in frontmatter; tests across Haiku/Sonnet/Opus models.
+
+**hermes:** Supports platform-specific filtering, conditional activation based on tools, and environment variable passthrough for sandboxes.
 
 ## Limitations
 
