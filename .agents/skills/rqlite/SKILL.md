@@ -293,18 +293,33 @@ See [Clustering](references/03-clustering.md) for detailed recovery procedures.
 
 ## Reference Files
 
+### Core Operations
 - [`references/01-installation.md`](references/01-installation.md) - Installation methods (binary, Docker, Homebrew, source)
 - [`references/02-shell.md`](references/02-shell.md) - Interactive rqlite shell commands and usage
 - [`references/03-clustering.md`](references/03-clustering.md) - Cluster creation, management, and failure recovery
 - [`references/04-api.md`](references/04-api.md) - HTTP API endpoints, request/response formats, parameters
 - [`references/05-backup-restore.md`](references/05-backup-restore.md) - Backup strategies, restore procedures, automated backups
 - [`references/06-docker-compose.md`](references/06-docker-compose.md) - Docker Compose configurations for development and production
+
+### Advanced Topics
 - [`references/07-read-consistency.md`](references/07-read-consistency.md) - Read consistency levels and trade-offs
 - [`references/08-security.md`](references/08-security.md) - TLS, authentication, and access control
 - [`references/09-performance.md`](references/09-performance.md) - Performance tuning and optimization
 - [`references/10-monitoring.md`](references/10-monitoring.md) - Monitoring, metrics, and observability
 - [`references/11-cdc.md`](references/11-cdc.md) - Change Data Capture for streaming database changes
 - [`references/12-extensions.md`](references/12-extensions.md) - SQLite extensions for extended functionality
+
+### API Deep Dives
+- [`references/13-bulk-api.md`](references/13-bulk-api.md) - Bulk operations for high-throughput batch processing
+- [`references/14-queued-writes.md`](references/14-queued-writes.md) - Asynchronous write queuing for maximum throughput
+- [`references/15-non-deterministic.md`](references/15-non-deterministic.md) - Handling RANDOM() and datetime functions in distributed context
+- [`references/16-cluster-client.md`](references/16-cluster-client.md) - Client connection strategies for clusters
+
+### Configuration and Access
+- [`references/17-config.md`](references/17-config.md) - Complete command-line flag reference
+- [`references/18-direct-access.md`](references/18-direct-access.md) - Safely accessing underlying SQLite database
+- [`references/19-ui-applications.md`](references/19-ui-applications.md) - Third-party graphical tools and interfaces
+- [`references/20-faq.md`](references/20-faq.md) - Frequently asked questions and common scenarios
 
 **Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/rqlite/`). All paths are relative to this directory.
 
