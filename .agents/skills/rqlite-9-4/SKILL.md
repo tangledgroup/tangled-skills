@@ -1,6 +1,6 @@
 ---
-name: rqlite
-description: Comprehensive toolkit for rqlite, a lightweight distributed relational database built on SQLite with Raft consensus. Use when deploying fault-tolerant databases, building edge/IoT applications with SQL, creating globally distributed read-intensive systems, or needing simple high-availability without complex administration.
+name: rqlite-9-4
+description: Comprehensive toolkit for rqlite 9.4, a lightweight distributed relational database built on SQLite with Raft consensus. Use when deploying fault-tolerant databases, building edge/IoT applications with SQL, creating globally distributed read-intensive systems, or needing simple high-availability without complex administration.
 version: "0.2.0"
 author: Your Name <email@example.com>
 license: MIT
@@ -33,7 +33,7 @@ required_environment_variables:
     required_for: "automated S3 backups"
 ---
 
-# rqlite Distributed Database Skill
+# rqlite 9.4 Distributed Database Skill
 
 A comprehensive skill for using rqlite, a lightweight, user-friendly distributed relational database built on SQLite. This skill covers installation, configuration, clustering, API usage, backup/restore, and operational best practices.
 
@@ -356,7 +356,7 @@ See [Clustering](references/03-clustering.md) for detailed recovery procedures.
 - [`references/19-ui-applications.md`](references/19-ui-applications.md) - Third-party graphical tools and interfaces
 - [`references/20-faq.md`](references/20-faq.md) - Frequently asked questions and common scenarios
 
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/rqlite/`). All paths are relative to this directory.
+**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/rqlite-9-4/`). All paths are relative to this directory.
 
 ## Best Practices
 
