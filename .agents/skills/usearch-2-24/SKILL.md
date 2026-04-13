@@ -32,7 +32,9 @@ USearch is a smaller and faster single-file similarity search and clustering eng
 - Memory-constrained environments requiring quantization (f16, i8, b1)
 - Multi-language projects needing cross-platform index compatibility
 - Clustering large datasets faster than SciPy, UMap, or tSNE
-- Implementing fuzzy joins and semantic matching in database applications
+- Implementing **Combinatorial Stable Marriages** for dating apps, job matching, targeted advertising
+- Replacing expensive preference storage with dynamic vector-based preference calculation
+- Database semantic joins and fuzzy matching at billion-scale
 
 ## Setup
 
@@ -287,6 +289,33 @@ multi_index = Indexes(indexes=[index1, index2, index3])
 query = np.random.rand(256).astype(np.float32)
 matches = multi_index.search(query, 10, threads=4)
 ```
+
+### Semantic Joins (Stable Marriage)
+
+```python
+from usearch.index import Index
+import numpy as np
+
+# Create two indexes for joining (e.g., users and items)
+users = Index(ndim=256, metric='cos', dtype='bf16')
+items = Index(ndim=256, metric='cos', dtype='bf16')
+
+# Populate with embeddings
+user_embeddings = np.random.rand(10000, 256).astype(np.float32)
+item_embeddings = np.random.rand(10000, 256).astype(np.float32)
+users.add(np.arange(10000), user_embeddings)
+items.add(np.arange(10000), item_embeddings)
+
+# Perform stable marriage matching
+import math
+import multiprocessing
+max_proposals = math.log(len(users)) + multiprocessing.cpu_count()
+pairs = users.join(items, max_proposals=max_proposals, exact=False)
+
+print(f"Matched {len(pairs)} user-item pairs")
+```
+
+See [Advanced Workflows](references/02-advanced-workflows.md) for detailed join patterns and performance optimization.
 
 See [Advanced Workflows](references/02-advanced-workflows.md) for clustering, joins, and filtering patterns.
 

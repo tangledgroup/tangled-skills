@@ -247,7 +247,19 @@ For 1 million points with 50,000 clusters:
 
 ## Joins and Semantic Matching
 
-USearch supports approximate joins for fuzzy matching tasks, enabling semantic joins beyond traditional exact database joins.
+USearch supports approximate joins for fuzzy matching tasks, enabling semantic joins beyond traditional exact database joins. This capability is particularly valuable for implementing **Combinatorial Stable Marriages** at scale, with applications in dating apps, job matching, targeted advertising, and database semantic joins.
+
+### Stable Marriage Problem and Vector Search
+
+The classic [Gale-Shapley algorithm](https://en.wikipedia.org/wiki/Gale%E2%80%93Shapley_algorithm) (1962) solves the stable marriage problem but requires complete preference lists. For 1 billion candidates, storing preferences would require **8 million terabytes of RAM** ($80 billion at current prices) - practically infeasible.
+
+USearch's approach: **Trade space for compute** by dynamically recalculating preferences using vector search instead of storing them:
+
+1. Encode all profiles using a neural network into a shared vector space
+2. Build two k-NN indexes (e.g., "men" and "women")
+3. Generalize Stable Marriages over these indexes with dynamic preference calculation
+
+This reduces the problem from requiring supercomputers to running on a single workstation.
 
 ### One-to-One Join (Stable Marriage)
 
@@ -266,7 +278,7 @@ vectors_b = np.random.rand(1000, 256).astype(np.float32)
 index_a.add(np.arange(1000), vectors_a)
 index_b.add(np.arange(1000), vectors_b)
 
-# Perform fuzzy join
+# Perform fuzzy join (Stable Marriage)
 pairs = index_a.join(index_b, max_proposals=0, exact=False)
 
 # pairs is a dict: {key_from_a: key_from_b}
@@ -274,6 +286,11 @@ print(f"Created {len(pairs)} matched pairs")
 for key_a, key_b in list(pairs.items())[:5]:
     print(f"  {key_a} ↔ {key_b}")
 ```
+
+**Key Parameters:**
+- `max_proposals=0`: Auto-estimate stopping criteria (recommended: `log(len(men)) + cpu_count()`)
+- `max_proposals=100`: Fixed limit to reduce variance across different dataset sizes
+- `exact=False`: Use approximate search for efficiency (critical for billion-scale)
 
 ### One-to-Many and Many-to-Many Joins
 
@@ -308,6 +325,56 @@ def custom_join_with_scores(index_a, index_b, top_k=5):
 
 scored_pairs = custom_join_with_scores(index_a, index_b, top_k=10)
 ```
+
+### Performance Considerations for Joins
+
+**Scale and Convergence:**
+- Small indexes (<1M vectors): 500K+ queries/second (fits in CPU cache)
+- Billion-scale indexes: ~1K queries/second (memory-bound)
+- **Critical question**: How many proposals until convergence?
+
+**Optimal max_proposals:**
+```python
+import math
+import multiprocessing
+
+# Recommended formula from USearch authors
+optimal_proposals = math.log(len(index_a)) + multiprocessing.cpu_count()
+
+pairs = index_a.join(index_b, max_proposals=optimal_proposals, exact=False)
+```
+
+**Performance optimization tips:**
+1. **Downcast to i8**: 3x speedup with negligible accuracy loss for cosine metrics
+2. **JIT distance functions**: Use Numba, Cppyy, or PeachPy for custom metrics
+3. **Parallel processing**: Leverage multi-core architectures with concurrent bitsets
+4. **Limit proposals**: Terminate early to avoid unnecessary computations
+
+### Real-World Join Quality Metrics
+
+Based on experiments with Arxiv dataset (2M paper titles and abstracts):
+
+| Dataset Size | Joined (%) | Joined Correctly (%) |
+|--------------|------------|---------------------|
+| 10K          | 98.12%     | **87.85%**          |
+| 100K         | 96.29%     | **70.47%**          |
+| 1M           | 94.34%     | **57.67%**          |
+
+**Key insight**: Correct join rate ≈ product of cross-recalls. For uni-modal text (e5-base-v2 embeddings), quality remains high even at scale.
+
+**Multi-modal caution**: With CLIP (image-text pairs), correct joins drop dramatically:
+- 10K pairs: 43.50% correct (ViT-B-16)
+- 1M pairs: **9.02% correct** (ViT-B-16) → 13.46% with ViT-G/14
+
+This highlights the critical importance of **high-quality shared vector space alignment** for multi-modal joins.
+
+### Application Examples
+
+**Dating Apps**: Match users based on encoded profile embeddings
+**Job Matching**: Connect candidates with positions using skill/task embeddings  
+**Targeted Advertising**: Pair products with user preferences dynamically
+**Database Semantic Joins**: Replace exact SQL joins with fuzzy semantic matching
+**Content Recommendation**: Link related articles, videos, or products across modalities
 
 ## Filtering and Predicates
 
