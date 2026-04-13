@@ -48,16 +48,18 @@ See [Repository Basics](references/01-repository-basics.md) for detailed setup i
 # Check status
 git status
 
-# Add files to staging
-git add <file>
+# Add files to staging (or specific file)
 git add .
+git add <file>
 
 # Commit changes with semantic message
 git commit -m "feat: add user authentication"
 
-# Push to remote
+# Push to remote repository
 git push origin main
 ```
+
+**Quick workflow:** `git add . && git commit -m "fix: resolve issue" && git push origin main`
 
 See [Basic Operations](references/02-basic-operations.md) for detailed commands.
 
@@ -292,6 +294,24 @@ git push origin feature-name
 ```
 
 See [Remote Operations](references/04-remote-operations.md) for collaboration patterns.
+
+### Add, Commit, Push Workflow
+
+```bash
+# Stage all changes
+git add .
+
+# Commit with message
+git commit -m "feat: add new feature"
+
+# Push to remote repository
+git push origin main
+```
+
+This is the standard workflow for sharing changes:
+1. `git add` - Stage files you want to include in the next commit
+2. `git commit` - Create a snapshot with a descriptive message
+3. `git push` - Upload commits to the remote repository
 
 ## Reference Files
 
