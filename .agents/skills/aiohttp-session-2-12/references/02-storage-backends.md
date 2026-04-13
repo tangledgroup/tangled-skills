@@ -548,35 +548,211 @@ Example:
 
 ## Custom Storage Backend
 
-Create a custom storage by implementing `AbstractStorage`:
+Create a custom storage by implementing `AbstractStorage`. This section includes examples for PostgreSQL and other databases.
+
+### PostgreSQL Storage Example
+
+Complete implementation using aiopg for async PostgreSQL connections:
+
+```python
+import json
+import uuid
+from typing import Any, Callable, Optional
+
+import psycopg2.extras
+from aiohttp import web
+from aiopg import Pool
+
+from aiohttp_session import AbstractStorage, Session
+
+
+class PgStorage(AbstractStorage):
+    """PostgreSQL session storage.
+    
+    Requires:
+    - aiopg: pip install aiopg
+    - psycopg2-binary: pip install psycopg2-binary
+    
+    Database schema:
+    ```sql
+    CREATE SCHEMA web;
+    CREATE TABLE web.sessions (
+        uuid UUID PRIMARY KEY,
+        session JSONB NOT NULL,
+        created TIMESTAMP NOT NULL,
+        expire TIMESTAMP NOT NULL
+    );
+    CREATE INDEX idx_sessions_expire ON web.sessions (expire);
+    """
+
+    def __init__(
+        self,
+        pg_pool: Pool,
+        *,
+        cookie_name: str = "AIOHTTP_SESSION",
+        domain: Optional[str] = None,
+        max_age: Optional[int] = None,
+        path: str = "/",
+        secure: Optional[bool] = None,
+        httponly: bool = True,
+        key_factory: Callable[[], str] = lambda: uuid.uuid4().hex,
+        encoder: Callable[[object], str] = psycopg2.extras.Json,
+        decoder: Callable[[str], Any] = json.loads,
+    ):
+        super().__init__(
+            cookie_name=cookie_name,
+            domain=domain,
+            max_age=max_age,
+            path=path,
+            secure=secure,
+            httponly=httponly,
+            encoder=encoder,
+            decoder=decoder,
+        )
+        self._pg = pg_pool
+        self._key_factory = key_factory
+
+    async def load_session(self, request: web.Request) -> Session:
+        cookie = self.load_cookie(request)
+        if cookie is None:
+            return Session(None, data={}, new=True, max_age=self.max_age)
+        else:
+            async with self._pg.acquire() as conn:
+                key = uuid.UUID(cookie)
+                async with conn.cursor(
+                    cursor_factory=psycopg2.extras.DictCursor
+                ) as cur:
+                    await cur.execute(
+                        "SELECT session, extract(epoch from created) "
+                        + "FROM web.sessions WHERE uuid = %s",
+                        (key,),
+                    )
+                    data = await cur.fetchone()
+
+                    if not data:
+                        return Session(None, data={}, new=True, max_age=self.max_age)
+
+            return Session(key, data=data, new=False, max_age=self.max_age)
+
+    async def save_session(
+        self, request: web.Request, response: web.StreamResponse, session: Session
+    ) -> None:
+        key = session.identity
+        if key is None:
+            key = self._key_factory()
+            self.save_cookie(response, key, max_age=session.max_age)
+        else:
+            if session.empty:
+                self.save_cookie(response, "", max_age=session.max_age)
+            else:
+                key = str(key)
+                self.save_cookie(response, key, max_age=session.max_age)
+
+        data = self._get_session_data(session)
+        if not data:
+            return
+
+        data_encoded = self._encoder(data["session"])
+        expire = data["created"] + (session.max_age or 0)
+        async with self._pg.acquire() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute(
+                    "INSERT INTO web.sessions (uuid,session,created,expire)"
+                    + " VALUES (%s, %s, to_timestamp(%s),to_timestamp(%s))"
+                    + " ON CONFLICT (uuid)"
+                    + " DO UPDATE"
+                    + " SET (session,expire)=(EXCLUDED.session, EXCLUDED.expire)",
+                    [key, data_encoded, data["created"], expire],
+                )
+
+
+# Usage example
+import asyncio
+from aiohttp import web
+from aiohttp_session import setup
+from aiopg import create_pool
+
+
+async def handler(request: web.Request):
+    from aiohttp_session import get_session
+    session = await get_session(request)
+    session["data"] = "stored in PostgreSQL"
+    return web.Response(text="OK")
+
+
+async def make_app():
+    app = web.Application()
+    
+    # Create PostgreSQL connection pool
+    pool = await create_pool(
+        host='localhost',
+        port=5432,
+        user='postgres',
+        password='password',
+        database='myapp'
+    )
+    
+    # Setup session storage
+    storage = PgStorage(pool, max_age=3600)
+    setup(app, storage)
+    
+    app.router.add_get("/", handler)
+    
+    # Cleanup pool on shutdown
+    app.on_cleanup.append(lambda app: pool.close())
+    
+    return app
+
+
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    app = loop.run_until_complete(make_app())
+    web.run_app(app)
+```
+
+##### Generic Database Storage Template
+
+Use this template as a starting point for other databases (MySQL, SQLite, MongoDB, etc.):
 
 ```python
 from aiohttp_session import AbstractStorage, Session
 from aiohttp import web
 import json
+import uuid
+
 
 class DatabaseStorage(AbstractStorage):
-    """Custom database-backed session storage."""
+    """Generic database-backed session storage template.
     
-    def __init__(self, db_connection, **kwargs):
+    Adapt the SQL queries and connection handling for your database.
+    """
+    
+    def __init__(self, db_connection, key_factory=None, **kwargs):
         super().__init__(**kwargs)
         self.db = db_connection
+        self._key_factory = key_factory or (lambda: uuid.uuid4().hex)
     
     async def load_session(self, request: web.Request) -> Session:
         cookie_value = self.load_cookie(request)
         
         if not cookie_value:
-            return await self.new_session()
+            return Session(None, data={}, new=True, max_age=self.max_age)
         
         # Query database for session data
+        # Adapt this query for your database
         row = await self.db.fetch(
-            "SELECT data FROM sessions WHERE id = $1", cookie_value
+            "SELECT data, created FROM sessions WHERE id = $1", 
+            cookie_value
         )
         
         if not row:
-            return await self.new_session()
+            return Session(None, data={}, new=True, max_age=self.max_age)
         
-        data = json.loads(row['data'])
+        # Parse data and create session
+        data = {
+            "session": json.loads(row['data']),
+            "created": row['created'].timestamp()
+        }
         return Session(cookie_value, data=data, new=False, max_age=self.max_age)
     
     async def save_session(
@@ -584,39 +760,46 @@ class DatabaseStorage(AbstractStorage):
         response: web.StreamResponse, 
         session: Session
     ) -> None:
-        if session.empty:
-            # Delete session
-            await self.db.execute(
-                "DELETE FROM sessions WHERE id = $1", session.identity
-            )
-            self.save_cookie(response, "", max_age=session.max_age)
-            return
-        
-        # Upsert session data
-        data = self._encoder(self._get_session_data(session))
-        await self.db.execute(
-            """INSERT INTO sessions (id, data, expires_at)
-               VALUES ($1, $2, NOW() + INTERVAL '$3 seconds')
-               ON CONFLICT (id) DO UPDATE SET data = $2, expires_at = NOW() + INTERVAL '$3 seconds""",
-            session.identity or self._key_factory(),
-            data,
-            session.max_age or 0
-        )
-        
-        # Set cookie with session ID
-        self.save_cookie(response, session.identity, max_age=session.max_age)
+        key = session.identity
+        if key is None:
+            key = self._key_factory()
+            self.save_cookie(response, key, max_age=session.max_age)
+        else:
+            if session.empty:
+                # Delete session from database
+                await self.db.execute(
+                    "DELETE FROM sessions WHERE id = $1", key
+                )
+                self.save_cookie(response, "", max_age=session.max_age)
+                return
+            else:
+                self.save_cookie(response, key, max_age=session.max_age)
 
-# Usage
-app = web.Application()
-db = await asyncpg.connect(...)
-setup(app, DatabaseStorage(db, max_age=3600))
+        # Prepare session data
+        data = self._get_session_data(session)
+        if not data:
+            return
+
+        # Upsert session data (adapt for your database)
+        data_encoded = self._encoder(data["session"])
+        expire = data["created"] + (session.max_age or 0)
+        
+        await self.db.execute(
+            """INSERT INTO sessions (id, data, created, expire)
+               VALUES ($1, $2, $3, $4)
+               ON CONFLICT (id) DO UPDATE 
+               SET (data, expire) = ($2, $4)""",
+            key, data_encoded, data["created"], expire
+        )
 ```
 
 ### Custom Encoder/Decoder
 
-For non-JSON data (e.g., pickle for complex objects):
+For non-JSON data or custom serialization needs:
 
+**Pickle for Complex Objects:**
 ```python
+import base64
 import pickle
 
 def pickle_dumps(obj):
@@ -636,3 +819,76 @@ session['custom_obj'] = MyCustomClass()
 ```
 
 **⚠️ Security Warning:** Pickle is vulnerable to arbitrary code execution. Only use with trusted data.
+
+**MsgPack for Better Performance:**
+```python
+import msgpack
+
+def msgpack_dumps(obj):
+    return msgpack.packb(obj, use_bin_type=True)
+
+def msgpack_loads(data):
+    return msgpack.unpackb(data, raw=False, strict_map_key=False)
+
+storage = RedisStorage(
+    redis,
+    encoder=msgpack_dumps,
+    decoder=msgpack_loads
+)
+```
+
+**Custom Type Serialization:**
+```python
+from datetime import datetime
+import json
+
+def custom_encoder(obj):
+    """Handle datetime and other custom types."""
+    if isinstance(obj, datetime):
+        return {"__type__": "datetime", "value": obj.isoformat()}
+    elif hasattr(obj, "to_dict"):
+        return {"__type__": "object", "value": obj.to_dict()}
+    raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
+
+def custom_decoder(dct):
+    """Restore custom types from JSON."""
+    if "__type__" in dct:
+        if dct["__type__"] == "datetime":
+            return datetime.fromisoformat(dct["value"])
+        elif dct["__type__"] == "object":
+            return CustomObject.from_dict(dct["value"])
+    return dct
+
+storage = EncryptedCookieStorage(
+    secret_key=fernet_key,
+    encoder=lambda obj: json.dumps(obj, default=custom_encoder),
+    decoder=lambda s: json.loads(s, object_hook=custom_decoder)
+)
+
+# Now you can store datetime objects
+session['last_login'] = datetime.now()
+```
+
+**Compression for Large Sessions:**
+```python
+import json
+import zlib
+import base64
+
+def compressed_dumps(obj):
+    """Compress JSON data to reduce cookie/storage size."""
+    json_str = json.dumps(obj)
+    compressed = zlib.compress(json_str.encode('utf-8'))
+    return base64.b64encode(compressed).decode('ascii')
+
+def compressed_loads(data):
+    """Decompress and parse JSON data."""
+    decompressed = zlib.decompress(base64.b64decode(data.encode('ascii')))
+    return json.loads(decompressed.decode('utf-8'))
+
+storage = EncryptedCookieStorage(
+    secret_key=fernet_key,
+    encoder=compressed_dumps,
+    decoder=compressed_loads
+)
+```
