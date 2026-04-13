@@ -1,747 +1,417 @@
 ---
 name: payloadcms-website-3-82-1
-description: Complete guide for Payload CMS website template v3.82.1 providing production-ready blog and multi-page website with Next.js App Router, TypeScript, MongoDB, Lexical editor, live preview, SEO optimization, and internationalization. Use when building content websites, blogs, marketing sites, or any web project requiring pages, posts, categories, media management, header/footer globals, and search functionality following official Payload best practices.
+description: Complete guide for Payload CMS website template v3.82.1 providing production-ready blog and multi-page website with Next.js App Router, TypeScript, MongoDB, Lexical editor, live preview, SEO optimization, internationalization, form builder, search functionality, redirects management, and scheduled publishing. Use when building content websites, blogs, marketing sites, or any web project requiring pages, posts, categories, media management, header/footer globals, and search functionality following official Payload best practices.
 version: "0.2.0"
 author: Your Name <email@example.com>
 license: MIT
 tags:
-  - payload-cms
+  - payloadcms
   - nextjs
+  - typescript
+  - cms
+  - mongodb
   - website-template
   - blog
-  - content-website
-  - mongodb
-  - lexical-editor
   - seo
-  - i18n
+  - live-preview
+  - forms
+  - search
 category: development
 required_environment_variables:
-  - name: PAYLOAD_SECRET
-    prompt: "Enter your Payload secret key"
-    help: "Generate with: node -e \"console.log(require('crypto').randomBytes(64).toString('hex'))\""
-    required_for: "application security and session management"
   - name: DATABASE_URL
     prompt: "Enter your MongoDB connection string"
-    help: "Example: mongodb://localhost:27017/payload or use MongoDB Atlas"
-    required_for: "database connectivity"
-  - name: PAYLOAD_PUBLIC_APP_URL
-    prompt: "Enter your public app URL"
-    help: "Example: http://localhost:3000 or https://your-domain.com"
-    required_for: "live preview and email links"
+    help: "For local development: mongodb://127.0.0.1/your-database-name. For production, use MongoDB Atlas or your hosted MongoDB instance."
+    required_for: database connectivity
+  - name: PAYLOAD_SECRET
+    prompt: "Enter a secret key for Payload (minimum 32 characters)"
+    help: "Generate using: node -e \"console.log(require('crypto').randomBytes(64).toString('hex'))\". Required for session encryption and JWT signing."
+    required_for: application security
+  - name: CRON_SECRET
+    prompt: "Enter a secret for cron job authentication"
+    help: "Generate a random string for authenticating scheduled tasks and background jobs."
+    required_for: scheduled publishing and background jobs
 ---
 
-# Payload CMS Website Template 3.82.1
+# Payload CMS Website Template v3.82.1
 
-The website template provides a production-ready, full-featured website starter with blog functionality, multi-page support, live preview, SEO optimization, and internationalization (i18n). It includes pre-configured collections for Pages, Posts, Categories, Media, and Users, plus Header/Footer globals, custom blocks, and search functionality.
+A production-ready, enterprise-grade website template for building blogs, marketing sites, portfolios, and content platforms with Payload CMS v3.82.1, Next.js 16.2.2, TypeScript, MongoDB, Lexical editor, and advanced features including live preview, SEO optimization, search functionality, form builder, redirects management, and scheduled publishing.
 
 ## When to Use
 
-- Building content websites or blogs from scratch
-- Needing multi-page website with navigation
-- Requiring live preview for content editors
-- Wanting SEO-optimized pages out of the box
-- Building marketing sites with custom layouts
-- Needing category-based content organization
-- Requiring search functionality across content
-- Following official Payload best practices
+- Building production-ready websites, blogs, or portfolios
+- Creating content publishing platforms with editorial workflows
+- Implementing draft preview and live preview functionality
+- Adding SEO optimization with automatic meta tags and sitemaps
+- Building sites with search functionality and redirects management
+- Integrating form builder for contact forms and lead capture
+- Setting up scheduled publishing and background jobs
+- Creating multi-page websites with layout builders
+- Implementing nested categories/taxonomies
+- Following official Payload best practices for websites
+
+## What This Template Includes
+
+### Pre-configured Collections
+
+- **Pages**: Layout builder-enabled pages with draft support, live preview, SEO fields, revalidation hooks
+- **Posts**: Blog posts with rich text editor, categories, authors, related posts, drafts, live preview
+- **Media**: Upload collection with image optimization, focal points, manual resizing
+- **Categories**: Nested taxonomy for organizing content (uses nested-docs plugin)
+- **Users**: Authentication-enabled admin users with role-based access control
+
+### Pre-configured Globals
+
+- **Header**: Navigation links and header configuration
+- **Footer**: Footer links and configuration
+
+### Advanced Features
+
+- **Live Preview**: Real-time preview of drafts with responsive breakpoints
+- **Draft Preview**: Shareable preview links for unpublished content
+- **SEO Plugin**: Automatic meta tags, Open Graph, Twitter cards, sitemap generation
+- **Search Plugin**: Full-text search across posts with custom indexing
+- **Redirects Plugin**: URL redirect management with automatic revalidation
+- **Form Builder Plugin**: Drag-and-drop form builder with submissions
+- **Nested Docs Plugin**: Hierarchical category structure
+- **On-demand Revalidation**: Instant cache invalidation on content updates
+- **Scheduled Publishing**: Publish content at specific dates/times
+- **Internationalization Ready**: i18n configuration and utilities
+
+### Technology Stack
+
+- **Runtime**: Node.js 18.20.2+ or 20.9.0+
+- **Framework**: Next.js 16.2.2 (App Router with SSR/SSG)
+- **Database**: MongoDB via `@payloadcms/db-mongodb`
+- **Editor**: Lexical rich text editor with custom blocks
+- **Styling**: Tailwind CSS 4.1+ with Radix UI components
+- **Package Manager**: pnpm 9+ or 10+
+- **Image Optimization**: Sharp 0.34.2
 
 ## Quick Start
 
-### Installation
+### Prerequisites
 
-```bash
-# Create new project from website template
-npm create payload@3.82.1 -- --template website
+- Node.js 18.20.2+ or 20.9.0+ installed
+- MongoDB running locally or MongoDB Atlas account
+- pnpm package manager (recommended)
 
-# Or use npx with specific version
-npx create-payload@3.82.1 --template website
+### Local Development Setup
 
-# Using bun
-bunx create-payload@3.82.1 --template website
+1. **Clone and install dependencies:**
+   ```bash
+   cd your-project
+   pnpm install
+   ```
+
+2. **Configure environment variables:**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit `.env` with your values:
+   ```env
+   DATABASE_URL=mongodb://127.0.0.1/your-database-name
+   PAYLOAD_SECRET=your-secret-key-minimum-32-chars
+   CRON_SECRET=your-cron-job-secret
+   ```
+
+3. **Start MongoDB (if not running):**
+   ```bash
+   docker run -d -p 27017:27017 --name mongo mongo:latest
+   ```
+
+4. **Start development server:**
+   ```bash
+   pnpm dev
+   ```
+
+5. **Open browser:**
+   - Frontend: http://localhost:3000
+   - Admin Panel: http://localhost:3000/admin
+
+6. **Seed demo content (optional):**
+   - Visit: http://localhost:3000/next/seed
+   - Creates sample pages, posts, categories for testing
+
+See [Setup and Configuration](references/01-setup-configuration.md) for detailed setup instructions and environment variables.
+
+## Project Structure
+
+```
+src/
+├── app/                          # Next.js App Router
+│   ├── (payload)/                # Admin panel routes
+│   └── (frontend)/               # Public website routes
+│       ├── [slug]/page.tsx       # Dynamic page routes
+│       ├── posts/                # Blog post routes
+│       ├── search/page.tsx       # Search results page
+│       └── (sitemaps)/           # XML sitemap routes
+├── collections/                   # Collection configurations
+│   ├── Pages/                    # Page collection with layout builder
+│   ├── Posts/                    # Post collection with rich text
+│   ├── Media/                    # Upload-enabled media
+│   ├── Categories/               # Nested taxonomy
+│   └── Users/                    # Auth-enabled users
+├── globals/                       # Global configurations
+│   ├── Header/                   # Navigation configuration
+│   └── Footer/                   # Footer links
+├── blocks/                        # Layout builder blocks
+│   ├── ArchiveBlock/             # Post archive display
+│   ├── CallToAction/             # CTA sections
+│   ├── Content/                  # Text and media columns
+│   ├── Form/                     # Form builder integration
+│   ├── MediaBlock/               # Full-width media
+│   ├── Banner/                   # Inline rich text banners
+│   └── Code/                     # Code blocks with syntax highlighting
+├── components/                    # React components
+│   ├── ui/                       # Reusable UI components (Radix)
+│   ├── RichText/                 # Lexical renderer
+│   ├── Media/                    # Image and video components
+│   ├── Link/                     # Link component
+│   └── Pagination/               # Pagination component
+├── heros/                         # Hero section variants
+│   ├── HighImpact/               # Full-screen hero
+│   ├── MediumImpact/             # Large hero
+│   ├── LowImpact/                # Subtle hero
+│   └── PostHero/                 # Post-specific hero
+├── fields/                        # Reusable field configurations
+├── hooks/                         # Collection hooks
+├── plugins/                       # Payload plugin configuration
+├── providers/                     # React context providers
+│   └── Theme/                    # Dark/light theme provider
+├── search/                        # Search plugin configuration
+└── utilities/                     # Helper functions
 ```
 
-### Project Structure
-
-```
-my-website/
-├── src/
-│   ├── app/
-│   │   ├── (frontend)/
-│   │   │   ├── pages/
-│   │   │   ├── posts/
-│   │   │   └── search/
-│   │   ├── (payload)/
-│   │   │   └── admin/
-│   │   ├── api/
-│   │   ├── layout.tsx
-│   │   └── page.tsx
-│   ├── collections/
-│   │   ├── Categories/
-│   │   ├── Media/
-│   │   ├── Pages/
-│   │   ├── Posts/
-│   │   └── Users/
-│   ├── Footer/              # Footer global
-│   ├── Header/              # Header global
-│   ├── blocks/              # Reusable content blocks
-│   ├── components/          # React components
-│   ├── fields/              # Custom field configurations
-│   ├── heros/               # Hero section variants
-│   ├── hooks/               # Collection hooks
-│   ├── plugins/             # Custom plugins
-│   ├── search/              # Search functionality
-│   ├── payload.config.ts    # Main configuration
-│   └── utilities/           # Helper functions
-├── .env.example
-├── next.config.js
-├── package.json
-└── tsconfig.json
-```
-
-### Environment Setup
-
-```bash title=".env"
-# Required - Generate with: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
-PAYLOAD_SECRET=your-generated-secret-here
-
-# MongoDB connection string
-DATABASE_URL=mongodb://localhost:27017/payload
-
-# Public URL for live preview and emails
-PAYLOAD_PUBLIC_APP_URL=http://localhost:3000
-
-# Optional - Cron job secret for background jobs
-CRON_SECRET=your-cron-secret
-
-# Optional - Disable telemetry
-TELEMETRY_ENABLED=false
-```
-
-### Run Development Server
-
-```bash
-# Install dependencies
-bun install
-
-# Start MongoDB (if not running)
-mongod --dbpath ./data  # Or use MongoDB Atlas
-
-# Start development server
-bun run dev
-
-# Access:
-# - Admin panel: http://localhost:3000/admin
-# - Website: http://localhost:3000
-```
-
-## Core Collections
-
-### Pages Collection
-
-Multi-page website support with hierarchical structure, live preview, and SEO fields.
-
-**Key Features:**
-- Hierarchical page structure (parent/child relationships)
-- Layout builder with reusable blocks
-- Live preview for all devices
-- SEO optimization fields
-- Draft/publish workflow
-- Version history
-
-```typescript title="src/collections/Pages/index.ts"
-export const Pages: CollectionConfig = {
-  slug: 'pages',
-  admin: {
-    useAsTitle: 'title',
-    defaultColumns: ['title', 'status', 'updatedAt'],
-  },
-  access: {
-    read: () => true,  // Public can read published pages
-  },
-  fields: [
-    { name: 'title', type: 'text', required: true },
-    { name: 'slug', type: 'text', unique: true },
-    
-    // Layout builder with blocks
-    {
-      name: 'layout',
-      type: 'blocks',
-      blocks: [
-        'hero',
-        'content',
-        'media',
-        'call-to-action',
-        'team',
-        'faq',
-      ],
-    },
-    
-    // SEO fields
-    seoFields(),
-    
-    // Status for drafts
-    {
-      name: 'status',
-      type: 'select',
-      options: ['draft', 'published'],
-      defaultValue: 'draft',
-    },
-  ],
-  versions: {
-    drafts: true,
-    maxPerDoc: 10,
-  },
-}
-```
-
-### Posts Collection (Blog)
-
-Full-featured blog with categories, authors, featured images, and SEO optimization.
-
-**Key Features:**
-- Rich text content with Lexical editor
-- Category-based organization
-- Author relationships
-- Featured image uploads
-- Publish date scheduling
-- Reading time calculation
-- Related posts
-- SEO meta fields
-
-```typescript title="src/collections/Posts/index.ts"
-export const Posts: CollectionConfig = {
-  slug: 'posts',
-  admin: {
-    useAsTitle: 'title',
-    defaultColumns: ['title', 'status', 'publishDate'],
-  },
-  access: {
-    read: ({ req }) => {
-      if (req.user) return true
-      return { status: { equals: 'published' } }
-    },
-  },
-  fields: [
-    { name: 'title', type: 'text', required: true },
-    { name: 'slug', type: 'text', unique: true },
-    
-    // Rich text content
-    {
-      name: 'content',
-      type: 'richText',
-      required: true,
-    },
-    
-    // Featured image
-    {
-      name: 'featuredImage',
-      type: 'upload',
-      relationTo: 'media',
-    },
-    
-    // Categories (many-to-many)
-    {
-      name: 'categories',
-      type: 'relationship',
-      relationTo: 'categories',
-      hasMany: true,
-    },
-    
-    // Author
-    {
-      name: 'author',
-      type: 'relationship',
-      relationTo: 'users',
-      required: true,
-    },
-    
-    // Publish date
-    {
-      name: 'publishDate',
-      type: 'date',
-    },
-    
-    // SEO fields
-    seoFields(),
-    
-    // Status
-    {
-      name: 'status',
-      type: 'select',
-      options: ['draft', 'published'],
-      defaultValue: 'draft',
-    },
-  ],
-  versions: {
-    drafts: true,
-    maxPerDoc: 10,
-  },
-}
-```
-
-### Categories Collection
-
-Organize posts into categories with descriptions and icons.
-
-```typescript title="src/collections/Categories.ts"
-export const Categories: CollectionConfig = {
-  slug: 'categories',
-  admin: {
-    useAsTitle: 'title',
-  },
-  fields: [
-    { name: 'title', type: 'text', required: true },
-    { name: 'slug', type: 'text', unique: true },
-    { name: 'description', type: 'text' },
-  ],
-}
-```
-
-### Media Collection
-
-Upload and manage images, videos, and documents with metadata.
-
-```typescript title="src/collections/Media.ts"
-export const Media: CollectionConfig = {
-  slug: 'media',
-  access: {
-    read: () => true,  // Public access
-  },
-  fields: [
-    { name: 'alt', type: 'text', required: true },
-    { name: 'caption', type: 'text' },
-    { name: 'credits', type: 'text' },
-  ],
-  upload: true,
-}
-```
-
-### Users Collection
-
-Authentication with role-based access control.
-
-```typescript title="src/collections/Users.ts"
-export const Users: CollectionConfig = {
-  slug: 'users',
-  auth: true,
-  admin: {
-    useAsTitle: 'email',
-  },
-  fields: [
-    {
-      name: 'roles',
-      type: 'select',
-      hasMany: true,
-      options: ['admin', 'editor', 'author'],
-      defaultValue: ['author'],
-      saveToJWT: true,
-    },
-    { name: 'displayName', type: 'text' },
-  ],
-}
-```
-
-## Globals
-
-### Header Global
-
-Manage global website header/navigation.
-
-```typescript title="src/Header/config.ts"
-export const Header: GlobalConfig = {
-  slug: 'header',
-  fields: [
-    {
-      name: 'navItems',
-      type: 'array',
-      fields: [
-        { name: 'label', type: 'text' },
-        { name: 'url', type: 'text' },
-      ],
-    },
-  ],
-}
-```
-
-### Footer Global
-
-Manage global website footer content.
-
-```typescript title="src/Footer/config.ts"
-export const Footer: GlobalConfig = {
-  slug: 'footer',
-  fields: [
-    { name: 'copyright', type: 'text' },
-    { name: 'socialLinks', type: 'array' },
-  ],
-}
-```
-
-## Custom Blocks
-
-Reusable content blocks for page builders.
-
-### Available Blocks
-
-1. **Hero Block**: Full-width hero sections with various layouts
-2. **Content Block**: Text and media combinations
-3. **Media Block**: Image galleries and video embeds
-4. **Call-to-Action Block**: Prominent CTAs with buttons
-5. **Team Block**: Team member grids
-6. **FAQ Block**: Accordion-style FAQs
-
-### Example: Hero Block
-
-```typescript title="src/blocks/Hero/index.ts"
-export const HeroBlock: Block = {
-  slug: 'hero',
-  labels: {
-    singular: 'Hero',
-    plural: 'Heroes',
-  },
-  fields: [
-    {
-      name: 'type',
-      type: 'select',
-      options: ['default', 'large', 'small'],
-      defaultValue: 'default',
-    },
-    { name: 'title', type: 'text' },
-    { name: 'subtitle', type: 'richText' },
-    {
-      name: 'media',
-      type: 'upload',
-      relationTo: 'media',
-    },
-    {
-      name: 'buttons',
-      type: 'array',
-      fields: [
-        { name: 'link', type: 'text' },
-        { name: 'label', type: 'text' },
-      ],
-    },
-  ],
-}
-```
-
-## Live Preview
-
-Real-time preview of content changes across devices.
-
-### Configuration
-
-```typescript title="src/payload.config.ts"
-admin: {
-  livePreview: {
-    breakpoints: [
-      { label: 'Mobile', name: 'mobile', width: 375, height: 667 },
-      { label: 'Tablet', name: 'tablet', width: 768, height: 1024 },
-      { label: 'Desktop', name: 'desktop', width: 1440, height: 900 },
-    ],
-  },
-}
-```
-
-### Usage in Pages
-
-```typescript title="src/app/(frontend)/pages/[slug]/page.tsx"
-export default async function Page({ params, searchParams }) {
-  const isPreview = searchParams?.preview === 'true'
-  
-  const query = {
-    where: { slug: { equals: params.slug } },
-    ...(isPreview ? { draft: true } : {}),
-  }
-  
-  const page = await payload.findBySlug({
-    collection: 'pages',
-    ...query,
-  })
-  
-  return <PageTemplate data={page} isPreview={isPreview} />
-}
-```
-
-## SEO Features
-
-### SEO Fields
-
-Reusable SEO field group for all collections.
-
-```typescript title="src/fields/seoFields.ts"
-export function seoFields() {
-  return {
-    name: 'seo',
-    type: 'group',
-    fields: [
-      { name: 'title', type: 'text' },
-      { name: 'description', type: 'textarea' },
-      { name: 'image', type: 'upload', relationTo: 'media' },
-    ],
-  }
-}
-```
-
-### Meta Tags in Next.js
-
-```typescript title="src/app/(frontend)/pages/[slug]/page.tsx"
-export async function generateMetadata({ params }) {
-  const page = await payload.findBySlug({
-    collection: 'pages',
-    slug: params.slug,
-  })
-  
-  return {
-    title: page.seo?.title || page.title,
-    description: page.seo?.description,
-    openGraph: {
-      images: [page.seo?.image.url],
-    },
-  }
-}
-```
-
-## Search Functionality
-
-Full-text search across all content.
-
-### Search Collection
-
-```typescript title="src/collections/Search.ts"
-export const Search: CollectionConfig = {
-  slug: 'search',
-  access: {
-    read: () => true,
-  },
-  fields: [
-    { name: 'title', type: 'text' },
-    { name: 'url', type: 'text' },
-    { name: 'excerpt', type: 'text' },
-    { name: 'document', type: 'relationship', relationTo: ['pages', 'posts'] },
-  ],
-}
-```
-
-### Search Hook
-
-Automatically index content on create/update.
-
-```typescript title="src/hooks/populateSearch.ts"
-export const populateSearch = async ({ doc, req }: { doc: any; req: any }) => {
-  await req.payload.update({
-    collection: 'search',
-    id: doc.id,
-    data: {
-      title: doc.title,
-      url: `/${doc.slug}`,
-      excerpt: doc.content?.substring(0, 200),
-    },
-  })
-}
-```
-
-## Internationalization (i18n)
-
-Multi-language support with localized content.
-
-### Configuration
-
-```typescript title="src/payload.config.ts"
-localization: {
-  locales: [
-    { code: 'en', label: 'English' },
-    { code: 'es', label: 'Spanish' },
-    { code: 'fr', label: 'French' },
-  ],
-  defaultLocale: 'en',
-  fallback: true,
-}
-```
-
-### Localized Fields
-
-```typescript
-fields: [
-  { name: 'title', type: 'text', localized: true },
-  { name: 'content', type: 'richText', localized: true },
-]
-```
-
-### Next.js i18n Routing
-
-```typescript title="src/app/[[locale]]/layout.tsx"
-export default function LocaleLayout({ children, params }) {
-  const locale = params.locale || 'en'
-  
-  return (
-    <html lang={locale}>
-      <body>{children}</body>
-    </html>
-  )
-}
-```
-
-## Security Best Practices
-
-### Access Control
-
-Always implement proper access control:
-
-```typescript
-access: {
-  read: ({ req }) => {
-    if (req.user) return true
-    return { status: { equals: 'published' } }
-  },
-  update: ({ req }) => {
-    return req.user?.roles?.includes('admin')
-  },
-}
-```
-
-### Local API Security
-
-**CRITICAL**: When using Local API with user context:
-
-```typescript
-// ✅ CORRECT - Enforces permissions
-await payload.find({
-  collection: 'pages',
-  user: req.user,
-  overrideAccess: false,  // REQUIRED!
-})
-```
-
-See [Payload CMS Skill](../payloadcms-3-82-1/SKILL.md) for complete security patterns.
-
-## Customization
-
-### Add New Block
-
-1. Create block configuration in `src/blocks/`
-2. Add to page layout blocks array
-3. Create React component in `src/components/`
-4. Update type generation: `bun run generate:types`
-
-### Add New Collection
-
-1. Create collection in `src/collections/`
-2. Import and add to `payload.config.ts`
-3. Create frontend pages in `src/app/`
-4. Regenerate types
+See [Project Structure](references/02-project-structure.md) for detailed explanation of each directory and file purpose.
+
+## Core Features
+
+### Layout Builder
+
+Both Pages and Posts use a powerful layout builder with reusable blocks:
+
+- **Call to Action**: Prominent CTA sections with buttons
+- **Content**: Flexible text and media column layouts
+- **Media Block**: Full-width images and videos
+- **Archive**: Display collections of posts
+- **Form**: Embed forms from Form Builder plugin
+
+See [Layout Builder](references/03-layout-builder.md) for block configuration and usage patterns.
+
+### SEO Optimization
+
+Comprehensive SEO features powered by `@payloadcms/plugin-seo`:
+
+- Automatic meta tags (title, description, Open Graph, Twitter)
+- SEO preview in admin panel
+- Automatic sitemap generation (pages, posts)
+- Canonical URLs
+- Structured data support
+
+See [SEO and Metadata](references/04-seo-metadata.md) for SEO configuration and best practices.
+
+### Search Functionality
+
+Full-text search across posts using `@payloadcms/plugin-search`:
+
+- Automatic search indexing on content updates
+- Custom search results page with filtering
+- Real-time search suggestions
+- Highlighted search terms
+
+See [Search Implementation](references/05-search.md) for search configuration and customization.
+
+### Form Builder
+
+Drag-and-drop form builder with `@payloadcms/plugin-form-builder`:
+
+- Create forms visually in admin panel
+- Multiple field types (text, email, textarea, select, etc.)
+- Email notifications on submission
+- Custom confirmation messages
+- Embed forms on any page using Form block
+
+See [Form Builder](references/06-form-builder.md) for form creation and integration.
+
+### Redirects Management
+
+URL redirect management with `@payloadcms/plugin-redirects`:
+
+- 301 and 302 redirects
+- Automatic redirect suggestions on slug changes
+- Support for internal and external URLs
+- On-demand revalidation
+
+See [Redirects](references/07-redirects.md) for redirect configuration.
+
+### Live Preview and Drafts
+
+Real-time preview of unpublished content:
+
+- **Live Preview**: Real-time editing with responsive breakpoints
+- **Draft Preview**: Shareable preview links for stakeholders
+- **Scheduled Publishing**: Auto-publish at specified dates
+- **Autosave**: Automatic draft saving every 100ms
+
+See [Preview and Drafts](references/08-preview-drafts.md) for preview configuration.
+
+## Common Operations
+
+### Create a New Page
+
+1. Navigate to Admin Panel → Pages → Create New Page
+2. Add title and hero section
+3. Build layout using blocks (Content, Media, CTA, etc.)
+4. Configure SEO metadata
+5. Click "Publish" or schedule for later
+
+See [Pages Collection](references/03-layout-builder.md#pages-collection) for page-specific features.
+
+### Create a Blog Post
+
+1. Navigate to Posts → Create New Post
+2. Add title, hero image, and rich text content
+3. Assign categories and related posts
+4. Configure SEO metadata
+5. Use live preview to see changes in real-time
+6. Publish or schedule
+
+See [Posts Collection](references/09-posts-collection.md) for post-specific features.
 
 ### Customize Theme
 
-```typescript title="src/cssVariables.js"
-export const cssVariables = {
-  colors: {
-    primary: '#0070f3',
-    secondary: '#fa823e',
-  },
-}
+The template uses Tailwind CSS with dark/light theme support:
+
+```typescript
+// src/providers/Theme/index.tsx
+import { ThemeProvider } from '@/providers/Theme'
+
+<ThemeProvider>
+  <YourApp />
+</ThemeProvider>
 ```
 
-## Scripts
+See [Theming and Styling](references/10-theming-styling.md) for customization options.
 
-```json title="package.json"
-{
-  "scripts": {
-    "build": "next build",
-    "dev": "next dev",
-    "generate:types": "payload generate:types",
-    "lint": "next lint",
-    "start": "next start",
-    "typecheck": "tsc --noEmit"
-  }
-}
-```
+### Add Custom Blocks
 
-## Deployment
+Create reusable layout blocks:
 
-### Production Build
+1. Create block config in `src/blocks/YourBlock/config.ts`
+2. Create React component in `src/blocks/YourBlock/Component.tsx`
+3. Add to Pages/Posts collection fields
+4. Implement in `RenderBlocks.tsx`
+
+See [Custom Blocks](references/03-layout-builder.md#creating-custom-blocks) for detailed guide.
+
+## Testing
+
+### Run Integration Tests
 
 ```bash
-# Install dependencies
-bun install --frozen
+pnpm test:int
+```
 
+Tests API endpoints, access control, and hooks using Vitest.
+
+### Run E2E Tests
+
+```bash
+pnpm test:e2e
+```
+
+Tests admin panel and frontend functionality using Playwright.
+
+See [Testing](references/11-testing.md) for test patterns and examples.
+
+## Production Deployment
+
+### Build for Production
+
+```bash
 # Generate types
-bun run generate:types
+pnpm generate:types
 
-# Build Next.js app
-bun run build
+# Build Next.js application with sitemaps
+pnpm build
 
 # Start production server
-bun run start
+pnpm start
 ```
 
-### Docker Deployment
+### Configure Cron Jobs
 
-```dockerfile title="Dockerfile"
-FROM oven/bun:1.3.12
+For scheduled publishing, set up cron jobs:
 
-WORKDIR /app
-
-COPY package.json bun.lockb* ./
-RUN bun install --frozen
-
-COPY . .
-RUN bun run generate:types
-RUN bun run build
-
-EXPOSE 3000
-
-CMD ["bun", "run", "start"]
+```bash
+# Example: Check every minute for posts to publish
+* * * * * curl -H "Authorization: Bearer $CRON_SECRET" https://your-site.com/api/jobs/process
 ```
+
+See [Production Deployment](references/12-production-deployment.md) for deployment guides and cron configuration.
 
 ## Troubleshooting
 
-### Live Preview Not Working
+**Live preview not working**: Verify `PAYLOAD_PUBLIC_URL` is set correctly in `.env`.
 
-- Verify `PAYLOAD_PUBLIC_APP_URL` is set correctly
-- Check CORS configuration in `payload.config.ts`
-- Ensure preview endpoint is accessible
+**Search not indexing**: Check search collection has proper access control and revalidation hooks.
 
-### Search Not Indexing
+**Forms not submitting**: Verify email service configuration in form settings.
 
-- Verify search hook is added to collections
-- Check search collection has proper access control
-- Run manual indexing if needed
+**Sitemap not updating**: Run `pnpm build` to regenerate sitemaps after content changes.
 
-### Types Not Generating
+See [Troubleshooting Guide](references/13-troubleshooting.md) for comprehensive solutions.
 
-```bash
-# Clean and regenerate
-rm src/payload-types.ts
-bun run generate:types
-```
+## Reference Files
 
-## Package Dependencies
+This skill includes detailed reference documentation organized by topic:
 
-Key packages included:
-- `@payloadcms/db-mongodb` - MongoDB adapter
-- `@payloadcms/richtext-lexical` - Lexical editor
-- `next` - Next.js framework
-- `payload` - Payload CMS core
-- `react` & `react-dom` - UI library
+### Core Setup and Structure
 
-## Next Steps
+- [`references/01-setup-configuration.md`](references/01-setup-configuration.md) - Environment variables, dependencies, Docker setup, Next.js config
+- [`references/02-project-structure.md`](references/02-project-structure.md) - Directory organization, file purposes, TypeScript paths
 
-1. **Customize Content**: Add your pages and posts
-2. **Extend Blocks**: Create custom layout blocks
-3. **Add Collections**: Implement custom content types
-4. **Configure Email**: Set up email provider for notifications
-5. **Deploy**: Push to production hosting
+### Content and Layout
+
+- [`references/03-layout-builder.md`](references/03-layout-builder.md) - Pages collection, Posts collection, block configuration, custom blocks
+- [`references/04-seo-metadata.md`](references/04-seo-metadata.md) - SEO plugin, meta tags, sitemaps, Open Graph, Twitter cards
+- [`references/05-search.md`](references/05-search.md) - Search plugin, indexing, search page, customization
+
+### Features and Plugins
+
+- [`references/06-form-builder.md`](references/06-form-builder.md) - Form creation, field types, submissions, email notifications
+- [`references/07-redirects.md`](references/07-redirects.md) - Redirect management, automatic suggestions, revalidation
+- [`references/08-preview-drafts.md`](references/08-preview-drafts.md) - Live preview, draft preview, scheduled publishing, autosave
+
+### Collections and Content Types
+
+- [`references/09-posts-collection.md`](references/09-posts-collection.md) - Post fields, rich text editor, categories, authors, related posts
+- [`references/10-theming-styling.md`](references/10-theming-styling.md) - Tailwind CSS, theme provider, dark mode, custom components
+
+### Operations and Deployment
+
+- [`references/11-testing.md`](references/11-testing.md) - Vitest integration tests, Playwright E2E tests, test helpers
+- [`references/12-production-deployment.md`](references/12-production-deployment.md) - Build process, Docker deployment, cron jobs, monitoring
+- [`references/13-troubleshooting.md`](references/13-troubleshooting.md) - Common errors, debugging techniques, performance issues
+
+## Important Notes
+
+1. **Type Generation**: Always run `pnpm generate:types` after modifying collections or globals
+2. **Revalidation Hooks**: Template uses on-demand revalidation for instant content updates
+3. **Environment Variables**: Never commit `.env` files; use `.env.example` as template
+4. **Cron Secret**: Required for scheduled publishing and background jobs
+5. **Live Preview**: Requires `PAYLOAD_PUBLIC_URL` to be set correctly
+6. **Search Indexing**: Automatic on content updates via `beforeSync` hook
+7. **Form Submissions**: Configure email service in Form Builder plugin settings
+8. **Sitemap Generation**: Runs automatically post-build via `next-sitemap`
 
 ## Resources
 
-- [Payload Website Template](https://github.com/payloadcms/payload/tree/v3.82.1/templates/website)
-- [Payload Documentation](https://payloadcms.com/docs)
-- [Next.js Documentation](https://nextjs.org/docs)
+- **Payload Docs**: https://payloadcms.com/docs
+- **Website Template GitHub**: https://github.com/payloadcms/payload/tree/v3.82.1/templates/website
+- **Next.js Docs**: https://nextjs.org/docs
+- **Tailwind CSS**: https://tailwindcss.com/docs
+- **Lexical Editor**: https://lexical.dev
 
-## Related Skills
-
-- `payloadcms-3-82-1` - Complete Payload CMS development guide
-- `payloadcms-blank-3-82-1` - Minimal starter template
-- `nextjs-14-2` - Next.js App Router patterns
-- `mongodb-8-0` - MongoDB database operations
+**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/payloadcms-website-3-82-1/`). All paths in this skill are relative to this directory.
