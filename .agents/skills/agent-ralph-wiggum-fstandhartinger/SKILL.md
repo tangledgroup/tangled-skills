@@ -1,5 +1,5 @@
 ---
-name: fstandhartinger-ralph-wiggum
+name: agent-ralph-wiggum-fstandhartinger
 description: Autonomous AI coding with spec-driven development combining iterative bash loops and SpecKit-style specifications for fully autonomous AI-assisted software development. Use when building projects that require hands-free AI implementation, working from specification files, or running autonomous development loops with completion verification.
 version: "0.2.0"
 author: Your Name <email@example.com>
@@ -27,7 +27,7 @@ required_environment_variables:
     required_for: "Audio Telegram notifications"
 ---
 
-# fstandhartinger-ralph-wiggum
+# agent-ralph-wiggum-fstandhartinger
 
 Autonomous AI coding with spec-driven development. Ralph Wiggum combines Geoffrey Huntley's original iterative bash loop methodology with SpecKit-style specifications for fully autonomous AI-assisted software development.
 
@@ -46,10 +46,10 @@ Autonomous AI coding with spec-driven development. Ralph Wiggum combines Geoffre
 
 ```bash
 # Using Vercel's add-skill
-npx add-skill fstandhartinger/ralph-wiggum
+npx add-skill agent-ralph-wiggum-fstandhartinger
 
 # Using OpenSkills
-openskills install fstandhartinger/ralph-wiggum
+openskills install agent-ralph-wiggum-fstandhartinger
 ```
 
 ### Manual Setup
@@ -129,7 +129,7 @@ See [Creating Specifications](references/04-creating-specifications.md) for spec
 - [`references/05-advanced-features.md`](references/05-advanced-features.md) - Telegram notifications, GitHub issues, circuit breakers
 - [`references/06-troubleshooting.md`](references/06-troubleshooting.md) - Common issues, stuck specs, and debugging
 
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/fstandhartinger-ralph-wiggum/`). All paths are relative to this directory.
+**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/agent-ralph-wiggum-fstandhartinger/`). All paths are relative to this directory.
 
 ## Troubleshooting
 

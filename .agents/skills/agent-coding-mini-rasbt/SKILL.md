@@ -1,5 +1,5 @@
 ---
-name: rasbt-mini-coding-agent
+name: agent-coding-mini-rasbt
 description: A minimal standalone coding agent framework backed by Ollama that provides workspace context collection, structured tool execution with approval gates, session persistence, and bounded subagent delegation for local development tasks. Use when building or operating lightweight coding agents for file manipulation, shell command execution, code editing, and automated development workflows without external API dependencies.
 version: "0.2.0"
 author: Your Name <email@example.com>
@@ -120,7 +120,7 @@ See [Advanced Patterns](references/04-advanced-patterns.md) for delegation, appr
 - [`references/03-session-management.md`](references/03-session-management.md) - Session persistence, memory distillation, transcript management, resumption workflows, and interactive commands
 - [`references/04-advanced-patterns.md`](references/04-advanced-patterns.md) - Approval modes, bounded delegation, model configuration, prompt customization, and troubleshooting
 
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/mini-coding-agent/`). All paths are relative to this directory.
+**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/agent-coding-mini-rasbt/`). All paths are relative to this directory.
 
 ## Troubleshooting
 
