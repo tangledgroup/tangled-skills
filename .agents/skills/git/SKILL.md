@@ -26,6 +26,9 @@ A comprehensive skill for using Git, the distributed version control system. Thi
 - Resolve merge conflicts
 - Undo or modify previous commits
 - Share changes with `push` and update with `pull`
+- **Analyze codebase health before reading code** (churn hotspots, bus factor, bug clusters, team momentum)
+- **Audit legacy codebases** to identify high-risk files and technical debt
+- **Investigate recurring issues** by finding where bugs cluster in the codebase
 
 ## Quick Start
 
@@ -313,6 +316,40 @@ This is the standard workflow for sharing changes:
 2. `git commit` - Create a snapshot with a descriptive message
 3. `git push` - Upload commits to the remote repository
 
+### Codebase Analysis (Before Reading Code)
+
+When joining a new project or investigating issues, run these diagnostic commands **before reading any code** to understand where the codebase "hurts". These five commands reveal churn hotspots, bus factor risks, bug clusters, team momentum, and crisis patterns.
+
+```bash
+# 1. Most changed files (churn hotspots)
+git log --format=format: --name-only --since="1 year ago" | sort | uniq -c | sort -nr | head -20
+
+# 2. Contributors by commit count (bus factor)
+git shortlog -sn --no-merges
+
+# 3. Bug hotspots
+git log -i -E --grep="fix|bug|broken" --name-only --format='' | sort | uniq -c | sort -nr | head -20
+
+# 4. Commit velocity by month (team health)
+git log --format='%ad' --date=format:'%Y-%m' | sort | uniq -c
+
+# 5. Firefighting frequency (deploy confidence)
+git log --oneline --since="1 year ago" | grep -iE 'revert|hotfix|emergency|rollback'
+```
+
+**What these reveal:**
+- **Churn hotspots**: Files everyone's afraid to touch; high-risk for unexpected blast radius when modified
+- **Bus factor**: If one person has 60%+ commits and left 6+ months ago, it's a crisis requiring immediate knowledge transfer
+- **Bug clusters**: Files that keep breaking but never get properly fixed (cross-reference with churn list)
+- **Team momentum**: Commit count dropping by half in a month usually means someone left; declining curve over 6-12 months indicates losing momentum
+- **Deploy confidence**: Reverts every couple of weeks means the team doesn't trust its deploy process; evidence of unreliable tests or missing staging
+
+**Critical insight:** Cross-reference the top 5 churn files with bug hotspots. Files appearing on both lists are your highest-risk code that needs refactoring, not more patches.
+
+**Why this matters**: The commit history gives a diagnostic picture before opening any file: who built it, where problems cluster, whether the team ships with confidence or tiptoes around landmines. This is the difference between spending your first day reading methodically versus wandering aimlessly.
+
+See [Codebase Analysis](references/07-codebase-analysis.md) for detailed explanations, interpretation guidelines, and automation scripts.
+
 ## Reference Files
 
 - [`references/01-repository-basics.md`](references/01-repository-basics.md) - Initialize, clone, and configure repositories
@@ -321,6 +358,7 @@ This is the standard workflow for sharing changes:
 - [`references/04-remote-operations.md`](references/04-remote-operations.md) - Clone, fetch, pull, push, and remote management
 - [`references/05-history-manipulation.md`](references/05-history-manipulation.md) - Reset, revert, cherry-pick, and reflog
 - [`references/06-advanced-topics.md`](references/06-advanced-topics.md) - Stash, tags, blame, bisect, and submodules
+- [`references/07-codebase-analysis.md`](references/07-codebase-analysis.md) - **Diagnostic commands to analyze codebase health before reading code** (churn hotspots, bus factor, bug clusters, team momentum, crisis patterns)
 
 **Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/git/`). All paths are relative to this directory.
 
@@ -358,6 +396,37 @@ git push origin fix/quick-fix
 ```
 
 See [Branching and Merging](references/03-branching-merging.md) for more workflows.
+
+### Codebase Diagnostic Workflow (First Hour on New Project)
+
+Before reading any code in an unfamiliar repository, run this quick diagnostic:
+
+```bash
+# Run the 5 key commands
+echo "=== CHURN HOTSPOTS ==="
+git log --format=format: --name-only --since="1 year ago" | sort | uniq -c | sort -nr | head -10
+
+echo -e "\n=== BUS FACTOR ==="
+git shortlog -sn --no-merges | head -5
+git shortlog -sn --no-merges --since="6 months ago" | head -5
+
+echo -e "\n=== BUG HOTSPOTS ==="
+git log -i -E --grep="fix|bug|broken" --name-only --format='' | sort | uniq -c | sort -nr | head -10
+
+echo -e "\n=== COMMIT VELOCITY ==="
+git log --format='%ad' --date=format:'%Y-%m' --since="1 year ago" | sort | uniq -c | sort -r | head -12
+
+echo -e "\n=== FIREFIGHTING ==="
+git log --oneline --since="1 year ago" | grep -iE 'revert|hotfix|emergency|rollback' | wc -l
+```
+
+**What to look for:**
+- **Critical risk**: Top 5 churn files overlap with top 5 bug files → prioritize refactoring
+- **Crisis alert**: Single contributor >60% of commits and left 6+ months ago → immediate knowledge transfer needed
+- **High risk**: Reverts every 2 weeks or more → audit deploy process and test coverage
+- **Warning sign**: Commit count declining over 6+ months → investigate team morale/resources
+
+See [Codebase Analysis](references/07-codebase-analysis.md) for complete interpretation guidelines.
 
 ## Troubleshooting
 
