@@ -5,716 +5,404 @@ version: "0.2.0"
 author: Your Name <email@example.com>
 license: MIT
 tags:
-  - payload-cms
+  - payloadcms
   - nextjs
   - typescript
-  - blank-template
-  - cms-starter
+  - cms
   - mongodb
-  - lexical-editor
+  - headless-cms
+  - blank-template
 category: development
 required_environment_variables:
-  - name: PAYLOAD_SECRET
-    prompt: "Enter your Payload secret key"
-    help: "Generate with: node -e \"console.log(require('crypto').randomBytes(64).toString('hex'))\""
-    required_for: "application security and session management"
   - name: DATABASE_URL
     prompt: "Enter your MongoDB connection string"
-    help: "Example: mongodb://localhost:27017/payload or use MongoDB Atlas"
-    required_for: "database connectivity"
+    help: "For local development: mongodb://127.0.0.1/your-database-name. For production, use MongoDB Atlas or your hosted MongoDB instance."
+    required_for: database connectivity
+  - name: PAYLOAD_SECRET
+    prompt: "Enter a secret key for Payload (minimum 32 characters)"
+    help: "Generate using: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"". Required for session encryption and JWT signing.
+    required_for: application security
 ---
 
-# Payload CMS Blank Template 3.82.1
+# Payload CMS Blank Template v3.82.1
 
-The blank template provides a minimal, production-ready starter project for Payload CMS with Next.js App Router, TypeScript, MongoDB, and Lexical rich text editor. It includes essential collections (Users, Media) and follows official best practices for security, type safety, and project structure.
+A minimal, production-ready starter template for building headless CMS applications with Payload CMS v3.82.1, Next.js 16.2.2, TypeScript, MongoDB, and the Lexical rich text editor. This template provides the bare minimum configuration needed to get started while following all official best practices and security patterns.
 
 ## When to Use
 
-- Starting a new Payload CMS project from scratch
-- Needing minimal configuration without pre-built features
-- Building custom CMS with specific requirements
-- Learning Payload fundamentals with clean baseline
-- Implementing basic authentication and media uploads
-- Following official Payload best practices and patterns
+- Starting a new Payload CMS project from scratch with minimal boilerplate
+- Building custom CMS solutions without pre-built content types
+- Learning Payload fundamentals without template-specific complexity
+- Setting up basic user authentication and media upload functionality
+- Creating a foundation for custom collections and globals
+- Implementing Next.js App Router with Payload's admin panel
+- Following official Payload security patterns from the start
+
+## What This Template Includes
+
+### Pre-configured Components
+
+- **Users Collection**: Authentication-enabled collection for admin users with email/password
+- **Media Collection**: Upload-enabled collection for images/files with public read access
+- **Lexical Editor**: Rich text editor configured for all richText fields
+- **Next.js App Router**: Modern routing with `(payload)` and `(frontend)` route groups
+- **TypeScript Configuration**: Path aliases, type generation, strict mode enabled
+- **Docker Support**: docker-compose.yml with MongoDB for local development
+- **Testing Setup**: Vitest for integration tests, Playwright for E2E tests
+
+### Technology Stack
+
+- **Runtime**: Node.js 18.20.2+ or 20.9.0+
+- **Framework**: Next.js 16.2.2 (App Router)
+- **Database**: MongoDB via `@payloadcms/db-mongodb`
+- **Editor**: Lexical via `@payloadcms/richtext-lexical`
+- **Package Manager**: pnpm 9+ or 10+
+- **Image Optimization**: Sharp 0.34.2
 
 ## Quick Start
 
-### Installation
+### Prerequisites
+
+- Node.js 18.20.2+ or 20.9.0+ installed
+- MongoDB running locally or MongoDB Atlas account
+- pnpm package manager (recommended) or npm/yarn
+
+### Local Development Setup
+
+1. **Clone and install dependencies:**
+   ```bash
+   cd your-project
+   pnpm install
+   ```
+
+2. **Configure environment variables:**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit `.env` with your values:
+   ```env
+   DATABASE_URL=mongodb://127.0.0.1/your-database-name
+   PAYLOAD_SECRET=your-secret-key-minimum-32-chars
+   ```
+
+3. **Start MongoDB (if not running):**
+   ```bash
+   # Docker (recommended)
+   docker run -d -p 27017:27017 --name mongo mongo:latest
+   
+   # Or use your local MongoDB installation
+   mongod
+   ```
+
+4. **Start development server:**
+   ```bash
+   pnpm dev
+   ```
+
+5. **Open browser:**
+   - Frontend: http://localhost:3000
+   - Admin Panel: http://localhost:3000/admin
+
+6. **Create first admin user:**
+   - Navigate to /admin/login
+   - Click "Create Account"
+   - Enter email and password
+   - You're ready to build!
+
+See [Setup and Configuration](references/01-setup-configuration.md) for detailed setup instructions, environment variables, and alternative configurations.
+
+### Docker Development (Alternative)
+
+For a standardized development environment without local MongoDB installation:
 
 ```bash
-# Create new project from blank template
-npm create payload@3.82.1 -- --template blank
+# Start with Docker Compose
+docker-compose up
 
-# Or use npx with specific version
-npx create-payload@3.82.1 --template blank
-
-# Using bun
-bunx create-payload@3.82.1 --template blank
+# Or in background
+docker-compose up -d
 ```
 
-### Project Structure
+This starts both the Payload app and MongoDB container automatically. Update `DATABASE_URL` to `mongodb://mongo/your-database-name` in `.env`.
+
+See [Docker Configuration](references/01-setup-configuration.md#docker-development) for complete Docker setup details.
+
+## Project Structure
 
 ```
-my-payload-app/
-├── src/
-│   ├── app/
-│   │   ├── (payload)/
-│   │   │   └── admin/
-│   │   │       └── route.ts          # Admin panel route
-│   │   ├── layout.tsx
-│   │   └── page.tsx                  # Frontend homepage
-│   ├── collections/
-│   │   ├── Users.ts                  # User collection with auth
-│   │   └── Media.ts                  # Media upload collection
-│   ├── payload.config.ts             # Main Payload configuration
-│   └── payload-types.ts              # Auto-generated types
-├── .env                              # Environment variables
-├── .env.example                      # Example environment file
-├── next.config.js                    # Next.js configuration
-├── package.json
-└── tsconfig.json
+src/
+├── app/                          # Next.js App Router
+│   ├── (payload)/                # Payload admin panel routes
+│   │   ├── admin/
+│   │   │   └── [[...segments]]/  # Admin panel catch-all route
+│   │   │       ├── page.tsx      # Root admin page (auto-generated)
+│   │   │       └── not-found.tsx # 404 handler
+│   │   ├── api/
+│   │   │   ├── [...slug]/route.ts    # REST API endpoint
+│   │   │   └── graphql/route.ts      # GraphQL endpoint
+│   │   └── layout.tsx          # Admin layout
+│   └── (frontend)/              # Public frontend routes
+│       ├── page.tsx            # Home page
+│       ├── layout.tsx          # Frontend layout
+│       └── styles.css          # Global styles
+├── collections/                  # Collection configurations
+│   ├── Users.ts                # Auth-enabled user collection
+│   └── Media.ts                # Upload-enabled media collection
+├── payload.config.ts            # Main Payload configuration
+└── payload-types.ts             # Auto-generated TypeScript types
+
+tests/
+├── e2e/                         # Playwright E2E tests
+│   ├── admin.e2e.spec.ts       # Admin panel tests
+│   └── frontend.e2e.spec.ts    # Frontend tests
+└── helpers/                     # Test utilities
+    ├── login.ts                # Login helper
+    └── seedUser.ts             # Test user seeding
+
+tests/int/                       # Vitest integration tests
+└── api.int.spec.ts             # API integration tests
+
+root/
+├── package.json                 # Dependencies and scripts
+├── tsconfig.json               # TypeScript configuration
+├── next.config.ts              # Next.js configuration with Payload
+├── docker-compose.yml          # Docker development setup
+├── Dockerfile                  # Production Docker image
+├── .env.example                # Environment variable template
+└── README.md                   # Project documentation
 ```
 
-### Environment Setup
+See [Project Structure](references/02-project-structure.md) for detailed explanation of each directory and file purpose.
 
-Copy example env file and configure:
+## Common Operations
+
+### Generate TypeScript Types
+
+After modifying collections, globals, or configuration:
 
 ```bash
-cp .env.example .env
+pnpm generate:types
 ```
 
-Edit `.env`:
+This creates `src/payload-types.ts` with types for all collections, globals, and fields. **Always run this after schema changes** to maintain type safety.
 
-```bash title=".env"
-# Required - Generate with: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
-PAYLOAD_SECRET=your-generated-secret-here
+See [Type Generation](references/02-project-structure.md#type-generation) for details on generated types and how to use them.
 
-# MongoDB connection string
-DATABASE_URL=mongodb://localhost:27017/payload
+### Create Custom Collections
 
-# Optional - Public URL for previews and emails
-PAYLOAD_PUBLIC_APP_URL=http://localhost:3000
+1. Create file in `src/collections/`:
+   ```typescript
+   // src/collections/Posts.ts
+   import type { CollectionConfig } from 'payload'
 
-# Optional - Disable telemetry
-TELEMETRY_ENABLED=false
-```
+   export const Posts: CollectionConfig = {
+     slug: 'posts',
+     admin: {
+       useAsTitle: 'title',
+     },
+     fields: [
+       {
+         name: 'title',
+         type: 'text',
+         required: true,
+       },
+       {
+         name: 'content',
+         type: 'richText',
+       },
+     ],
+   }
+   ```
 
-### Run Development Server
+2. Import in `payload.config.ts`:
+   ```typescript
+   import { Posts } from './collections/Posts'
 
-```bash
-# Install dependencies
-bun install
+   export default buildConfig({
+     collections: [Users, Media, Posts],
+     // ...
+   })
+   ```
 
-# Start development server
-bun run dev
+3. Generate types:
+   ```bash
+   pnpm generate:types
+   ```
 
-# Access admin panel at http://localhost:3000/admin
-```
+See [Collection Configuration](references/03-collection-configuration.md) for complete collection patterns, field types, and best practices.
 
-## Core Configuration
+### Implement Access Control
 
-### Payload Config (payload.config.ts)
+**CRITICAL SECURITY PATTERN**: When using Local API with user context:
 
-```typescript title="src/payload.config.ts"
-import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import path from 'path'
-import { buildConfig } from 'payload'
-import { fileURLToPath } from 'url'
-import sharp from 'sharp'
-
-import { Users } from './collections/Users'
-import { Media } from './collections/Media'
-
-const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename)
-
-export default buildConfig({
-  admin: {
-    user: Users.slug,  // Collection used for authentication
-    importMap: {
-      baseDir: path.resolve(dirname),
-    },
-  },
-  collections: [Users, Media],
-  editor: lexicalEditor(),  // Rich text editor
-  secret: process.env.PAYLOAD_SECRET || '',
-  typescript: {
-    outputFile: path.resolve(dirname, 'payload-types.ts'),
-  },
-  db: mongooseAdapter({
-    url: process.env.DATABASE_URL || '',
-  }),
-  sharp,  // Image processing library
-  plugins: [],
+```typescript
+// ❌ WRONG: Access control bypassed (runs as admin)
+await payload.find({
+  collection: 'posts',
+  user: someUser, // Ignored!
 })
-```
 
-### Key Configuration Options
-
-**Admin Settings:**
-- `user`: Specifies which collection handles authentication
-- `importMap`: Base directory for custom component imports
-- `locale`: Default locale (defaults to 'en')
-- `date`: Date format configuration
-
-**TypeScript Settings:**
-- `outputFile`: Path for auto-generated types
-- Always run `bun run generate:types` after schema changes
-
-**Database Adapter:**
-- Uses MongoDB by default (`@payloadcms/db-mongodb`)
-- Can switch to PostgreSQL (`@payloadcms/db-postgres`)
-- Connection URL from environment variable
-
-## Default Collections
-
-### Users Collection (Authentication)
-
-```typescript title="src/collections/Users.ts"
-import type { CollectionConfig } from 'payload'
-
-export const Users: CollectionConfig = {
-  slug: 'users',
-  admin: {
-    useAsTitle: 'email',  // Field used as document title in UI
-  },
-  auth: true,  // Enables authentication for this collection
-  fields: [
-    // Email and password fields added automatically by Payload
-    // Add custom fields here as needed
-  ],
-}
-```
-
-**Auto-generated Fields:**
-- `email` (text, required, unique)
-- `password` (text, required, hidden)
-- `resetPasswordToken` (text, hidden)
-- `resetPasswordExpiration` (date, hidden)
-
-**Authentication Features:**
-- JWT token-based authentication
-- Password reset via email
-- Login/logout endpoints
-- User session management
-
-### Media Collection (Uploads)
-
-```typescript title="src/collections/Media.ts"
-import type { CollectionConfig } from 'payload'
-
-export const Media: CollectionConfig = {
-  slug: 'media',
-  access: {
-    read: () => true,  // Public read access
-  },
-  fields: [
-    {
-      name: 'alt',
-      type: 'text',
-      required: true,  // Alt text for accessibility
-    },
-  ],
-  upload: true,  // Enables file upload functionality
-}
-```
-
-**Auto-generated Fields:**
-- `url` (text) - File URL
-- `filename` (text) - Original filename
-- `mimeType` (text) - MIME type
-- `filesize` (number) - File size in bytes
-- `width` (number) - Image width (if image)
-- `height` (number) - Image height (if image)
-
-**Upload Features:**
-- Image resizing with Sharp
-- Multiple file uploads
-- File validation
-- CDN integration support
-
-## Adding Custom Collections
-
-### Example: Posts Collection
-
-```typescript title="src/collections/Posts.ts"
-import type { CollectionConfig } from 'payload'
-
-export const Posts: CollectionConfig = {
-  slug: 'posts',
-  admin: {
-    useAsTitle: 'title',
-    defaultColumns: ['title', 'author', 'status', 'createdAt'],
-  },
-  access: {
-    read: () => true,  // Public can read all posts
-  },
-  fields: [
-    {
-      name: 'title',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'slug',
-      type: 'text',
-      unique: true,
-      index: true,
-    },
-    {
-      name: 'content',
-      type: 'richText',  // Uses Lexical editor
-      required: true,
-    },
-    {
-      name: 'author',
-      type: 'relationship',
-      relationTo: 'users',
-      required: true,
-    },
-    {
-      name: 'coverImage',
-      type: 'upload',
-      relationTo: 'media',
-    },
-    {
-      name: 'status',
-      type: 'select',
-      options: [
-        { label: 'Draft', value: 'draft' },
-        { label: 'Published', value: 'published' },
-      ],
-      defaultValue: 'draft',
-      required: true,
-    },
-  ],
-  versions: {
-    drafts: true,  // Enable draft functionality
-    maxPerDoc: 10,
-  },
-  timestamps: true,  // Add createdAt and updatedAt
-}
-```
-
-Then add to config:
-
-```typescript title="src/payload.config.ts"
-import { Posts } from './collections/Posts'
-
-export default buildConfig({
-  collections: [Users, Media, Posts],  // Add Posts
-  // ... rest of config
-})
-```
-
-## Type Generation
-
-**CRITICAL**: Always regenerate types after schema changes:
-
-```bash
-# Generate TypeScript types
-bun run generate:types
-
-# Or directly
-payload generate:types
-```
-
-This creates/updates `src/payload-types.ts` with full type safety for:
-- Collection types
-- Field types
-- Hook contexts
-- API responses
-
-### Using Generated Types
-
-```typescript
-import type { Post, User, Media } from './payload-types'
-
-async function getPost(id: string): Promise<Post> {
-  // Fully typed Post object
-}
-
-async function getUser(email: string): Promise<User> {
-  // Fully typed User object with auth fields
-}
-```
-
-## Scripts
-
-```json title="package.json"
-{
-  "scripts": {
-    "build": "next build",
-    "dev": "next dev",
-    "generate:types": "payload generate:types",
-    "lint": "next lint",
-    "start": "next start",
-    "typecheck": "tsc --noEmit"
-  }
-}
-```
-
-## Development Workflow
-
-### 1. Add New Collection
-
-```bash
-# Create collection file
-touch src/collections/Products.ts
-
-# Define collection schema
-# (add fields, access control, etc.)
-
-# Import in payload.config.ts
-# Add to collections array
-```
-
-### 2. Update Schema
-
-```bash
-# Modify collection config
-# Add/remove fields, change types
-
-# Regenerate types
-bun run generate:types
-
-# Validate TypeScript
-bun run typecheck
-```
-
-### 3. Test Changes
-
-```bash
-# Start dev server
-bun run dev
-
-# Access admin panel
-# http://localhost:3000/admin
-
-# Test CRUD operations
-# Verify access control works
-```
-
-## Security Best Practices
-
-### 1. Environment Variables
-
-**Never commit `.env` file:**
-
-```bash title=".gitignore"
-.env
-.env.local
-.env.production
-```
-
-Use `.env.example` for documentation:
-
-```bash title=".env.example"
-PAYLOAD_SECRET=generate-your-own
-DATABASE_URL=mongodb://localhost:27017/payload
-```
-
-### 2. Access Control
-
-Always define access control for collections:
-
-```typescript
-access: {
-  read: ({ req: { user } }) => {
-    if (user) return true  // Authenticated users can read
-    return { status: { equals: 'published' } }  // Public sees published only
-  },
-  create: ({ req: { user } }) => {
-    return user?.roles?.includes('admin')
-  },
-  update: ({ req: { user } }) => {
-    return user?.roles?.includes('admin')
-  },
-  delete: ({ req: { user } }) => {
-    return user?.roles?.includes('admin')
-  },
-}
-```
-
-### 3. Local API Security
-
-**CRITICAL**: When using Local API with user context:
-
-```typescript
-// ❌ WRONG - Access control bypassed
+// ✅ CORRECT: Enforces user permissions
 await payload.find({
   collection: 'posts',
   user: someUser,
-})
-
-// ✅ CORRECT - Enforces permissions
-await payload.find({
-  collection: 'posts',
-  user: someUser,
-  overrideAccess: false,  // REQUIRED!
+  overrideAccess: false, // REQUIRED
 })
 ```
 
-See [Payload CMS Skill](../payloadcms-3-82-1/SKILL.md) for complete security patterns.
+See [Security Patterns](references/04-security-patterns.md) for critical security patterns and access control implementation.
 
-## Common Customizations
+### Build Custom API Routes
 
-### Add Roles to Users
-
-```typescript title="src/collections/Users.ts"
-export const Users: CollectionConfig = {
-  slug: 'users',
-  auth: true,
-  fields: [
-    {
-      name: 'roles',
-      type: 'select',
-      hasMany: true,
-      options: ['admin', 'editor', 'user'],
-      defaultValue: ['user'],
-      required: true,
-      saveToJWT: true,  // Include in JWT for fast access checks
-    },
-  ],
-}
-```
-
-### Add Custom Fields to Media
-
-```typescript title="src/collections/Media.ts"
-export const Media: CollectionConfig = {
-  slug: 'media',
-  upload: true,
-  fields: [
-    { name: 'alt', type: 'text', required: true },
-    {
-      name: 'caption',
-      type: 'text',
-    },
-    {
-      name: 'credits',
-      type: 'text',
-    },
-  ],
-}
-```
-
-### Enable Localization
-
-```typescript title="src/payload.config.ts"
-export default buildConfig({
-  localization: {
-    locales: [
-      { code: 'en', label: 'English' },
-      { code: 'es', label: 'Spanish' },
-    ],
-    defaultLocale: 'en',
-    fallback: true,
-  },
-  // ... rest of config
-})
-```
-
-Then mark fields as localized:
+Create Next.js route handlers in `src/app/`:
 
 ```typescript
-fields: [
-  { name: 'title', type: 'text', localized: true },
-  { name: 'content', type: 'richText', localized: true },
-]
-```
-
-## Next.js Integration
-
-### Admin Panel Route
-
-```typescript title="src/app/(payload)/admin/route.ts"
-// This file enables the Payload admin panel
-// Payload automatically handles routing
-```
-
-### Frontend Routes
-
-```typescript title="src/app/page.tsx"
-export default function Home() {
-  return (
-    <main>
-      <h1>Welcome to my Payload app</h1>
-      <p>Admin: /admin</p>
-    </main>
-  )
-}
-```
-
-### API Routes
-
-```typescript title="src/app/api/posts/route.ts"
+// src/app/api/custom/route.ts
 import { getPayload } from 'payload'
-import { config as payloadConfig } from '@/payload.config'
+import config from '@payload-config'
 
-export async function GET() {
-  const payload = await getPayload({ config: payloadConfig })
+export const GET = async () => {
+  const payload = await getPayload({ config })
   
   const posts = await payload.find({
     collection: 'posts',
-    where: { status: { equals: 'published' } },
+    overrideAccess: false, // Enforce access control
   })
   
   return Response.json(posts)
 }
 ```
 
-## Deployment
+See [Custom Routes and Endpoints](references/05-custom-routes-endpoints.md) for API route patterns and Local API usage.
 
-### Production Build
+### Query Data in Server Components
 
-```bash
-# Install dependencies
-bun install --frozen
+```typescript
+// src/app/(frontend)/posts/page.tsx
+import { getPayload } from 'payload'
+import config from '@payload-config'
 
-# Generate types
-bun run generate:types
-
-# Build Next.js app
-bun run build
-
-# Start production server
-bun run start
-```
-
-### Environment Variables (Production)
-
-```bash title=".env.production"
-PAYLOAD_SECRET=your-production-secret
-DATABASE_URL=mongodb+srv://atlas-connection-string
-PAYLOAD_PUBLIC_APP_URL=https://your-domain.com
-NODE_ENV=production
-```
-
-### Docker Deployment
-
-```dockerfile title="Dockerfile"
-FROM oven/bun:1.3.12
-
-WORKDIR /app
-
-COPY package.json bun.lockb* ./
-RUN bun install --frozen
-
-COPY . .
-RUN bun run generate:types
-RUN bun run build
-
-EXPOSE 3000
-
-CMD ["bun", "run", "start"]
-```
-
-## Troubleshooting
-
-### Types Not Generating
-
-**Problem**: `payload-types.ts` not updating
-
-**Solution**:
-```bash
-# Clean and regenerate
-rm src/payload-types.ts
-bun run generate:types
-
-# Check payload.config.ts is exported correctly
-```
-
-### Database Connection Errors
-
-**Problem**: Can't connect to MongoDB
-
-**Solution**:
-```bash
-# Check DATABASE_URL format
-# MongoDB Local: mongodb://localhost:27017/payload
-# MongoDB Atlas: mongodb+srv://user:pass@cluster.mongodb.net/db
-
-# Verify MongoDB is running
-mongosh --version
-```
-
-### Admin Panel Not Loading
-
-**Problem**: `/admin` returns 404 or errors
-
-**Solution**:
-- Verify `admin.user` points to valid collection slug
-- Check `PAYLOAD_SECRET` is set
-- Ensure collections array includes user collection
-- Run `bun run build` to regenerate import map
-
-### Access Control Issues
-
-**Problem**: Users can't access data they should
-
-**Solution**:
-- Check access control functions return boolean or query
-- Verify user is authenticated (`req.user` exists)
-- For Local API, ensure `overrideAccess: false` when passing user
-
-## Package Dependencies
-
-```json title="package.json"
-{
-  "dependencies": {
-    "@payloadcms/db-mongodb": "^3.82.1",
-    "@payloadcms/next": "^3.82.1",
-    "@payloadcms/richtext-lexical": "^3.82.1",
-    "next": "^14.2.0",
-    "payload": "^3.82.1",
-    "react": "^18.3.0",
-    "react-dom": "^18.3.0",
-    "sharp": "^0.33.5"
-  },
-  "devDependencies": {
-    "@types/node": "^22.0.0",
-    "@types/react": "^18.3.0",
-    "typescript": "^5.6.0"
-  }
+export default async function PostsPage() {
+  const payload = await getPayload({ config })
+  
+  const posts = await payload.find({
+    collection: 'posts',
+    where: {
+      _status: { equals: 'published' },
+    },
+    depth: 2, // Populate relationships
+  })
+  
+  return (
+    <div>
+      {posts.docs.map(post => (
+        <article key={post.id}>{post.title}</article>
+      ))}
+    </div>
+  )
 }
 ```
 
-## Migration from Other Templates
+See [Local API Usage](references/06-local-api-usage.md) for comprehensive query patterns and operators.
 
-### From E-commerce Template
+## Testing
 
-Remove e-commerce specific packages:
+### Run Integration Tests
+
 ```bash
-bun remove @payloadcms/plugin-stripe @payloadcms/ecommerce
+pnpm test:int
 ```
 
-Keep only core dependencies and custom collections.
+Uses Vitest with jsdom environment to test API functionality.
 
-### From Website Template
+### Run E2E Tests
 
-Remove blog/portfolio collections you don't need, keeping minimal Users and Media.
+```bash
+pnpm test:e2e
+```
 
-## Next Steps
+Uses Playwright to test admin panel and frontend in real browser.
 
-1. **Add Custom Collections**: Define your content types
-2. **Implement Access Control**: Secure your data
-3. **Build Frontend**: Create pages to display content
-4. **Add Custom Components**: Extend admin panel UI
-5. **Set Up Email**: Configure email provider for password resets
-6. **Deploy**: Push to production hosting
+See [Testing Setup](references/07-testing.md) for test patterns, helpers, and best practices.
+
+## Production Deployment
+
+### Build for Production
+
+```bash
+# Generate types first
+pnpm generate:types
+
+# Build Next.js application
+pnpm build
+
+# Start production server
+pnpm start
+```
+
+### Docker Production Build
+
+See [Docker Configuration](references/01-setup-configuration.md#docker-production) for multi-stage Docker builds and deployment strategies.
+
+## Troubleshooting
+
+### Common Issues
+
+**"Cannot find module '@payload-config'"**: Run `pnpm generate:types` to regenerate type definitions.
+
+**MongoDB connection errors**: Verify `DATABASE_URL` is correct and MongoDB is running. For Docker, use `mongodb://mongo/your-db`.
+
+**TypeScript errors in payload-types.ts**: Delete `.next` folder and run `pnpm generate:types` again.
+
+**Import map errors**: Run `pnpm generate:importmap` to regenerate component import map.
+
+See [Troubleshooting Guide](references/08-troubleshooting.md) for comprehensive error solutions and debugging tips.
+
+## Reference Files
+
+This skill includes detailed reference documentation organized by topic:
+
+### Core Setup and Configuration
+
+- [`references/01-setup-configuration.md`](references/01-setup-configuration.md) - Environment variables, Docker setup, Next.js config, TypeScript configuration
+- [`references/02-project-structure.md`](references/02-project-structure.md) - Directory organization, file purposes, type generation, path aliases
+
+### Collections and Data Modeling
+
+- [`references/03-collection-configuration.md`](references/03-collection-configuration.md) - Users collection (auth), Media collection (uploads), custom collections, field types
+- [`references/04-security-patterns.md`](references/04-security-patterns.md) - **CRITICAL**: Local API access control, transaction safety, hook patterns, RBAC implementation
+
+### API and Routes
+
+- [`references/05-custom-routes-endpoints.md`](references/05-custom-routes-endpoints.md) - Next.js route handlers, custom endpoints, REST/GraphQL APIs
+- [`references/06-local-api-usage.md`](references/06-local-api-usage.md) - Query patterns, operators, CRUD operations, relationship population
+
+### Testing and Quality
+
+- [`references/07-testing.md`](references/07-testing.md) - Vitest integration tests, Playwright E2E tests, test helpers, seeding data
+
+### Operations and Deployment
+
+- [`references/08-troubleshooting.md`](references/08-troubleshooting.md) - Common errors, debugging techniques, performance issues
+- [`references/09-production-deployment.md`](references/09-production-deployment.md) - Build process, Docker deployment, environment configuration, monitoring
+
+## Important Notes
+
+1. **Type Generation**: Always run `pnpm generate:types` after modifying collections or globals
+2. **Security First**: Read [Security Patterns](references/04-security-patterns.md) before implementing access control
+3. **Environment Variables**: Never commit `.env` files; use `.env.example` as template
+4. **Database Backups**: Regular backups for production MongoDB instances
+5. **Secret Management**: Use secure secret generation and rotate periodically
+6. **Docker Development**: Preferred for consistent environments across teams
+7. **Testing**: Run tests before deploying to catch breaking changes
 
 ## Resources
 
-- [Payload Documentation](https://payloadcms.com/docs)
-- [Payload Blank Template](https://github.com/payloadcms/payload/tree/v3.82.1/templates/blank)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [MongoDB Documentation](https://www.mongodb.com/docs)
+- **Payload Docs**: https://payloadcms.com/docs
+- **Blank Template GitHub**: https://github.com/payloadcms/payload/tree/v3.82.1/templates/blank
+- **Next.js Docs**: https://nextjs.org/docs
+- **MongoDB Docs**: https://www.mongodb.com/docs
+- **Lexical Editor**: https://lexical.dev
 
-## Related Skills
-
-- `payloadcms-3-82-1` - Complete Payload CMS development guide
-- `nextjs-14-2` - Next.js App Router patterns
-- `mongodb-8-0` - MongoDB database operations
-- `typescript-5-6` - TypeScript configuration and types
+**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/payloadcms-blank-3-82-1/`). All paths in this skill are relative to this directory.
