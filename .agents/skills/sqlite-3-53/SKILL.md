@@ -1,6 +1,6 @@
 ---
 name: sqlite-3-53
-description: Complete toolkit for SQLite 3.53 database operations including SQL queries, C API integration, JSON/JSONB processing, full-text search with FTS5, virtual tables, and database administration. Use when building applications requiring embedded SQL databases, performing data analysis, implementing persistent storage, or working with SQLite's advanced features like JSON functions, window functions, and full-text search.
+description: Complete toolkit for SQLite 3.53 covering all official documentation topics including SQL queries, C API integration, JSON/JSONB processing, FTS5 full-text search, virtual tables, R-Tree spatial indexing, transactions and isolation levels, STRICT tables, WITHOUT ROWID optimization, UPSERT/RETURNING patterns, CLI commands, and all built-in extensions (Sessions, CSV, Spellfix, Percentile, DBSTAT, generate_series, CARRAY, Zipfile). Use when building applications requiring embedded SQL databases, performing data analysis, implementing persistent storage, or working with any SQLite feature from basic CRUD to advanced spatial queries, change tracking, and concurrent transaction management.
 version: "0.2.0"
 author: Your Name <email@example.com>
 license: MIT
@@ -12,6 +12,11 @@ tags:
   - fts
   - embedded-database
   - persistence
+  - transactions
+  - rtree
+  - spatial
+  - cli
+  - extensions
 category: database
 required_environment_variables: []
 ---
@@ -156,6 +161,15 @@ This skill includes detailed reference files organized by topic:
 
 - [`references/09-sql-functions.md`](references/09-sql-functions.md) - Built-in SQL functions including aggregate, mathematical, string, date/time, and window functions
 - [`references/10-advanced-sql.md`](references/10-advanced-sql.md) - Advanced SQL features: CTEs, recursive queries, triggers, views, and window functions
+
+### CLI and Modern Features
+
+- [`references/11-cli-commands.md`](references/11-cli-commands.md) - Complete SQLite command-line interface reference including dot-commands, output modes, and interactive features
+- [`references/12-strict-tables-without-rowid.md`](references/12-strict-tables-without-rowid.md) - STRICT tables for type enforcement and WITHOUT ROWID tables for optimization
+- [`references/13-upsert-returning.md`](references/13-upsert-returning.md) - UPSERT (INSERT...ON CONFLICT) patterns and RETURNING clause usage
+- [`references/14-transactions-isolation.md`](references/14-transactions-isolation.md) - Transaction management, isolation levels, savepoints, and concurrency control
+- [`references/15-additional-extensions.md`](references/15-additional-extensions.md) - R-Tree spatial indexing, Sessions extension, CSV virtual table, Spellfix, Percentile, DBSTAT, generate_series, CARRAY, and Zipfile extensions
+- [`references/16-error-codes-limits.md`](references/16-error-codes-limits.md) - Complete error code reference, result codes, constraint violations, system limits, and error handling best practices
 
 **Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/sqlite-3-53/`). All paths are relative to this directory.
 
