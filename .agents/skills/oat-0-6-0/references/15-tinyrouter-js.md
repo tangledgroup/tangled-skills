@@ -1,313 +1,297 @@
 # TinyRouter.js - Frontend Routing
 
-A tiny (~950 bytes), zero-dependency JavaScript library for frontend routing using `window.history`.
+A tiny (~950 bytes minified+gzipped), zero-dependency JavaScript library for client-side routing on top of the browser's `window.history` API. Ideal for simple vanilla JS single-page applications and use with AlpineJS.
 
-## Overview
+[**View Demo**](https://knadh.github.io/tinyrouter.js/demo) | [**GitHub**](https://github.com/knadh/tinyrouter.js)
 
-TinyRouter provides simple client-side routing without framework dependencies. Perfect for single-page applications or progressive enhancement.
+## Features
+
+- Dynamic route parameters using `{param}` syntax
+- Route grouping with shared handlers
+- Before/after handler hooks for each route and globally
+- Automatic optional binding to `<a>` tags for navigation
+- Zero dependencies, ~950 bytes minified+gzipped
 
 ## Installation
-
-### CDN
-
-```html
-<script src="https://unpkg.com/tinyrouter.js"></script>
-```
-
-### Download
-
-```bash
-wget https://raw.githubusercontent.com/knadh/tinyrouter.js/master/dist/tinyrouter.min.js
-```
 
 ### npm
 
 ```bash
-npm install tinyrouter.js
+npm install @knadh/tinyrouter
 ```
+
+### CDN / ES Module
+
+```html
+<script type="module">
+  import router from 'https://unpkg.com/@knadh/tinyrouter';
+</script>
+```
+
+### Direct Download
+
+Download from [GitHub releases](https://github.com/knadh/tinyrouter.js/releases) or use the demo source as reference.
 
 ## Basic Usage
 
-### Define Routes
+### Create Router and Register Routes
 
 ```javascript
-const router = new TinyRouter({
-  '/': () => {
-    document.body.innerHTML = '<h1>Home Page</h1>';
-  },
-  
-  '/about': () => {
-    document.body.innerHTML = '<h1>About Us</h1>';
-  },
-  
-  '/contact': () => {
-    document.body.innerHTML = '<h1>Contact</h1>';
+import router from '@knadh/tinyrouter';
+
+// Create router instance with default handler for 404s
+const r = router.new({
+  defaultHandler: (ctx) => {
+    console.log('Route not found', ctx.location.pathname);
+    document.body.innerHTML = '<h1>404 - Not Found</h1>';
   }
 });
 
-router.start();
+// Register routes
+r.on('/', (ctx) => {
+  document.body.innerHTML = '<h1>Home Page</h1>';
+});
+
+r.on('/users/{id}', (ctx) => {
+  const userId = ctx.params.id;
+  document.body.innerHTML = `<h1>User Profile: ${userId}</h1>`;
+});
+
+// Initialize router
+r.ready();
 ```
 
-### Dynamic Routes
+### Dynamic Routes with Multiple Parameters
 
 ```javascript
-const router = new TinyRouter({
-  '/users/:id': (params) => {
-    const userId = params.id;
-    document.body.innerHTML = `<h1>User: ${userId}</h1>`;
+r.on('/posts/{year}/{month}/{day}', (ctx) => {
+  const { year, month, day } = ctx.params;
+  document.body.innerHTML = `
+    <h1>Post</h1>
+    <p>Date: ${year}-${month}-${day}</p>
+  `;
+});
+
+r.on('/users/{userId}/posts/{postId}', (ctx) => {
+  const { userId, postId } = ctx.params;
+  console.log(`User ${userId}, Post ${postId}`);
+});
+```
+
+## Advanced Usage
+
+### Routes with Before/After Hooks
+
+```javascript
+// Route with before/on/after handlers
+r.on('/posts/{id}', {
+  before: (ctx) => {
+    console.log('Before post handler, loading data...');
+    // Return false to cancel route
+    return true;
   },
-  
-  '/posts/:year/:month/:day': (params) => {
-    document.body.innerHTML = `
-      <h1>Post</h1>
-      <p>Date: ${params.year}-${params.month}-${params.day}</p>
-    `;
+  on: (ctx) => {
+    console.log('Post content', ctx.params.id);
+    document.body.innerHTML = `<h1>Post ${ctx.params.id}</h1>`;
+  },
+  after: (ctx) => {
+    console.log('After post handler, analytics...');
+    // Scroll to top
+    window.scrollTo(0, 0);
   }
 });
-
-router.start();
 ```
 
-### Route with Query Parameters
+### Route Groups with Shared Prefix and Handlers
 
 ```javascript
-const router = new TinyRouter({
-  '/search': (params, query) => {
-    const q = query.q || '';
-    const page = query.page || 1;
-    
-    document.body.innerHTML = `
-      <h1>Search Results for "${q}"</h1>
-      <p>Page: ${page}</p>
-    `;
+// Create admin group with authentication check
+const admin = r.group('/admin', {
+  before: (ctx) => {
+    // Check if user is authenticated
+    const isAuthenticated = localStorage.getItem('isAdmin') === 'true';
+    if (!isAuthenticated) {
+      r.navigate('/login');
+      return false; // Cancel navigation
+    }
+    return true;
   }
 });
 
-router.start();
+// All routes in this group are prefixed with /admin
+// and the before() callback runs for all of them
+admin.on('/dashboard', (ctx) => {
+  document.body.innerHTML = '<h1>Admin Dashboard</h1>';
+});
+
+admin.on('/users/{id}', (ctx) => {
+  const userId = ctx.params.id;
+  document.body.innerHTML = `<h1>Edit User: ${userId}</h1>`;
+});
+
+admin.on('/settings', (ctx) => {
+  document.body.innerHTML = '<h1>Admin Settings</h1>';
+});
 ```
+
+### Global Before/After Handlers
+
+```javascript
+// Runs before EVERY route's before/on/after handlers
+r.beforeEach((ctx) => {
+  console.log('Global beforeEach:', ctx.path, ctx.location.pathname);
+  
+  // Example: Track all page views
+  analytics.trackPageView(ctx.path);
+  
+  // Return false to cancel all navigation
+  return true;
+});
+
+// Runs after EVERY route's before/on/after handlers
+r.afterEach((ctx) => {
+  console.log('Global afterEach:', ctx.path);
+  
+  // Example: Update document title
+  document.title = getPageTitle(ctx.path) + ' - My App';
+  
+  // Scroll to top on every navigation
+  window.scrollTo(0, 0);
+});
+
+// Execution order:
+// global beforeEach -> group before -> route before -> on -> route after -> group after -> global afterEach
+```
+
+Multiple `beforeEach` and `afterEach` handlers can be registered; they run in the order they were added.
 
 ## Navigation
 
 ### Programmatic Navigation
 
 ```javascript
-// Navigate to route
-router.navigate('/about');
+// Navigate to a new route (pushes to history)
+r.navigate('/users/42');
 
-// Navigate with query params
-router.navigate('/search?q=oat&page=2');
+// Navigate with query parameters
+r.navigate('/search', { q: 'oat', page: 1 });
 
-// Replace current history entry
-router.replace('/contact');
+// Navigate with hash
+r.navigate('/page', {}, 'section1');
+
+// Full navigation with all options
+r.navigate('/users/42', { filter: 'active' }, 'settings', true);
+// Parameters: path, query (object), hash, pushState (boolean)
+
+// Replace current history entry instead of pushing
+r.replace('/contact');
 ```
 
-### Link Elements Work Automatically
+### Link Binding with data-route
+
+Add the `data-route` attribute to links for automatic navigation without page reload:
 
 ```html
-<a href="/about">About</a>
-<a href="/users/123">User 123</a>
-<a href="/search?q=test">Search</a>
+<a href="/users/42" data-route>View User 42</a>
+<a href="/search?q=oat" data-route>Search "oat"</a>
 ```
 
-No JavaScript needed - links work natively!
-
-## Advanced Features
-
-### Wildcard Routes
+Or bind programmatically to a parent element:
 
 ```javascript
-const router = new TinyRouter({
-  '/api/*': (params) => {
-    const path = params.rest; // Everything after /api/
-    console.log('API path:', path);
-  },
-  
-  '*': (params) => {
-    // 404 handler
-    document.body.innerHTML = '<h1>404 - Not Found</h1>';
-  }
+// Bind all elements with data-route inside the nav element
+r.bind(document.querySelector('nav'));
+```
+
+## Context Object
+
+Every handler receives a context object with useful information:
+
+```javascript
+r.on('/users/{id}', (ctx) => {
+  console.log(ctx.path);           // "/users/42"
+  console.log(ctx.location);       // Full Location object
+  console.log(ctx.location.pathname); // "/users/42"
+  console.log(ctx.params);         // { id: "42" }
+  console.log.ctx.query);          // Parsed query params object
+  console.log(ctx.hash);           // URL hash (if any)
 });
 ```
 
-### Route Groups
+## Real-World Example: Single Page Application
 
 ```javascript
-const adminRoutes = {
-  '/admin/users': () => { /* ... */ },
-  '/admin/settings': () => { /* ... */ },
-  '/admin/*': () => { /* ... */ }
-};
+import router from '@knadh/tinyrouter';
 
-const router = new TinyRouter({
-  '/': () => { /* Home */ },
-  ...adminRoutes // Spread routes
-});
-```
-
-### Before Navigation Hook
-
-```javascript
-const router = new TinyRouter({
-  '/protected': () => {
-    document.body.innerHTML = '<h1>Protected Page</h1>';
-  }
-}, {
-  before: (to, from) => {
-    // Check authentication
-    if (to.path.startsWith('/protected') && !isLoggedIn()) {
-      router.replace('/login');
-      return false; // Cancel navigation
-    }
-    return true; // Allow navigation
-  }
-});
-```
-
-### After Navigation Hook
-
-```javascript
-const router = new TinyRouter(routes, {
-  after: (to, from) => {
-    // Scroll to top
-    window.scrollTo(0, 0);
-    
-    // Update document title
-    document.title = to.pageTitle || 'My App';
-    
-    // Analytics tracking
-    ga('send', 'pageview', to.path);
-  }
-});
-```
-
-## Route Metadata
-
-```javascript
-const router = new TinyRouter({
-  '/': {
-    handler: () => { /* ... */ },
-    title: 'Home'
-  },
-  
-  '/about': {
-    handler: () => { /* ... */ },
-    title: 'About Us',
-    auth: true // Custom metadata
-  }
-});
-```
-
-## Current Route Info
-
-```javascript
-// Get current route
-const current = router.current;
-console.log(current.path);    // "/users/123"
-console.log_current.params);  // { id: "123" }
-console.log(current.query);   // { page: "1" }
-```
-
-## Options
-
-```javascript
-const router = new TinyRouter(routes, {
-  // Base path for all routes
-  base: '/app',
-  
-  // Called before navigation (return false to cancel)
-  before: (to, from) => true,
-  
-  // Called after navigation completes
-  after: (to, from) => {},
-  
-  // Handle browser back/forward buttons
-  handleHistory: true,
-  
-  // Initial path to start at
-  initialPath: '/'
-});
-```
-
-## Browser History API Integration
-
-TinyRouter automatically uses the History API:
-
-```javascript
-// Push new state (creates history entry)
-router.navigate('/about');
-
-// Replace current state (no new history entry)
-router.replace('/contact');
-
-// Go back in history
-history.back();
-
-// Go forward in history
-history.forward();
-```
-
-## Real-world Example
-
-```javascript
-const routes = {
-  '/': () => renderHome(),
-  
-  '/products': () => renderProducts(),
-  
-  '/products/:id': (params) => {
-    return renderProduct(params.id);
-  },
-  
-  '/cart': () => renderCart(),
-  
-  '/checkout': () => {
-    if (!isLoggedIn()) {
-      router.replace('/login?redirect=/checkout');
-      return false;
-    }
-    return renderCheckout();
-  },
-  
-  '/account/orders': () => renderOrders(),
-  
-  '/account/*': () => renderAccountSettings(),
-  
-  '*': () => render404()
-};
-
-const router = new TinyRouter(routes, {
-  base: '/',
-  
-  before: (to, from) => {
-    // Analytics
-    console.log(`Navigating from ${from.path} to ${to.path}`);
-    
-    // Auth check
-    if (to.path.startsWith('/account') && !isLoggedIn()) {
-      router.replace('/login?redirect=' + encodeURIComponent(to.path));
-      return false;
-    }
-    
-    return true;
-  },
-  
-  after: (to, from) => {
-    // Scroll to top on navigation
-    window.scrollTo(0, 0);
-    
-    // Update title
-    document.title = getPageTitle(to.path) + ' - My Shop';
+const r = router.new({
+  defaultHandler: (ctx) => {
+    document.body.innerHTML = `
+      <h1>404 - Page Not Found</h1>
+      <p>The page you're looking for doesn't exist.</p>
+      <a href="/" data-route>Go Home</a>
+    `;
   }
 });
 
-// Start router
-router.start();
+// Global handlers
+r.beforeEach((ctx) => {
+  // Show loading spinner
+  document.body.innerHTML = '<div class="loading">Loading...</div>';
+});
 
-// Helper functions
-function renderHome() { /* ... */ }
-function renderProducts() { /* ... */ }
-function renderProduct(id) { /* ... */ }
-// etc.
+r.afterEach((ctx) => {
+  // Update title
+  document.title = ctx.pageTitle || 'My SPA';
+  window.scrollTo(0, 0);
+});
+
+// Routes
+r.on('/', (ctx) => {
+  document.body.innerHTML = `
+    <h1>Welcome Home</h1>
+    <nav>
+      <a href="/about" data-route>About</a> |
+      <a href="/users/1" data-route>User 1</a> |
+      <a href="/posts" data-route>Posts</a>
+    </nav>
+  `;
+});
+
+r.on('/about', (ctx) => {
+  document.body.innerHTML = `
+    <h1>About Us</h1>
+    <p>This is a tiny SPA built with tinyrouter.js</p>
+    <a href="/" data-route>Back Home</a>
+  `;
+});
+
+r.on('/users/{id}', (ctx) => {
+  const userId = ctx.params.id;
+  // Fetch user data
+  fetch(`/api/users/${userId}`)
+    .then(res => res.json())
+    .then(user => {
+      document.body.innerHTML = `
+        <h1>User: ${user.name}</h1>
+        <p>Email: ${user.email}</p>
+        <a href="/" data-route>Back Home</a>
+      `;
+    });
+});
+
+r.on('/posts', (ctx) => {
+  const page = ctx.query.page || 1;
+  document.body.innerHTML = `
+    <h1>Posts (Page ${page})</h1>
+    <ul>
+      <li><a href="/posts/1" data-route>Post 1</a></li>
+      <li><a href="/posts/2" data-route>Post 2</a></li>
+    </ul>
+  `;
+});
+
+// Initialize
+r.ready();
 ```
 
 ## Integration with Oat UI
@@ -316,63 +300,166 @@ function renderProduct(id) { /* ... */ }
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <title>Oat + TinyRouter</title>
   <link rel="stylesheet" href="oat.min.css">
 </head>
 <body>
-  <!-- Navigation -->
   <nav data-topnav class="hstack justify-between items-center" style="padding: var(--space-3);">
-    <a href="/">My App</a>
+    <a href="/" data-route class="logo">My App</a>
     <div class="hstack gap-3">
-      <a href="/products">Products</a>
-      <a href="/about">About</a>
-      <a href="/contact">Contact</a>
+      <a href="/products" data-route>Products</a>
+      <a href="/about" data-route>About</a>
+      <a href="/contact" data-route>Contact</a>
     </div>
   </nav>
   
-  <!-- Main content (rendered by router) -->
   <main id="app" style="padding: var(--space-6);"></main>
   
   <script src="oat.min.js" defer></script>
-  <script src="tinyrouter.min.js" defer></script>
-  <script>
-    const routes = {
-      '/': () => `
+  <script type="module">
+    import router from 'https://unpkg.com/@knadh/tinyrouter';
+    
+    const r = router.new({
+      defaultHandler: (ctx) => {
+        document.getElementById('app').innerHTML = `
+          <article class="card">
+            <h1>404 - Not Found</h1>
+            <p>The page you're looking for doesn't exist.</p>
+            <button onclick="window.location.href='/'">Go Home</button>
+          </article>
+        `;
+      }
+    });
+    
+    r.on('/', (ctx) => {
+      document.getElementById('app').innerHTML = `
         <h1>Welcome</h1>
-        <p>This is the home page.</p>
-        <button onclick="router.navigate('/products')">View Products</button>
-      `,
-      
-      '/products': () => `
+        <p>This is a single-page app using Oat UI and TinyRouter.</p>
+        <div class="grid">
+          <div class="col-4">
+            <article class="card">
+              <h3>Products</h3>
+              <p>Browse our products</p>
+              <button onclick="r.navigate('/products')">View Products</button>
+            </article>
+          </div>
+          <div class="col-4">
+            <article class="card">
+              <h3>About</h3>
+              <p>Learn more about us</p>
+              <button onclick="r.navigate('/about')">Learn More</button>
+            </article>
+          </div>
+        </div>
+      `;
+    });
+    
+    r.on('/products', (ctx) => {
+      document.getElementById('app').innerHTML = `
         <h1>Products</h1>
         <div class="grid">
           <div class="col-4">
             <article class="card">
               <h3>Product 1</h3>
-              <button onclick="router.navigate('/products/1')">View Details</button>
+              <button onclick="r.navigate('/products/1')">View Details</button>
             </article>
           </div>
         </div>
-      `,
-      
-      '/products/:id': (params) => `
-        <h1>Product ${params.id}</h1>
-        <p>Details for product ${params.id}</p>
-        <button onclick="router.navigate('/products')">Back</button>
-      `
-    };
+      `;
+    });
     
-    const router = new TinyRouter(routes);
-    router.start();
+    r.on('/products/{id}', (ctx) => {
+      document.getElementById('app').innerHTML = `
+        <h1>Product ${ctx.params.id}</h1>
+        <p>Details for product ${ctx.params.id}</p>
+        <button onclick="r.navigate('/products')">Back to Products</button>
+      `;
+    });
+    
+    r.on('/about', (ctx) => {
+      document.getElementById('app').innerHTML = `
+        <h1>About Us</h1>
+        <p>We build tiny, zero-dependency JavaScript libraries.</p>
+      `;
+    });
+    
+    r.on('/contact', (ctx) => {
+      document.getElementById('app').innerHTML = `
+        <h1>Contact</h1>
+        <form>
+          <label data-field>
+            Email
+            <input type="email" required />
+          </label>
+          <button type="submit">Send Message</button>
+        </form>
+      `;
+    });
+    
+    // Initialize
+    r.ready();
   </script>
 </body>
 </html>
 ```
 
+## API Reference
+
+| Method | Description |
+|--------|-------------|
+| `router.new(options)` | Creates a new router instance. Options include `defaultHandler` for 404s |
+| `r.on(path, handler)` | Registers a route handler (can be function or object with before/on/after) |
+| `r.group(prefix, handlers)` | Creates a group of routes with common prefix and shared handlers |
+| `r.ready()` | Initializes the router and handles initial page load |
+| `r.navigate(path, query, hash, pushState)` | Navigates to a new route |
+| `r.replace(path, query, hash)` | Replaces current history entry |
+| `r.bind(parent)` | Binds navigate() onclick to all elements with `data-route` inside parent |
+| `r.beforeEach(handler)` | Registers global before navigation handler |
+| `r.afterEach(handler)` | Registers global after navigation handler |
+
+## Options
+
+```javascript
+const r = router.new({
+  // Default handler for unmatched routes
+  defaultHandler: (ctx) => {
+    console.log('404:', ctx.location.pathname);
+  }
+});
+```
+
+See the source code for additional options.
+
 ## Browser Support
 
-- Chrome, Firefox, Safari, Edge (modern versions)
-- Requires History API support
-- Graceful degradation for non-JS browsers
+- Modern browsers with History API support
+- Chrome, Firefox, Safari, Edge (latest versions)
+- Graceful degradation: links work without JavaScript
+
+## Best Practices
+
+### DO
+
+- Use semantic URLs (`/users/123` not `/u?id=123`)
+- Handle 404s with `defaultHandler`
+- Update document title in `afterEach` hook
+- Scroll to top on navigation
+- Use for simple SPAs and progressive enhancement
+
+### DON'T
+
+- Use for complex state management
+- Store sensitive data in URLs
+- Forget to handle browser back/forward buttons
+- Nest routes deeply (keep flat structure)
+
+## Limitations
+
+- No built-in code splitting or lazy loading
+- No nested route rendering (use composition instead)
+- No built-in authentication (implement in hooks)
+- Manual SSR implementation needed
 
 ## Comparison with Other Routers
 
@@ -381,31 +468,6 @@ function renderProduct(id) { /* ... */ }
 | Size | ~950B | ~40KB+ | ~40KB+ |
 | Dependencies | 0 | React | Vue |
 | Framework Required | No | Yes | Yes |
-| SSR Support | Manual | Built-in | Built-in |
+| Learning Curve | Minimal | Moderate | Moderate |
 
-## Best Practices
-
-### DO
-
-- Use semantic URLs (`/users/123` not `/u?id=123`)
-- Handle 404s with wildcard route
-- Update document title in `after` hook
-- Scroll to top on navigation
-- Use for simple SPAs and progressive enhancement
-
-### DON'T
-
-- Use for complex state management
-- Store sensitive data in URL
-- Forget to handle browser back button
-- Nest routes deeply (keep flat structure)
-
-## Limitations
-
-- No built-in code splitting
-- No route lazy loading
-- No nested routes (use composition instead)
-- No built-in authentication
-- Manual SSR implementation needed
-
-For most simple to medium SPAs, TinyRouter provides all the routing you need with minimal overhead!
+Licensed under the MIT License.

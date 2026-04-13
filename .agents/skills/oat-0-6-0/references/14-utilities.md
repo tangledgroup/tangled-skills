@@ -1,418 +1,481 @@
 # Oat UI - Utilities and Helper Classes
 
-Utility classes for common styling needs without custom CSS.
+Official utility classes from Oat UI. See the [original utilities.css](https://github.com/knadh/oat/blob/master/src/css/utilities.css) for the complete source.
 
-## Display Utilities
+## Overview
 
-### Visibility
+Oat provides a minimal set of utility classes for common layout and styling needs. These are designed to work seamlessly with Oat's semantic components without requiring custom CSS.
+
+**Source**: https://raw.githubusercontent.com/knadh/oat/master/src/css/utilities.css
+
+## Text Alignment
+
+Control text alignment within elements:
 
 ```html
-<div class="hidden">Hidden (display: none)</div>
-<div class="invisible">Invisible (visibility: hidden)</div>
+<p class="align-left">Aligned to the left (start)</p>
+<p class="align-center">Centered text</p>
+<p class="align-right">Aligned to the right (end)</p>
 ```
 
-### Display Type
+**CSS:**
+```css
+.align-left { text-align: start; }
+.align-center { text-align: center; }
+.align-right { text-align: end; }
+```
+
+## Text Color Variants
+
+Muted text colors for secondary content:
 
 ```html
-<div class="block">Block element</div>
-<div class="inline">Inline element</div>
-<div class="inline-block">Inline block</div>
-<div class="flex">Flex container</div>
-<div class="grid">Grid container</div>
+<p class="text-light">This text is muted (var(--muted-foreground))</p>
+<p class="text-lighter">This text is even lighter (var(--faint-foreground))</p>
+```
+
+**CSS:**
+```css
+.text-light { color: var(--muted-foreground); }
+.text-lighter { color: var(--faint-foreground); }
 ```
 
 ## Flexbox Utilities
 
-### Flex Container
+### Basic Flex Display
 
+```html
+<div class="flex">Flex container</div>
+<div class="flex-col">Flex column (vertical)</div>
+```
+
+**CSS:**
+```css
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+```
+
+### Alignment in Flex Containers
+
+```html
+<div class="flex items-center">
+  <!-- Children are vertically centered -->
+</div>
+
+<div class="flex justify-center">
+  <!-- Children are horizontally centered -->
+</div>
+
+<div class="flex justify-between">
+  <!-- Children spread with space between -->
+</div>
+
+<div class="flex justify-end">
+  <!-- Children aligned to the end -->
+</div>
+```
+
+**CSS:**
+```css
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-end { justify-content: flex-end; }
+```
+
+### HStack and VStack (Bootstrap-inspired)
+
+Pre-configured flex containers for common layouts:
+
+**HStack (Horizontal Stack)**
 ```html
 <div class="hstack">
-  <!-- Horizontal flex (row) -->
+  <button>Save</button>
+  <button class="outline">Cancel</button>
+  <span class="text-light">Last saved 2min ago</span>
 </div>
+```
 
+- Display: flex
+- Align items: center
+- Gap: var(--space-3) (12px)
+- Flex wrap: wrap
+- Auto height
+- Children margins reset to 0
+
+**VStack (Vertical Stack)**
+```html
 <div class="vstack">
-  <!-- Vertical flex (column) -->
+  <h2>Title</h2>
+  <p>Description text</p>
+  <button>Primary Action</button>
 </div>
 ```
 
-### Justify Content
+- Display: flex
+- Flex direction: column
+- Gap: var(--space-3) (12px)
 
-```html
-<div class="hstack justify-start">Start (default)</div>
-<div class="hstack justify-center">Center</div>
-<div class="hstack justify-end">End</div>
-<div class="hstack justify-between">Space between</div>
-<div class="hstack justify-around">Space around</div>
+**CSS:**
+```css
+.hstack {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  align-content: flex-start;
+  height: auto;
+
+  > * {
+    margin: 0;
+  }
+}
+
+.vstack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
 ```
 
-### Align Items
+## Gap Utilities
+
+Control spacing between flex/grid children:
 
 ```html
-<div class="hstack items-start">Align start</div>
-<div class="hstack items-center">Align center</div>
-<div class="hstack items-end">Align end</div>
-<div class="hstack items-stretch">Stretch (default)</div>
+<div class="hstack gap-1">
+  <!-- Gap: 4px -->
+  <span>Item 1</span>
+  <span>Item 2</span>
+</div>
+
+<div class="hstack gap-2">
+  <!-- Gap: 8px -->
+  <span>Item 1</span>
+  <span>Item 2</span>
+</div>
+
+<div class="hstack gap-4">
+  <!-- Gap: 16px -->
+  <span>Item 1</span>
+  <span>Item 2</span>
+</div>
 ```
 
-### Flex Direction
-
-```html
-<div class="flex-row">Horizontal</div>
-<div class="flex-column">Vertical</div>
-<div class="flex-wrap">Wrap items</div>
+**CSS:**
+```css
+.gap-1 { gap: var(--space-1); }  /* 4px */
+.gap-2 { gap: var(--space-2); }  /* 8px */
+.gap-4 { gap: var(--space-4); }  /* 16px */
 ```
 
-### Flex Grow/Shrink
+## Margin Utilities
+
+Block-start and block-end margins (logical properties):
 
 ```html
-<div class="flex-1">Grow to fill space</div>
-<div class="flex-auto">Auto flex</div>
-<div class="flex-none">No flex</div>
-```
-
-## Spacing Utilities
-
-### Margin
-
-Scale: `1` = 4px, `2` = 8px, `3` = 12px, `4` = 16px, `6` = 24px, `8` = 32px, `10` = 40px, `12` = 48px, `16` = 64px
-
-```html
-<div class="m-4">Margin all sides: 16px</div>
-<div class="mx-4">Margin horizontal: 16px</div>
-<div class="my-4">Margin vertical: 16px</div>
+<div class="mt-2">Margin top: 8px</div>
 <div class="mt-4">Margin top: 16px</div>
-<div class="mr-4">Margin right: 16px</div>
+<div class="mt-6">Margin top: 24px</div>
+
+<div class="mb-2">Margin bottom: 8px</div>
 <div class="mb-4">Margin bottom: 16px</div>
-<div class="ml-4">Margin left: 16px</div>
-
-<div class="m-auto">Auto margin</div>
-<div class="mx-auto">Horizontal center</div>
+<div class="mb-6">Margin bottom: 24px</div>
 ```
 
-### Padding
+**CSS:**
+```css
+.mt-2 { margin-block-start: var(--space-2); }  /* 8px */
+.mt-4 { margin-block-start: var(--space-4); }  /* 16px */
+.mt-6 { margin-block-start: var(--space-6); }  /* 24px */
 
-```html
-<div class="p-4">Padding all: 16px</div>
-<div class="px-4">Padding horizontal: 16px</div>
-<div class="py-4">Padding vertical: 16px</div>
-<div class="pt-4">Padding top: 16px</div>
-<div class="pr-4">Padding right: 16px</div>
-<div class="pb-4">Padding bottom: 16px</div>
-<div class="pl-4">Padding left: 16px</div>
+.mb-2 { margin-block-end: var(--space-2); }  /* 8px */
+.mb-4 { margin-block-end: var(--space-4); }  /* 16px */
+.mb-6 { margin-block-end: var(--space-6); }  /* 24px */
 ```
 
-### Gap (for flex/grid)
+## Padding Utilities
 
 ```html
-<div class="hstack gap-2">Gap: 8px</div>
-<div class="vstack gap-4">Gap: 16px</div>
-<div class="gap-0">No gap</div>
+<div class="p-4">Padding all sides: 16px</div>
 ```
 
-## Size Utilities
-
-### Width
-
-```html
-<div class="w-full">Width: 100%</div>
-<div class="w-auto">Width: auto</div>
-<div class="w-screen">Width: 100vw</div>
-
-<div class="min-w-0">Min-width: 0</div>
-<div class="min-w-full">Min-width: 100%</div>
-
-<div class="max-w-full">Max-width: 100%</div>
-<div class="max-w-screen">Max-width: screen</div>
+**CSS:**
+```css
+.p-4 { padding: var(--space-4); }  /* 16px */
 ```
 
-### Height
+## Width Utilities
 
 ```html
-<div class="h-full">Height: 100%</div>
-<div class="h-auto">Height: auto</div>
-<div class="h-screen">Height: 100vh</div>
-
-<div class="min-h-0">Min-height: 0</div>
-<div class="min-h-full">Min-height: 100%</div>
-<div class="min-h-screen">Min-height: 100vh</div>
+<div class="w-100">Width: 100%</div>
 ```
 
-## Text Utilities
-
-### Text Color
-
-```html
-<p class="text-light">Muted text color</p>
+**CSS:**
+```css
+.w-100 { width: 100%; }
 ```
 
-### Text Alignment
+## Unstyled Lists and Links
+
+Remove default styling from lists and links:
 
 ```html
-<p class="text-left">Left align (default)</p>
-<p class="text-center">Center align</p>
-<p class="text-right">Right align</p>
+<ul class="unstyled">
+  <li><a href="#" class="unstyled">No bullets, no underline</a></li>
+  <li><a href="#" class="unstyled">Clean navigation items</a></li>
+</ul>
 ```
 
-### Text Size
-
-```html
-<p class="small">Smaller text</p>
-<p class="large">Larger text</p>
+**CSS:**
+```css
+:is(ul, ol, a).unstyled {
+  list-style: none;
+  text-decoration: none;
+  padding: 0;
+}
 ```
 
-### Font Weight
+## Complete utilities.css Source
 
-```html
-<span class="font-normal">Normal (400)</span>
-<span class="font-medium">Medium (500)</span>
-<span class="font-semibold">Semibold (600)</span>
-<span class="font-bold">Bold (700)</span>
+```css
+@layer utilities {
+  .align-left { text-align: start; }
+  .align-center { text-align: center; }
+  .align-right { text-align: end; }
+  .text-light { color: var(--muted-foreground); }
+  .text-lighter { color: var(--faint-foreground); }
+
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .items-center { align-items: center; }
+  .justify-center { justify-content: center; }
+  .justify-between { justify-content: space-between; }
+  .justify-end { justify-content: flex-end; }
+
+  /* Bootstrap inspired. */
+  .hstack {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    align-content: flex-start;
+    height: auto;
+
+    > * {
+      margin: 0;
+    }
+  }
+  .vstack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .gap-1 { gap: var(--space-1); }
+  .gap-2 { gap: var(--space-2); }
+  .gap-4 { gap: var(--space-4); }
+
+  .mt-2 { margin-block-start: var(--space-2); }
+  .mt-4 { margin-block-start: var(--space-4); }
+  .mt-6 { margin-block-start: var(--space-6); }
+
+  .mb-2 { margin-block-end: var(--space-2); }
+  .mb-4 { margin-block-end: var(--space-4); }
+  .mb-6 { margin-block-end: var(--space-6); }
+  .p-4 { padding: var(--space-4); }
+
+  .w-100 { width: 100%; }
+
+  :is(ul, ol, a).unstyled {
+    list-style: none;
+    text-decoration: none;
+    padding: 0;
+  }
+}
 ```
 
-### Text Transform
+## Practical Examples
+
+### Navigation Bar
 
 ```html
-<p class="uppercase">UPPERCASE</p>
-<p class="lowercase">lowercase</p>
-<p class="capitalize">Capitalize</p>
-```
-
-### Text Decoration
-
-```html
-<a class="no-underline">No underline</a>
-<p class="line-through">Strikethrough</p>
-```
-
-## Alignment Utilities
-
-### Vertical Align
-
-```html
-<span class="align-base">Baseline</span>
-<span class="align-middle">Middle</span>
-<span class="align-top">Top</span>
-<span class="align-bottom">Bottom</span>
-```
-
-### Text Align (Vertical)
-
-```html
-<article class="card align-center">Centered content</article>
-<article class="card align-start">Top aligned</article>
-<article class="card align-end">Bottom aligned</article>
-```
-
-## Position Utilities
-
-```html
-<div class="relative">Position: relative</div>
-<div class="absolute">Position: absolute</div>
-<div class="fixed">Position: fixed</div>
-<div class="sticky">Position: sticky</div>
-```
-
-### Z-Index
-
-```html
-<div class="z-0">z-index: 0</div>
-<div class="z-10">z-index: 10</div>
-<div class="z-20">z-index: 20</div>
-<div class="z-30">z-index: 30</div>
-<div class="z-40">z-index: 40</div>
-<div class="z-50">z-index: 50</div>
-<div class="z-auto">z-index: auto</div>
-```
-
-## Border Utilities
-
-### Border Width
-
-```html
-<div class="border">Border: 1px</div>
-<div class="border-0">No border</div>
-<div class="border-t">Top border</div>
-<div class="border-r">Right border</div>
-<div class="border-b">Bottom border</div>
-<div class="border-l">Left border</div>
-```
-
-### Border Radius
-
-```html
-<div class="rounded">Default radius</div>
-<div class="rounded-none">No radius</div>
-<div class="rounded-sm">Small radius</div>
-<div class="rounded-md">Medium radius</div>
-<div class="rounded-lg">Large radius</div>
-<div class="rounded-full">Full radius (circle)</div>
-```
-
-## Background Utilities
-
-```html
-<div class="bg-transparent">Transparent</div>
-<div class="bg-current">Current color</div>
-```
-
-## Overflow Utilities
-
-```html
-<div class="overflow-auto">Scroll when needed</div>
-<div class="overflow-hidden">Hide overflow</div>
-<div class="overflow-visible">Show overflow</div>
-<div class="overflow-scroll">Always scroll</div>
-
-<div class="overflow-x-auto">Horizontal scroll</div>
-<div class="overflow-y-auto">Vertical scroll</div>
-```
-
-## Cursor Utilities
-
-```html
-<div class="cursor-pointer">Pointer cursor</div>
-<div class="cursor-default">Default cursor</div>
-<div class="cursor-not-allowed">Not allowed</div>
-<div class="cursor-wait">Waiting</div>
-<div class="cursor-text">Text input</div>
-```
-
-## Opacity Utilities
-
-```html
-<div class="opacity-0">0% opacity</div>
-<div class="opacity-50">50% opacity</div>
-<div class="opacity-100">100% opacity</div>
-```
-
-## Shadow Utilities
-
-```html
-<div class="shadow-none">No shadow</div>
-<div class="shadow-sm">Small shadow</div>
-<div class="shadow-md">Medium shadow</div>
-<div class="shadow-lg">Large shadow</div>
-```
-
-## Transition Utilities
-
-```html
-<div class="transition">Default transition</div>
-<div class="transition-none">No transition</div>
-<div class="transition-all">All properties</div>
-```
-
-## User Select
-
-```html
-<div class="select-none">Cannot select</div>
-<div class="select-all">Select all</div>
-<div class="select-auto">Auto select</div>
-```
-
-## Common Combinations
-
-### Centered Content
-
-```html
-<div class="align-center p-8">
-  <h3>Centered Title</h3>
-  <p class="text-light">Centered paragraph</p>
-</div>
-```
-
-### Inline Actions
-
-```html
-<div class="hstack items-center gap-2">
-  <span>Item name</span>
-  <span class="badge">Status</span>
-  <button class="outline small">Edit</button>
-</div>
+<nav data-topnav class="hstack justify-between">
+  <div class="hstack">
+    <a href="/" class="logo">My App</a>
+  </div>
+  
+  <ul class="unstyled hstack">
+    <li><a href="/about" class="unstyled">About</a></li>
+    <li><a href="/products" class="unstyled">Products</a></li>
+    <li><a href="/contact" class="unstyled">Contact</a></li>
+  </ul>
+</nav>
 ```
 
 ### Card Header with Actions
 
 ```html
-<header class="hstack justify-between items-start">
+<header class="hstack justify-between items-center mb-4">
   <div>
-    <h3>Title</h3>
-    <p class="text-light">Subtitle</p>
+    <h2>Dashboard</h2>
+    <p class="text-light">Welcome back, John</p>
   </div>
   <button class="outline small">Settings</button>
 </header>
 ```
 
-### Form Row
+### Form Actions Footer
 
 ```html
-<div class="hstack gap-3">
+<footer class="hstack justify-end gap-2 mt-6">
+  <button type="button" class="outline">Cancel</button>
+  <button type="submit">Save Changes</button>
+</footer>
+```
+
+### Vertical Stack of Cards
+
+```html
+<div class="vstack">
+  <article class="card">
+    <h3>First Card</h3>
+    <p>Content here</p>
+  </article>
+  
+  <article class="card">
+    <h3>Second Card</h3>
+    <p>Content here</p>
+  </article>
+  
+  <article class="card">
+    <h3>Third Card</h3>
+    <p>Content here</p>
+  </article>
+</div>
+```
+
+### Centered Content
+
+```html
+<div class="align-center p-4">
+  <h2 class="mb-2">Welcome</h2>
+  <p class="text-light mb-4">Thank you for visiting</p>
+  <button>Get Started</button>
+</div>
+```
+
+### Inline Badge and Button
+
+```html
+<div class="hstack items-center gap-2">
+  <span>Status:</span>
+  <span class="badge success">Active</span>
+  <button class="outline small">Edit</button>
+</div>
+```
+
+### Two Column Form Row
+
+```html
+<div class="hstack gap-4">
   <div class="flex-1">
-    <label data-field><input type="text" placeholder="First name" /></label>
+    <label data-field>
+      First Name
+      <input type="text" placeholder="John" />
+    </label>
   </div>
+  
   <div class="flex-1">
-    <label data-field><input type="text" placeholder="Last name" /></label>
+    <label data-field>
+      Last Name
+      <input type="text" placeholder="Doe" />
+    </label>
   </div>
 </div>
 ```
 
-### Button Group Footer
+**Note**: `flex-1` is standard CSS, not an Oat utility class.
 
-```html
-<footer class="hstack justify-end gap-2 pt-4 border-t">
-  <button class="outline">Cancel</button>
-  <button>Save</button>
-</footer>
-```
+## Custom Utilities
 
-### Responsive Text
-
-```html
-<h1 class="text-center">
-  <span class="large">Hello</span>
-  <span class="large"> </span>
-  <span class="xlarge">World</span>
-</h1>
-```
-
-## Custom Utility Classes
-
-You can extend utilities in your own CSS:
+Extend Oat's utilities with your own CSS:
 
 ```css
-/* Custom spacing */
-.m-20 { margin: var(--space-20); }
-.p-20 { padding: var(--space-20); }
-
-/* Custom text sizes */
-.text-xsmall { font-size: 0.625rem; }
-.text-xlarge { font-size: 1.5rem; }
-
-/* Custom display */
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Custom borders */
-.border-primary {
-  border-color: var(--primary);
+@layer utilities {
+  /* Additional spacing */
+  .mt-8 { margin-block-start: var(--space-8); }
+  .mb-8 { margin-block-end: var(--space-8); }
+  .p-8 { padding: var(--space-8); }
+  
+  /* Custom text utilities */
+  .text-small { font-size: var(--text-7); }
+  .text-large { font-size: var(--text-3); }
+  
+  /* Flex center shortcut */
+  .flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Additional width utilities */
+  .w-auto { width: auto; }
+  .w-half { width: 50%; }
 }
 ```
+
+**Important**: Wrap custom utilities in `@layer utilities` to maintain proper cascade order.
+
+## Space Scale Reference
+
+Oat uses a consistent spacing scale based on CSS variables:
+
+| Variable | Size | Common Use |
+|----------|------|------------|
+| `--space-1` | 4px | Tight spacing |
+| `--space-2` | 8px | Small gaps |
+| `--space-3` | 12px | Default hstack/vstack gap |
+| `--space-4` | 16px | Standard padding/margin |
+| `--space-6` | 24px | Large spacing |
+| `--space-8` | 32px | Section spacing |
+| `--space-10` | 40px | Large sections |
+| `--space-12` | 48px | Hero sections |
 
 ## Best Practices
 
 ### DO
 
-- Use utilities for quick layouts and spacing
-- Combine with semantic components
-- Keep classes readable and organized
-- Use for one-off styling needs
+- Use `hstack` and `vstack` for common layouts
+- Leverage `gap` instead of margins between children
+- Use logical properties (`margin-block-start` instead of `margin-top`)
+- Keep utility classes minimal and focused
+- Extend utilities in `@layer utilities` for custom needs
 
 ### DON'T
 
-- Overuse utilities (use custom CSS for complex patterns)
-- Chain too many classes on single element
-- Replace component classes with utilities
-- Forget to test responsive behavior
+- Overuse utility classes (use components when possible)
+- Create duplicate utilities that Oat already provides
+- Forget to wrap custom utilities in `@layer utilities`
+- Use utilities for complex component styling
+
+## Comparison with Other Frameworks
+
+| Feature | Oat | Tailwind | Bootstrap |
+|---------|-----|----------|-----------|
+| Philosophy | Minimal, semantic | Utility-first | Component-first |
+| Flex utilities | `hstack`, `vstack` | `flex`, `flex-col` | `.d-flex` |
+| Spacing scale | 9 steps | 100+ steps | 5 steps |
+| Customization | CSS variables | Build-time | Sass variables |
+| Bundle size | ~6KB | ~100KB+ | ~50KB+ |
+
+Oat's approach is intentionally minimal - use utilities for quick adjustments, but rely on semantic components for structure.
+
+## Browser Support
+
+All utility classes use modern CSS features:
+- Logical properties (`margin-block-start`, `margin-block-end`)
+- CSS custom properties (variables)
+- CSS layers (`@layer`)
+
+Supported in all modern browsers. For IE11 support, use the legacy build with polyfills.

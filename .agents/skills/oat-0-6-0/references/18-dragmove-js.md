@@ -1,334 +1,561 @@
-# DragMove.js - Draggable Elements
+# DragMove.js - Draggable DOM Elements
 
-A super tiny (~500 bytes) JavaScript library to make DOM elements draggable and movable.
+A super tiny (~500 bytes minified+gzipped), zero-dependency JavaScript library to make DOM elements draggable and movable. Includes touch screen support for mobile devices.
 
-## Overview
+[**View Demo**](https://knadh.github.io/dragmove.js/docs/) | [**GitHub**](https://github.com/knadh/dragmove.js)
 
-Add drag-and-drop functionality to any DOM element with minimal code and zero dependencies.
+## Features
+
+- Make any DOM element draggable
+- Touch screen support for mobile devices
+- Zero dependencies, ~500 bytes minified+gzipped
+- Optional start/end callbacks for custom behavior
+- Simple API with minimal configuration
 
 ## Installation
 
-### CDN
-```html
-<script src="https://unpkg.com/dragmove.js"></script>
+### npm
+
+```bash
+npm install @knadh/dragmove
 ```
 
-### Download
-```bash
-wget https://raw.githubusercontent.com/knadh/dragmove.js/master/dist/dragmove.min.js
+### ES Module (CDN)
+
+```html
+<script type="module">
+  import { dragmove } from 'https://unpkg.com/@knadh/dragmove';
+</script>
 ```
 
 ## Basic Usage
 
-### Make Element Draggable
+### Simple Draggable Element
 
 ```html
-<div id="draggable" style="width: 200px; height: 150px; background: #3b82f6; color: white; display: flex; align-items: center; justify-content: center;">
-  Drag me!
-</div>
-
-<script src="dragmove.min.js"></script>
-<script>
-const dm = new DragMove('#draggable');
-</script>
-```
-
-### Multiple Elements
-
-```javascript
-document.querySelectorAll('.draggable').forEach(el => {
-  new DragMove(el);
-});
-```
-
-## Options
-
-```javascript
-new DragMove(element, {
-  // Element to use as drag handle (defaults to entire element)
-  handle: '.drag-handle',
-  
-  // Container to constrain dragging (optional)
-  container: '#container',
-  
-  // Callback when dragging starts
-  onDragStart: (e) => {
-    console.log('Drag started');
-  },
-  
-  // Callback during drag (called continuously)
-  onDrag: (e, x, y) => {
-    console.log('Dragging to:', x, y);
-  },
-  
-  // Callback when dragging ends
-  onDragEnd: (e, x, y) => {
-    console.log('Drag ended at:', x, y);
-  },
-  
-  // Snap to grid size in pixels (0 = no snap)
-  snap: 10,
-  
-  // Inertia effect after release (pixels)
-  inertia: 0
-});
-```
-
-## Drag Handle Example
-
-```html
-<div id="window" style="width: 400px; height: 300px; border: 1px solid #ccc; background: white;">
-  <div class="drag-handle" style="padding: 8px; background: #f0f0f0; cursor: move; border-bottom: 1px solid #ddd;">
-    ☰ Drag Handle
-  </div>
-  <div style="padding: 16px;">
-    Window content here...
-  </div>
-</div>
-
-<script>
-const dm = new DragMove('#window', {
-  handle: '.drag-handle'
-});
-</script>
-```
-
-## Constrained Dragging
-
-### Within Container
-
-```html
-<div id="container" style="width: 600px; height: 400px; border: 2px dashed #ccc; position: relative;">
-  <div id="box" style="width: 100px; height: 100px; background: #3b82f6; position: absolute;">
-    Drag within container
-  </div>
-</div>
-
-<script>
-new DragMove('#box', {
-  container: '#container'
-});
-</script>
-```
-
-### With Boundaries
-
-```javascript
-new DragMove('#draggable', {
-  onDrag: (e, x, y) => {
-    // Keep within viewport
-    const maxX = window.innerWidth - e.target.offsetWidth;
-    const maxY = window.innerHeight - e.target.offsetHeight;
-    
-    return {
-      x: Math.max(0, Math.min(x, maxX)),
-      y: Math.max(0, Math.min(y, maxY))
-    };
-  }
-});
-```
-
-## Snap to Grid
-
-```javascript
-new DragMove('#grid-item', {
-  snap: 20 // Snap to 20px grid
-});
-```
-
-## Real-world Example: Draggable Cards
-
-```html
-<div style="display: flex; gap: 16px; padding: 20px;">
-  <article class="card draggable-card" style="width: 300px; cursor: move;">
-    <header>
-      <h3>Task 1</h3>
-      <p class="text-light">Drag me anywhere</p>
-    </header>
-    <p>This card is draggable.</p>
-  </article>
-  
-  <article class="card draggable-card" style="width: 300px; cursor: move;">
-    <header>
-      <h3>Task 2</h3>
-      <p class="text-light">Drag me too</p>
-    </header>
-    <p>Another draggable card.</p>
-  </article>
-</div>
-
-<script src="oat.min.js" defer></script>
-<script src="dragmove.min.js" defer></script>
-<script>
-document.querySelectorAll('.draggable-card').forEach(card => {
-  new DragMove(card, {
-    onDragStart: () => {
-      card.style.boxShadow = '0 10px 40px rgba(0,0,0,0.2)';
-      card.style.transform = 'scale(1.02)';
-    },
-    
-    onDragEnd: () => {
-      card.style.boxShadow = '';
-      card.style.transform = '';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DragMove Demo</title>
+  <style>
+    .draggable {
+      position: absolute;
+      top: 100px;
+      left: 100px;
+      width: 200px;
+      height: 150px;
+      background: #4a90d9;
+      border-radius: 8px;
+      padding: 20px;
+      color: white;
+      cursor: move;
+      user-select: none;
     }
-  });
-});
-</script>
-
-<style>
-.draggable-card {
-  transition: box-shadow 0.2s, transform 0.2s;
-}
-</style>
+    
+    .drag-handle {
+      padding: 10px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 4px;
+      cursor: grab;
+      text-align: center;
+    }
+    
+    .drag-handle:active {
+      cursor: grabbing;
+    }
+  </style>
+</head>
+<body>
+  <div id="box" class="draggable">
+    <div class="drag-handle">Drag me!</div>
+    <p style="margin-top: 15px;">This entire box is draggable from the handle above.</p>
+  </div>
+  
+  <script type="module">
+    import { dragmove } from 'https://unpkg.com/@knadh/dragmove';
+    
+    // Make the box draggable using the handle
+    const box = document.querySelector('#box');
+    const handle = document.querySelector('#box .drag-handle');
+    
+    dragmove(box, handle);
+  </script>
+</body>
+</html>
 ```
 
-## Draggable Dialog/Modal
+### Drag Entire Element (No Handle)
 
 ```html
-<dialog id="draggable-dialog" style="width: 500px;">
-  <div class="drag-handle" style="padding: 12px; cursor: move; user-select: none;">
-    <h3 style="margin: 0;">Draggable Dialog</h3>
-  </div>
+<div id="widget" style="position: absolute; width: 200px; height: 150px; background: #4a90d9;">
+  <h3>Draggable Widget</h3>
+  <p>Click anywhere to drag</p>
+</div>
+
+<script type="module">
+  import { dragmove } from '@knadh/dragmove';
   
-  <div style="padding: 16px;">
-    <p>You can drag this dialog by its header!</p>
-  </div>
-  
-  <footer style="padding: 12px; text-align: right; border-top: 1px solid #eee;">
-    <button onclick="this.closest('dialog').close()">Close</button>
-  </footer>
-</dialog>
-
-<button onclick="document.getElementById('draggable-dialog').showModal()">
-  Open Draggable Dialog
-</button>
-
-<script>
-const dialog = document.getElementById('draggable-dialog');
-
-// Make draggable after opening
-dialog.addEventListener('showmodal', () => {
-  new DragMove(dialog, {
-    handle: '.drag-handle'
-  });
-});
+  // Make entire element draggable (no separate handle)
+  const widget = document.querySelector('#widget');
+  dragmove(widget, widget);
 </script>
 ```
 
-## Draggable Sidebar Widget
+## Advanced Usage
 
-```html
-<aside data-sidebar>
-  <div class="widget" style="margin-bottom: 16px; cursor: move;">
-    <div class="widget-header" style="padding: 8px; background: #f5f5f5; cursor: grab;">
-      ⚙️ Widget Settings
-    </div>
-    <div style="padding: 12px;">
-      Widget content...
-    </div>
-  </div>
-  
-  <div class="widget" style="margin-bottom: 16px; cursor: move;">
-    <div class="widget-header" style="padding: 8px; background: #f5f5f5; cursor: grab;">
-      📊 Statistics
-    </div>
-    <div style="padding: 12px;">
-      Stats content...
-    </div>
-  </div>
-</aside>
+### Start and End Callbacks
 
-<script>
-document.querySelectorAll('.widget').forEach(widget => {
-  new DragMove(widget, {
-    handle: '.widget-header',
-    container: widget.closest('aside')
-  });
-});
-</script>
-```
-
-## Position Persistence
+Use callbacks to add custom behavior when dragging starts and ends:
 
 ```javascript
-const dm = new DragMove('#draggable', {
-  onDragEnd: (e, x, y) => {
-    // Save position
-    localStorage.setItem('draggable-position', JSON.stringify({ x, y }));
+import { dragmove } from '@knadh/dragmove';
+
+const box = document.querySelector('#box');
+const handle = document.querySelector('#box .handle');
+
+function onStart(element, x, y) {
+  console.log('Drag started at:', x, y);
+  
+  // Store original position or add visual feedback
+  element.classList.add('dragging');
+  element.style.opacity = '0.8';
+}
+
+function onEnd(element, x, y) {
+  console.log('Drag ended at:', x, y);
+  
+  // Remove visual feedback
+  element.classList.remove('dragging');
+  element.style.opacity = '1';
+  
+  // Save new position
+  localStorage.setItem('box-position', 
+    JSON.stringify({ left: element.offsetLeft, top: element.offsetTop })
+  );
+}
+
+// Initialize with callbacks
+dragmove(box, handle, onStart, onEnd);
+```
+
+### Snap to Edges on Drop
+
+```javascript
+const snapThreshold = 50; // Pixels from edge to trigger snap
+
+function onStart(el, x, y) {
+  // Store original positioning method
+  el._originalTop = el.style.top;
+  el._originalLeft = el.style.left;
+  
+  // Ensure we're using top/left for dragging
+  el.style.top = el.offsetTop + 'px';
+  el.style.left = el.offsetLeft + 'px';
+  el.style.bottom = 'auto';
+  el.style.right = 'auto';
+}
+
+function onEnd(el, x, y) {
+  const windowWidth = window.innerWidth;
+  const windowHeight = window.innerHeight;
+  const elWidth = el.offsetWidth;
+  const elHeight = el.offsetHeight;
+  
+  // Snap to top
+  if (el.offsetTop < snapThreshold) {
+    el.style.top = '0px';
   }
-});
-
-// Restore position on load
-const saved = localStorage.getItem('draggable-position');
-if (saved) {
-  const { x, y } = JSON.parse(saved);
-  const el = document.getElementById('draggable');
-  el.style.left = x + 'px';
-  el.style.top = y + 'px';
+  
+  // Snap to bottom
+  if (windowHeight - (el.offsetTop + elHeight) < snapThreshold) {
+    el.style.top = 'auto';
+    el.style.bottom = '0px';
+  }
+  
+  // Snap to left
+  if (el.offsetLeft < snapThreshold) {
+    el.style.left = '0px';
+  }
+  
+  // Snap to right
+  if (windowWidth - (el.offsetLeft + elWidth) < snapThreshold) {
+    el.style.left = 'auto';
+    el.style.right = '0px';
+  }
+  
+  // Snap to center
+  const centerX = windowWidth / 2 - elWidth / 2;
+  const centerY = windowHeight / 2 - elHeight / 2;
+  const distToCenter = Math.hypot(
+    el.offsetLeft - centerX,
+    el.offsetTop - centerY
+  );
+  
+  if (distToCenter < snapThreshold) {
+    el.style.left = centerX + 'px';
+    el.style.top = centerY + 'px';
+  }
 }
+
+dragmove(box, handle, onStart, onEnd);
 ```
 
-## Multiple Drag Modes
+### Drag Boundary Constraint
+
+Constrain dragging within a parent container:
 
 ```javascript
-// Free drag
-const freeDrag = new DragMove('#free');
+function onEnd(el, x, y) {
+  const parent = el.parentElement;
+  const parentRect = parent.getBoundingClientRect();
+  const elRect = el.getBoundingClientRect();
+  
+  // Constrain within parent boundaries
+  if (elRect.left < parentRect.left) {
+    el.style.left = (parentRect.left - elRect.left) + el.offsetLeft + 'px';
+  }
+  
+  if (elRect.top < parentRect.top) {
+    el.style.top = (parentRect.top - elRect.top) + el.offsetTop + 'px';
+  }
+  
+  if (elRect.right > parentRect.right) {
+    el.style.left = (parentRect.right - elRect.right) + el.offsetLeft + 'px';
+  }
+  
+  if (elRect.bottom > parentRect.bottom) {
+    el.style.top = (parentRect.bottom - elRect.bottom) + el.offsetTop + 'px';
+  }
+}
 
-// Constrained to container
-const constrained = new DragMove('#constrained', {
-  container: '#container'
+dragmove(box, handle, null, onEnd);
+```
+
+### Multiple Draggable Elements
+
+```javascript
+import { dragmove } from '@knadh/dragmove';
+
+// Make multiple elements draggable
+document.querySelectorAll('.draggable').forEach(element => {
+  const handle = element.querySelector('.handle') || element;
+  dragmove(element, handle);
 });
 
-// Snap to grid
-const snapDrag = new DragMove('#snapped', {
-  snap: 50
-});
+// Or with specific pairs
+const widgets = [
+  { el: '#widget1', handle: '#widget1 .title' },
+  { el: '#widget2', handle: '#widget2 .header' },
+  { el: '#widget3', handle: '#widget3' } // Entire element
+];
 
-// With handle only
-const handleDrag = new DragMove('#handle-only', {
-  handle: '.handle'
+widgets.forEach(({ el, handle }) => {
+  dragmove(document.querySelector(el), document.querySelector(handle));
 });
 ```
 
-## Styling Tips
+### Restore Saved Position
+
+```javascript
+import { dragmove } from '@knadh/dragmove';
+
+const box = document.querySelector('#box');
+const handle = document.querySelector('#box .handle');
+
+// Load saved position
+const savedPos = localStorage.getItem('box-position');
+if (savedPos) {
+  const { left, top } = JSON.parse(savedPos);
+  box.style.left = left + 'px';
+  box.style.top = top + 'px';
+}
+
+// Save position on drag end
+function onEnd(el, x, y) {
+  localStorage.setItem('box-position', JSON.stringify({
+    left: el.offsetLeft,
+    top: el.offsetTop
+  }));
+}
+
+dragmove(box, handle, null, onEnd);
+```
+
+## Styling
+
+### Basic Styles for Draggable Elements
 
 ```css
-/* Visual feedback during drag */
-.dragging {
-  opacity: 0.8;
-  cursor: grabbing;
+/* Draggable container */
+.draggable {
+  position: absolute; /* Required for dragging */
+  user-select: none;  /* Prevent text selection while dragging */
+  touch-action: none; /* Prevent browser gestures on mobile */
 }
 
-/* Handle styling */
+/* Drag handle */
 .drag-handle {
   cursor: grab;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
   user-select: none;
-  -webkit-user-select: none;
 }
 
 .drag-handle:active {
   cursor: grabbing;
+  background: rgba(0, 0, 0, 0.2);
 }
 
-/* Drop zone indication */
-.drop-zone {
-  border: 2px dashed var(--primary);
-  background: var(--primary)10;
+/* Visual feedback during drag */
+.draggable.dragging {
+  opacity: 0.8;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transform: scale(1.02);
+  transition: none; /* Remove transitions for smooth dragging */
+}
+
+/* Reset after drag */
+.draggable:not(.dragging) {
+  transition: box-shadow 0.2s, transform 0.2s;
 }
 ```
+
+### Integration with Oat UI
+
+```css
+/* Use Oat's design system */
+.draggable {
+  position: absolute;
+  background: var(--card-background, var(--background));
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  color: var(--text-color);
+  user-select: none;
+  touch-action: none;
+}
+
+.drag-handle {
+  cursor: grab;
+  padding: var(--space-2) var(--space-3);
+  background: var(--hover-background);
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 500;
+  user-select: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+  background: var(--active-background);
+}
+
+.draggable.dragging {
+  opacity: 0.9;
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+}
+```
+
+## Real-World Example: Dashboard Widgets
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Draggable Dashboard</title>
+  <link rel="stylesheet" href="oat.min.css">
+  
+  <style>
+    .dashboard {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: var(--background);
+    }
+    
+    .widget {
+      position: absolute;
+      min-width: 250px;
+      background: var(--card-background);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+      user-select: none;
+      touch-action: none;
+    }
+    
+    .widget-header {
+      padding: var(--space-3);
+      background: var(--primary);
+      color: var(--primary-foreground);
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+      cursor: grab;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .widget-header:active {
+      cursor: grabbing;
+    }
+    
+    .widget-content {
+      padding: var(--space-3);
+    }
+    
+    .widget.dragging {
+      opacity: 0.9;
+      box-shadow: var(--shadow-xl);
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard" id="dashboard">
+    <div class="widget" id="widget1" style="top: 20px; left: 20px; width: 300px;">
+      <div class="widget-header">
+        <span>📊 Statistics</span>
+      </div>
+      <div class="widget-content">
+        <p>User stats and analytics</p>
+      </div>
+    </div>
+    
+    <div class="widget" id="widget2" style="top: 20px; left: 340px; width: 280px;">
+      <div class="widget-header">
+        <span>📝 Recent Activity</span>
+      </div>
+      <div class="widget-content">
+        <p>Latest user actions</p>
+      </div>
+    </div>
+    
+    <div class="widget" id="widget3" style="top: 350px; left: 20px; width: 320px;">
+      <div class="widget-header">
+        <span>⚙️ Settings</span>
+      </div>
+      <div class="widget-content">
+        <p>Configuration options</p>
+      </div>
+    </div>
+  </div>
+  
+  <script src="oat.min.js" defer></script>
+  <script type="module">
+    import { dragmove } from 'https://unpkg.com/@knadh/dragmove';
+    
+    // Initialize all widgets as draggable
+    document.querySelectorAll('.widget').forEach(widget => {
+      const header = widget.querySelector('.widget-header');
+      
+      function onStart(el) {
+        el.classList.add('dragging');
+      }
+      
+      function onEnd(el) {
+        el.classList.remove('dragging');
+        
+        // Save position
+        const positions = JSON.parse(localStorage.getItem('widget-positions') || '{}');
+        positions[el.id] = {
+          top: el.offsetTop,
+          left: el.offsetLeft
+        };
+        localStorage.setItem('widget-positions', JSON.stringify(positions));
+      }
+      
+      dragmove(widget, header, onStart, onEnd);
+    });
+    
+    // Load saved positions
+    const positions = JSON.parse(localStorage.getItem('widget-positions') || '{}');
+    Object.keys(positions).forEach(widgetId => {
+      const widget = document.querySelector(`#${widgetId}`);
+      if (widget && positions[widgetId]) {
+        widget.style.top = positions[widgetId].top + 'px';
+        widget.style.left = positions[widgetId].left + 'px';
+      }
+    });
+  </script>
+</body>
+</html>
+```
+
+## Touch Support
+
+DragMove automatically supports touch events for mobile devices:
+
+```javascript
+// No special configuration needed - touch works out of the box!
+dragmove(element, handle);
+```
+
+The library handles:
+- `touchstart`, `touchmove`, `touchend` events
+- Multi-touch prevention
+- Smooth dragging on mobile devices
+
+## API Reference
+
+```javascript
+dragmove(target, handler, onStart, onEnd)
+```
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `target` | Element | Yes | The element to be dragged |
+| `handler` | Element | Yes | The element that initiates dragging (can be same as target) |
+| `onStart` | Function | No | Callback when dragging starts: `(element, x, y) => void` |
+| `onEnd` | Function | No | Callback when dragging ends: `(element, x, y) => void` |
+
+### Callback Parameters
+
+Both `onStart` and `onEnd` receive:
+- `element`: The target element being dragged
+- `x`: X coordinate of the mouse/touch event
+- `y`: Y coordinate of the mouse/touch event
 
 ## Browser Support
 
 - All modern browsers
-- Touch support built-in
-- No polyfills needed
+- Chrome, Firefox, Safari, Edge
+- Mobile browsers with touch support
+- IE11+ (with limitations)
 
-## Tips
+## Tips and Best Practices
 
-1. Use `cursor: move` or `cursor: grab` for visual feedback
-2. Add visual indicators during drag (shadow, scale)
-3. Constrain dragging to prevent losing elements
-4. Save positions if layout persistence is needed
-5. Consider touch devices for mobile support
+### DO
 
-Perfect for draggable widgets, customizable layouts, sortable items, or any UI where users need to reposition elements!
+- Use `position: absolute` or `position: fixed` on draggable elements
+- Add visual feedback during drag (opacity, shadow, scale)
+- Save positions to localStorage for persistence
+- Use separate handles for better UX on content-rich widgets
+- Constrain dragging within parent boundaries if needed
+
+### DON'T
+
+- Forget to set `position: absolute` on target elements
+- Use CSS transitions during drag (causes lag)
+- Make entire content-area draggable (use a handle instead)
+- Forget about mobile touch support (it's built-in!)
+
+## Limitations
+
+- No built-in collision detection
+- No built-in snap-to-grid (implement in callbacks)
+- No z-index management (handle manually)
+- Single drag at a time (no multi-element drag)
+
+## Related Libraries
+
+- **tinyrouter.js**: Client-side routing
+- **highlighted-input.js**: Keyword highlighting in inputs
+- **floatype.js**: Floating autocomplete for textareas
+
+Licensed under the MIT License.

@@ -1,369 +1,607 @@
-# Floatype.js - Floating Autocomplete
+# Floatype.js - Floating Autocomplete for Textareas
 
-A tiny (~1200 bytes), zero-dependency floating autocomplete/autosuggestion widget for textareas.
+A super tiny (~1200 bytes minified+gzipped), zero-dependency JavaScript autocomplete/autosuggestion library for rendering floating suggestion widgets in textareas.
 
-## Overview
+[**View Demo**](https://knadh.github.io/floatype.js) | [**GitHub**](https://github.com/knadh/floatype.js)
 
-Add intelligent autocomplete suggestions that float above textarea content, perfect for documentation editors, markdown writers, or any rich text input.
+> **Note**: For dropdown suggestions on `<input>` boxes, see [autocomp.js](https://github.com/knadh/autocomp.js)
+
+## Features
+
+- Floating suggestion widget positioned near cursor
+- Zero dependencies, ~1200 bytes minified+gzipped
+- Async query support for server-side search
+- Keyboard navigation (arrow keys, enter, escape)
+- Customizable appearance and behavior
+- Works with any textarea element
 
 ## Installation
 
-### CDN
-```html
-<script src="https://unpkg.com/floatype.js"></script>
+### npm
+
+```bash
+npm install @knadh/floatype
 ```
 
-### Download
-```bash
-wget https://raw.githubusercontent.com/knadh/floatype.js/master/dist/floatype.min.js
+### ES Module (CDN)
+
+```html
+<script type="module">
+  import { floatype } from 'https://unpkg.com/@knadh/floatype';
+</script>
 ```
 
 ## Basic Usage
 
+### Simple Autocomplete with Local Data
+
 ```html
-<textarea placeholder="Type *bold* or _italic_..." rows="10" style="width: 100%;"></textarea>
-
-<script src="floatype.min.js"></script>
-<script>
-const textarea = document.querySelector('textarea');
-const ft = new Floatype(textarea, {
-  triggers: ['*', '_', '~'],
-  suggestions: {
-    '*': ['**bold**', '*italic*'],
-    '_': ['**bold**', '_italic_'],
-    '~': ['~~strikethrough~~']
-  }
-});
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Floatype Demo</title>
+  <style>
+    textarea {
+      width: 100%;
+      height: 200px;
+      padding: 15px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    
+    /* Floatype widget styles */
+    .floatype {
+      position: absolute;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+    
+    .floatype-item {
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    
+    .floatype-item:hover {
+      background: #f5f5f5;
+    }
+    
+    .floatype-sel {
+      background: #0066cc;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <textarea placeholder="Type to search for fruits..."></textarea>
+  
+  <script type="module">
+    import { floatype } from 'https://unpkg.com/@knadh/floatype';
+    
+    const fruits = [
+      "apple", "banana", "apricot", "avocado", "blueberry",
+      "blackberry", "cherry", "mango", "orange", "pineapple",
+      "strawberry", "watermelon", "grapefruit", "kiwi", "peach"
+    ];
+    
+    floatype(document.querySelector("textarea"), {
+      onQuery: async (query) => {
+        // Filter fruits based on query
+        const q = query.trim().toLowerCase();
+        return fruits
+          .filter(fruit => fruit.startsWith(q))
+          .slice(0, 10); // Return top 10 matches
+      }
+    });
+  </script>
+</body>
+</html>
 ```
 
-## Advanced Configuration
-
-### Custom Suggestions
+### Server-Side Search with fetch()
 
 ```javascript
-const ft = new Floatype(textarea, {
-  triggers: ['/', '@', '#'],
-  
-  suggestions: {
-    '/': [
-      { text: '/bold', label: 'Bold text' },
-      { text: '/italic', label: 'Italic text' },
-      { text: '/heading', label: 'Heading' }
-    ],
+import { floatype } from '@knadh/floatype';
+
+floatype(document.querySelector("textarea"), {
+  onQuery: async (query) => {
+    // Fetch suggestions from server
+    const resp = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+    const results = await resp.json();
     
-    '@': [
-      { text: '@john', label: 'John Doe' },
-      { text: '@jane', label: 'Jane Smith' }
-    ],
-    
-    '#': [
-      { text: '#todo', label: 'Todo tag' },
-      { text: '#done', label: 'Done tag' }
-    ]
+    // Return array of suggestion strings
+    return results.map(item => item.name);
   }
 });
 ```
 
-### Async Suggestions (API Fetch)
+### Server Response Format
+
+Your server should return a JSON array:
+
+```json
+[
+  "javascript",
+  "java",
+  "jquery",
+  "json",
+  "jasmine"
+]
+```
+
+Or with more data (use a formatter):
+
+```json
+[
+  {"name": "JavaScript", "language": true},
+  {"name": "Java", "language": true},
+  {"name": "jQuery", "library": true}
+]
+```
+
+## Advanced Usage
+
+### Custom Item Formatting
 
 ```javascript
-const ft = new Floatype(textarea, {
-  triggers: ['@'],
+floatype(textarea, {
+  onQuery: async (query) => {
+    const resp = await fetch(`/api/search?q=${query}`);
+    return resp.json(); // Array of objects
+  },
   
-  suggestions: {
-    '@': async (query) => {
-      // Fetch from API based on query
-      const response = await fetch(`/api/users?q=${query}`);
-      const users = await response.json();
-      
-      return users.map(user => ({
-        text: `@${user.username}`,
-        label: user.name
-      }));
+  // Custom formatter for display
+  itemFormatter: (item) => {
+    if (typeof item === 'string') {
+      return item;
+    }
+    
+    // For objects, create custom HTML
+    const type = item.language ? 'Language' : 'Library';
+    return `
+      <strong>${item.name}</strong>
+      <small style="color: #666;">${type}</small>
+    `;
+  }
+});
+```
+
+### Insert Custom Text on Selection
+
+```javascript
+floatype(textarea, {
+  onQuery: async (query) => {
+    return [
+      { value: "@john", display: "John Doe" },
+      { value: "@jane", display: "Jane Smith" }
+    ];
+  },
+  
+  itemFormatter: (item) => item.display,
+  
+  // Custom insert behavior
+  onSelect: (item, textarea) => {
+    // Insert the value part instead of display
+    const text = item.value || item;
+    // Logic to insert at cursor position
+    insertAtCursor(textarea, text);
+  }
+});
+
+function insertAtCursor(textarea, text) {
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const value = textarea.value;
+  
+  textarea.value = value.substring(0, start) + text + value.substring(end);
+  textarea.selectionStart = textarea.selectionEnd = start + text.length;
+}
+```
+
+### Trigger Characters
+
+Only show suggestions when user types specific trigger characters:
+
+```javascript
+floatype(textarea, {
+  // Only trigger on @ or #
+  triggers: ['@', '#'],
+  
+  onQuery: async (query, trigger) => {
+    if (trigger === '@') {
+      // Fetch user mentions
+      return fetchUsers(query);
+    } else if (trigger === '#') {
+      // Fetch hashtags/topics
+      return fetchTopics(query);
     }
   }
 });
 ```
 
-### Custom Trigger Characters
+### Debouncing Queries
 
 ```javascript
-const ft = new Floatype(textarea, {
-  triggers: ['!', '$', '%'],
+floatype(textarea, {
+  onQuery: async (query) => {
+    // This is automatically debounced
+    const resp = await fetch(`/search?q=${query}`);
+    return resp.json();
+  },
   
-  suggestions: {
-    '!': ['!NOTE', '!WARNING', '!TIP'],
-    '$': ['$variable', '$env'],
-    '%': ['%highlight%', '%code%']
-  }
+  // Custom debounce delay (default is typically 300ms)
+  debounce: 300
 });
 ```
 
-## Options
+### Unbind/Rebind
 
 ```javascript
-new Floatype(textarea, {
-  // Characters that trigger suggestions
-  triggers: ['*', '_', '/'],
-  
-  // Suggestions per trigger
-  suggestions: {
-    '*': ['**bold**', '*italic*'],
-    '_': ['__bold__', '_italic_']
-  },
-  
-  // Maximum suggestions to show
-  maxSuggestions: 10,
-  
-  // Minimum characters before showing suggestions
-  minLength: 0,
-  
-  // Custom CSS class for suggestion container
-  className: 'floatype-suggestions',
-  
-  // Callback when suggestion is selected
-  onSelect: (suggestion, trigger) => {
-    console.log('Selected:', suggestion);
-  },
-  
-  // Callback when suggestion popup opens
-  onOpen: (trigger, query) => {
-    console.log('Opened for:', trigger);
-  },
-  
-  // Callback when suggestion popup closes
-  onClose: () => {
-    console.log('Closed');
-  }
+// Initialize and store the instance
+const ft = floatype(textarea, {
+  onQuery: async (q) => getSuggestions(q)
 });
+
+// Later, unbind to disable
+ft.unbind();
+
+// Re-bind when needed
+ft.bind();
 ```
 
-## Markdown Editor Example
-
-```html
-<textarea 
-  id="markdown-editor" 
-  placeholder="Write markdown..."
-  rows="15"
-  style="width: 100%; font-family: monospace; padding: 12px;"
-></textarea>
-
-<script src="floatype.min.js"></script>
-<script>
-const editor = document.getElementById('markdown-editor');
-const ft = new Floatype(editor, {
-  triggers: ['*', '_', '~', '`', '#', '-', '['],
-  
-  suggestions: {
-    '*': [
-      { text: '**bold**', label: 'Bold' },
-      { text: '*italic*', label: 'Italic' }
-    ],
-    
-    '_': [
-      { text: '__bold__', label: 'Bold (alt)' },
-      { text: '_italic_', label: 'Italic (alt)' }
-    ],
-    
-    '~': [
-      { text: '~~strikethrough~~', label: 'Strikethrough' }
-    ],
-    
-    '`': [
-      { text: '`code`', label: 'Inline code' },
-      { text: '```javascript\n// code\n```', label: 'Code block' }
-    ],
-    
-    '#': [
-      { text: '# Heading 1', label: 'H1' },
-      { text: '## Heading 2', label: 'H2' },
-      { text: '### Heading 3', label: 'H3' }
-    ],
-    
-    '-': [
-      { text: '- Item', label: 'Bullet list' },
-      { text: '1. Item', label: 'Numbered list' }
-    ],
-    
-    '[': [
-      { text: '[text](url)', label: 'Link' },
-      { text: '![alt](url)', label: 'Image' }
-    ]
-  },
-  
-  onSelect: (suggestion) => {
-    console.log('Inserted:', suggestion.text);
-  }
-});
-</script>
-```
-
-## Documentation Example with Oat UI
-
-```html
-<article class="card">
-  <header>
-    <h3>Documentation Editor</h3>
-    <p class="text-light">Type / for commands, @ to mention users</p>
-  </header>
-  
-  <div style="margin-top: var(--space-4);">
-    <textarea 
-      id="doc-editor"
-      placeholder="Start typing..."
-      rows="12"
-      style="width: 100%; border: 1px solid var(--input); border-radius: var(--radius-md); padding: var(--space-3); font-family: monospace;"
-    ></textarea>
-  </div>
-  
-  <footer class="hstack justify-end gap-2 mt-4">
-    <button class="outline">Preview</button>
-    <button>Save</button>
-  </footer>
-</article>
-
-<script src="oat.min.js" defer></script>
-<script src="floatype.min.js" defer></script>
-<script>
-const docEditor = new Floatype(document.getElementById('doc-editor'), {
-  triggers: ['/', '@', '#'],
-  
-  suggestions: {
-    '/': [
-      { text: '/h1 Heading', label: 'Heading 1' },
-      { text: '/h2 Heading', label: 'Heading 2' },
-      { text: '/bold **text**', label: 'Bold' },
-      { text: '/italic *text*', label: 'Italic' },
-      { text: '/list - item', label: 'Bullet List' }
-    ],
-    
-    '@': [
-      { text: '@alice', label: 'Alice Johnson' },
-      { text: '@bob', label: 'Bob Smith' },
-      { text: '@carol', label: 'Carol White' }
-    ],
-    
-    '#': [
-      { text: '#todo', label: 'Todo' },
-      { text: '#done', label: 'Done' },
-      { text: '#wip', label: 'Work in Progress' }
-    ]
-  }
-});
-</script>
-
-<style>
-/* Custom suggestion styling */
-.floatype-suggestions {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.floatype-suggestion {
-  padding: var(--space-2) var(--space-3);
-  cursor: pointer;
-}
-
-.floatype-suggestion:hover,
-.floatype-suggestion.active {
-  background: var(--primary);
-  color: var(--primary-foreground);
-}
-</style>
-```
-
-## Code Editor Example
+### Multiple Textareas
 
 ```javascript
-const codeEditor = new Floatype(textarea, {
-  triggers: ['import', 'function', 'const', 'let', 'var'],
-  
-  suggestions: {
-    'import': [
-      { text: "import { something } from 'package'", label: 'Import statement' },
-      { text: "import pkg from 'package'", label: 'Default import' }
-    ],
-    
-    'function': [
-      { text: 'function name() { }\n', label: 'Function declaration' },
-      { text: 'const name = () => { }\n', label: 'Arrow function' }
-    ],
-    
-    'const': [
-      { text: 'const name = value\n', label: 'Const declaration' },
-      { text: "const { a, b } = obj\n", label: 'Destructuring' }
-    ]
-  }
+document.querySelectorAll('.mention-input').forEach(textarea => {
+  floatype(textarea, {
+    onQuery: async (query) => {
+      return fetchMentions(query);
+    }
+  });
 });
 ```
 
-## Custom Styling
+## Styling
+
+### Basic Styles
 
 ```css
-.floatype-suggestions {
+/* Container for the floating widget */
+.floatype {
   position: absolute;
-  z-index: 1000;
-  background: white;
-  border: 1px solid #ddd;
+  background: #fff;
+  border: 1px solid #ccc;
   border-radius: 4px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  max-height: 300px;
-  overflow-y: auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   min-width: 200px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  font-family: inherit;
+  font-size: 14px;
 }
 
-.floatype-suggestion {
+/* Individual suggestion items */
+.floatype-item {
   padding: 8px 12px;
   cursor: pointer;
   border-bottom: 1px solid #eee;
 }
 
-.floatype-suggestion:last-child {
+.floatype-item:last-child {
   border-bottom: none;
 }
 
-.floatype-suggestion:hover,
-.floatype-suggestion.active {
-  background: #f0f0f0;
+/* Hover state */
+.floatype-item:hover {
+  background: #f5f5f5;
 }
 
-.floatype-suggestion-label {
-  font-weight: 500;
-  color: #333;
+/* Selected/focused item */
+.floatype-sel {
+  background: #0066cc;
+  color: #fff;
 }
 
-.floatype-suggestion-text {
-  font-size: 12px;
+/* No results message */
+.floatype-no-results {
+  padding: 12px;
   color: #666;
-  margin-top: 2px;
+  font-style: italic;
 }
 ```
 
-## Keyboard Navigation
+### Dark Mode Support
 
-Built-in support for:
-- **Arrow Up/Down**: Navigate suggestions
-- **Enter**: Select suggestion
-- **Escape**: Close popup
-- **Tab**: Select and insert
+```css
+@media (prefers-color-scheme: dark) {
+  .floatype {
+    background: #1a1a1a;
+    border-color: #444;
+    color: #fff;
+  }
+  
+  .floatype-item {
+    border-bottom-color: #333;
+  }
+  
+  .floatype-item:hover {
+    background: #333;
+  }
+  
+  .floatype-sel {
+    background: #0066cc;
+    color: #fff;
+  }
+}
+```
+
+### Integration with Oat UI
+
+```css
+/* Use Oat's design tokens */
+.floatype {
+  background: var(--background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  color: var(--text-color);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+}
+
+.floatype-item {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+.floatype-item:last-child {
+  border-bottom: none;
+}
+
+.floatype-item:hover {
+  background: var(--hover-background);
+}
+
+.floatype-sel {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+```
+
+## Real-World Example: Social Media Composer
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Social Post Composer</title>
+  <link rel="stylesheet" href="oat.min.css">
+  
+  <style>
+    .composer {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    
+    .composer textarea {
+      width: 100%;
+      height: 150px;
+      resize: vertical;
+    }
+    
+    .floatype {
+      position: absolute;
+      background: var(--background);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      max-height: 250px;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+    
+    .floatype-item {
+      padding: var(--space-2) var(--space-3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    
+    .floatype-item:hover,
+    .floatype-sel {
+      background: var(--primary);
+      color: var(--primary-foreground);
+    }
+    
+    .floatype-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-foreground);
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="composer">
+    <h1>Compose Post</h1>
+    <textarea 
+      placeholder="Write something... Mention @friends or add #hashtags"
+    ></textarea>
+    <button type="button" class="primary">Post</button>
+  </div>
+  
+  <script src="oat.min.js" defer></script>
+  <script type="module">
+    import { floatype } from 'https://unpkg.com/@knadh/floatype';
+    
+    // Mock user data
+    const users = [
+      { id: 1, name: 'john', avatar: 'JD' },
+      { id: 2, name: 'jane', avatar: 'JS' },
+      { id: 3, name: 'bob', avatar: 'BD' },
+      { id: 4, name: 'alice', avatar: 'AL' },
+      { id: 5, name: 'charlie', avatar: 'CH' }
+    ];
+    
+    // Popular hashtags
+    const hashtags = [
+      'javascript', 'webdev', 'coding', 'programming',
+      'frontend', 'backend', 'fullstack', 'react',
+      'vue', 'angular', 'nodejs', 'python'
+    ];
+    
+    const textarea = document.querySelector('textarea');
+    
+    floatype(textarea, {
+      triggers: ['@', '#'],
+      
+      onQuery: async (query, trigger) => {
+        if (trigger === '@') {
+          // Filter users by name
+          return users
+            .filter(u => u.name.toLowerCase().startsWith(query.toLowerCase()))
+            .slice(0, 5);
+        } else if (trigger === '#') {
+          // Filter hashtags
+          return hashtags
+            .filter(h => h.startsWith(query.toLowerCase()))
+            .slice(0, 8)
+            .map(h => '#' + h);
+        }
+      },
+      
+      itemFormatter: (item) => {
+        if (typeof item === 'string') {
+          // Hashtag
+          return `<strong>${item}</strong>`;
+        } else {
+          // User mention with avatar
+          return `
+            <span class="floatype-avatar">${item.avatar}</span>
+            <span>@${item.name}</span>
+          `;
+        }
+      },
+      
+      onSelect: (item, textarea) => {
+        if (typeof item === 'string') {
+          // Insert hashtag
+          insertAtCursor(textarea, item + ' ');
+        } else {
+          // Insert mention
+          insertAtCursor(textarea, '@' + item.name + ' ');
+        }
+      }
+    });
+    
+    function insertAtCursor(textarea, text) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const value = textarea.value;
+      
+      textarea.value = value.substring(0, start) + text + value.substring(end);
+      textarea.selectionStart = textarea.selectionEnd = start + text.length;
+      textarea.focus();
+    }
+  </script>
+</body>
+</html>
+```
+
+## Options
+
+```javascript
+floatype(textarea, {
+  // Required: Async function that returns suggestions
+  onQuery: async (query, trigger) => {
+    return ['suggestion1', 'suggestion2'];
+  },
+  
+  // Optional: Characters that trigger suggestions (default: none, always active)
+  triggers: ['@', '#'],
+  
+  // Optional: Custom formatter for display (default: use string as-is)
+  itemFormatter: (item) => item,
+  
+  // Optional: Callback when item is selected
+  onSelect: (item, textarea) => {
+    // Default behavior inserts the item text
+  },
+  
+  // Optional: Debounce delay in ms (default: 300)
+  debounce: 300,
+  
+  // Optional: CSS class for the widget container
+  className: 'floatype',
+  
+  // Optional: CSS class for selected item
+  selClassName: 'floatype-sel'
+});
+```
+
+## Methods
+
+The floatype instance provides these methods:
+
+```javascript
+const ft = floatype(textarea, options);
+
+// Unbind the widget (disable suggestions)
+ft.unbind();
+
+// Re-bind the widget (enable suggestions)
+ft.bind();
+```
 
 ## Browser Support
 
-- Chrome, Firefox, Safari, Edge (modern versions)
-- Requires textarea support
-- Graceful degradation (textarea works without JS)
+- Modern browsers with ES6 support
+- Chrome, Firefox, Safari, Edge (latest versions)
+- Requires fetch API for server-side search
 
-## Tips
+## Tips and Best Practices
 
-1. Use descriptive labels for better UX
-2. Limit suggestions to 5-10 items max
-3. Consider async loading for large suggestion sets
-4. Style suggestions to match your app theme
-5. Add keyboard shortcuts documentation
+### DO
 
-Perfect for markdown editors, documentation tools, code editors, or any textarea where contextual suggestions improve the writing experience!
+- Debounce server requests to avoid excessive API calls
+- Limit results to 5-10 items for better UX
+- Provide clear visual feedback for selected items
+- Support keyboard navigation (arrow keys, enter, escape)
+- Handle empty results gracefully
+
+### DON'T
+
+- Return too many suggestions (performance issue)
+- Forget to handle async errors
+- Use without proper CSS styling
+- Expect it to work on `<input>` elements (use autocomp.js instead)
+
+## Limitations
+
+- Works only with `<textarea>` elements
+- For `<input>` autocomplete, use [autocomp.js](https://github.com/knadh/autocomp.js)
+- No built-in caching (implement in onQuery if needed)
+- Positioning may need adjustment for fixed/absolute parent containers
+
+## Related Libraries
+
+- **autocomp.js**: Dropdown autocomplete for input fields
+- **highlighted-input.js**: Keyword highlighting in inputs
+- **tinyrouter.js**: Client-side routing
+
+Licensed under the MIT License.

@@ -1,380 +1,506 @@
-# IndexedCache.js - Browser Asset Caching
+# Indexed-Cache.js - Static Asset Caching in IndexedDB
 
-A tiny (~2.1KB) JavaScript library for sideloading static assets and caching them in IndexedDB for long-term storage.
+A tiny JavaScript library that "sideloads" static assets (script, link, and img tags) using the fetch() API and caches them in IndexedDB for long-term storage. Eliminates dependency on browser cache and reduces HTTP requests on subsequent page loads.
 
-## Overview
+[**GitHub**](https://github.com/knadh/indexed-cache) | [**npm**](https://www.npmjs.com/package/@knadh/indexed-cache)
 
-Cache static assets (images, fonts, CSS, JS) in the browser's IndexedDB for offline access and faster subsequent loads.
+## Use Cases
+
+This library is designed for **very specific scenarios**. Consider using it if several of these apply:
+
+- Large static files (JS, CSS) that rarely change
+- High traffic from returning users who access pages with the same assets frequently
+- Mobile webview environments where browser cache gets evicted due to OS pressure
+- Bandwidth optimization is a concern
+- Service Workers aren't an option (e.g., mobile webviews)
+
+> **Important**: This is not a general-purpose caching solution. For most websites, standard browser caching or Service Workers are better options.
+
+## How It Works
+
+1. Static assets are marked with `data-src` instead of `src`/`href`
+2. Indexed-Cache fetches these assets using the fetch() API
+3. Assets are stored as Blobs in IndexedDB
+4. On subsequent visits, assets are loaded from IndexedDB instead of HTTP requests
+5. Unlike browser cache, IndexedDB is not automatically cleared by the browser
+
+## Features
+
+- Supports `<script>`, `<link>`, and `<img>` tags
+- Respects `defer`/`async` attributes on scripts
+- Per-tag cache invalidation with TTL (expiry date)
+- Per-tag cache invalidation with hash change
+- ES6 modules and legacy bundle support
 
 ## Installation
 
-### CDN
-```html
-<script src="https://unpkg.com/indexed-cache"></script>
+### npm
+
+```bash
+npm install @knadh/indexed-cache
 ```
 
-### Download
-```bash
-wget https://raw.githubusercontent.com/knadh/indexed-cache/master/dist/indexed-cache.min.js
+### CDN (ES Module)
+
+```html
+<script type="module">
+  import IndexedCache from 'https://unpkg.com/@knadh/indexed-cache@0.4.3/dist/indexed-cache.esm.min.js';
+</script>
+```
+
+### CDN (Legacy)
+
+```html
+<script src="https://unpkg.com/@knadh/indexed-cache@0.4.3/dist/indexed-cache.legacy.min.js" nomodule></script>
 ```
 
 ## Basic Usage
 
-### Cache Assets
+### Mark Assets for Caching
 
-```javascript
-const cache = new IndexedCache('my-app-cache', '1.0');
-
-// Cache individual files
-cache.cache('/images/logo.png');
-cache.cache('/fonts/inter.woff2');
-cache.cache('/css/styles.css');
-
-// Cache multiple files
-cache.cache([
-  '/images/logo.png',
-  '/images/banner.jpg',
-  '/fonts/inter.woff2'
-]);
-```
-
-### Check if Cached
-
-```javascript
-cache.isCached('/images/logo.png').then(cached => {
-  if (cached) {
-    console.log('File is cached');
-  }
-});
-```
-
-### Get Cached File
-
-```javascript
-cache.get('/images/logo.png').then(blob => {
-  const url = URL.createObjectURL(blob);
-  document.querySelector('#logo').src = url;
-});
-```
-
-## Advanced Usage
-
-### Cache with Metadata
-
-```javascript
-cache.cache('/images/photo.jpg', {
-  metadata: {
-    width: 1920,
-    height: 1080,
-    photographer: 'John Doe'
-  }
-});
-```
-
-### Get with Metadata
-
-```javascript
-cache.getWithMetadata('/images/photo.jpg').then(({ blob, metadata }) => {
-  const url = URL.createObjectURL(blob);
-  console.log('Metadata:', metadata);
-});
-```
-
-### Clear Cache
-
-```javascript
-// Clear specific file
-cache.remove('/images/old.png');
-
-// Clear all cache
-cache.clear();
-```
-
-## Version Management
-
-```javascript
-// Create cache with version
-const cache = new IndexedCache('app-cache', '2.0');
-
-// Check cache version
-cache.version.then(v => console.log('Cache version:', v));
-
-// Migrate between versions
-cache.onUpgrade = (oldVersion, newVersion) => {
-  console.log(`Upgrading from ${oldVersion} to ${newVersion}`);
-  
-  // Clear old cache or migrate data
-  if (oldVersion < '1.5') {
-    cache.clear();
-  }
-};
-```
-
-## Preload Assets on Startup
-
-```javascript
-const cache = new IndexedCache('app-cache', '1.0');
-
-// List of critical assets to preload
-const criticalAssets = [
-  '/images/logo.png',
-  '/fonts/inter.woff2',
-  '/css/critical.css'
-];
-
-// Cache on app load
-Promise.all(criticalAssets.map(url => cache.cache(url)))
-  .then(() => console.log('Critical assets cached'))
-  .catch(err => console.error('Cache failed:', err));
-```
-
-## Use Cached or Fallback
-
-```javascript
-async function loadImage(src) {
-  try {
-    // Try cached version first
-    const blob = await cache.get(src);
-    return URL.createObjectURL(blob);
-  } catch (e) {
-    // Fall back to network
-    console.log('Not cached, loading from network');
-    
-    // Cache for next time
-    cache.cache(src).catch(() => {});
-    
-    return src;
-  }
-}
-
-// Usage
-const imgUrl = await loadImage('/images/photo.jpg');
-document.querySelector('img').src = imgUrl;
-```
-
-## Progress Tracking
-
-```javascript
-const cache = new IndexedCache('app-cache', '1.0');
-
-const urls = ['/a.png', '/b.png', '/c.png'];
-let cachedCount = 0;
-
-urls.forEach((url, i) => {
-  cache.cache(url)
-    .then(() => {
-      cachedCount++;
-      const progress = (cachedCount / urls.length) * 100;
-      console.log(`Cache progress: ${progress.toFixed(0)}%`);
-      
-      if (cachedCount === urls.length) {
-        console.log('All assets cached!');
-      }
-    })
-    .catch(err => console.error('Failed to cache:', url));
-});
-```
-
-## Integration with Oat UI
+Change `src`/`href` to `data-src` and add a unique `data-key`:
 
 ```html
-<article class="card">
-  <header>
-    <h3>Offline-Ready App</h3>
-    <p class="text-light">Assets cached for offline use</p>
-  </header>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Indexed Cache Demo</title>
   
-  <div style="margin: var(--space-4) 0;">
-    <progress id="cache-progress" value="0" max="100"></progress>
-    <p class="text-light small mt-2"><span id="cache-status">Initializing...</span></p>
-  </div>
+  <!-- CSS file with caching -->
+  <link rel="stylesheet" type="text/css"
+    data-key="main-styles"
+    data-src="/css/main.css" />
   
-  <footer>
-    <button id="cache-btn">Cache Assets</button>
-    <button id="clear-btn" class="outline">Clear Cache</button>
-  </footer>
-</article>
+  <!-- JavaScript bundle with caching -->
+  <script data-key="app-bundle" data-src="/js/app.js"></script>
+</head>
+<body>
+  <h1>My Application</h1>
+  
+  <!-- Regular script (not cached) -->
+  <script src="/js/inline.js"></script>
+  
+  <!-- Image with caching -->
+  <img data-key="hero-image" 
+       data-src="/images/hero.png" 
+       alt="Hero" />
+  
+  <!-- Initialize indexed-cache at the end -->
+  <script src="https://unpkg.com/@knadh/indexed-cache@0.4.3/dist/indexed-cache.min.js" nomodule></script>
+  <script>
+    const ic = new IndexedCache();
+    ic.init().then(function() {
+      ic.load();
+    }).catch(function(err) {
+      console.log("Error loading indexed-cache:", err);
+    });
+  </script>
+</body>
+</html>
+```
 
-<script src="oat.min.js" defer></script>
-<script src="indexed-cache.min.js" defer></script>
-<script>
-const cache = new IndexedCache('oat-app', '1.0');
+### Cache Invalidation with Hash
 
-const assets = [
-  '/images/logo.png',
-  '/images/avatar.svg',
-  '/fonts/custom.woff2'
-];
+Change the `data-hash` value when the file changes to force re-caching:
 
-document.getElementById('cache-btn').addEventListener('click', async () => {
-  const progress = document.getElementById('cache-progress');
-  const status = document.getElementById('cache-status');
-  
-  let completed = 0;
-  
-  for (const asset of assets) {
-    try {
-      await cache.cache(asset);
-      completed++;
-      progress.value = (completed / assets.length) * 100;
-      status.textContent = `Caching: ${completed}/${assets.length}`;
-    } catch (err) {
-      console.error('Failed to cache:', asset);
-    }
-  }
-  
-  status.textContent = 'All assets cached!';
-  ot.toast('Assets cached successfully', 'Done', { variant: 'success' });
-});
+```html
+<!-- Hash from build system or version control -->
+<script data-key="app-bundle" 
+        data-src="/js/app.bundle.js" 
+        data-hash="a1b2c3d4e5f6"></script>
 
-document.getElementById('clear-btn').addEventListener('click', () => {
-  cache.clear();
-  document.getElementById('cache-progress').value = 0;
-  document.getElementById('cache-status').textContent = 'Cache cleared';
-  ot.toast('Cache cleared', 'Info');
-});
+<img data-key="logo" 
+     data-src="/images/logo.png" 
+     data-hash="v2.1.0" />
+```
 
-// Check cache status on load
-async function checkCache() {
-  let cachedCount = 0;
-  
-  for (const asset of assets) {
-    if (await cache.isCached(asset)) {
-      cachedCount++;
-    }
-  }
-  
-  const progress = document.getElementById('cache-progress');
-  const status = document.getElementById('cache-status');
-  
-  progress.value = (cachedCount / assets.length) * 100;
-  status.textContent = `${cachedCount}/${assets.length} assets cached`;
-}
+When the hash changes, Indexed-Cache will refetch and re-cache the asset.
 
-checkCache();
+### Cache Invalidation with Expiry
+
+Set an expiry date after which the cache is invalidated:
+
+```html
+<script data-key="analytics" 
+        data-src="/js/analytics.js" 
+        data-expiry="2029-12-31T23:59:59Z"></script>
+
+<link rel="stylesheet" 
+      data-key="theme" 
+      data-src="/css/theme.css" 
+      data-expiry="2025-06-01T00:00:00Z" />
+```
+
+### Combined Hash and Expiry
+
+```html
+<script data-key="main-bundle" 
+        data-src="/js/main.js" 
+        data-hash="build-12345"
+        data-expiry="2029-12-31T23:59:59Z">
 </script>
 ```
 
-## PWA Integration
+The asset is re-fetched if either the hash changes OR the expiry is crossed.
+
+## Advanced Usage
+
+### ES Module with Conditional Loading
+
+Load modern (ESM) and legacy bundles based on browser support:
+
+```html
+<head>
+  <!-- Modern browsers (ES modules) -->
+  <script type="module">
+    import IndexedCache from 'https://unpkg.com/@knadh/indexed-cache@0.4.3/dist/indexed-cache.esm.min.js';
+    
+    const ic = new IndexedCache();
+    ic.init().then(function() {
+      ic.load();
+    }).catch(function(err) {
+      console.log("Error:", err);
+    });
+  </script>
+  
+  <!-- Legacy browsers (no ES modules) -->
+  <script src="https://unpkg.com/@knadh/indexed-cache@0.4.3/dist/indexed-cache.legacy.min.js" nomodule></script>
+  <script nomodule>
+    const ic = new IndexedCache();
+    ic.init().then(function() {
+      ic.load();
+      // Trigger load event for scripts that depend on it
+      document.dispatchEvent(new Event('load'));
+    }).catch(function(err) {
+      console.log("Error:", err);
+    });
+  </script>
+</head>
+```
+
+### Custom Configuration
 
 ```javascript
-// Cache assets for offline use in PWA
-const cache = new IndexedCache('pwa-cache', '1.0');
-
-// In service worker registration
-navigator.serviceWorker.register('/sw.js').then(() => {
-  // Cache critical assets
-  cache.cache([
-    '/offline.html',
-    '/images/icon.png',
-    '/app.js'
-  ]);
+const ic = new IndexedCache({
+  // Tags to process (default: ["script", "img", "link"])
+  tags: ["script", "link"],
+  
+  // Database name (default: "indexed-cache")
+  dbName: "my-app-cache",
+  
+  // Store name (default: "objects")
+  storeName: "assets",
+  
+  // Prune unused cache entries (default: false)
+  // If true, removes cached items not found on current page
+  prune: false,
+  
+  // Skip caching entirely (default: false)
+  // Forces HTTP fetch every time - useful for debugging
+  debug: false
 });
 
-// Handle offline state
-window.addEventListener('offline', () => {
-  ot.toast('You are now offline', 'Notice', { 
-    variant: 'warning',
-    duration: 0 // Persistent
-  });
-});
-
-window.addEventListener('online', () => {
-  ot.toast('Back online', 'Notice', { variant: 'success' });
+ic.init().then(function() {
+  ic.load();
 });
 ```
 
-## Image Lazy Loading with Cache
+### Manual Asset Loading
 
 ```javascript
-async function lazyLoadImage(img) {
-  const src = img.dataset.src;
-  
-  try {
-    // Try cache first
-    const blob = await cache.get(src);
-    img.src = URL.createObjectURL(blob);
-  } catch (e) {
-    // Load from network and cache
-    img.src = src;
-    
-    img.onload = () => {
-      cache.cache(src).catch(() => {});
-    };
-  }
-  
-  img.removeAttribute('data-src');
+const ic = new IndexedCache();
+
+await ic.init();
+
+// Load specific asset by key
+const blob = await ic.get('app-bundle');
+if (blob) {
+  const url = URL.createObjectURL(blob);
+  const script = document.createElement('script');
+  script.src = url;
+  document.head.appendChild(script);
 }
 
-// Observe images
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      lazyLoadImage(entry.target);
-      observer.unobserve(entry.target);
-    }
-  });
-});
+// Check if asset is cached
+const isCached = await ic.has('main-styles');
 
-document.querySelectorAll('img[data-src]').forEach(img => {
-  observer.observe(img);
-});
+// Remove asset from cache
+await ic.remove('old-bundle');
+
+// Clear entire cache
+await ic.clear();
 ```
 
-## Options
+### Progress Callbacks
 
 ```javascript
-new IndexedCache(databaseName, version, {
-  // Debug mode (logs operations)
-  debug: false,
-  
-  // Called on cache upgrade
-  onUpgrade: (oldVersion, newVersion) => {
-    // Migration logic
+const ic = new IndexedCache();
+
+await ic.init();
+
+ic.load({
+  onProgress: (total, loaded, currentKey) => {
+    console.log(`Loading ${loaded}/${total} assets, current: ${currentKey}`);
+    
+    // Update progress bar
+    const percent = (loaded / total) * 100;
+    document.getElementById('progress').value = percent;
   },
   
-  // Called when file is cached
-  onCached: (url) => {
-    console.log('Cached:', url);
+  onComplete: () => {
+    console.log('All assets loaded');
+    document.getElementById('loader').style.display = 'none';
   },
   
-  // Called when cache fails
-  onError: (url, error) => {
-    console.error('Cache error:', url, error);
+  onError: (key, error) => {
+    console.error(`Failed to load ${key}:`, error);
   }
 });
 ```
 
-## Best Practices
+## Important Considerations
 
-### DO
+### CORS Requirements
 
-- Version your cache for updates
-- Cache critical assets on app init
-- Provide fallback for uncached assets
-- Clear old cache versions during upgrades
-- Track cache progress for UX
+Since Indexed-Cache uses fetch(), all assets must be served with proper CORS headers:
 
-### DON'T
+```
+Access-Control-Allow-Origin: *
+```
 
-- Cache large files without consideration
-- Forget to handle cache failures
-- Cache dynamic content that changes frequently
-- Store sensitive data in cache
-- Skip version management
+Or your specific domain.
 
-## Browser Support
+### First-Paint Flash
 
-- Chrome, Firefox, Safari, Edge (modern versions)
+Scripts and styles load after HTML is fetched and rendered, which may cause a brief flash. Handle this by:
+
+1. Showing a loading indicator
+2. Using critical CSS inline
+3. Deferring non-essential content
+
+### Inline Script Tags
+
+**Important**: Ensure no whitespace between opening and closing script tags:
+
+```html
+<!-- CORRECT - No space between tags -->
+<script data-src="file.js" data-key="key"></script>
+
+<!-- WRONG - Space will be executed as inline script -->
+<script data-src="file.js" data-key="key">
+</script>
+```
+
+### document.onload Event
+
+Scripts that rely on `document.onload` won't trigger automatically. Manually dispatch the event:
+
+```javascript
+const ic = new IndexedCache();
+ic.init().then(function() {
+  ic.load();
+  
+  // Trigger load event for scripts that depend on it
+  document.dispatchEvent(new Event('load'));
+});
+```
+
+## Complete Example with Oat UI
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Oat UI with Indexed Cache</title>
+  
+  <!-- Oat CSS (cached) -->
+  <link rel="stylesheet" 
+        data-key="oat-css" 
+        data-src="https://unpkg.com/@knadh/oat/oat.min.css"
+        data-hash="v0.6.0" />
+  
+  <!-- Custom styles (cached) -->
+  <link rel="stylesheet" 
+        data-key="custom-styles" 
+        data-src="/css/custom.css"
+        data-hash="build-abc123" />
+  
+  <style>
+    /* Critical CSS for initial render */
+    body {
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    body.loaded {
+      opacity: 1;
+    }
+    #loader {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div id="loader">Loading...</div>
+  
+  <nav data-topnav>
+    <div class="row">
+      <div class="col-4 branding">
+        <a href="/" class="logo">My App</a>
+      </div>
+    </div>
+  </nav>
+  
+  <main style="padding: var(--space-6);">
+    <h1>Welcome</h1>
+    <p>This page uses Indexed-Cache for static assets.</p>
+  </main>
+  
+  <!-- Oat JS (cached) -->
+  <script data-key="oat-js" 
+          data-src="https://unpkg.com/@knadh/oat/oat.min.js"
+          data-hash="v0.6.0"></script>
+  
+  <!-- App JS (cached) -->
+  <script data-key="app-js" 
+          data-src="/js/app.js"
+          data-hash="build-xyz789"></script>
+  
+  <!-- Indexed Cache (NOT cached - load fresh every time) -->
+  <script type="module">
+    import IndexedCache from 'https://unpkg.com/@knadh/indexed-cache@0.4.3/dist/indexed-cache.esm.min.js';
+    
+    const ic = new IndexedCache({
+      dbName: 'oat-app-cache',
+      prune: false
+    });
+    
+    ic.init().then(function() {
+      ic.load({
+        onProgress: (total, loaded) => {
+          console.log(`Loaded ${loaded}/${total} assets`);
+        },
+        onComplete: () => {
+          // Hide loader
+          document.getElementById('loader').style.display = 'none';
+          document.body.classList.add('loaded');
+          
+          // Trigger load event
+          document.dispatchEvent(new Event('load'));
+        }
+      });
+    }).catch(function(err) {
+      console.error("IndexedCache error:", err);
+      document.getElementById('loader').textContent = 'Load error';
+    });
+  </script>
+</body>
+</html>
+```
+
+## Browser Compatibility
+
+- Requires ES6 support (for modern bundle)
 - Requires IndexedDB support
-- Graceful degradation for unsupported browsers
+- Modern browsers: Chrome, Firefox, Safari, Edge
+- Legacy bundle available for older browsers
 
-## Tips
+### Supported Browsers
 
-1. Use cache versions to force refresh when assets change
-2. Cache critical assets first for better offline UX
-3. Show loading state while checking cache
-4. Consider cache size limits (browsers may evict old data)
-5. Combine with Service Workers for full offline support
+| Browser | Version | Bundle |
+|---------|---------|--------|
+| Chrome | 49+ | ESM / Legacy |
+| Firefox | 51+ | ESM / Legacy |
+| Safari | 10.1+ | ESM / Legacy |
+| Edge | 16+ | ESM / Legacy |
+| iOS Safari | 10.3+ | ESM / Legacy |
+| Android Chrome | 49+ | ESM / Legacy |
 
-Perfect for PWAs, offline-first apps, or any web app that needs to work reliably even with poor connectivity!
+## API Reference
+
+### Constructor
+
+```javascript
+new IndexedCache(options)
+```
+
+**Options:**
+- `tags`: Array of tag names to process (default: `["script", "img", "link"]`)
+- `dbName`: IndexedDB database name (default: `"indexed-cache"`)
+- `storeName`: IndexedDB store name (default: `"objects"`)
+- `prune`: Remove unused cache entries (default: `false`)
+- `debug`: Skip caching, always fetch from HTTP (default: `false`)
+
+### Methods
+
+| Method | Description | Returns |
+|--------|-------------|---------|
+| `init()` | Initialize IndexedDB connection | Promise |
+| `load(options)` | Load all cached assets | Promise |
+| `get(key)` | Get asset blob by key | Promise&lt;Blob&gt; |
+| `has(key)` | Check if key exists in cache | Promise&lt;boolean&gt; |
+| `remove(key)` | Remove asset from cache | Promise |
+| `clear()` | Clear entire cache | Promise |
+
+### Load Options
+
+```javascript
+ic.load({
+  onProgress: (total, loaded, currentKey) => {},
+  onComplete: () => {},
+  onError: (key, error) => {}
+});
+```
+
+## Troubleshooting
+
+### Assets Not Loading
+
+1. Check browser console for errors
+2. Verify CORS headers on asset URLs
+3. Ensure `data-src` and `data-key` are set correctly
+4. Check IndexedDB in browser dev tools
+
+### Cache Not Invalidating
+
+1. Change `data-hash` value
+2. Set earlier `data-expiry` date
+3. Clear IndexedDB manually in dev tools
+4. Use `debug: true` to test HTTP fetching
+
+### Scripts Not Executing
+
+1. Ensure no whitespace in empty script tags
+2. Dispatch `load` event manually if needed
+3. Check script load order
+4. Verify `defer`/`async` attributes are preserved
+
+## Limitations
+
+- Requires CORS-enabled servers
+- First-page load may be slower (fetch + cache)
+- Not suitable for frequently-changing assets
+- IndexedDB quota limits (~50-80% of disk space)
+- No automatic cache versioning (use hash/expiry)
+- May cause flash of unstyled content
+
+## When NOT to Use
+
+- Small websites with few returning visitors
+- Assets that change frequently
+- When Service Workers are an option
+- When bandwidth is not a concern
+- For single-page applications with dynamic assets
+
+## Related Libraries
+
+- **tinyrouter.js**: Client-side routing
+- **dragmove.js**: Draggable elements
+- **floatype.js**: Floating autocomplete
+
+Licensed under the MIT License.
