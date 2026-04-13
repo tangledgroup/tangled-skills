@@ -121,6 +121,8 @@ web.run_app(make_app())
 
 See [Core API](references/01-core-api.md) for session methods and best practices.
 
+See [Real-World Examples](references/05-real-world-examples.md) for production patterns including flash messages, login decorators, and advanced setups.
+
 ### Using Redis Sessions
 
 For distributed applications or large session data:
@@ -218,6 +220,7 @@ async def cart_handler(request):
 - [`references/02-storage-backends.md`](references/02-storage-backends.md) - All 5 storage implementations with configuration options and examples
 - [`references/03-cookie-configuration.md`](references/03-cookie-configuration.md) - Cookie parameters (domain, path, secure, httponly, samesite, max_age)
 - [`references/04-security-best-practices.md`](references/04-security-best-practices.md) - Session fixation prevention, encryption setup, security hardening
+- [`references/05-real-world-examples.md`](references/05-real-world-examples.md) - Production-ready patterns: flash messages, login decorators, Redis/Memcached setups
 
 ## Troubleshooting
 
