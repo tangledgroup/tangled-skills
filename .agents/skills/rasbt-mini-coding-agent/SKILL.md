@@ -1,5 +1,5 @@
 ---
-name: mini-coding-agent
+name: rasbt-mini-coding-agent
 description: A minimal standalone coding agent framework backed by Ollama that provides workspace context collection, structured tool execution with approval gates, session persistence, and bounded subagent delegation for local development tasks. Use when building or operating lightweight coding agents for file manipulation, shell command execution, code editing, and automated development workflows without external API dependencies.
 version: "0.2.0"
 author: Your Name <email@example.com>
