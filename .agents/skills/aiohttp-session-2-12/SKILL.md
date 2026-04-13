@@ -222,6 +222,7 @@ async def cart_handler(request):
 - [`references/04-security-best-practices.md`](references/04-security-best-practices.md) - Session fixation prevention, encryption setup, security hardening
 - [`references/05-real-world-examples.md`](references/05-real-world-examples.md) - Production-ready patterns: flash messages, login decorators, Redis/Memcached setups
 - [`references/02-storage-backends.md#postgresql-storage-example`](references/02-storage-backends.md#postgresql-storage-example) - Custom PostgreSQL storage implementation with aiopg
+- [`references/06-fernet-encryption.md`](references/06-fernet-encryption.md) - Complete Fernet encryption guide: key generation, MultiFernet rotation, password-based keys, security best practices
 
 ## Troubleshooting
 

@@ -113,6 +113,8 @@ async def logout_handler(request):
 
 ## Encryption Key Management
 
+For comprehensive Fernet encryption details including key rotation, password-based keys, and advanced features, see [Fernet Encryption Guide](references/06-fernet-encryption.md).
+
 ### Key Generation
 
 Always use cryptographically secure random keys:
@@ -202,6 +204,8 @@ storage = EncryptedCookieStorage(multi_fernet)
 2. Deploy with both keys: `MultiFernet([new, old])`
 3. New sessions use new key, old sessions still work
 4. After session expiry period, remove old key
+
+**For detailed key rotation procedures including active token rotation and environment configuration, see [Fernet Encryption Guide - Key Rotation](references/06-fernet-encryption.md#key-rotation-with-multifernet)**
 
 **Strategy 2: Redis/Memcached storage**
 
