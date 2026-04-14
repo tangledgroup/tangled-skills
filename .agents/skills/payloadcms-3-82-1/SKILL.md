@@ -7,109 +7,79 @@ license: MIT
 tags:
   - cms
   - headless-cms
+  - content-management
   - nextjs
   - typescript
   - react
-  - content-management
+  - database
   - admin-panel
-  - access-control
 category: development
 required_environment_variables:
   - name: PAYLOAD_SECRET
     prompt: "Enter your Payload secret key"
-    help: "Generate with: node -e \"console.log(require('crypto').randomBytes(64).toString('hex'))\""
-    required_for: "application security and session management"
+    help: "Generate a random string (e.g., openssl rand -base64 32)"
+    required_for: "full functionality"
   - name: DATABASE_URL
     prompt: "Enter your database connection string"
-    help: "MongoDB: mongodb://localhost:27017/payload or PostgreSQL: postgresql://user:pass@host:5432/db"
-    required_for: "database connectivity"
+    help: "MongoDB: mongodb://localhost:27017/payload, PostgreSQL: postgresql://user:pass@host/db"
+    required_for: "full functionality"
 ---
 
-# Payload CMS 3.82.1
+# Payload CMS v3.82.1
 
-Payload CMS is a TypeScript-first headless CMS and application framework for building admin panels, REST/GraphQL APIs, and custom applications. It provides type-safe collections, flexible access control, built-in authentication, and seamless Next.js integration with React components.
+Complete toolkit for Payload CMS v3.82.1 headless CMS development including collections, fields, access control, authentication, custom components, and Local API operations. Use when building content management systems, creating admin interfaces, implementing role-based access control, developing custom React components, or integrating with Next.js applications using TypeScript-first patterns with proper security practices.
+
+## Overview
+
+Payload CMS is a TypeScript-first headless CMS providing:
+- **Admin Panel**: Auto-generated React admin interface
+- **APIs**: REST and GraphQL out of the box
+- **Database Adapters**: MongoDB, PostgreSQL, SQLite support
+- **Authentication**: Built-in auth with JWT tokens
+- **Customization**: Extensible via plugins and custom components
+- **Type Safety**: Full TypeScript support with generated types
 
 ## When to Use
 
-- Building headless CMS with custom content types
-- Creating admin interfaces with role-based access control
-- Implementing authentication with JWT tokens
-- Developing custom React components for the admin panel
-- Integrating CMS with Next.js applications
-- Managing media uploads and relationships
-- Creating API-first content management solutions
-- Building e-commerce platforms with Payload's ecommerce module
+- Building content management systems with custom data models
+- Creating admin interfaces for content editors
+- Implementing role-based access control (RBAC)
+- Developing headless CMS for Next.js applications
+- Needing type-safe database operations in TypeScript
+- Building multi-tenant or multi-language applications
+- Requiring custom React components in admin panel
+- Integrating with external services via hooks
 
-## Quick Start
+## Setup
+
+### Prerequisites
+
+- Node.js 18.17 or higher
+- TypeScript knowledge
+- React fundamentals
+- Database (MongoDB, PostgreSQL, or SQLite)
 
 ### Installation
 
 ```bash
 # Create new Payload project
-npm create payload@3.82.1
+npx create-payload-app@latest my-payload-app
 
-# Or use npx
-npx create-payload@3.82.1
-
-# Install to existing project
-bun add payload @payloadcms/db-mongodb @payloadcms/richtext-lexical
+# Or add to existing Next.js project
+npm install payload @payloadcms/db-mongodb @payloadcms/richtext-lexical
 ```
 
-### Basic Configuration
+### Minimal Configuration
 
-See [Configuration Guide](references/04-configuration.md) for detailed setup.
+See [Configuration Options](references/06-configuration-options.md) for complete setup patterns.
 
-```typescript title="src/payload.config.ts"
-import { buildConfig } from 'payload'
-import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import path from 'path'
-import { fileURLToPath } from 'url'
+## Quick Start
 
-const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename)
+### Creating Collections
 
-export default buildConfig({
-  admin: {
-    user: 'users',
-    importMap: {
-      baseDir: path.resolve(dirname),
-    },
-  },
-  collections: [],
-  editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET,
-  typescript: {
-    outputFile: path.resolve(dirname, 'payload-types.ts'),
-  },
-  db: mongooseAdapter({
-    url: process.env.DATABASE_URL,
-  }),
-})
-```
+Define data models with collections:
 
-### Project Structure
-
-```
-src/
-├── app/
-│   ├── (frontend)/          # Frontend routes
-│   └── (payload)/           # Payload admin routes
-├── collections/             # Collection configs
-├── globals/                 # Global configs
-├── components/              # Custom React components
-├── hooks/                   # Hook functions
-├── access/                  # Access control functions
-└── payload.config.ts        # Main config
-```
-
-## Core Features
-
-### Collections
-
-Define content types with type-safe schemas:
-
-```typescript title="src/collections/Posts.ts"
+```typescript
 import type { CollectionConfig } from 'payload'
 
 export const Posts: CollectionConfig = {
@@ -128,325 +98,125 @@ export const Posts: CollectionConfig = {
 }
 ```
 
-See [Collections Guide](references/05-collections.md) for advanced patterns.
+See [Collections & Fields](references/01-collections-fields.md) for detailed patterns.
 
-### Authentication
+### Implementing Access Control
 
-Built-in auth with JWT tokens and role-based access control:
-
-```typescript title="src/collections/Users.ts"
-export const Users: CollectionConfig = {
-  slug: 'users',
-  auth: true,
-  fields: [
-    {
-      name: 'roles',
-      type: 'select',
-      hasMany: true,
-      options: ['admin', 'editor', 'user'],
-      defaultValue: ['user'],
-      saveToJWT: true, // Include in JWT for fast access checks
-    },
-  ],
-}
-```
-
-See [Authentication Guide](references/03-authentication.md) for complete auth patterns.
-
-### Access Control
-
-Secure your data with granular permissions:
+Secure your data with role-based permissions:
 
 ```typescript
+import type { Access } from 'payload'
+
+// Row-level security: users see only their own posts
+const ownPostsOnly: Access = ({ req: { user } }) => {
+  if (!user) return false
+  if (user?.roles?.includes('admin')) return true
+  
+  return { author: { equals: user.id } }
+}
+
 export const Posts: CollectionConfig = {
   slug: 'posts',
   access: {
-    read: ({ req: { user } }) => {
-      // Public can read published posts
-      if (!user) return { status: { not_in: ['draft'] } }
-      
-      // Editors can read all
-      if (user.roles?.includes('editor')) return true
-      
-      // Authors can read their own posts
-      return { author: { equals: user.id } }
-    },
-    update: ({ req: { user } }) => {
-      return user?.roles?.includes('admin')
-    },
+    read: ownPostsOnly,
+    update: ownPostsOnly,
+    delete: ({ req: { user } }) => user?.roles?.includes('admin'),
   },
   fields: [/* ... */],
 }
 ```
 
-See [Access Control Guide](references/02-access-control.md) for security patterns.
+See [Access Control & Authentication](references/02-access-control-auth.md) for security patterns.
 
-## Local API Usage
-
-### CRITICAL: Access Control in Local API
-
-```typescript
-// ❌ SECURITY BUG: Access control bypassed
-await payload.find({
-  collection: 'posts',
-  user: someUser, // Ignored! Runs with ADMIN privileges
-})
-
-// ✅ SECURE: Enforces user permissions
-await payload.find({
-  collection: 'posts',
-  user: someUser,
-  overrideAccess: false, // REQUIRED when passing user
-})
-
-// ✅ Administrative operation (intentional bypass)
-await payload.find({
-  collection: 'posts',
-  // No user - overrideAccess defaults to true
-})
-```
-
-**Rule**: When passing `user` to Local API, ALWAYS set `overrideAccess: false`
-
-### Transaction Safety in Hooks
-
-```typescript
-// ❌ DATA CORRUPTION: Separate transaction
-hooks: {
-  afterChange: [
-    async ({ doc, req }) => {
-      await req.payload.create({
-        collection: 'audit-log',
-        data: { docId: doc.id },
-        // Missing req - separate transaction!
-      })
-    },
-  ],
-}
-
-// ✅ ATOMIC: Same transaction
-hooks: {
-  afterChange: [
-    async ({ doc, req }) => {
-      await req.payload.create({
-        collection: 'audit-log',
-        data: { docId: doc.id },
-        req, // Pass req for same transaction
-      })
-    },
-  ],
-}
-```
-
-See [Local API Guide](references/06-local-api.md) for complete patterns.
-
-## Custom Components
+### Custom Components
 
 Extend the admin panel with React components:
 
-```typescript title="src/components/CustomCell.tsx"
-import type { CellProps } from 'payload'
-
-export const CustomCell: React.FC<CellProps> = ({ value }) => {
-  return <div>{formatValue(value)}</div>
-}
-```
-
-Then use in collection config:
 ```typescript
-fields: [
-  {
-    name: 'price',
-    type: 'number',
-    admin: {
-      components: {
-        Cell: '/components/CustomCell',
+export const Posts: CollectionConfig = {
+  slug: 'posts',
+  admin: {
+    components: {
+      edit: {
+        PreviewButton: '/components/PostPreview',
+      },
+      list: {
+        Header: '/components/ListHeader',
       },
     },
   },
-]
-```
-
-See [Custom Components Guide](references/07-custom-components.md) for examples.
-
-## Type Generation
-
-After schema changes, always regenerate types:
-
-```bash
-# Generate TypeScript types
-bun run generate:types
-
-# Or directly
-payload generate:types
-```
-
-This creates `src/payload-types.ts` with full type safety.
-
-## Reference Files
-
-### Core Concepts
-- [`references/01-agent-rules.md`](references/01-agent-rules.md) - Official Payload development rules and patterns
-- [`references/02-access-control.md`](references/02-access-control.md) - Access control for collections, fields, and globals
-- [`references/03-authentication.md`](references/03-authentication.md) - Authentication, JWT, API keys, and token management
-- [`references/04-configuration.md`](references/04-configuration.md) - Complete configuration options and environment setup
-
-### Advanced Topics
-- [`references/05-collections.md`](references/05-collections.md) - Collection configs, hooks, and validation
-- [`references/06-local-api.md`](references/06-local-api.md) - Local API patterns, transactions, and security
-- [`references/07-custom-components.md`](references/07-custom-components.md) - Custom React components for admin panel
-- [`references/08-fields-guide.md`](references/08-fields-guide.md) - All field types and configurations
-
-### Integration & Deployment
-- [`references/09-nextjs-integration.md`](references/09-nextjs-integration.md) - Next.js app router integration patterns
-- [`references/10-database-adapters.md`](references/10-database-adapters.md) - MongoDB, PostgreSQL, and SQLite adapters
-- [`references/11-hooks-and-validation.md`](references/11-hooks-and-validation.md) - Hook lifecycle and validation patterns
-- [`references/12-troubleshooting.md`](references/12-troubleshooting.md) - Common issues and debugging techniques
-
-## Common Patterns
-
-### Auto-generate Slugs
-
-```typescript
-import { slugField } from 'payload'
-
-fields: [
-  { name: 'title', type: 'text' },
-  slugField({ fieldToUse: 'title' }),
-]
-```
-
-### Relationship with Filtering
-
-```typescript
-{
-  name: 'category',
-  type: 'relationship',
-  relationTo: 'categories',
-  filterOptions: { active: { equals: true } },
 }
 ```
 
-### Conditional Fields
+See [Custom Components](references/03-custom-components.md) for component patterns.
+
+### Local API Operations
+
+Perform database operations programmatically:
 
 ```typescript
-{
-  name: 'featuredImage',
-  type: 'upload',
-  relationTo: 'media',
-  admin: {
-    condition: (data) => data.featured === true,
-  },
-}
-```
+import { getPayload } from 'payload'
+import config from '@payload-config'
 
-### Virtual Fields
+const payload = await getPayload({ config })
 
-```typescript
-{
-  name: 'fullName',
-  type: 'text',
-  virtual: true,
-  hooks: {
-    afterRead: [({ siblingData }) => `${siblingData.firstName} ${siblingData.lastName}`],
-  },
-}
-```
+// Find documents
+const posts = await payload.find({
+  collection: 'posts',
+  where: { status: { equals: 'published' } },
+  depth: 2, // Populate relationships
+})
 
-## Environment Variables
+// Create document
+const newPost = await payload.create({
+  collection: 'posts',
+  data: { title: 'New Post', status: 'draft' },
+})
 
-```bash title=".env"
-# Required
-PAYLOAD_SECRET=your-secret-key-here
-DATABASE_URL=mongodb://localhost:27017/payload
-
-# Optional
-NODE_ENV=development
-PAYLOAD_PUBLIC_APP_URL=http://localhost:3000
-TELEMETRY_ENABLED=false
-```
-
-## Scripts
-
-```json title="package.json"
-{
-  "scripts": {
-    "build": "next build",
-    "dev": "next dev",
-    "generate:types": "payload generate:types",
-    "lint": "next lint",
-    "start": "next start",
-    "typecheck": "tsc --noEmit"
-  }
-}
-```
-
-## Troubleshooting
-
-### Type Errors
-
-**Issue**: TypeScript errors after schema changes
-
-**Solution**: Regenerate types:
-```bash
-bun run generate:types
-bun run typecheck
-```
-
-### Access Control Not Working
-
-**Issue**: Local API bypassing access control
-
-**Solution**: Always set `overrideAccess: false` when passing user:
-```typescript
+// ⚠️ CRITICAL: Always set overrideAccess: false when passing user
 await payload.find({
   collection: 'posts',
-  user: req.user,
-  overrideAccess: false, // Required!
+  user, // User context
+  overrideAccess: false, // REQUIRED for security
 })
 ```
 
-### Import Map Issues
+See [Local API Operations](references/04-local-api-operations.md) for operation patterns.
 
-**Issue**: Custom components not loading
+## Reference Files
 
-**Solution**: Regenerate import map:
+- [`references/01-collections-fields.md`](references/01-collections-fields.md) - Data modeling with collections and all field types
+- [`references/02-access-control-auth.md`](references/02-access-control-auth.md) - Security patterns, RBAC, authentication
+- [`references/03-custom-components.md`](references/03-custom-components.md) - React component customization for admin panel
+- [`references/04-local-api-operations.md`](references/04-local-api-operations.md) - Programmatic database operations with security
+- [`references/05-hooks-extensions.md`](references/05-hooks-extensions.md) - Lifecycle hooks and plugin development
+- [`references/06-configuration-options.md`](references/06-configuration-options.md) - Complete Payload configuration reference
+- [`references/07-common-patterns.md`](references/07-common-patterns.md) - Best practices and common gotchas
+
+## Troubleshooting
+
+### Common Issues
+
+**Types not updating after schema changes:**
 ```bash
-bun run build
-# Or manually
-payload build
+npm run generate:types
 ```
 
-## Best Practices
+**Access control bypassed in Local API:**
+Always set `overrideAccess: false` when passing `user` parameter.
 
-1. **TypeScript-First**: Always use TypeScript with proper types from Payload
-2. **Security-Critical**: Follow all security patterns, especially access control
-3. **Type Generation**: Run `generate:types` after schema changes
-4. **Transaction Safety**: Always pass `req` to nested operations in hooks
-5. **Access Control**: Understand Local API bypasses access control by default
-6. **Code Validation**: Run `tsc --noEmit` to validate TypeScript correctness
+**Infinite hook loops:**
+Use context flags to prevent recursive operations in hooks.
 
-## Migration from v2
+**Transaction failures in MongoDB:**
+Ensure replica set is configured for multi-operation transactions.
 
-Key breaking changes:
-- `buildConfig` replaces `configure`
-- Database adapters are separate packages
-- Lexical editor replaces Slate
-- App Router required for Next.js 13+
+See [Common Patterns](references/07-common-patterns.md) for detailed troubleshooting.
 
-See Payload's migration guide for detailed steps.
+## Resources
 
-## Getting Help
-
-- [Payload Documentation](https://payloadcms.com/docs)
-- [Payload Discord](https://discord.com/invite/payload)
-- [GitHub Issues](https://github.com/payloadcms/payload/issues)
-- [Payload Templates](https://github.com/payloadcms/payload/tree/main/templates)
-
-## Related Skills
-
-Consider also using:
-- `nextjs-14-2` - For Next.js integration patterns
-- `typescript-5-6` - For TypeScript configuration
-- `mongodb-8-0` - For MongoDB database operations
-- `react-18-3` - For custom React components
+- **Official Docs**: https://payloadcms.com/docs
+- **GitHub Repository**: https://github.com/payloadcms/payload
+- **Examples**: https://github.com/payloadcms/payload/tree/v3.82.1/examples
+- **Templates**: https://github.com/payloadcms/payload/tree/v3.82.1/templates
+- **Plugins**: https://payloadcms.com/docs/plugins/overview
