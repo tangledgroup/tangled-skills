@@ -59,10 +59,8 @@ All skills in this repository are automatically generated using the `write-skill
 | payloadcms-blank-3-82-1 | Payload CMS Blank | 3.82.1 | TypeScript, Next.js, MongoDB | Minimal Payload CMS template for custom project initialization |
 | payloadcms-ecommerce-3-82-1 | Payload CMS Ecommerce | 3.82.1 | TypeScript, Next.js, Stripe | Production-ready online store with carts, orders, and Stripe payments |
 | payloadcms-website-3-82-1 | Payload CMS Website | 3.82.1 | TypeScript, Next.js, MongoDB | Blog and multi-page website template with Lexical editor and SEO |
-| pi-agent-0-66-1 | Pi Agent | 0.66.1 | Python, AI agents | Stateful agent architecture with event-driven message loop and tool execution |
-| pi-ai-0-66-1 | Pi AI | 0.66.1 | Python, LLM, AI | Unified LLM API with provider abstraction and streaming event system |
 | picocss-2-1 | Pico CSS | 2.1 | CSS, minimalist framework | Minimalist CSS framework that styles semantic HTML elegantly by default |
-| pi-coding-agent-0-66-1 | Pi Coding Agent | 0.66.1 | Python, AI, coding agents | Terminal-based coding harness with extensible tool system and TUI |
+| pi-mono-0-66-1 | Pi Mono | 0.66.1 | TypeScript, AI, LLM, terminal UI | Complete implementation guide for pi-mono monorepo architecture and patterns |
 | pinecone-router-7-5 | Pinecone Router | 7.5 | Alpine.js, routing | Client-side routing for Alpine.js with template rendering and handlers |
 | podman-5-8-1 | Podman | 5.8.1 | containers, Linux | Daemonless container engine with Docker-compatible CLI and rootless support |
 | podman-compose-1-5-0 | podman-compose | 1.5.0 | containers, compose | Multi-container orchestration using Compose specification with Podman backend |
