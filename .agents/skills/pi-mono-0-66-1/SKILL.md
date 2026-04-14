@@ -49,21 +49,104 @@ Use this skill when:
 
 ## Core Concepts
 
+### Design Philosophy
+
+Pi is built on **minimalism and extensibility**. Unlike feature-heavy agents with built-in sub-agents, plan modes, MCP support, and permission gates, pi provides powerful defaults that you extend yourself. The philosophy: "Adapt pi to your workflows, not the other way around."
+
+**Key design decisions:**
+
+1. **No MCP**: MCP servers dump 7-9% of context window on startup with tools you'll never use. Instead, build CLI tools with README files - progressive disclosure means you only pay token costs when needed.
+
+2. **No sub-agents**: Black-box sub-agents have zero observability and poor context transfer. If you need parallel work, spawn pi via bash (optionally in tmux for full visibility). Better yet: gather context in a separate session first, create an artifact, then use it in a fresh session.
+
+3. **No plan mode**: Ephemeral planning confuses models. Write plans to files (`PLAN.md`) - they're versioned with code, shareable across sessions, and editable collaboratively.
+
+4. **No built-in to-dos**: To-do lists add state that models struggle to track. Use a `TODO.md` file with checkboxes instead - simple, visible, under your control.
+
+5. **No background bash**: Background process management adds complexity with poor observability. Use tmux instead - full visibility, direct interaction, CLI to list sessions, and you can co-debug with the agent.
+
+6. **No permission popups**: Security theater. If an agent can write code and run commands, it's game over anyway. Run in a container if you need isolation, or build your own confirmation flow via extensions.
+
+7. **YOLO by default**: Unrestricted filesystem access, no safety rails, no command pre-checking. Everybody runs in YOLO mode to get work done - why pretend otherwise?
+
+8. **Minimal system prompt**: ~1000 tokens total (system prompt + tool definitions). Models are RL-trained to understand coding agents - they don't need 10,000 tokens of instructions.
+
+9. **Minimal toolset**: Four tools (`read`, `bash`, `edit`, `write`) are all you need. Optional read-only tools (`grep`, `find`, `ls`) for exploration mode. Models know how to use these - they've been trained on similar schemas.
+
+10. **Context engineering**: Pi's minimal system prompt and extensibility let you do actual context engineering. Control what goes into the context window via AGENTS.md, SYSTEM.md, skills, and extensions.
+
 ### Layered Architecture
 
 Pi is built in four distinct layers, each with a single responsibility:
 
 **Layer 1: pi-ai (LLM Abstraction)**
-This layer provides a unified interface to dozens of LLM providers. Instead of writing separate code for OpenAI, Anthropic, Google, etc., you work with one API that handles all the differences. The key innovation is lazy loading - providers are only loaded when you actually use them, keeping the application small and allowing browser compatibility.
+This layer provides a unified interface to 15+ LLM providers with 2000+ models. Instead of writing separate code for OpenAI, Anthropic, Google, etc., you work with one API that handles all the differences.
+
+**Key innovations:**
+- **Lazy loading**: Providers are only loaded when used, keeping bundle size small and enabling browser compatibility
+- **Unified streaming events**: Every provider has different streaming format; pi-ai normalizes them into single event types (`text_delta`, `thinking_delta`, `toolcall_delta`, `done`, `error`)
+- **Abort support**: Full abort controller integration throughout pipeline (unlike most unified APIs that ignore this)
+- **Partial results**: When aborted, you get partial content instead of nothing
+- **Structured tool results**: Tools return both `content` (for LLM) and `details` (for UI display) - no need to parse textual outputs for restructuring
+- **TypeBox validation**: Tool arguments automatically validated with AJV, detailed error messages on failure
+- **Cost tracking**: Per-message token usage by type (input, output, cache read/write) with cost calculation
+- **Model registry**: Built-in catalog of 2000+ models with metadata (capabilities, pricing, context window)
+- **Custom models**: Define self-hosted endpoints (Ollama, vLLM, Mistral) via simple model objects
+- **Provider SDKs**: Uses official provider SDKs under the hood (OpenAI SDK, Anthropic SDK, etc.) for full feature support
 
 **Layer 2: pi-agent-core (Agent Runtime)**
-This layer implements the agent's message loop: send prompt to LLM, receive response, execute any requested tools, repeat until done. It handles parallel tool execution, steering (interrupting the agent), follow-up (queuing work for later), and emits events at every step so UIs can stay synchronized.
+This layer wraps pi-ai into an agent loop via the `Agent` class. You define tools, the agent calls the LLM, executes tools, feeds results back, and repeats until done.
+
+**Key features:**
+- **Event-driven**: Emits events at every step (`agent_start`, `turn_start`, `message_update`, `tool_execution_start/end`, `agent_end`)
+- **Steering**: Interrupt agent mid-turn - message delivered after current tool finishes, remaining pending tools skipped
+- **Follow-ups**: Queue messages for after agent finishes naturally without interrupting current work
+- **State management**: Change model, thinking level, system prompt, or tools at any time (picked up on next turn)
+- **Parallel tool execution**: Independent tools execute in parallel for speed
+- **Tool validation**: TypeBox schemas validated with AJV before execution, errors returned to LLM for retry
+- **Streaming tool results**: `onUpdate` callback in tools allows streaming partial results during long-running execution
+- **Transport abstraction**: Run agent directly or through proxy for RPC/SDK modes
 
 **Layer 3: pi-tui (Terminal UI)**
-This layer provides a component-based UI framework for terminals. It uses differential rendering to only update changed screen regions, preventing flicker. Components like Editor, Input, SelectList, and Markdown are composable building blocks. The focus system supports IME (Input Method Editors) for CJK languages.
+This layer provides a retained-mode component framework for terminals using differential rendering.
+
+**Two TUI approaches:**
+1. **Full-screen TUIs** (Amp, opencode): Take ownership of viewport, treat it like pixel buffer. Lose scrollback buffer, must implement custom search and scrolling.
+2. **Native terminal TUIs** (Claude Code, Codex, Droid, pi): Write to terminal like CLI programs, append to scrollback buffer, occasionally move cursor up to redraw editors/spinners. Get natural scrolling, built-in search, mouse scrolling works properly.
+
+Pi uses approach #2 - coding agents are chat interfaces with linear flow (prompt → replies → tool calls → results), perfect for native terminal emulator.
+
+**Differential rendering algorithm:**
+1. **First render**: Output all lines without clearing scrollback
+2. **Width changed**: Clear screen, fully re-render (soft wrapping changes)
+3. **Normal update**: Find first changed line, move cursor there, clear to end, render only changed lines
+4. **Synchronized output**: Wrap in `CSI ?2026h/l` escape sequences for atomic display (no flicker in modern terminals like Ghostty, iTerm2)
+
+**Retained mode components:**
+- Components cache rendered output - unchanged components return cached lines
+- Containers collect lines from children
+- TUI class compares to previously rendered backbuffer, redraws only differences
+- Components have `render(width)` returning string array with ANSI codes, optional `handleInput(data)` for keyboard
+
+**Trade-offs:** Stores entire scrollback buffer worth of lines (few hundred KB for large sessions), compares many lines on each update. Worth it for dead-simple programming model and fast iteration.
 
 **Layer 4: pi-coding-agent (Application)**
-This layer combines the three lower layers into a working application. It manages sessions (persistent conversation history), implements branching (create alternative timelines), compaction (summarize old messages to fit context windows), and provides four different run modes for different use cases.
+This layer combines all lower layers into a production-ready agent with built-in tools, session persistence, and extensibility.
+
+**Built-in tool presets:**
+- `codingTools`: `[read, bash, edit, write]` - default active tools
+- `readOnlyTools`: `[read, grep, find, ls]` - exploration without modification
+- Individual tools accessible via `allBuiltInTools.*`
+
+**Key features:**
+- **Session management**: JSONL persistence with tree structure, branching, forking
+- **Context files**: AGENTS.md loaded hierarchically (global → parent dirs → project), SYSTEM.md to replace prompt, APPEND_SYSTEM.md to augment
+- **Extension system**: TypeScript modules that register tools, commands, UI components, event handlers
+- **Skills**: Agent Skills standard compliance with `/skill:name` commands
+- **Prompt templates**: Markdown files with argument support via `/templatename`
+- **Themes**: Hot-reloading color schemes
+- **Package management**: Install extensions/skills/prompts/themes from npm or git
+- **Four run modes**: Interactive (TUI), Print/JSON, RPC (stdin/stdout JSONL), SDK (programmatic embedding)
 
 ### Session-Based Design
 
@@ -385,6 +468,22 @@ In print mode, pi reads piped stdin and merges it into the initial prompt:
 ```bash
 cat README.md | pi -p "Summarize this text"
 ```
+
+### Why Minimalism Works
+
+**Benchmark results**: pi with Claude Opus 4.5 on Terminal-Bench 2.0 competed against Codex, Cursor, Windsurf, and other harnesses with native models. Results: https://github.com/laude-institute/terminal-bench (see leaderboard placement).
+
+**Key insight**: Terminus 2 (Terminal-Bench team's own minimal agent) just gives the model a tmux session - no fancy tools, no file operations, raw terminal interaction. It holds its own against agents with sophisticated tooling. Evidence that minimal approach works.
+
+**Why it works:**
+1. **Models are RL-trained**: Frontier models inherently understand what coding agents are - they don't need 10,000 tokens of system prompt
+2. **Training data**: Models trained on read/write/edit tools with similar schemas, know how to use bash
+3. **Context efficiency**: ~1000 tokens for system prompt + tool definitions vs 7-9% context window waste from MCP servers
+4. **Progressive disclosure**: CLI tools with READMEs only cost tokens when agent reads them (on-demand)
+5. **Observability**: Full visibility into what agent does vs black-box sub-agents
+6. **Workflow matters**: Context gathering in separate session → artifact → fresh session beats mid-session sub-agents
+
+**Real-world validation**: Pi used exclusively for day-to-day work, hundreds of exchanges in single session without compaction issues. Terminal-Bench results prove contrarian design decisions work in practice.
 
 ### Understanding Provider Abstraction
 
