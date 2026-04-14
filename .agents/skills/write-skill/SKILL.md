@@ -13,12 +13,14 @@ tags:
   - git-introspection
 category: tooling
 external_references:
-  - url: https://docs.example.com
-    description: Official documentation for the target tool or framework
-  - url: https://github.com/example/repo
-    description: GitHub repository with source code and examples
-  - url: https://piechowski.io/post/git-commands-before-reading-code/
-    description: Git introspection techniques for understanding codebases before reading files
+  - url: https://opencode.ai/docs/skills
+    description: OpenCode skills documentation and specification
+  - url: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/skills.md
+    description: pi-mono agent skills implementation and format details
+  - url: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
+    description: Claude agent skills best practices and guidelines
+  - url: https://developers.openai.com/codex/skills
+    description: OpenAI Codex skills documentation
 ---
 
 # write-skill
