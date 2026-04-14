@@ -1,7 +1,7 @@
 ---
 name: write-skill
-description: Generate fine-grained agent skills from minimal prompts, complex requirements, URL documentation crawling, and directory analysis. Researches and creates complete, spec-compliant skills using available tools.
-version: "0.5.1"
+description: Generate fine-grained agent skills from minimal prompts, complex requirements, URL documentation crawling, git introspection, and directory analysis. Researches and creates complete, spec-compliant skills using available tools.
+version: "0.5.2"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
@@ -10,17 +10,20 @@ tags:
   - meta-skill
   - documentation-crawling
   - content-extraction
+  - git-introspection
 category: tooling
 external_references:
   - url: https://docs.example.com
     description: Official documentation for the target tool or framework
   - url: https://github.com/example/repo
     description: GitHub repository with source code and examples
+  - url: https://piechowski.io/post/git-commands-before-reading-code/
+    description: Git introspection techniques for understanding codebases before reading files
 ---
 
 # write-skill
 
-A meta-skill that generates other agent skills by analyzing user requirements, crawling documentation URLs, and examining codebases. Uses available tools to research and create complete, spec-compliant skills.
+A meta-skill that generates other agent skills by analyzing user requirements, crawling documentation URLs, and examining codebases with git introspection. Uses available tools to research and create complete, spec-compliant skills.
 
 ## When to Use
 
@@ -46,7 +49,7 @@ Workflow:
 5. Present for review
 ```
 
-See [Interaction Examples](references/07-interaction-examples.md) for detailed walkthroughs.
+See [Interaction Examples](references/08-interaction-examples.md) for detailed walkthroughs.
 
 ### From Documentation URLs
 
@@ -73,9 +76,13 @@ Workflow:
 2. Discover configs, scripts, env vars
 3. Extract patterns and workflows
 4. Generate skill with discovered requirements
+5. Run git introspection (if repository exists)
+6. Identify most important files from git history
+7. Refine skill based on file importance
 ```
 
-See [Directory Analysis](references/04-directory-analysis.md) for scanning patterns.
+See [Directory Analysis](references/05-directory-analysis.md) for scanning patterns.
+See [Git Introspection](references/04-git-introspection.md) for post-analysis enhancement.
 
 ## Core Workflow
 
@@ -107,8 +114,14 @@ See [Tool Detection](references/01-tool-detection.md) for complete detection log
 
 **For PDFs:** Extract text with layout preservation using best available method.
 
-**For Directories:** Scan for configs, scripts, env vars, and dependencies.
+**For Directories:** 
+1. **Directory scanning first** - Discover configs, scripts, env vars, and dependencies
+2. **Extract patterns** - Identify workflows and requirements from content
+3. **Git introspection** (if repository exists) - Enhance understanding with file importance
+4. **Read priority files** - Focus on most modified/recently changed files
 
+See [Directory Analysis](references/05-directory-analysis.md) for scanning patterns.
+See [Git Introspection](references/04-git-introspection.md) for post-analysis enhancement.
 See [Content Extraction](references/03-content-extraction.md) for processing workflows.
 
 ### Step 3: Skill Structure Selection
@@ -122,7 +135,7 @@ Auto-detect whether to create **simple** or **complex** skill:
 | Structure | Single SKILL.md | SKILL.md + references/ |
 | Use case | One specific workflow | APIs, frameworks, extensive docs |
 
-See [Skill Templates](references/05-skill-templates.md) for structure details.
+See [Skill Templates](references/06-skill-templates.md) for structure details.
 
 ### Step 4: Validation
 
@@ -135,7 +148,7 @@ Run validation checklist before finalizing:
 - ✅ Relative links resolve correctly
 - ✅ Code snippets complete and valid
 
-See [Validation Checklist](references/06-validation-checklist.md) for complete requirements.
+See [Validation Checklist](references/07-validation-checklist.md) for complete requirements.
 
 ## Reference Files
 
@@ -144,13 +157,14 @@ See [Validation Checklist](references/06-validation-checklist.md) for complete r
 - [`references/01-tool-detection.md`](references/01-tool-detection.md) - Tool detection, negotiation, and fallback strategies
 - [`references/02-url-crawling.md`](references/02-url-crawling.md) - BFS, DFS, and hybrid crawling scripts for documentation discovery
 - [`references/03-content-extraction.md`](references/03-content-extraction.md) - PDF processing, HTML conversion, content extraction patterns
-- [`references/04-directory-analysis.md`](references/04-directory-analysis.md) - Directory scanning, pattern detection, auto-detection heuristics
+- [`references/04-git-introspection.md`](references/04-git-introspection.md) - Git-based codebase analysis before reading files
+- [`references/05-directory-analysis.md`](references/05-directory-analysis.md) - Directory scanning, pattern detection, auto-detection heuristics
 
 ### Templates and Validation
 
-- [`references/05-skill-templates.md`](references/05-skill-templates.md) - Simple and complex skill templates, frontmatter requirements
-- [`references/06-validation-checklist.md`](references/06-validation-checklist.md) - Complete validation requirements and cross-platform notes
-- [`references/07-interaction-examples.md`](references/07-interaction-examples.md) - Detailed examples with expected outputs
+- [`references/06-skill-templates.md`](references/06-skill-templates.md) - Simple and complex skill templates, frontmatter requirements
+- [`references/07-validation-checklist.md`](references/07-validation-checklist.md) - Complete validation requirements and cross-platform notes
+- [`references/08-interaction-examples.md`](references/08-interaction-examples.md) - Detailed examples with expected outputs
 
 ## Output Structure
 
@@ -185,6 +199,7 @@ my-skill/
 9. **Numbered reference files** - Use 2-digit prefixes (`01-`, `02-`, `03-`) for consistent ordering
 10. **Cross-platform compatible** - Generate skills for pi, opencode, claude, and hermes
 11. **external_references field** - Include only user-provided starting URLs, not all crawled pages
+12. **Directory analysis then git** - Scan directory structure first, then use git introspection to validate and prioritize content
 
 ## Cross-Platform Compatibility
 
@@ -197,7 +212,7 @@ Generated skills work across these platforms:
 | **claude** | Strict | Requires third-person, rejects XML in frontmatter |
 | **hermes** | Flexible | Supports platform filtering and env passthrough |
 
-See [Validation Checklist](references/06-validation-checklist.md) for detailed requirements.
+See [Validation Checklist](references/07-validation-checklist.md) for detailed requirements.
 
 ## Limitations
 
@@ -208,6 +223,7 @@ See [Validation Checklist](references/06-validation-checklist.md) for detailed r
 - Generated skills should be tested before production use
 - **HTML conversion quality** - Best with pandoc/pandoc-bin; basic extraction used otherwise
 - **PDF extraction quality** - Best with poppler-utils (pdftotext -layout); ghostscript provides fallback
+- **Git introspection** - Requires git repository; falls back to directory analysis for non-git projects
 
 ## Optional Tools for Enhanced Processing
 

@@ -2,6 +2,8 @@
 
 This reference covers directory scanning, pattern detection, and auto-detection heuristics for analyzing codebases and extracting workflows.
 
+**First step in codebase analysis**: Run directory scanning to discover configs, scripts, env vars, and extract patterns. After this initial scan, optionally run [Git Introspection](04-git-introspection.md) to validate findings and prioritize which files to read deeply based on git history.
+
 ## Directory Scanning with Bash Commands
 
 When user provides directories to analyze, use **bash commands as primary method**:
@@ -314,4 +316,4 @@ Focus on extracting these key elements:
 - **Fallback**: Use read tool if bash unavailable (less efficient)
 - **Output**: Organize discovered patterns into skill frontmatter and references
 
-See [Skill Templates](05-skill-templates.md) for how to incorporate discovered information into generated skills.
+See [Skill Templates](06-skill-templates.md) for how to incorporate discovered information into generated skills.
