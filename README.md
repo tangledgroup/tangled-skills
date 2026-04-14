@@ -79,6 +79,7 @@ All skills in this repository are automatically generated using the `write-skill
 | solid-start-1-3 | SolidStart | 1.3 | SolidJS, fullstack, SSR | Fullstack framework for SolidJS with SSR, SSG, and API routes |
 | spec-kit-0-6-1 | Spec Kit | 0.6.1 | AI, specification-driven development | Specification-first workflows with AI agents to generate implementation plans |
 | sqlalchemy-2-0 | SQLAlchemy | 2.0 | Python, ORM, database | Database toolkit with ORM mapping and SQL expression construction |
+| duckdb-1-5-2 | DuckDB | 1.5.2 | SQL, analytics, embedded database, Python, data science | High-performance analytical SQL database with nested types and vectorized execution |
 | sqlite-3-53 | SQLite | 3.53 | SQL, database | Embedded SQL database with FTS5, JSON, R-Tree, and virtual tables |
 | stringzilla-4-6 | StringZilla | 4.6 | C, C++, Python, Rust, SIMD | High-performance SIMD-accelerated string search and fuzzy matching |
 | tailwindcss-4-2 | Tailwind CSS | 4.2 | CSS, utility-first | Utility-first CSS framework with OKLCH color space and cascade layers |
