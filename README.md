@@ -87,6 +87,7 @@ All skills in this repository are automatically generated using the `write-skill
 | ty-0-0-29 | ty | 0.0.29 | Python, type checker | Extremely fast Python type checker written in Rust with advanced diagnostics |
 | upx-5-1-1 | UPX | 5.1.1 | executable compression | Cross-platform executable compressor for reducing distribution size |
 | tokenizers-0-22-3 | Tokenizers | 0.22.3 | Rust, Python, Node.js, NLP | Fast state-of-the-art tokenizers for BPE, WordPiece, Unigram with alignment tracking
+| transformers-5-5-4 | Transformers | 5.5.4 | Python, PyTorch, NLP, computer vision, audio, multimodal | State-of-the-art pretrained models for text, vision, audio with Pipeline API and Trainer |
 | usearch-2-24 | USearch | 2.24 | Python, C++, vector search | High-performance similarity search engine supporting HNSW algorithm |
 | caveman-1-5-1 | Caveman | 1.5.1 | communication, token efficiency | Ultra-compressed communication mode cutting token usage ~75% while maintaining technical accuracy |
 | mem0-1-0-11 | Mem0 | 1.0.11 | Python, TypeScript, AI memory, LLM, vector search | Universal self-improving memory layer for LLM applications with persistent context across sessions |
