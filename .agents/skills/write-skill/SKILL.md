@@ -141,15 +141,50 @@ Auto-detect whether to create **simple** or **complex** skill:
 
 See [Skill Templates](references/06-skill-templates.md) for structure details.
 
-### Step 4: Validation
+### Step 4: YAML Header Validation (REQUIRED)
 
-Run validation checklist before finalizing:
+**Every skill MUST have a valid YAML header.** This is non-negotiable for cross-platform compatibility.
 
-- ✅ `name` passes regex: `^[a-z0-9]+(-[a-z0-9]+)*$`
-- ✅ `description` is 1-1024 characters
+```yaml
+---
+name: <skill-name>
+description: <1-1024 character description>
+license: MIT
+author: <Your Name> <email@example.com>
+version: "<semver version>"
+tags:
+  - <tag1>
+  - <tag2>
+category: <category>
+external_references:
+  - https://<user-provided-url>
+---
+```
+
+**Validation requirements:**
+- ✅ File starts with `---` on line 1
+- ✅ YAML syntax is valid (use Python yaml.safe_load to verify)
+- ✅ `name` matches directory name exactly and passes regex: `^[a-z0-9]+(-[a-z0-9]+)*$`
+- ✅ `description` is 1-1024 characters, uses third person, includes WHAT and WHEN
+- ✅ All string values properly quoted if containing special characters
+- ✅ Header ends with `---` before main content
+
+**Run YAML validation script:**
+```bash
+python3 -c "import yaml; data=yaml.safe_load(open('SKILL.md').read().split('---',2)[1].split('---')[0]); print('✓ Valid' if 'name' in data and 'description' in data else '✗ Invalid')"
+```
+
+See [Validation Checklist](references/07-validation-checklist.md) for complete YAML validation requirements.
+
+### Step 5: Structure and Content Validation
+
+After YAML validation passes, verify:
+
 - ✅ Structure matches type (simple vs complex)
 - ✅ Relative links resolve correctly
 - ✅ Code snippets complete and valid
+- ✅ No placeholder values in examples
+- ✅ Troubleshooting section present
 
 See [Validation Checklist](references/07-validation-checklist.md) for complete requirements.
 
@@ -196,15 +231,18 @@ my-skill/
 1. **Check tools first** - Test available tools (bash/curl preferred), don't ask user
 2. **Prefer bash/curl** - Primary method for web fetching and file operations
 3. **Respect rate limits** - Add delays between URL requests, check robots.txt
-4. **Validate output** - Run checklist before presenting generated skill
-5. **Auto-detect structure** - Use single-file for < 500 lines, multi-file for > 500 lines
-6. **User review** - Always present generated skill for approval before writing
-7. **Flat reference structure** - No nested references (all refs one level deep from SKILL.md)
-8. **Numbered reference files** - Use 2-digit prefixes (`01-`, `02-`, `03-`) for consistent ordering
-9. **Cross-platform compatible** - Generate skills for pi, opencode, claude, and codex
-10. **external_references field** - Include only user-provided starting URLs, not all crawled pages
-11. **Markdown-only skills** - Skills use agent tools (read, write, edit, bash), no bundled scripts/assets required
-12. **Clear descriptions** - Write specific descriptions for proper skill matching across platforms
+4. **YAML validation REQUIRED** - Every skill MUST have valid YAML header (use Python yaml.safe_load to verify)
+5. **Validate output** - Run full checklist before presenting generated skill
+6. **Auto-detect structure** - Use single-file for < 500 lines, multi-file for > 500 lines
+7. **User review** - Always present generated skill for approval before writing
+8. **Flat reference structure** - No nested references (all refs one level deep from SKILL.md)
+9. **Numbered reference files** - Use 2-digit prefixes (`01-`, `02-`, `03-`) for consistent ordering
+10. **Cross-platform compatible** - Generate skills for pi, opencode, claude, and codex
+11. **external_references field** - Include only user-provided starting URLs, not all crawled pages
+12. **Markdown-only skills** - Skills use agent tools (read, write, edit, bash), no bundled scripts/assets required
+13. **Clear descriptions** - Write specific descriptions for proper skill matching across platforms
+
+**CRITICAL:** Never skip YAML validation. A skill with invalid YAML will fail to load on all platforms.
 
 ## Cross-Platform Compatibility
 

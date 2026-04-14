@@ -86,6 +86,7 @@ All skills in this repository are automatically generated using the `write-skill
 | ty-0-0-29 | ty | 0.0.29 | Python, type checker | Extremely fast Python type checker written in Rust with advanced diagnostics |
 | upx-5-1-1 | UPX | 5.1.1 | executable compression | Cross-platform executable compressor for reducing distribution size |
 | usearch-2-24 | USearch | 2.24 | Python, C++, vector search | High-performance similarity search engine supporting HNSW algorithm |
+| caveman-1-5-1 | Caveman | 1.5.1 | communication, token efficiency | Ultra-compressed communication mode cutting token usage ~75% while maintaining technical accuracy |
 | uv-0-11-6 | uv | 0.11.6 | Python, package manager | Extremely fast Python package and project manager written in Rust |
 | write-skill | write-skill | - | AI, skill generation | Generate fine-grained agent skills from prompts, documentation, and analysis |
 | zeromq-wiki-3-2 | ZeroMQ Wiki | 3.2 | messaging, distributed systems | Comprehensive guide to ZeroMQ socket patterns and architecture |

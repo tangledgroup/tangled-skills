@@ -2,6 +2,48 @@
 
 This reference covers skill structure templates, frontmatter requirements, and organization patterns for both simple and complex skills.
 
+## YAML Header Validation (REQUIRED)
+
+**Every skill MUST have a valid YAML header.** This is non-negotiable for cross-platform compatibility.
+
+### YAML Header Requirements
+
+1. **File must start with `---`** on the first line
+2. **YAML syntax must be valid** - Use Python's `yaml.safe_load()` to verify
+3. **Header must end with `---`** before main content begins
+4. **Required fields present:** `name` and `description`
+5. **Field validation:**
+   - `name` matches directory name exactly (case-sensitive)
+   - `name` passes regex: `^[a-z0-9]+(-[a-z0-9]+)*$`
+   - `description` is 1-1024 characters
+   - `description` uses third person (no "I", "you", "we")
+   - `description` includes WHAT the skill does AND WHEN to use it
+
+### YAML Validation Command
+
+```bash
+# Quick validation using Python
+python3 -c "
+import yaml, sys
+with open('SKILL.md') as f:
+    content = f.read()
+if not content.startswith('---'):
+    print('✗ File must start with ---'); sys.exit(1)
+data = yaml.safe_load(content.split('---', 2)[1].split('---')[0])
+required = ['name', 'description']
+for field in required:
+    if field not in data:
+        print(f'✗ Missing required field: {field}'); sys.exit(1)
+print('✓ YAML header valid')
+print(f'  name: {data[\"name\"]}')
+print(f'  description: {data[\"description\"][:80]}...')
+"
+```
+
+**Never skip YAML validation.** A skill with invalid YAML will fail to load on all platforms (pi, opencode, claude, codex).
+
+See [Validation Checklist](07-validation-checklist.md) for complete YAML validation requirements.
+
 ## Auto-Detection: Simple vs Complex Skills
 
 Before generating, estimate the total content size. This determines whether to create a **simple skill** (single file) or **complex skill** (multi-file with references).

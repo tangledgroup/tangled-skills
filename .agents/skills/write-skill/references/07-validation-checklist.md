@@ -2,9 +2,138 @@
 
 This reference covers complete validation requirements for generated skills and cross-platform compatibility notes.
 
-## Frontmatter Validation (Required for All Skills)
+## YAML Header Validation (REQUIRED FOR ALL SKILLS)
 
-Before finalizing any skill, verify all frontmatter requirements:
+**Every skill MUST have a valid YAML frontmatter header.** This is non-negotiable for cross-platform compatibility.
+
+### YAML Header Structure
+
+```yaml
+---
+name: <skill-name>
+description: <1-1024 character description>
+license: MIT
+author: <Your Name> <email@example.com>
+version: "<semver version>"
+tags:
+  - <tag1>
+  - <tag2>
+category: <category>
+external_references:
+  - https://<user-provided-url-1>
+  - https://<user-provided-url-2>
+---
+```
+
+### YAML Validation Checklist
+
+Before finalizing ANY skill, run this validation:
+
+- [ ] **YAML syntax is valid** - No indentation errors, proper quoting
+- [ ] **Header starts with `---`** on first line of file
+- [ ] **Header ends with `---`** before main content begins
+- [ ] **`name` matches directory name exactly** (case-sensitive)
+- [ ] **`name` passes regex**: `^[a-z0-9]+(-[a-z0-9]+)*$`
+- [ ] **`description` is 1-1024 characters**
+- [ ] **`description` uses third person** (no "I", "you", "we")
+- [ ] **`description` includes WHAT and WHEN** (both required)
+- [ ] **All string values properly quoted** if they contain special characters
+- [ ] **No trailing whitespace** in YAML fields
+
+### YAML Validation Script (REQUIRED)
+
+```bash
+#!/bin/bash
+# Validate YAML header - REQUIRED for all skills
+
+SKILL_FILE="$1"
+
+echo "=== YAML Header Validation ==="
+
+# Check if file starts with ---
+first_line=$(head -n1 "$SKILL_FILE")
+if [ "$first_line" = "---" ]; then
+  echo "✓ File starts with YAML delimiter"
+else
+  echo "✗ File does NOT start with '---' (found: $first_line)"
+  exit 1
+fi
+
+# Extract frontmatter
+frontmatter=$(sed -n '/^---$/,/^---$/p' "$SKILL_FILE" | tail -n +2 | head -n -1)
+
+# Validate YAML syntax using Python (most reliable)
+if command -v python3 &> /dev/null; then
+  echo ""
+  echo "Validating YAML syntax..."
+  python3 << EOF
+import sys
+import yaml
+
+try:
+    with open('$SKILL_FILE', 'r') as f:
+        content = f.read()
+    
+    # Extract frontmatter
+    if not content.startswith('---'):
+        print("✗ YAML syntax INVALID: File must start with '---'")
+        sys.exit(1)
+    
+    frontmatter = content.split('---', 2)[1].split('---')[0]
+    data = yaml.safe_load(frontmatter)
+    
+    if not isinstance(data, dict):
+        print("✗ YAML syntax INVALID: Frontmatter must be a dictionary")
+        sys.exit(1)
+    
+    print("✓ YAML syntax VALID")
+    print(f"✓ Parsed {len(data)} fields successfully")
+    
+    # Check required fields
+    required = ['name', 'description']
+    for field in required:
+        if field not in data:
+            print(f"✗ Required field MISSING: {field}")
+            sys.exit(1)
+        print(f"✓ Required field present: {field}")
+    
+except yaml.YAMLError as e:
+    print(f"✗ YAML syntax ERROR: {e}")
+    sys.exit(1)
+except Exception as e:
+    print(f"✗ Validation ERROR: {e}")
+    sys.exit(1)
+EOF
+  
+  if [ $? -ne 0 ]; then
+    echo ""
+    echo "=== YAML VALIDATION FAILED ==="
+    exit 1
+  fi
+else
+  echo "⚠ Python3 not available - skipping YAML syntax validation"
+  echo "  Install python3 for reliable YAML validation"
+fi
+
+echo ""
+echo "=== YAML Header Validation Complete ==="
+```
+
+### Common YAML Errors to Avoid
+
+| Error | Example | Fix |
+|-------|---------|-----|
+| Missing delimiters | No `---` at start/end | Add `---` on first and last line of header |
+| Invalid indentation | `name: value\n  description: text` | Use 2-space indentation for list items only |
+| Unquoted special chars | `description: Hello, World!` | Quote: `description: "Hello, World!"` |
+| Boolean confusion | `version: true` | Quote strings: `version: "true"` |
+| Missing required fields | No `description` field | Add all required fields |
+
+## Frontmatter Field Validation
+
+After YAML syntax validation, verify field contents:
+
+### Required Fields (All Platforms)
 
 ### Required Fields (All Platforms)
 
@@ -335,26 +464,55 @@ When research was performed, verify:
 - [ ] Same-domain/subdomain URLs discovered using BFS/DFS strategies
 - [ ] Extracted content organized into logical reference files
 
-## Final Validation Summary
+## Final Validation Summary (REQUIRED BEFORE DEPLOYMENT)
 
-Before presenting generated skill for review:
+**Every skill MUST pass YAML validation before being presented to user.**
+
+### Mandatory Validation Sequence
 
 ```bash
 #!/bin/bash
-# Complete validation summary
+# Complete validation summary - REQUIRED FOR ALL SKILLS
 
 echo "=== FINAL VALIDATION SUMMARY ==="
 echo ""
 
-# Run all validations
-./validate_frontmatter.sh SKILL.md
-./validate_structure.sh SKILL.md  # or validate_complex_structure.sh
-./validate_content.sh SKILL.md
-
+# STEP 1: YAML Header Validation (REQUIRED)
+echo "STEP 1: YAML Header Validation"
+./validate_yaml_header.sh SKILL.md
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ YAML VALIDATION FAILED - Skill cannot be deployed"
+  exit 1
+fi
 echo ""
-echo "=== READY FOR REVIEW ==="
-echo "If all checks pass, skill is ready for user review and deployment."
+
+# STEP 2: Structure Validation
+echo "STEP 2: Structure Validation"
+./validate_structure.sh SKILL.md  # or validate_complex_structure.sh
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ STRUCTURE VALIDATION FAILED"
+  exit 1
+fi
+echo ""
+
+# STEP 3: Content Quality Validation
+echo "STEP 3: Content Quality Validation"
+./validate_content.sh SKILL.md
+echo ""
+
+echo "=== ALL VALIDATIONS PASSED ==="
+echo "✅ Skill is ready for user review and deployment"
 ```
+
+### Validation Order Matters
+
+1. **YAML Header First** - If YAML is invalid, nothing else matters
+2. **Structure Second** - Ensure file organization is correct
+3. **Content Last** - Quality checks on properly structured content
+
+**Never skip YAML validation.** A skill with invalid YAML will fail to load on all platforms.
 
 ## Summary
 
