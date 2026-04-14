@@ -10,11 +10,19 @@ Before generating, estimate the total content size. This determines whether to c
 
 | Factor | Simple Skill | Complex Skill |
 |--------|--------------|---------------|
-| **Line count** | < 400 lines | > 400 lines |
+| **Line count** | < 500 lines in SKILL.md | > 500 lines in SKILL.md |
 | **Topics** | Single focused task | Multiple topics (3+) |
 | **Documentation** | Minimal to moderate | Extensive docs/APIs |
 | **Structure** | Single SKILL.md | SKILL.md + references/ |
 | **Use case** | One specific workflow | APIs, frameworks, tools with many use cases |
+
+### When to Use Reference Files
+
+Create a complex skill with reference files when:
+- SKILL.md approaches 500 lines during generation
+- User explicitly requests reference files
+- User indicates the skill is complex with many topics or reference materials
+- Content naturally divides into distinct subtopics (e.g., core concepts, API reference, troubleshooting)
 
 ### Estimation Approach
 
@@ -29,7 +37,7 @@ Before generating, estimate the total content size. This determines whether to c
 
 ## Simple Skills Structure
 
-For focused, single-task skills (< 400 lines):
+For focused, single-task skills (SKILL.md < 500 lines):
 
 ```
 my-skill/
@@ -133,22 +141,24 @@ required_environment_variables:
 - All content inline in SKILL.md
 - Keep focused on one specific task or workflow
 - No progressive disclosure required
-- Total line count should stay under 400 lines
+- Total line count should stay under 500 lines
 - Include all examples and patterns directly in main file
 
 ## Complex Skills Structure
 
-For multi-topic, extensive knowledge areas (> 400 lines):
+For multi-topic, extensive knowledge areas (SKILL.md > 500 lines):
 
 ```
 my-skill/
 ├── SKILL.md              # Overview + navigation hub (keep under 500 lines)
-└── references/
+└── references/           # Flat structure only - no nested directories
     ├── 01-core-concepts.md
     ├── 02-advanced-workflow.md
     ├── 03-api-reference.md
     └── 04-troubleshooting.md
 ```
+
+**Important:** Reference files should be in a flat structure (one level deep). Do not create nested reference directories.
 
 ### Template for Complex Skills (SKILL.md)
 
@@ -475,35 +485,50 @@ For error details, see [Troubleshooting](references/04-troubleshooting.md).
 - Include APIs, frameworks, or tools with many use cases
 - Split extensive topics across multiple reference files
 - All relative links must resolve correctly
+- **Flat structure only** - no nested reference directories (all refs one level deep from SKILL.md)
+- Reference files can exceed 500 lines if needed
 
 ### Note on Directory Structure
 
-Generated skills use `references/` directory only (for complex skills). Reference files should be numbered with 2-digit prefixes (`01-`, `02-`, etc.) for consistent ordering. Do not create `scripts/` or `templates/` directories unless explicitly requested.
+Generated skills are **markdown-only** by default. Skills use agent tools (read, write, edit, bash) to perform their tasks.
+
+- Use `references/` directory only for complex skills
+- Reference files should be numbered with 2-digit prefixes (`01-`, `02-`, etc.) for consistent ordering
+- Do not create `scripts/`, `templates/`, or `assets/` directories unless explicitly requested
+- **Flat structure** - all reference files one level deep, no nested directories
 
 ## Frontmatter Requirements
 
-All skills must include complete YAML frontmatter:
+All skills must include YAML frontmatter with at minimum the required fields:
 
-### Required Fields
+### Required Fields (All Platforms)
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `name` | string | Yes | Must match parent directory exactly (lowercase, hyphens only) |
-| `description` | string | Yes | 1-1024 characters, third person, WHAT + WHEN |
-| `version` | string | Yes | Semantic version (e.g., `"0.2.0"`) |
-| `author` | string | Yes | Name and email (e.g., `Your Name <email@example.com>`) |
-| `license` | string | Yes | Usually `MIT` unless specified otherwise |
-| `tags` | array | Yes | Relevant keywords for discovery |
-| `category` | string | Yes | Skill category (e.g., `tooling`, `development`, `devops`) |
+| `name` | string | Yes | Must match parent directory exactly, passes regex `^[a-z0-9]+(-[a-z0-9]+)*$` |
+| `description` | string | Yes | 1-1024 characters, includes WHAT + WHEN |
+
+### Recommended Fields (For Best Compatibility)
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `version` | string | Recommended | Semantic version (e.g., `"0.2.0"`) |
+| `author` | string | Recommended | Name and email (e.g., `Your Name <email@example.com>`) |
+| `license` | string | Recommended | Usually `MIT` unless specified otherwise |
+| `tags` | array | Recommended | Relevant keywords for discovery |
+| `category` | string | Recommended | Skill category (e.g., `tooling`, `development`, `devops`) |
 | `external_references` | array | Conditional | Starting point URLs provided by user (not all crawled URLs) |
 
-### Optional Fields
+### Optional Fields (Union Across Platforms)
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `required_environment_variables` | array | Env vars needed for full functionality |
-| `compatibility` | object | Platform-specific compatibility notes |
-| `references` | array | External documentation URLs (deprecated, use `external_references`) |
+| Field | Type | Platforms | Description |
+|-------|------|-----------|-------------|
+| `required_environment_variables` | array | All | Env vars needed for full functionality |
+| `compatibility` | string/object | pi, opencode | Platform-specific compatibility notes |
+| `metadata` | object | pi, opencode | String-to-string map for custom metadata |
+| `allowed-tools` | string | pi (experimental) | Space-delimited list of pre-approved tools |
+| `disable-model-invocation` | boolean | pi | When `true`, skill hidden from system prompt |
+| `references` | array | Deprecated | External documentation URLs (use `external_references`) |
 
 ### Frontmatter Validation Rules
 
@@ -511,7 +536,6 @@ All skills must include complete YAML frontmatter:
 - ✅ `description` is 1-1024 characters
 - ✅ `description` uses third person (no "I", "you", "we")
 - ✅ `description` includes both WHAT the skill does and WHEN to use it
-- ✅ No XML tags in any frontmatter values
 - ✅ All required fields present
 
 ### Example Frontmatter (Simple Skill)
@@ -577,11 +601,12 @@ external_references:
 
 ## Summary
 
-- **Simple skills:** Single SKILL.md file, < 400 lines, focused on one task
-- **Complex skills:** SKILL.md + references/, > 400 lines, multiple topics
-- **Frontmatter:** Always complete with name, description, version, author, license, tags, category
-- **Naming:** Lowercase with hyphens, numbered reference files (01-, 02-, 03-)
-- **Links:** Use relative paths in main file (`references/01-topic.md`)
+- **Simple skills:** Single SKILL.md file, < 500 lines, focused on one task
+- **Complex skills:** SKILL.md + references/, > 500 lines, multiple topics, flat structure only
+- **Frontmatter:** `name` and `description` required; version, author, license, tags, category recommended
+- **Naming:** Lowercase with hyphens (`^[a-z0-9]+(-[a-z0-9]+)*$`), numbered reference files (01-, 02-, 03-)
+- **Links:** Use relative paths in main file (`references/01-topic.md`), flat structure only
 - **Progressive disclosure:** High-level in SKILL.md, details in references/
+- **Markdown-only:** Skills use agent tools (read, write, edit, bash), no bundled scripts/assets required
 
-See [Validation Checklist](06-validation-checklist.md) for complete validation requirements before finalizing skills.
+See [Validation Checklist](07-validation-checklist.md) for complete validation requirements before finalizing skills.

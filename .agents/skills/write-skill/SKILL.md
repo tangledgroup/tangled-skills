@@ -1,16 +1,13 @@
 ---
 name: write-skill
-description: Generate fine-grained agent skills from minimal prompts, complex requirements, URL documentation crawling, git introspection, and directory analysis. Researches and creates complete, spec-compliant skills using available tools.
-version: "0.5.2"
+description: Generate fine-grained agent skills from user requirements, creating complete spec-compliant markdown files that work across pi, opencode, claude, and codex platforms. Use when creating new skills or converting existing documentation into skill format.
+version: "0.6.0"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
   - skill-generation
   - automation
   - meta-skill
-  - documentation-crawling
-  - content-extraction
-  - git-introspection
 category: tooling
 external_references:
   - url: https://opencode.ai/docs/skills
@@ -25,7 +22,7 @@ external_references:
 
 # write-skill
 
-A meta-skill that generates other agent skills by analyzing user requirements, crawling documentation URLs, and examining codebases with git introspection. Uses available tools to research and create complete, spec-compliant skills.
+A meta-skill that generates other agent skills by analyzing user requirements and creating complete, spec-compliant markdown files. Skills use standard agent tools (read, write, edit, bash) to perform their tasks.
 
 ## When to Use
 
@@ -132,10 +129,15 @@ Auto-detect whether to create **simple** or **complex** skill:
 
 | Criteria | Simple Skill | Complex Skill |
 |----------|--------------|---------------|
-| Line count | < 400 lines | > 400 lines |
-| Topics | Single focused task | Multiple topics |
+| Line count | < 500 lines in SKILL.md | > 500 lines in SKILL.md |
+| Topics | Single focused task | Multiple topics (3+) |
 | Structure | Single SKILL.md | SKILL.md + references/ |
 | Use case | One specific workflow | APIs, frameworks, extensive docs |
+
+**When to use reference files:**
+- SKILL.md approaches 500 lines
+- User explicitly requests reference files
+- User indicates the skill is complex with many topics
 
 See [Skill Templates](references/06-skill-templates.md) for structure details.
 
@@ -143,9 +145,8 @@ See [Skill Templates](references/06-skill-templates.md) for structure details.
 
 Run validation checklist before finalizing:
 
-- ✅ Frontmatter complete (name, description, version, etc.)
-- ✅ Third-person throughout document
-- ✅ No XML tags in frontmatter values
+- ✅ `name` passes regex: `^[a-z0-9]+(-[a-z0-9]+)*$`
+- ✅ `description` is 1-1024 characters
 - ✅ Structure matches type (simple vs complex)
 - ✅ Relative links resolve correctly
 - ✅ Code snippets complete and valid
@@ -172,21 +173,23 @@ See [Validation Checklist](references/07-validation-checklist.md) for complete r
 
 Generated skills are created in `.agents/skills/<skill-name>/`:
 
-**Simple skills (< 400 lines):**
+**Simple skills (SKILL.md < 500 lines):**
 ```
 my-skill/
 └── SKILL.md              # All content inline, no references directory
 ```
 
-**Complex skills (> 400 lines):**
+**Complex skills (SKILL.md > 500 lines):**
 ```
 my-skill/
 ├── SKILL.md              # Overview + navigation hub (under 500 lines)
-└── references/           # Extracted documentation only
+└── references/           # Flat structure only, no nested references
     ├── 01-core-concepts.md
     ├── 02-advanced-workflow.md
     └── 03-api-reference.md
 ```
+
+**Note:** Reference files can exceed 500 lines if needed. Only SKILL.md should stay under 500 lines.
 
 ## Important Notes
 
@@ -194,14 +197,14 @@ my-skill/
 2. **Prefer bash/curl** - Primary method for web fetching and file operations
 3. **Respect rate limits** - Add delays between URL requests, check robots.txt
 4. **Validate output** - Run checklist before presenting generated skill
-5. **Auto-detect structure** - Use single-file for < 400 lines, multi-file for > 400 lines
+5. **Auto-detect structure** - Use single-file for < 500 lines, multi-file for > 500 lines
 6. **User review** - Always present generated skill for approval before writing
-7. **Third-person descriptions** - Required throughout (Claude compatibility)
-8. **No XML in frontmatter** - Never include XML tags in YAML values
-9. **Numbered reference files** - Use 2-digit prefixes (`01-`, `02-`, `03-`) for consistent ordering
-10. **Cross-platform compatible** - Generate skills for pi, opencode, claude, and hermes
-11. **external_references field** - Include only user-provided starting URLs, not all crawled pages
-12. **Directory analysis then git** - Scan directory structure first, then use git introspection to validate and prioritize content
+7. **Flat reference structure** - No nested references (all refs one level deep from SKILL.md)
+8. **Numbered reference files** - Use 2-digit prefixes (`01-`, `02-`, `03-`) for consistent ordering
+9. **Cross-platform compatible** - Generate skills for pi, opencode, claude, and codex
+10. **external_references field** - Include only user-provided starting URLs, not all crawled pages
+11. **Markdown-only skills** - Skills use agent tools (read, write, edit, bash), no bundled scripts/assets required
+12. **Clear descriptions** - Write specific descriptions for proper skill matching across platforms
 
 ## Cross-Platform Compatibility
 
@@ -211,32 +214,51 @@ Generated skills work across these platforms:
 |----------|-----------|-------|
 | **pi** | Lenient | Warns on violations but loads skill |
 | **opencode** | Strict | Missing `description` prevents loading |
-| **claude** | Strict | Requires third-person, rejects XML in frontmatter |
+| **claude** | Strict | Rejects invalid frontmatter |
+| **codex** | Strict | Requires valid name and description |
 | **hermes** | Flexible | Supports platform filtering and env passthrough |
+
+### Required Fields (All Platforms)
+
+- `name`: 1-64 chars, lowercase alphanumeric with hyphens (`^[a-z0-9]+(-[a-z0-9]+)*$`)
+- `description`: 1-1024 characters, specific enough for proper skill matching
+
+### Optional Fields (Union Across Platforms)
+
+- `license` (pi, opencode)
+- `compatibility` (pi, opencode)
+- `metadata` - string-to-string map (pi, opencode)
+- `allowed-tools` (pi - experimental)
+- `disable-model-invocation` (pi)
+- `agents/openai.yaml` for codex UI metadata and policy
 
 See [Validation Checklist](references/07-validation-checklist.md) for detailed requirements.
 
 ## Limitations
 
 - Tool availability depends on agent configuration (bash/curl assumed available)
-- URL crawling depth limited by time/bandwidth preferences
-- Directory analysis limited to files user allows reading
-- Cannot execute discovered scripts, only analyze and reference them
 - Generated skills should be tested before production use
-- **HTML conversion quality** - Best with pandoc/pandoc-bin; basic extraction used otherwise
-- **PDF extraction quality** - Best with poppler-utils (pdftotext -layout); ghostscript provides fallback
-- **Git introspection** - Requires git repository; falls back to directory analysis for non-git projects
+- Skills are markdown-only by default (use agent tools for execution)
+- **Name validation** - Must match regex `^[a-z0-9]+(-[a-z0-9]+)*$`
+- **Description length** - Must be 1-1024 characters
 
 ## Optional Tools for Enhanced Processing
 
 Install these tools for better content processing:
 
-| Tool | Purpose | Install Command |
-|------|---------|-----------------|
-| **pandoc** or **pandoc-bin** | HTML → Markdown with structure preservation | `apt install pandoc` or `brew install pandoc` |
-| **poppler-utils** (pdftotext) | Best quality PDF text extraction with layout | `apt install poppler-utils` or `brew install poppler` |
-| **ghostscript** (gs) | Alternative PDF processor | `apt install ghostscript` or `brew install ghostscript` |
+| Tool | Purpose | Install Commands |
+|------|---------|------------------|
+| **pandoc** or **pandoc-bin** | HTML → Markdown with structure preservation | Debian/Ubuntu: `apt install pandoc`<br>Arch: `pacman -S pandoc`<br>macOS: `brew install pandoc`<br>Nix: `nix-shell -p pandoc`<br>Docker: `docker run pandoc/core`<br>Podman: `podman run docker.io/pandoc/core` |
+| **poppler-utils** (pdftotext) | Best quality PDF text extraction with layout | Debian/Ubuntu: `apt install poppler-utils`<br>Arch: `pacman -S poppler`<br>macOS: `brew install poppler`<br>Nix: `nix-shell -p poppler`<br>Docker: `docker run minidocks/poppler`<br>Podman: `podman run docker.io/minidocks/poppler` |
+| **ghostscript** (gs) | Alternative PDF processor | Debian/Ubuntu: `apt install ghostscript`<br>Arch: `pacman -S ghostscript`<br>macOS: `brew install ghostscript`<br>Nix: `nix-shell -p ghostscript`<br>Docker: `docker run minidocks/ghostscript`<br>Podman: `podman run docker.io/minidocks/ghostscript` |
+
+**NixOS users:** Add to `/etc/nixos/configuration.nix`:
+```nix
+environment.systemPackages = with pkgs; [ pandoc poppler ghostscript ];
+```
 
 Without these tools, the skill uses basic text extraction which may lose formatting but remains functional.
 
 See [Tool Detection](references/01-tool-detection.md) for installation details and benefits.
+
+
