@@ -42,7 +42,7 @@ All skills in this repository are automatically generated using the `write-skill
 | dayjs-1-11 | Day.js | 1.11 | JavaScript, date/time | Minimalist 2kB date manipulation library with Moment.js-compatible API |
 | deno-2-7 | Deno | 2.7 | TypeScript, JavaScript, runtime | Secure JavaScript/TypeScript runtime with built-in tooling and npm integration |
 | esbuild-0-28 | esbuild | 0.28 | JavaScript, bundler, TypeScript | Extremely fast JavaScript bundler with TypeScript and JSX support |
-| git | Git | - | version control, Git | Distributed version control system with branching and collaboration workflows |
+| git | Git | - | version control, Git, conventional-commits | Distributed version control with Conventional Commits and Keep a Changelog support |
 | htm-3-1 | htm | 3.1 | JavaScript, JSX, HTML | Tagged template syntax for JSX-like markup without a transpiler |
 | htmx-2 | htmx | 2 | HTML, AJAX, web | JavaScript library for AJAX and WebSockets directly from HTML attributes |
 | htmx-4 | htmx | 4 | HTML, AJAX, web | Modern hypermedia-driven architecture with declarative HTML syntax |

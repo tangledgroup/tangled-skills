@@ -1,7 +1,7 @@
 ---
 name: git
-description: A skill for using Git version control system to track changes, collaborate, and manage code repositories. Use when working with Git repositories, managing branches, or collaborating on code projects.
-version: "0.2.0"
+description: A skill for using Git version control system to track changes, collaborate, and manage code repositories. Use when working with Git repositories, managing branches, or collaborating on code projects. Follows Conventional Commits specification for commit messages and Keep a Changelog format for changelogs.
+version: "0.3.0"
 author: Your Name <email@example.com>
 license: MIT
 tags:
@@ -9,7 +9,13 @@ tags:
   - collaboration
   - repository
   - branching
+  - conventional-commits
+  - changelog
 category: version-control
+external_references:
+  - https://www.conventionalcommits.org/
+  - https://keepachangelog.com/
+  - https://semver.org/
 ---
 
 # Git Version Control Skill
@@ -66,20 +72,20 @@ git push origin main
 
 See [Basic Operations](references/02-basic-operations.md) for detailed commands.
 
-### Semantic Commit Messages (Conventional Commits)
+### Semantic Commit Messages (Conventional Commits + Keep a Changelog)
 
-Use [Conventional Commits](https://www.conventionalcommits.org/) for human and machine-readable commit history. This specification provides an easy set of rules for creating an explicit commit history, making it easier to write automated tools on top of.
+Use [Conventional Commits](https://www.conventionalcommits.org/) for the **first line** of commit messages and [Keep a Changelog](https://keepachangelog.com/) for the **body**. This combination provides human and machine-readable commit history with standardized changelog formatting.
 
 **Format:**
 ```
-<type>[optional scope]: <description>
+<type>[optional scope]: <description>    # Conventional Commits (first line)
 
-[optional body]
+[optional body]                          # Keep a Changelog format
 
-[optional footer(s)]
+[optional footer(s)]                     # Conventional Commits footers
 ```
 
-#### Types
+#### Commit Types (Conventional Commits)
 
 The Conventional Commits specification **MUST** use `feat` and `fix` types. Additional types are allowed but have no implicit SemVer effect.
 
@@ -133,14 +139,40 @@ A scope **MAY** be provided after a type to provide additional contextual inform
 - `docs(readme): update installation steps`
 - `feat(lang): add Polish language`
 
-#### Body and Footers
+#### Body (Keep a Changelog Format)
 
-**Body:**
-- A longer commit body **MAY** be provided after the short description, providing additional contextual information about the code changes.
+The commit body should follow [Keep a Changelog](https://keepachangelog.com/) format for consistency with generated changelogs. This provides a standardized way to document changes.
+
+**Body structure:**
 - The body **MUST** begin one blank line after the description.
-- The body is free-form and **MAY** consist of any number of newline-separated paragraphs.
+- Use categorized sections that match conventional commit types:
+  - **Added** - New features (corresponds to `feat`)
+  - **Changed** - Changes in existing functionality
+  - **Deprecated** - Soon-to-be removed features
+  - **Removed** - Removed features (breaking changes)
+  - **Fixed** - Bug fixes (corresponds to `fix`)
+  - **Security** - Security improvements or vulnerabilities fixed
+- Each category **SHOULD** use bullet points for clarity.
+- The body **MAY** consist of any number of categories with newline-separated items.
 
-**Footers:**
+**Example body:**
+```
+Added:
+- User authentication via OAuth2 provider
+- New /api/v2/users endpoint with pagination
+
+Changed:
+- Response format now includes total count for paginated results
+
+Fixed:
+- Timeout error on slow network connections
+- Memory leak in session cleanup routine
+
+Security:
+- Updated dependencies to patch CVE-2024-1234
+```
+
+**Footers (Conventional Commits):**
 - One or more footers **MAY** be provided one blank line after the body.
 - Each footer **MUST** consist of a word token, followed by either a `:<space>` or `<space>#` separator, followed by a string value (inspired by [git trailer format](https://git-scm.com/docs/git-interpret-trailers)).
 - A footer's token **MUST** use `-` in place of whitespace characters (e.g., `Reviewed-by`, not `Reviewed by`). An exception is made for `BREAKING CHANGE`, which **MAY** also be used as a token.
@@ -167,7 +199,9 @@ git commit -m "fix: prevent racing of requests" \
 - `Reviewed-by: Name` - Track code review approval
 - `Co-authored-by: Name <email>` - For co-authored commits
 
-#### Examples by Type
+### Complete Commit Examples
+
+#### Simple Commits
 
 ```bash
 # New feature
@@ -178,18 +212,6 @@ git commit -m "feat(auth): add OAuth2 support"
 
 # Bug fix
 git commit -m "fix(api): resolve timeout on slow connections"
-
-# Breaking change with ! (no footer needed)
-git commit -m "feat!: remove deprecated login endpoint"
-
-# Breaking change with scope and !
-git commit -m "feat(api)!: change response format to JSON"
-
-# Breaking change with footer only
-git commit -m "chore: update dependencies" -m "BREAKING CHANGE: requires Node.js 18+"
-
-# Breaking change with both ! and footer
-git commit -m "feat!: drop support for Node 6" -m "BREAKING CHANGE: use JavaScript features not available in Node 6."
 
 # Documentation
 git commit -m "docs(readme): update installation steps"
@@ -202,12 +224,70 @@ git commit -m "refactor(utils): simplify date formatting logic"
 
 # Test addition
 git commit -m "test(auth): add unit tests for login flow"
+```
 
-# Build changes
-git commit -m "build: update webpack configuration"
+#### Breaking Changes
 
-# CI changes
-git commit -m "ci: add GitHub Actions workflow"
+```bash
+# Breaking change with ! (no footer needed)
+git commit -m "feat!: remove deprecated login endpoint"
+
+# Breaking change with scope and !
+git commit -m "feat(api)!: change response format to JSON"
+
+# Breaking change with footer only
+git commit -m "chore: update dependencies" -m "BREAKING CHANGE: requires Node.js 18+"
+
+# Breaking change with both ! and footer
+git commit -m "feat!: drop support for Node 6" -m "BREAKING CHANGE: use JavaScript features not available in Node 6."
+```
+
+#### Commits with Keep a Changelog Body
+
+```bash
+# Feature with changelog-style body
+git commit -m "feat: add user authentication system" \
+  -m "" \
+  -m "Added:" \
+  -m "- User login and registration endpoints" \
+  -m "- Password reset functionality" \
+  -m "- Email verification workflow" \
+  -m "" \
+  -m "Changed:" \
+  -m "- API response now includes user object in authentication tokens"
+
+# Bug fix with changelog-style body
+git commit -m "fix(api): resolve timeout and memory issues" \
+  -m "" \
+  -m "Fixed:" \
+  -m "- Timeout error on slow network connections" \
+  -m "- Memory leak in session cleanup routine" \
+  -m "" \
+  -m "Security:" \
+  -m "- Updated dependencies to patch CVE-2024-1234"
+
+# Complex change with multiple categories
+git commit -m "feat(auth): overhaul authentication system" \
+  -m "" \
+  -m "Added:" \
+  -m "- OAuth2 provider integration (Google, GitHub, Microsoft)" \
+  -m "- Two-factor authentication support" \
+  -m "- Session management with refresh tokens" \
+  -m "" \
+  -m "Changed:" \
+  -m "- Authentication response format now includes expiration timestamps" \
+  -m "- Token validation is now async for better performance" \
+  -m "" \
+  -m "Deprecated:" \
+  -m "- Legacy API v1 authentication endpoints (remove in next major version)" \
+  -m "" \
+  -m "Fixed:" \
+  -m "- Race condition during concurrent login attempts" \
+  -m "- Memory leak in session cleanup routine" \
+  -m "" \
+  -m "Security:" \
+  -m "- Updated dependencies to patch CVE-2024-1234" \
+  -m "- Added rate limiting to prevent brute force attacks"
 
 # Revert a commit with refs to original commits
 git commit -m "revert: let us never again speak of the noodle incident" \
@@ -216,11 +296,11 @@ git commit -m "revert: let us never again speak of the noodle incident" \
 # Multi-paragraph body with multiple footers
 git commit -m "fix: prevent racing of requests" \
   -m "" \
+  -m "Fixed:" \
+  -m "- Race condition when multiple requests are processed concurrently" \
+  -m "" \
   -m "Introduce a request id and a reference to latest request. Dismiss" \
   -m "incoming responses other than from latest request." \
-  -m "" \
-  -m "Remove timeouts which were used to mitigate the racing issue but are" \
-  -m "obsolete now." \
   -m "" \
   -m "Reviewed-by: Alice" \
   -m "Refs: #123"
@@ -228,16 +308,23 @@ git commit -m "fix: prevent racing of requests" \
 
 #### Benefits
 
-Conventional Commits enables:
+**Conventional Commits enables:**
 - Automatically generating CHANGELOGs
 - Automatically determining a semantic version bump (based on the types of commits landed)
 - Communicating the nature of changes to teammates, the public, and other stakeholders
 - Triggering build and publish processes
 - Making it easier for people to contribute to your projects, by allowing them to explore a more structured commit history
 
+**Keep a Changelog format provides:**
+- Consistent categorization of changes (Added, Changed, Deprecated, Removed, Fixed, Security)
+- Human-readable changelogs that are easy to scan
+- Clear communication about what changed and why
+- Better migration guides for users upgrading between versions
+- Standardized format that tools can parse and generate
+
 See [Basic Operations](references/02-basic-operations.md) for more on commits.
 
-### Conventional Commits FAQ
+### Commit Message FAQ
 
 **Q: How should I deal with commit messages in the initial development phase?**
 A: Proceed as if you've already released the product. Someone (even fellow developers) is using your software and they'll want to know what's fixed, what breaks, etc.
@@ -440,7 +527,7 @@ See [Codebase Analysis](references/07-codebase-analysis.md) for complete interpr
 | Need to undo last commit | `git reset --soft HEAD~1` (keeps changes) or `git reset --hard HEAD~1` (discards) |
 | Lost a branch | Check `git reflog` for recovery |
 
-### Conventional Commits Troubleshooting
+### Commit Message Troubleshooting
 
 | Problem | Solution |
 |---------|----------|
@@ -450,5 +537,21 @@ See [Codebase Analysis](references/07-codebase-analysis.md) for complete interpr
 | Forgot BREAKING CHANGE footer | Amend: `git commit --amend -m "BREAKING CHANGE: description"` |
 | Scope in wrong position | Should be before `!`: `feat(api)!: not feat!(api):` |
 | Non-conforming commit landed | Not catastrophic; tools will simply skip that commit |
+| Changelog categories missing | Amend with Keep a Changelog format: `git commit --amend -m "Added:\n- New feature"` |
 
 For detailed troubleshooting, see [History Manipulation](references/05-history-manipulation.md).
+
+## References
+
+### Official Specifications
+
+- **Conventional Commits**: [https://www.conventionalcommits.org/](https://www.conventionalcommits.org/) - Specification for the first line of commit messages (type, scope, description)
+- **Keep a Changelog**: [https://keepachangelog.com/](https://keepachangelog.com/) - Specification for changelog format and commit body structure
+- **SemVer 2.0.0**: [https://semver.org/](https://semver.org/) - Semantic versioning that Conventional Commits enables
+
+### Tools and Resources
+
+- **commitlint**: Linting tool for conventional commits
+- **standard-version**: Automated changelog generation from conventional commits
+- **git cz (Commitizen)**: Interactive commit message generator
+- **Conventional Changelog**: Plugin-based changelog generator
