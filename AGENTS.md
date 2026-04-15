@@ -8,10 +8,10 @@ This document provides guidance for AI agents working with the tangled-skills re
 tangled-skills/
 ├── .agents/skills/
 │   ├── <skill-name>/
-│   │   ├── SKILL.md          # Main skill file (required)
-│   │   └── refs/             # Optional reference files
-│   │       ├── topic1.md
-│   │       └── topic2.md
+│   │   ├── SKILL.md          # Main skill file (required, must include YAML header)
+│   │   └── references/       # Optional reference files (flat structure, numbered)
+│   │       ├── 01-topic-name.md
+│   │       └── 02-another-topic.md
 ├── README.md                 # Skills table and overview
 └── AGENTS.md                 # This file
 ```
@@ -30,9 +30,23 @@ Examples:
 
 ### 2. Main Skill File (SKILL.md)
 
-Each skill has a `SKILL.md` file that follows this structure:
+Each skill has a `SKILL.md` file that **MUST include a YAML header** followed by the main content:
 
 ```markdown
+---
+name: <skill-name>
+description: <1-1024 character description, third person, includes WHAT and WHEN>
+license: MIT
+author: <Your Name> <email@example.com>
+version: "<semver version>"
+tags:
+  - <tag1>
+  - <tag2>
+category: <category>
+external_references:
+  - https://<user-provided-url>
+---
+
 # <Project Name> <Version>
 
 ## Overview
@@ -66,30 +80,74 @@ Deeper topics that may be in separate reference files.
 - Other relevant resources
 ```
 
+**YAML Header Requirements (CRITICAL):**
+- File must start with `---` on line 1
+- `name`: Must match directory name, lowercase alphanumeric with hyphens (`^[a-z0-9]+(-[a-z0-9]+)*$`)
+- `description`: 1-1024 characters, specific enough for proper skill matching across platforms
+- All fields properly quoted if containing special characters
+- Header must end with `---` before main content
+- **Invalid YAML will prevent skill from loading on most platforms**
+
 ### 3. Reference Files (Optional)
 
-For large topics, break content into modular reference files:
+For large topics (> 500 lines in SKILL.md), break content into modular reference files:
 
+**Simple skills** (< 500 lines):
 ```
 <skill-name>/
-├── SKILL.md
-└── refs/
-    ├── architecture.md
-    ├── api-reference.md
-    └── examples.md
+└── SKILL.md                  # All content inline, no references directory
 ```
 
-Reference files allow loading specific topics on demand, keeping context usage efficient.
+**Complex skills** (> 500 lines):
+```
+<skill-name>/
+├── SKILL.md                  # Overview + navigation hub (under 500 lines)
+└── references/               # Flat structure only, numbered with 2-digit prefixes
+    ├── 01-core-concepts.md
+    ├── 02-advanced-workflow.md
+    └── 03-api-reference.md
+```
+
+**Important rules:**
+- Use `references/` directory (not `refs/`)
+- Number files with 2-digit prefixes (`01-`, `02-`, `03-`) for consistent ordering
+- Keep SKILL.md under 500 lines; reference files can be longer
+- Flat structure only - no nested references directories
+- Reference files allow loading specific topics on demand, keeping context usage efficient
 
 ### 4. Creating a New Skill
 
-1. **Determine the skill name** following the naming convention
+1. **Determine the skill name** following the naming convention (`^[a-z0-9]+(-[a-z0-9]+)*$`)
 2. **Create the skill directory**: `.agents/skills/<skill-name>/`
-3. **Write SKILL.md** with overview, when to use, core concepts, examples, and references
-4. **Add reference files** if the topic is large (optional)
-5. **Update README.md** by adding a new row to the skills table
+3. **Write SKILL.md** with:
+   - Valid YAML header (REQUIRED - see section 2)
+   - Overview, when to use, core concepts, examples, and references
+4. **Determine structure** based on content size:
+   - < 500 lines: Keep everything in SKILL.md (no references/)
+   - > 500 lines: Move detailed topics to `references/` with numbered files
+5. **Validate YAML header** using Python yaml.safe_load before finalizing
+6. **Update README.md** by adding a new row to the skills table
 
-### 5. Skill Content Guidelines
+### 5. YAML Header Field Requirements
+
+**Required fields (all platforms):**
+- `name`: 1-64 chars, matches directory name, regex: `^[a-z0-9]+(-[a-z0-9]+)*$`
+- `description`: 1-1024 characters, specific enough for proper skill matching
+
+**Optional fields (union across platforms):**
+- `license` (pi, opencode)
+- `compatibility` (pi, opencode)
+- `metadata` - string-to-string map (pi, opencode)
+- `allowed-tools` (pi - experimental)
+- `disable-model-invocation` (pi)
+- `agents/openai.yaml` for codex UI metadata and policy
+
+**Validation:**
+```bash
+python3 -c "import yaml; data=yaml.safe_load(open('SKILL.md').read().split('---',2)[1].split('---')[0]); print('✓ Valid' if 'name' in data and 'description' in data else '✗ Invalid')"
+```
+
+### 6. Skill Content Guidelines
 
 - **Be specific**: Clearly state when to use the skill
 - **Include examples**: Provide practical, copy-pasteable code
@@ -136,6 +194,20 @@ Here's a minimal example of a complete skill:
 
 #### SKILL.md
 ```markdown
+---
+name: hello-world-1-0
+description: A simple greeting library for demonstration purposes. Use when generating greetings or demonstrating basic skill structure.
+license: MIT
+author: Example Author <example@example.com>
+version: "1.0.0"
+tags:
+  - greeting
+  - example
+category: utilities
+external_references:
+  - https://example.com/hello-world
+---
+
 # Hello World 1.0
 
 ## Overview
@@ -171,6 +243,19 @@ print(message)  # Hello, Alice!
 - Documentation: https://example.com/hello-world
 - GitHub: https://github.com/example/hello-world
 ```
+
+## Important Notes
+
+1. **YAML header is REQUIRED** - Every skill must have valid YAML starting on line 1
+2. **Validate before finalizing** - Use yaml.safe_load to verify YAML syntax
+3. **Name validation** - Must match regex `^[a-z0-9]+(-[a-z0-9]+)*$`
+4. **Description length** - Must be 1-1024 characters, third person, includes WHAT and WHEN
+5. **Reference directory name** - Use `references/` not `refs/`
+6. **Numbered reference files** - Use 2-digit prefixes (`01-`, `02-`, `03-`)
+7. **Flat structure** - No nested references directories
+8. **Simple vs Complex** - < 500 lines = single file, > 500 lines = add references/
+9. **Cross-platform compatible** - Skills work on pi, opencode, claude, codex, hermes
+10. **external_references field** - Include only user-provided starting URLs, not all crawled pages
 
 ## Best Practices
 
