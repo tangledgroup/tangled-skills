@@ -75,6 +75,7 @@ All skills in this repository are automatically generated using the `write-skill
 | redis-py-7-4 | redis-py | 7.4 | Python, Redis | Comprehensive Python client for Redis with cluster and async support |
 | rqlite-9-4 | rqlite | 9.4 | SQLite, distributed database | Distributed relational database built on SQLite with Raft consensus |
 | ruff-0-4-10 | Ruff | 0.4.10 | Python, linter, formatter | Extremely fast Python linter and formatter written in Rust |
+| rustfs-1-0-0-alpha-93 | RustFS | 1.0.0-alpha.93 | Rust, object storage, S3, OpenStack Swift, distributed systems | High-performance distributed object storage with S3 compatibility, Swift API, and observability |
 | semver-2-0 | SemVer | 2.0 | versioning | Semantic Versioning specification for managing software version numbers |
 | solidjs-1-19 | SolidJS | 1.19 | JavaScript, TypeScript, reactive | Declarative framework with fine-grained reactivity and minimal overhead |
 | solid-meta-0-29 | solid-meta | 0.29 | SolidJS, SSR, meta tags | Document Head management for SolidJS with async SSR support |
