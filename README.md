@@ -77,10 +77,12 @@ All skills in this repository are automatically generated using the `write-skill
 | solid-meta-0-29 | solid-meta | 0.29 | SolidJS, SSR, meta tags | Document Head management for SolidJS with async SSR support |
 | solid-router-0-16 | solid-router | 0.16 | SolidJS, routing | Universal router for SolidJS with history, hash, and static modes |
 | solid-start-1-3 | SolidStart | 1.3 | SolidJS, fullstack, SSR | Fullstack framework for SolidJS with SSR, SSG, and API routes |
+| scipy-1-17-1 | SciPy | 1.17.1 | Python, scientific computing, optimization, statistics, signal processing, linear algebra | Comprehensive toolkit for scientific computing covering optimization, integration, interpolation, signal processing, linear algebra, statistics, clustering, spatial data, sparse matrices, FFT, image processing, and special functions |
 | spec-kit-0-6-1 | Spec Kit | 0.6.1 | AI, specification-driven development | Specification-first workflows with AI agents to generate implementation plans |
 | sqlalchemy-2-0 | SQLAlchemy | 2.0 | Python, ORM, database | Database toolkit with ORM mapping and SQL expression construction |
 | duckdb-1-5-2 | DuckDB | 1.5.2 | SQL, analytics, embedded database, Python, data science | High-performance analytical SQL database with nested types and vectorized execution |
 | sqlite-3-53 | SQLite | 3.53 | SQL, database | Embedded SQL database with FTS5, JSON, R-Tree, and virtual tables |
+| sentence-transformers-5-4-1 | Sentence Transformers | 5.4.1 | Python, PyTorch, NLP, embeddings, semantic search, reranking | Dense/sparse embeddings, semantic search, paraphrase mining, clustering, multimodal CLIP models with training support |
 | stringzilla-4-6 | StringZilla | 4.6 | C, C++, Python, Rust, SIMD | High-performance SIMD-accelerated string search and fuzzy matching |
 | tailwindcss-4-2 | Tailwind CSS | 4.2 | CSS, utility-first | Utility-first CSS framework with OKLCH color space and cascade layers |
 | tailwindcss-browser-4-2 | Tailwind CSS Browser | 4.2 | CSS, browser build | In-browser Tailwind compilation without Node.js or build tools |
