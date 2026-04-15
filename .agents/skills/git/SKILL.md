@@ -403,6 +403,14 @@ This is the standard workflow for sharing changes:
 2. `git commit` - Create a snapshot with a descriptive message
 3. `git push` - Upload commits to the remote repository
 
+**Example: Committing embeddings work**
+```bash
+# Working on sentence-transformers integration
+git add src/embeddings.py requirements.txt
+git commit -m "feat(nlp): integrate sentence-transformers for semantic search"
+git push origin feature/semantic-search
+```
+
 ### Codebase Analysis (Before Reading Code)
 
 When joining a new project or investigating issues, run these diagnostic commands **before reading any code** to understand where the codebase "hurts". These five commands reveal churn hotspots, bus factor risks, bug clusters, team momentum, and crisis patterns.
@@ -555,3 +563,8 @@ For detailed troubleshooting, see [History Manipulation](references/05-history-m
 - **standard-version**: Automated changelog generation from conventional commits
 - **git cz (Commitizen)**: Interactive commit message generator
 - **Conventional Changelog**: Plugin-based changelog generator
+
+### Related Skills
+
+- **[networkx-3-6-1](../../networkx-3-6-1/SKILL.md)**: For graph analysis, network algorithms, and complex network studies in Python
+- **[sentence-transformers-5-4-1](../../sentence-transformers-5-4-1/SKILL.md)**: For versioning embedding models and tracking NLP experiments with proper semantic commits

@@ -91,6 +91,7 @@ All skills in this repository are automatically generated using the `write-skill
 | tokenizers-0-22-3 | Tokenizers | 0.22.3 | Rust, Python, Node.js, NLP | Fast state-of-the-art tokenizers for BPE, WordPiece, Unigram with alignment tracking
 | transformers-5-5-4 | Transformers | 5.5.4 | Python, PyTorch, NLP, computer vision, audio, multimodal | State-of-the-art pretrained models for text, vision, audio with Pipeline API and Trainer |
 | usearch-2-24 | USearch | 2.24 | Python, C++, vector search | High-performance similarity search engine supporting HNSW algorithm |
+| networkx-3-6-1 | NetworkX | 3.6.1 | Python, graph theory, network analysis, algorithms | Graph creation/manipulation with shortest paths, centrality measures, community detection, visualization, and file I/O |
 | cython-3-2-4 | Cython | 3.2.4 | Python, C, C++, compiler, performance optimization, NumPy, OpenMP | Optimizing Python compiler for creating C extensions with C/C++ integration and parallel computing |
 | llama-cpp-b8789 | llama.cpp | b8789 | C/C++, LLM inference, GGUF, CUDA, Metal, quantization | High-performance LLM inference with GPU acceleration and OpenAI-compatible server |
 | caveman-1-5-1 | Caveman | 1.5.1 | communication, token efficiency | Ultra-compressed communication mode cutting token usage ~75% while maintaining technical accuracy |
