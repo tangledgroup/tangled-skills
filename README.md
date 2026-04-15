@@ -35,6 +35,7 @@ All skills in this repository are automatically generated using the `write-skill
 | axios-1-15 | Axios | 1.15 | JavaScript, HTTP, REST | Promise-based HTTP client for browser and Node.js environments |
 | bcrypt-5-0 | bcrypt | 5.0 | Python, cryptography, password hashing | Password hashing and key derivation using bcrypt and bcrypt_pbkdf |
 | bun-1-3-12 | Bun | 1.3.12 | JavaScript, TypeScript, runtime | Fast JavaScript runtime, package manager, bundler, and test runner |
+| boto3-1-42-89 | Boto3 | 1.42.89 | Python, AWS SDK, cloud services | Complete toolkit for AWS SDK for Python with high-level resource interface and low-level client access to 200+ AWS services |
 | changelog-1-1 | Changelog | 1.1 | documentation, Keep a Changelog | Standardized format for documenting project changes human-readably |
 | crun-1-27 | crun | 1.27 | containers, OCI, Linux | Lightweight OCI container runtime with low memory footprint |
 | cryptography-46 | cryptography | 4.6 | Python, encryption, cryptography | Cryptographic primitives including encryption, hashing, and signatures |
@@ -51,6 +52,7 @@ All skills in this repository are automatically generated using the `write-skill
 | nextjs-16-2-3 | Next.js | 16.2.3 | React, TypeScript, SSR | Production-ready React framework with App Router and full-stack capabilities |
 | nodejs-24-14 | Node.js | 24.14 | JavaScript, runtime | Server-side JavaScript runtime with core modules and async programming |
 | nltk-3-9-2 | NLTK | 3.9.2 | Python, NLP, tokenization, POS tagging | Natural Language Processing toolkit with tokenization, stemming, lemmatization, parsing, and WordNet integration |
+| networkxternal-0-3 | NetworkXternal | 0.3 | Python, graph, database, NetworkX, SQLite, PostgreSQL, MySQL, MongoDB, Neo4J | NetworkX-compatible interface for external memory graphs persisted in databases, enabling Terabyte-Petabyte graphs that won't fit into RAM |
 | nuitka-4-0-8 | Nuitka | 4.0.8 | Python, compiler | Python to C compiler for creating native executables and extension modules |
 | numeral-2 | Numeral.js | 2 | JavaScript, number formatting | Library for formatting and manipulating numbers, currency, and percentages |
 | oat-0-6-0 | OAT | 0.6.0 | HTML, CSS, UI components | Ultra-lightweight semantic UI component library with zero dependencies |
