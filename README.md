@@ -93,6 +93,7 @@ All skills in this repository are automatically generated using the `write-skill
 | caveman-1-5-1 | Caveman | 1.5.1 | communication, token efficiency | Ultra-compressed communication mode cutting token usage ~75% while maintaining technical accuracy |
 | chonkie-1-6-2 | Chonkie | 1.6.2 | Python, JavaScript, RAG, text chunking, embeddings, vector databases | Lightweight text chunking library with 10+ chunkers, pipeline orchestration, and 32+ integrations |
 | agentmemory-0-8-9 | agentmemory | 0.8.9 | TypeScript, Node.js, MCP, AI agents, vector search | Persistent memory engine for AI coding agents with automatic context capture, hybrid search (BM25 + vector + graph), and multi-agent coordination via 43 MCP tools |
+| agentmemory-0-8-10 | agentmemory | 0.8.10 | TypeScript, Node.js, MCP, AI agents, iii-engine, knowledge graph | Persistent memory for AI coding agents with 43 MCP tools, 109 REST endpoints, hybrid search (BM25 + vector + graph), and multi-agent coordination via iii-engine primitives |
 | mem0-1-0-11 | Mem0 | 1.0.11 | Python, TypeScript, AI memory, LLM, vector search | Universal self-improving memory layer for LLM applications with persistent context across sessions |
 | mempalace-3-3-0 | MemPalace | 3.3.0 | Python, AI memory, RAG, ChromaDB | Local AI memory system with 96.6% LongMemEval recall using palace architecture |
 | uv-0-11-6 | uv | 0.11.6 | Python, package manager | Extremely fast Python package and project manager written in Rust |
