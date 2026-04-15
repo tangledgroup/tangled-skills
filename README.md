@@ -103,6 +103,7 @@ All skills in this repository are automatically generated using the `write-skill
 | numba-0-65-0 | Numba | 0.65.0 | Python, JIT compiler, LLVM, NumPy, CUDA, GPU | Just-in-time compiler for numerical Python with @jit, @vectorize, @stencil, and CUDA GPU acceleration |
 | numpy-2-4-4 | NumPy | 2.4.4 | Python, arrays, scientific computing, linear algebra | Fundamental package for scientific computing with n-dimensional arrays, mathematical functions, and high-performance numerical operations |
 | qwen3-embedding-1-0 | Qwen3 Embedding | 1.0 | embeddings, semantic-search, reranking, qwen, multilingual | State-of-the-art text embedding and reranking models (0.6B, 4B, 8B variants) built on Qwen3 foundation for semantic search, RAG, and multilingual applications |
+| qwen3-reranker-0-6B | Qwen3-Reranker | 0.6B/4B/8B | reranking, retrieval, qwen, transformers, vllm, rag, multilingual | Text reranking models for RAG pipelines and search systems with 100+ language support, 32K context, and instruction-aware ranking |
 | uv-0-11-6 | uv | 0.11.6 | Python, package manager | Extremely fast Python package and project manager written in Rust |
 | write-skill | write-skill | - | AI, skill generation | Generate fine-grained agent skills from prompts, documentation, and analysis |
 | zeromq-wiki-3-2 | ZeroMQ Wiki | 3.2 | messaging, distributed systems | Comprehensive guide to ZeroMQ socket patterns and architecture |
