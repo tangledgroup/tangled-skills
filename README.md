@@ -110,6 +110,7 @@ All skills in this repository are automatically generated using the `write-skill
 | qwen3-embedding-1-0 | Qwen3 Embedding | 1.0 | embeddings, semantic-search, reranking, qwen, multilingual | State-of-the-art text embedding and reranking models (0.6B, 4B, 8B variants) built on Qwen3 foundation for semantic search, RAG, and multilingual applications |
 | qwen3-reranker-06 | Qwen3-Reranker | 0.6/4/8B | reranking, retrieval, qwen, transformers, vllm, rag, multilingual | Text reranking models for RAG pipelines and search systems with 100+ language support, 32K context, and instruction-aware ranking |
 | uv-0-11-6 | uv | 0.11.6 | Python, package manager | Extremely fast Python package and project manager written in Rust |
+| cffi-2-0-0 | CFFI | 2.0.0 | Python, C integration, FFI | Python C Foreign Function Interface for calling C libraries with C-like declarations |
 | write-skill | write-skill | - | AI, skill generation | Generate fine-grained agent skills from prompts, documentation, and analysis |
 | zeromq-wiki-3-2 | ZeroMQ Wiki | 3.2 | messaging, distributed systems | Comprehensive guide to ZeroMQ socket patterns and architecture |
 | zeromq-zguide-3-2 | ZeroMQ ZGuide | 3.2 | messaging, distributed systems | ZeroMQ messaging patterns and distributed computing architectures |
