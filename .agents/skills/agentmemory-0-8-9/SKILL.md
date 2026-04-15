@@ -1,5 +1,3 @@
-# agentmemory 0.8.9
-
 ---
 name: agentmemory-0-8-9
 description: Persistent memory engine for AI coding agents providing automatic cross-session context capture, hybrid search (BM25 + vector + knowledge graph), and multi-agent coordination via MCP server with 43 tools. Works with Claude Code, Cursor, Gemini CLI, OpenCode, Hermes, OpenClaw, and any MCP client without external database dependencies.
@@ -17,6 +15,8 @@ external_references:
   - https://github.com/rohitg00/agentmemory/tree/v0.8.9
   - https://iii.dev/docs
 ---
+
+# agentmemory 0.8.9
 
 ## Overview
 

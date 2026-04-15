@@ -1,5 +1,3 @@
-# llama.cpp b8789
-
 ---
 name: llama-cpp-b8789
 description: C/C++ LLM inference library providing GGUF model support, quantization, GPU acceleration (CUDA/Metal/HIP/Vulkan/SYCL), OpenAI-compatible server, multimodal processing, and speculative decoding for running large language models locally with high performance across diverse hardware platforms.
@@ -19,6 +17,8 @@ external_references:
   - https://github.com/ggml-org/llama.cpp/tree/b8789
   - https://github.com/ggml-org/llama.cpp/tree/b8789/docs
 ---
+
+# llama.cpp b8789
 
 **llama.cpp** is a high-performance C/C++ library for running large language models (LLMs) with minimal dependencies and state-of-the-art performance across diverse hardware platforms. Commit `b8789` represents a mature release with comprehensive model support, multimodal capabilities, and production-ready server infrastructure.
 
