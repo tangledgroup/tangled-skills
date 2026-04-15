@@ -91,6 +91,7 @@ All skills in this repository are automatically generated using the `write-skill
 | tokenizers-0-22-3 | Tokenizers | 0.22.3 | Rust, Python, Node.js, NLP | Fast state-of-the-art tokenizers for BPE, WordPiece, Unigram with alignment tracking
 | transformers-5-5-4 | Transformers | 5.5.4 | Python, PyTorch, NLP, computer vision, audio, multimodal | State-of-the-art pretrained models for text, vision, audio with Pipeline API and Trainer |
 | usearch-2-24 | USearch | 2.24 | Python, C++, vector search | High-performance similarity search engine supporting HNSW algorithm |
+| cython-3-2-4 | Cython | 3.2.4 | Python, C, C++, compiler, performance optimization, NumPy, OpenMP | Optimizing Python compiler for creating C extensions with C/C++ integration and parallel computing |
 | llama-cpp-b8789 | llama.cpp | b8789 | C/C++, LLM inference, GGUF, CUDA, Metal, quantization | High-performance LLM inference with GPU acceleration and OpenAI-compatible server |
 | caveman-1-5-1 | Caveman | 1.5.1 | communication, token efficiency | Ultra-compressed communication mode cutting token usage ~75% while maintaining technical accuracy |
 | chonkie-1-6-2 | Chonkie | 1.6.2 | Python, JavaScript, RAG, text chunking, embeddings, vector databases | Lightweight text chunking library with 10+ chunkers, pipeline orchestration, and 32+ integrations |
@@ -98,6 +99,7 @@ All skills in this repository are automatically generated using the `write-skill
 | agentmemory-0-8-10 | agentmemory | 0.8.10 | TypeScript, Node.js, MCP, AI agents, iii-engine, knowledge graph | Persistent memory for AI coding agents with 43 MCP tools, 109 REST endpoints, hybrid search (BM25 + vector + graph), and multi-agent coordination via iii-engine primitives |
 | mem0-1-0-11 | Mem0 | 1.0.11 | Python, TypeScript, AI memory, LLM, vector search | Universal self-improving memory layer for LLM applications with persistent context across sessions |
 | mempalace-3-3-0 | MemPalace | 3.3.0 | Python, AI memory, RAG, ChromaDB | Local AI memory system with 96.6% LongMemEval recall using palace architecture |
+| numpy-2-4-4 | NumPy | 2.4.4 | Python, arrays, scientific computing, linear algebra | Fundamental package for scientific computing with n-dimensional arrays, mathematical functions, and high-performance numerical operations |
 | uv-0-11-6 | uv | 0.11.6 | Python, package manager | Extremely fast Python package and project manager written in Rust |
 | write-skill | write-skill | - | AI, skill generation | Generate fine-grained agent skills from prompts, documentation, and analysis |
 | zeromq-wiki-3-2 | ZeroMQ Wiki | 3.2 | messaging, distributed systems | Comprehensive guide to ZeroMQ socket patterns and architecture |
