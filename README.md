@@ -99,6 +99,7 @@ All skills in this repository are automatically generated using the `write-skill
 | agentmemory-0-8-10 | agentmemory | 0.8.10 | TypeScript, Node.js, MCP, AI agents, iii-engine, knowledge graph | Persistent memory for AI coding agents with 43 MCP tools, 109 REST endpoints, hybrid search (BM25 + vector + graph), and multi-agent coordination via iii-engine primitives |
 | mem0-1-0-11 | Mem0 | 1.0.11 | Python, TypeScript, AI memory, LLM, vector search | Universal self-improving memory layer for LLM applications with persistent context across sessions |
 | mempalace-3-3-0 | MemPalace | 3.3.0 | Python, AI memory, RAG, ChromaDB | Local AI memory system with 96.6% LongMemEval recall using palace architecture |
+| numba-0-65-0 | Numba | 0.65.0 | Python, JIT compiler, LLVM, NumPy, CUDA, GPU | Just-in-time compiler for numerical Python with @jit, @vectorize, @stencil, and CUDA GPU acceleration |
 | numpy-2-4-4 | NumPy | 2.4.4 | Python, arrays, scientific computing, linear algebra | Fundamental package for scientific computing with n-dimensional arrays, mathematical functions, and high-performance numerical operations |
 | uv-0-11-6 | uv | 0.11.6 | Python, package manager | Extremely fast Python package and project manager written in Rust |
 | write-skill | write-skill | - | AI, skill generation | Generate fine-grained agent skills from prompts, documentation, and analysis |
