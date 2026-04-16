@@ -95,6 +95,7 @@ All skills in this repository are automatically generated using the `write-skill
 | rustfs-1-0-0-alpha-93 | rustfs-1-0-0-alpha | 93 | Object Storage, S3, Swift, Distributed Systems | High-performance distributed object storage system with S3-compatible API, OpenStack Swift support, and comprehensive... |
 | scipy-1-17-1 | scipy-1-17 | 1 | Scipy, Scientific Computing, Optimization, Statistics | Comprehensive toolkit for SciPy 1.17.1 scientific computing library covering optimization, integration, interpolation... |
 | semver-2-0 | semver-2 | 0 | Semantic Versioning, Semver, Versioning, Software Versions | A skill for implementing and validating Semantic Versioning 2.0.0 (SemVer) to manage software version numbers, determ... |
+| spacy-3-8-14 | spacy-3-8 | 14 | Nlp, Natural Language Processing, Python, Machine Learning | Industrial-strength NLP library for Python providing tokenization, named entity recognition, dependency parsing, text classification, and more with support for 70+ languages, neural network models, transformers, and production-ready training systems.
 | sentence-transformers-5-4-1 | sentence-transformers-5-4 | 1 | Embeddings, Semantic Search, Reranking, Nlp | A comprehensive toolkit for computing text embeddings, semantic search, and reranking using Sentence Transformers v5.... |
 | solid-meta-0-29 | solid-meta-0 | 29 | Solidjs, Meta Tags, Ssr, Document Head | A skill for managing document head tags in SolidJS applications with @solidjs/meta v0.29, providing asynchronous SSR-... |
 | solid-router-0-16 | solid-router-0 | 16 | Solidjs, Router, Routing, Navigation | A skill for using Solid Router v0.16, the universal router for SolidJS that provides fine-grained reactivity for rout... |
@@ -120,5 +121,5 @@ All skills in this repository are automatically generated using the `write-skill
 
 ## Statistics
 
-- **Total Skills**: 99
-- **Last Updated**: 2026-04-15
+- **Total Skills**: 100
+- **Last Updated**: 2026-04-16
