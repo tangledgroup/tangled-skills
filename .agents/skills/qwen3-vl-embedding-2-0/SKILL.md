@@ -1,6 +1,6 @@
 ---
 name: qwen3-vl-embedding-2-0
-description: A comprehensive toolkit for using Qwen3-VL-Embedding models (2B and 8B variants) to generate multimodal embeddings from text, images, screenshots, videos, and mixed-modal inputs. Use when building multimodal retrieval systems, implementing cross-modal search, performing visual question answering, clustering multimodal content, or creating RAG pipelines that require semantic similarity between different modalities. This is the latest version (also available as qwen3-vl-embedding).
+description: A comprehensive toolkit for using Qwen3-VL-Embedding models v2.0 (2B and 8B variants) to generate multimodal embeddings from text, images, screenshots, videos, and mixed-modal inputs. Use when building multimodal retrieval systems, implementing cross-modal search, performing visual question answering, clustering multimodal content, or creating RAG pipelines that require semantic similarity between different modalities.
 license: MIT
 author: Tangled Skills <skills@tangled.dev>
 version: "2.0.0"
@@ -300,10 +300,10 @@ MRL allows you to:
 
 See the following reference files for deeper coverage:
 
-- **[Model Architecture](refs/01-model-architecture.md)**: Dual-tower vs single-tower designs, LoRA configs, technical specifications
-- **[Usage Patterns](refs/02-usage-patterns.md)**: vLLM integration, SGLang deployment, batch processing, production patterns
-- **[Performance Benchmarks](refs/03-performance-benchmarks.md)**: MMEB-V2 and MMTEB results, comparison with other models
-- **[Multimodal RAG](refs/04-multimodal-rag.md)**: End-to-end RAG pipelines combining embedding, reranking, and generation
+- **[Model Architecture](references/01-model-architecture.md)**: Dual-tower vs single-tower designs, LoRA configs, technical specifications
+- **[Usage Patterns](references/02-usage-patterns.md)**: vLLM integration, SGLang deployment, batch processing, production patterns
+- **[Performance Benchmarks](references/03-performance-benchmarks.md)**: MMEB-V2 and MMTEB results, comparison with other models
+- **[Multimodal RAG](references/04-multimodal-rag.md)**: End-to-end RAG pipelines combining embedding, reranking, and generation
 
 ## Model Performance
 

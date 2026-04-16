@@ -1,6 +1,6 @@
 ---
 name: qwen3-vl-reranker-2-0
-description: A comprehensive toolkit for using Qwen3-VL-Reranker models (2B and 8B variants) to perform high-precision multimodal reranking and relevance scoring. Use when building retrieval-augmented generation (RAG) pipelines, implementing two-stage retrieval systems, refining search results across text-image-video modalities, or needing precise cross-modal relevance scoring beyond initial embedding-based recall. This is the latest version (also available as qwen3-vl-reranker).
+description: A comprehensive toolkit for using Qwen3-VL-Reranker models v2.0 (2B and 8B variants) to perform high-precision multimodal reranking and relevance scoring. Use when building retrieval-augmented generation (RAG) pipelines, implementing two-stage retrieval systems, refining search results across text-image-video modalities, or needing precise cross-modal relevance scoring beyond initial embedding-based recall.
 license: MIT
 author: Tangled Skills <skills@tangled.dev>
 version: "2.0.0"
@@ -375,10 +375,10 @@ scores = model.process(inputs)
 
 See the following reference files for deeper coverage:
 
-- **[Model Architecture](refs/01-model-architecture.md)**: Single-tower cross-attention design, technical specifications, comparison with dual-tower embedding models
-- **[Usage Patterns](refs/02-usage-patterns.md)**: vLLM integration, SGLang deployment, batch processing, production patterns
-- **[Performance Benchmarks](refs/03-performance-benchmarks.md)**: MMEB-V2 and MMTEB reranking results, comparison with jina-reranker and other baselines
-- **[RAG Integration](refs/04-rag-integration.md)**: End-to-end RAG pipelines, hybrid search strategies, caching optimization
+- **[Model Architecture](references/01-model-architecture.md)**: Single-tower cross-attention design, technical specifications, comparison with dual-tower embedding models
+- **[Usage Patterns](references/02-usage-patterns.md)**: vLLM integration, SGLang deployment, batch processing, production patterns
+- **[Performance Benchmarks](references/03-performance-benchmarks.md)**: MMEB-V2 and MMTEB reranking results, comparison with jina-reranker and other baselines
+- **[RAG Integration](references/04-rag-integration.md)**: End-to-end RAG pipelines, hybrid search strategies, caching optimization
 
 ## Model Performance
 
