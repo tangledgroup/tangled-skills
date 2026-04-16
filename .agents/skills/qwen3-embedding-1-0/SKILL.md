@@ -1,6 +1,6 @@
 ---
 name: qwen3-embedding-1-0
-description: A comprehensive toolkit for Qwen3 Embedding models (0.6B, 4B, 8B variants) providing state-of-the-art text embeddings and reranking capabilities built on Qwen3 foundation models. Use when implementing semantic search, retrieval-augmented generation (RAG), document similarity, or hybrid dense-sparse embedding systems requiring high-quality multilingual support with Apache 2.0 licensing.
+description: A comprehensive toolkit for Qwen3 Embedding models (0.6B, 4B, 8B variants) providing state-of-the-art text embeddings and reranking capabilities built on Qwen3 foundation models. Use when implementing semantic search, retrieval-augmented generation (RAG), document similarity, or hybrid dense-sparse embedding systems requiring high-quality multilingual support with Apache 2.0 licensing. This is the latest version (also available as qwen3-embedding).
 license: MIT
 author: Tangled Skills <skills@tangled.dev>
 version: "1.0.0"

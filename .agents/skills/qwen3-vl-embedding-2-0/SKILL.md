@@ -1,6 +1,6 @@
 ---
 name: qwen3-vl-embedding-2-0
-description: A comprehensive toolkit for using Qwen3-VL-Embedding models (2B and 8B variants) to generate multimodal embeddings from text, images, screenshots, videos, and mixed-modal inputs. Use when building multimodal retrieval systems, implementing cross-modal search, performing visual question answering, clustering multimodal content, or creating RAG pipelines that require semantic similarity between different modalities.
+description: A comprehensive toolkit for using Qwen3-VL-Embedding models (2B and 8B variants) to generate multimodal embeddings from text, images, screenshots, videos, and mixed-modal inputs. Use when building multimodal retrieval systems, implementing cross-modal search, performing visual question answering, clustering multimodal content, or creating RAG pipelines that require semantic similarity between different modalities. This is the latest version (also available as qwen3-vl-embedding).
 license: MIT
 author: Tangled Skills <skills@tangled.dev>
 version: "2.0.0"

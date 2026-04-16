@@ -1,6 +1,6 @@
 ---
 name: qwen3-reranker-06
-description: A skill for using Qwen3-Reranker models (0.6B, 4B, 8B) for text reranking and relevance scoring in RAG pipelines, search systems, and information retrieval tasks with support for 100+ languages, 32K context, and instruction-aware ranking.
+description: A skill for using Qwen3-Reranker models (0.6B, 4B, 8B) for text reranking and relevance scoring in RAG pipelines, search systems, and information retrieval tasks with support for 100+ languages, 32K context, and instruction-aware ranking. This is the latest version (also available as qwen3-reranker).
 license: MIT
 author: Tangled Skills
 version: "0.6"

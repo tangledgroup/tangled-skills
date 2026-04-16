@@ -1,6 +1,6 @@
 ---
 name: qwen3-vl-reranker-2-0
-description: A comprehensive toolkit for using Qwen3-VL-Reranker models (2B and 8B variants) to perform high-precision multimodal reranking and relevance scoring. Use when building retrieval-augmented generation (RAG) pipelines, implementing two-stage retrieval systems, refining search results across text-image-video modalities, or needing precise cross-modal relevance scoring beyond initial embedding-based recall.
+description: A comprehensive toolkit for using Qwen3-VL-Reranker models (2B and 8B variants) to perform high-precision multimodal reranking and relevance scoring. Use when building retrieval-augmented generation (RAG) pipelines, implementing two-stage retrieval systems, refining search results across text-image-video modalities, or needing precise cross-modal relevance scoring beyond initial embedding-based recall. This is the latest version (also available as qwen3-vl-reranker).
 license: MIT
 author: Tangled Skills <skills@tangled.dev>
 version: "2.0.0"
