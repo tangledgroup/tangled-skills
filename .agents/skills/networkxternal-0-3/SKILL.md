@@ -1,9 +1,9 @@
 ---
 name: networkxternal-0-3
-description: NetworkX-compatible interface for external memory graphs persisted in databases (SQLite, PostgreSQL, MySQL, MongoDB, Neo4J). Use when working with Terabyte-Petabyte graphs that won't fit into RAM, migrating from NetworkX to persistent storage, or building graph applications requiring database-backed storage without changing application code.
+description: NetworkX-compatible interface for external memory MultiDiGraphs persisted in databases (SQLite, PostgreSQL, MySQL, MongoDB, Neo4J). Use when working with Terabyte-Petabyte graphs that won't fit into RAM, needing multi-edge support with key/label-based edge identity, or building graph applications requiring database-backed storage without changing application code.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.3.0"
+version: "0.3"
 tags:
   - graph
   - database
@@ -26,7 +26,7 @@ external_references:
 
 **NetworkXternal** is a NetworkX-like interface for external memory graphs persisted in various databases. It lets you upscale from Megabyte-Gigabyte graphs to Terabyte-Petabyte graphs (that won't fit into RAM) without changing your code.
 
-The library provides drop-in compatibility with [NetworkX](https://networkx.github.io/) `MultiDiGraph` API while storing graph data in:
+The library provides **partial** compatibility with [NetworkX](https://networkx.github.io/) `MultiDiGraph` API, supporting multi-edges (multiple edges between the same node pair) with key/label-based edge identity. Graph data is stored in:
 
 - **SQLite** - Fastest for tiny databases under 20 MB
 - **PostgreSQL** - Feature-rich open-source relational DB
@@ -60,35 +60,186 @@ Traditional graph libraries like NetworkX store all nodes and edges in RAM. Netw
 - **Concurrency**: Multiple processes can access the same graph
 - **Crash safety**: Database ACID properties protect against data loss
 
-### NetworkX Compatibility
+### MultiDiGraph Compatibility
 
-NetworkXternal implements a subset of the NetworkX `MultiDiGraph` API:
+NetworkXternal is designed as a partial `MultiDiGraph` replacement. It stores **directed weighted multigraphs** by default, with configurable options:
 
 | Feature | Supported | Notes |
 |---------|-----------|-------|
-| Directed/undirected graphs | ✅ | Configurable per instance |
-| Weighted edges | ✅ | Float weights supported |
-| Multi-edges | ✅ | Multiple edges between same nodes |
-| Node/edge attributes | ✅ | Stored as JSON payload |
-| Integer node IDs | ✅ | Non-integers are hashed to integers |
-| Edge uniqueness | ⚠️ | Use edge ID hashing for uniqueness |
+| Directed graphs | ✅ | `directed=True` (default) |
+| Undirected graphs | ✅ | `directed=False` in constructor |
+| Weighted edges | ✅ | Float weights, default 1.0 |
+| Multi-edges | ✅ | `multigraph=True` (default); multiple edges between same nodes |
+| Edge keys/labels | ✅ | `key` parameter maps to edge `label` (int) |
+| Node attributes | ✅ | Stored as JSON payload dict |
+| Edge attributes | ✅ | Stored as JSON payload dict; `key` is special-cased |
+| Integer node IDs | ✅ | Native support, fastest path |
+| Non-integer node IDs | ✅ | Hashed to integers via Python's `hash()` |
+| Edge identity | ✅ | Cantor-style hash: `(first+second)*(first+second+1)//2 + second` mod 2³¹ |
 
-### Data Model
+**Key deviation from NetworkX API:**
+- `has_edge(u, v)` returns a **list of Edge objects** (not a `bool`). Returns empty list `[]` if no edges found.
+- `number_of_edges()` accepts optional `u`, `v`, `key` parameters for filtering (like NetworkX's `MultiDiGraph.number_of_edges()`).
+- `get_edge_data(u, v)` returns a dict of edge attributes or `default`; not actively used internally.
+
+**Edge uniqueness strategy:**
+When no explicit `_id` is provided, edges are identified by hashing their endpoints using a Cantor-style pairing function. This means `(u, v)` and `(v, u)` produce different IDs for directed graphs. For undirected graphs, the same hash applies regardless of direction.
+
+### Constructor Parameters
+
+All backends accept these parameters in `__init__`:
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `directed` | `bool` | `True` | Whether the graph is directed (MultiDiGraph) or undirected (MultiGraph) |
+| `weighted` | `bool` | `True` | Whether edges carry float weights |
+| `multigraph` | `bool` | `True` | Whether multiple edges between same nodes are allowed |
+| `url` | `str` | varies by backend | Database connection string (SQL backends and MongoDB) |
+| `enterprise_edition` | `bool` | `False` | Neo4J only: enables edge uniqueness constraints |
+
+### Node Model
 
 **Nodes** have:
-- `_id`: Integer identifier (auto-generated or provided)
+- `_id`: Integer identifier (auto-generated or provided; non-integers are hashed)
 - `weight`: Float value (default: 1.0)
 - `label`: Integer label (default: -1)
 - `payload`: Dict of custom attributes (stored as JSON)
 
+If the original node name was non-integer, it is stored in `payload["_id"]`.
+
+### Edge Model
+
 **Edges** have:
-- `_id`: Integer identifier (auto-generated or computed from endpoints)
-- `first`: Source node ID
-- `second`: Target node ID
+- `_id`: Integer identifier (auto-generated via Cantor hash from endpoints if not provided)
+- `first`: Source node ID (integer)
+- `second`: Target node ID (integer)
 - `is_directed`: Boolean flag
 - `weight`: Float value (default: 1.0)
-- `label`: Integer label (default: -1)
-- `payload`: Dict of custom attributes (stored as JSON)
+- `label`: Integer label (derived from the `key` parameter, default: -1)
+- `payload`: Dict of custom attributes (stored as JSON; `key` is stored here too)
+
+Edges support tuple-like indexing: `edge[0]` returns `first`, `edge[1]` returns `second` (for NetworkX compatibility).
+
+### Edge ID Hashing
+
+NetworkXternal uses a Cantor-style pairing function for deterministic edge IDs:
+
+```python
+def identify_by_members(first: int, second: int) -> int:
+    _id = (first + second) * (first + second + 1) // 2 + second
+    _id = _id % (2**31)
+    return _id
+```
+
+This ensures:
+- **Order-dependent**: `identify_by_members(10, 20) != identify_by_members(20, 10)` — critical for directed graphs
+- **Deterministic**: Same node pair always produces the same ID
+- **Bounded**: Result fits in signed 31-bit integer
+
+**Note:** Some databases (SQLite default) use smaller integer sizes. Use `BigInteger` type in SQLAlchemy models to avoid overflow on large graphs.
+
+## MultiDiGraph Usage Patterns
+
+### Basic Directed Multigraph
+
+```python
+from networkxternal.sqlite import SQLite
+
+# Create a directed multigraph (MultiDiGraph)
+graph = SQLite(url="sqlite:///multigraph.db", directed=True, multigraph=True)
+
+# Add multiple edges between same nodes using key/label parameter
+graph.add_edge(1, 2, key=1, weight=1.0, relation="friend")    # label=1
+graph.add_edge(1, 2, key=2, weight=2.0, relation="colleague")  # label=2
+graph.add_edge(1, 2, key=3, weight=3.0, relation="family")     # label=3
+
+# has_edge returns a LIST of Edge objects (not bool!)
+edges = graph.has_edge(1, 2)
+print(f"Found {len(edges)} edges between 1 and 2")  # 3
+
+# Query by key/label
+edge_key_1 = graph.has_edge(1, 2, key=1)
+print(f"Friend edge: {edge_key_1[0].payload}")  # {'key': 1, 'relation': 'friend'}
+
+# Count edges with filtering
+all_edges = graph.number_of_edges()           # Total edges
+from_1_to_2 = graph.number_of_edges(u=1, v=2) # Specific direction
+by_key = graph.number_of_edges(u=1, v=2, key=1)  # Specific label
+```
+
+### Undirected Multigraph (MultiGraph)
+
+```python
+from networkxternal.sqlite import SQLite
+
+# Create an undirected multigraph
+graph = SQLite(url="sqlite:///undirected.db", directed=False, multigraph=True)
+
+# Edges work bidirectionally
+graph.add_edge(1, 2, key=1, weight=5.0)
+graph.add_edge(1, 2, key=2, weight=3.0)
+
+# neighbors() returns all connected nodes (both directions for undirected)
+print(graph.neighbors(1))  # {2}
+
+# successors/predecessors are the same in undirected mode
+print(graph.successors(1))   # {2}
+print(graph.predecessors(1)) # {2}
+```
+
+### Using Edge Objects Directly
+
+```python
+from networkxternal.helpers.edge import Edge
+from networkxternal.sqlite import SQLite
+
+graph = SQLite(url="sqlite:///graph.db")
+
+# Create edges with explicit IDs and labels
+edge_a = Edge(_id=-1, first=1, second=2, weight=1.0, label=1, is_directed=True)
+edge_b = Edge(_id=-1, first=1, second=2, weight=2.0, label=2, is_directed=True)
+
+# Adding edges auto-computes _id via Cantor hash if _id < 0
+graph.add([edge_a, edge_b])
+print(f"Edge A ID: {edge_a._id}")  # Computed from (1, 2)
+print(f"Edge B ID: {edge_b._id}")  # Same computed ID (same endpoints!)
+
+# The label distinguishes them in has_edge() queries
+```
+
+### Non-Integer Node IDs
+
+```python
+from networkxternal.sqlite import SQLite
+
+graph = SQLite(url="sqlite:///string_nodes.db")
+
+# String node IDs are hashed to integers
+graph.add_node("alice", role="user")   # Stored with hash(id("alice"))
+graph.add_node("bob", role="user")     # Stored with hash(id("bob"))
+graph.add_edge("alice", "bob", weight=10.0)
+
+# The original string is preserved in node payload
+node = graph.has_node(hash("alice"))
+print(node.payload["_id"])  # "alice"
+print(node.payload["role"]) # "user"
+```
+
+### In-Memory Quick Prototyping
+
+```python
+from networkxternal.sqlite import SQLiteMem
+
+# Fastest option, single-process only (no concurrency)
+graph = SQLiteMem(directed=True, weighted=True, multigraph=True)
+
+graph.add_node(1, category="A")
+graph.add_edge(1, 2, weight=3.5, label="connects_to")
+
+# All operations are in-memory — no disk I/O
+print(f"Nodes: {graph.number_of_nodes()}")
+print(f"Edges: {graph.number_of_edges()}")
+```
 
 ## Installation
 
@@ -221,17 +372,27 @@ from networkxternal.neo4j import Neo4J
 graph = Neo4J(
     url="bolt://user:password@localhost:7687/graph",
     directed=True,
-    enterprise_edition=False  # Set True for edge constraints
+    enterprise_edition=False  # Set True for edge uniqueness constraints
 )
 
-# WARNING: Neo4J has known issues:
-# - High CPU usage (10-20x other DBs)
-# - Java heap space crashes on large imports
-# - Edge indexing only in Enterprise edition
-# - Unstable with datasets > small size
+# Neo4J-specific methods:
+path, weight = graph.shortest_path(first_node, second_node)  # Returns (node_ids, total_weight)
+degree_count, degree_weight = graph.degree_neighbors(v)       # Count + total weight of edges
+degree_count, degree_weight = graph.degree_successors(v)      # Out-degree stats
+degree_count, degree_weight = graph.degree_predecessors(v)    # In-degree stats
+
+# Neo4J uses Cypher queries with labels: v<name> for nodes, e<name> for edges
 ```
 
-**Best for**: Small graphs where native graph queries are needed, NOT recommended for large-scale use
+**⚠️ CRITICAL WARNING: Neo4J is the least stable backend:**
+- **High CPU usage**: 10-20x higher than other backends
+- **Java heap space crashes**: Frequently crashes on large imports (30 MB CSV → 1.4 GB RAM)
+- **Edge indexing**: Only available in Enterprise edition; free version has poor edge lookup performance
+- **Unstable**: Reports of stack overflow errors, inconsistent query profiler results
+- **Small batch size recommended**: Max 1,000 edges per batch (vs 1M+ for SQL backends)
+- **Not recommended for production** with large datasets
+
+**Best for**: Small graphs (< 10K edges) where native Cypher graph queries are needed. Use other backends for anything larger.
 
 ## Basic Operations
 
@@ -267,25 +428,57 @@ graph.add(edges)  # Returns count of added edges
 ```python
 # Count nodes and edges
 node_count = graph.number_of_nodes()
-edge_count = graph.number_of_edges()
+edge_count = graph.number_of_edges()  # Optional: u, v, key filters
 
 # Check if node exists
 node = graph.has_node(1)  # Returns Node object or None
 
-# Check if edge exists
-edges = graph.has_edge(1, 2)  # Returns list of Edge objects or None
+# Check if edge exists — RETURNS LIST (not bool like NetworkX!)
+edges = graph.has_edge(1, 2)  # Returns list of Edge objects (empty [] if none)
+if edges:  # Not empty
+    for edge in edges:
+        print(f"Edge {edge._id}: {edge.first} -> {edge.second}, weight={edge.weight}")
 
-# Get neighbors (undirected)
+# Query specific key/label
+edges_by_key = graph.has_edge(1, 2, key=1)  # Edges with label == 1 between 1 and 2
+
+# Get neighbors (both directions for undirected)
 neighbors = graph.neighbors(1)  # Set of node IDs
 
-# Get successors/predecessors (directed)
-successors = graph.successors(1)  # Nodes reachable from 1
-predecessors = graph.predecessors(1)  # Nodes that point to 1
+# Get successors/predecessors (directed only)
+successors = graph.successors(1)  # Nodes reachable FROM 1 (out-neighbors)
+predecessors = graph.predecessors(1)  # Nodes that point TO 1 (in-neighbors)
 
-# Get all nodes/edges (can be expensive!)
-all_nodes = list(graph.nodes)
-all_edges = list(graph.edges)
+# out_edges and in_edges properties
+out_edges = graph.out_edges   # All directed edges where is_directed=True
+in_edges = graph.in_edges     # Inverted copy of out_edges (not stored separately!)
+
+# Get all nodes/edges (can be expensive on large graphs!)
+all_nodes = list(graph.nodes)  # Returns Sequence[Node]
+all_edges = list(graph.edges)  # Returns Sequence[Edge]
+
+# Filter edges by endpoint using reduce_edges
+edges_to_node_1 = graph.reduce_edges(v=1)  # GraphDegree(count, weight)
+edges_from_node_1 = graph.reduce_edges(u=1)
 ```
+
+**Important API deviations from NetworkX MultiDiGraph:**
+
+| NetworkX Method | NetworkXternal Equivalent | Difference |
+|----------------|--------------------------|------------|
+| `G.has_edge(u, v)` | `G.has_edge(u, v)` | Returns `list[Edge]` (not `bool`) |
+| `G.number_of_edges()` | `G.number_of_edges(u, v, key)` | Accepts filter params |
+| `G.get_edge_data(u, v, key)` | `G.get_edge_data(u, v, key)` | Returns dict; not actively used |
+| `G.successors(v)` | `G.successors(v)` | Same semantics |
+| `G.predecessors(v)` | `G.predecessors(v)` | Same semantics |
+| `G.neighbors(v)` | `G.neighbors(v)` | Same semantics |
+| `G.edges` | `G.edges` | Returns `Sequence[Edge]` |
+| `G.out_edges` | `G.out_edges` | Directed edges only |
+| `G.in_edges` | `G.in_edges` | Inverted copy of out_edges (computed, not stored) |
+| `G.__len__()` | `len(G)` | Returns node count |
+| `G.order()` | `G.order()` | Returns node count |
+| `G.is_directed()` | `G.is_directed()` | Same |
+| `G.is_multigraph()` | `G.is_multigraph()` | Same |
 
 ### Removing Data
 
@@ -328,7 +521,47 @@ NetworkXternal has performance tradeoffs compared to in-memory graphs:
 | MongoDB | 10,000 | 100,000 |
 | Neo4J | 1,000 | 10,000 |
 
-## Common Patterns
+### Ensuring Node Existence (add_missing_nodes)
+
+When adding edges, nodes are not automatically created. Use `add_missing_nodes()` to ensure all nodes referenced by edges exist:
+
+```python
+from networkxternal.sqlite import SQLite
+
+graph = SQLite(url="sqlite:///graph.db")
+
+# Add edges without pre-creating nodes
+graph.add_edge(1, 2, weight=5.0)
+graph.add_edge(2, 3, weight=3.0)
+
+# Nodes 1, 2, 3 may not exist as registered nodes!
+# Verify and fix:
+graph.add_missing_nodes()  # Creates Node objects for any edge-referenced IDs missing from nodes table
+
+# This is automatically called at the end of add_stream()
+```
+
+**How it works:**
+1. Collects all node IDs mentioned in edges (`mentioned_nodes_ids`)
+2. Compares against registered nodes in the nodes table
+3. Creates `Node` objects for any missing IDs
+4. Bulk-inserts them into the database
+
+### Getting All Edges Touching a Node (edges_related)
+
+```python
+from networkxternal.sqlite import SQLite
+
+graph = SQLite(url="sqlite:///graph.db")
+
+# Get all edges connected to node 1 (both directions, undirected semantics)
+related_edges = graph.edges_related(1)  # Returns list of Edge objects
+
+# In directed mode: first == 1 OR second == 1
+# In undirected mode: same behavior (edges are bidirectional)
+```
+
+### Common Patterns
 
 ### Importing from CSV
 
@@ -374,16 +607,28 @@ edges_from_node_1 = graph.reduce_edges(u=1)
 ### Common Issues
 
 **Issue**: "Java heap space" error with Neo4J
-- **Solution**: Reduce batch size to 1,000 or use a different backend
+- **Solution**: Reduce batch size to 1,000 or use a different backend (SQLite/PostgreSQL)
 
 **Issue**: Slow imports with SQLite
-- **Solution**: Ensure WAL mode is enabled (automatic on first launch)
+- **Solution**: Ensure WAL mode is enabled (automatic on first launch); increase `page_size` pragma
 
 **Issue**: Edge not found after adding
-- **Solution**: Check if node IDs are integers; strings are hashed
+- **Solution**: Check if node IDs are integers; non-integers are hashed via Python's `hash()`. Use `graph.has_edge(u, v)` and check the returned list (not truthiness).
 
 **Issue**: Memory usage still high
-- **Solution**: Use streaming (`for edge in graph.edges`) instead of loading all at once
+- **Solution**: Use streaming (`for edge in graph.edges`) instead of loading all at once. Avoid `list(graph.edges)` on large graphs.
+
+**Issue**: `has_edge()` returns empty list but I expected a boolean
+- **Solution**: NetworkXternal deviates from NetworkX here — `has_edge()` returns `list[Edge]`. Check with `if graph.has_edge(u, v):` or `len(graph.has_edge(u, v)) > 0`.
+
+**Issue**: Multiple edges between same nodes all return the same ID
+- **Solution**: Use the `key` parameter in `add_edge()` to assign different labels. Edges with the same `(first, second)` but different `label` are distinct.
+
+**Issue**: Integer overflow on edge IDs in large graphs
+- **Solution**: Edge IDs use 31-bit signed integers. For very large graphs, ensure your database uses `BigInteger` type (SQLAlchemy does this by default).
+
+**Issue**: `in_edges` returns unexpected results
+- **Solution**: `in_edges` is computed as an inverted copy of `out_edges` — it's not stored separately. It swaps `first` and `second` for all directed edges.
 
 ### Backend Selection Guide
 
@@ -399,7 +644,9 @@ edges_from_node_1 = graph.reduce_edges(u=1)
 ## References
 
 - **GitHub Repository**: https://github.com/ashvardanian/NetworkXternal
-- **NetworkX Documentation**: https://networkx.github.io/documentation/stable/
+- **BaseAPI Source**: https://github.com/ashvardanian/NetworkXternal/blob/main/networkxternal/base_api.py
+- **NetworkX MultiDiGraph Docs**: https://networkx.github.io/documentation/stable/reference/classes/multidigraph.html
+- **NetworkX Graph API**: https://networkx.github.io/documentation/stable/reference/classes/generated/networkx.Graph.html
 - **SQLAlchemy Documentation**: https://docs.sqlalchemy.org/
 
 ## See Also
