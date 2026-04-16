@@ -84,14 +84,12 @@ All skills in this repository are automatically generated using the `write-skill
 | python-scrypt | python-scrypt | - | Cryptography, Key Derivation, Password Hashing, Scrypt | Python toolkit for scrypt-based key derivation and password hashing. Use when implementing secure password storage, d... |
 | pywebview-6-2 | pywebview-6 | 2 | Python, Desktop Gui, Webview, Cross Platform | A skill for building cross-platform desktop applications with native webview components using pywebview 6.2, enabling... |
 | pyzmq-27-1-0 | pyzmq-27-1 | 0 | Zeromq, Zmq, Messaging, Networking | Complete toolkit for Python bindings to ZeroMQ (pyzmq 27.x) covering socket types, messaging patterns, async/await in... |
-| qwen3-embedding-1-0 | qwen3-embedding-1 | 0 | Embeddings, Semantic Search, Reranking, Qwen | A comprehensive toolkit for Qwen3 Embedding models (0.6B, 4B, 8B variants) providing state-of-the-art text embeddings... |
-| qwen3-embedding | qwen3-embedding | latest (alias) | Embeddings, Semantic Search, Reranking, Qwen | Latest version of Qwen3 Embedding toolkit (symlink to qwen3-embedding-1-0) |
-| qwen3-reranker-06 | qwen3-reranker | 06 | Reranking, Retrieval, Qwen, Transformers | A skill for using Qwen3-Reranker models (0.6B, 4B, 8B) for text reranking and relevance scoring in RAG pipelines, sea... |
-| qwen3-reranker | qwen3-reranker | latest (alias) | Reranking, Retrieval, Qwen, Transformers | Latest version of Qwen3-Reranker toolkit (symlink to qwen3-reranker-06) |
-| qwen3-vl-embedding-2-0 | qwen3-vl-embedding-2 | 0 | Qwen, Embedding, Multimodal, Transformers | A comprehensive toolkit for using Qwen3-VL-Embedding models (2B and 8B variants) to generate multimodal embeddings fr... |
-| qwen3-vl-embedding | qwen3-vl-embedding | latest (alias) | Qwen, Embedding, Multimodal, Transformers | Latest version of Qwen3-VL-Embedding toolkit (symlink to qwen3-vl-embedding-2-0) |
+| qwen3-embedding | qwen3-embedding | 1.0.0 | Embeddings, Semantic Search, Retrieval, Multilingual, Reranking | Complete toolkit for Qwen3 Embedding models (0.6B, 4B, 8B) and reranker models with Sentence Transformers, raw Transformers, vLLM, and TEI support. Use when generating text embeddings, building semantic search or RAG pipelines, performing cross-lingual retrieval, code retrieval, text classification/clustering, or reranking search results.
+| qwen3-reranker | qwen3-reranker | 1.0.0 | Reranking, Retrieval, Qwen, Cross Encoder, Transformers, Vllm | Comprehensive toolkit for Qwen3 Reranker models (0.6B, 4B, 8B) — state-of-the-art cross-encoder text reranking with 100+ language support, 32K context length, and user-defined instructions. Use when re-ranking search results, improving retrieval relevance in RAG pipelines, building semantic search systems, or deploying high-performance cross-encoder rerankers via Sentence Transformers, Hugging Face Transformers, or vLLM. |
+| qwen3-vl-embedding | qwen3-vl-embedding | latest | Embeddings, Multimodal, Vision Language, Retrieval, Transformers, Vllm | Complete toolkit for Qwen3-VL-Embedding multimodal embedding models (2B and 8B) supporting text, images, screenshots, videos, and mixed-modal inputs. Use when generating semantic embeddings for retrieval, clustering, similarity search, RAG pipelines, or cross-modal understanding with Matryoshka dimension flexibility and 30+ language support. |
+
+| qwen3-vl-reranker | qwen3-vl-reranker | latest | Qwen, Reranker, Multimodal, Transformers | Complete toolkit for Qwen3-VL-Reranker (2B and 8B) multimodal reranking models that score relevance of text, image,... |
 | qwen3-vl-reranker-2-0 | qwen3-vl-reranker-2 | 0 | Qwen, Reranker, Multimodal, Transformers | A comprehensive toolkit for using Qwen3-VL-Reranker models (2B and 8B variants) to perform high-precision multimodal ... |
-| qwen3-vl-reranker | qwen3-vl-reranker | latest (alias) | Qwen, Reranker, Multimodal, Transformers | Latest version of Qwen3-VL-Reranker toolkit (symlink to qwen3-vl-reranker-2-0) |
 | redis-om-python-1-1 | redis-om-python-1 | 1 | Redis, Orm, Pydantic, Redisearch | A skill for using Redis OM Python v1.1.0, an object mapping library that provides declarative models, automatic secon... |
 | redis-py-7-4 | redis-py-7 | 4 | Redis, Database, Key Value Store, Caching | Comprehensive Python client for Redis database and key-value store. Use when building Python applications requiring R... |
 | rqlite-9-4 | rqlite-9 | 4 | Database, Distributed Systems, Sqlite, Raft | Comprehensive toolkit for rqlite 9.4, a lightweight distributed relational database built on SQLite with Raft consens... |
@@ -127,5 +125,5 @@ All skills in this repository are automatically generated using the `write-skill
 
 ## Statistics
 
-- **Total Skills**: 100
+- **Total Skills**: 108
 - **Last Updated**: 2026-04-16
