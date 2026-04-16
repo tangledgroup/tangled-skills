@@ -2,7 +2,7 @@
 name: stringzilla-4-6
 description: High-performance SIMD-accelerated string library for search, hashing, sorting, and fuzzy matching in C/C++/Python/Rust. Use when optimizing string operations for big data processing, bioinformatics, or high-throughput applications requiring up to 10x faster CPU throughput.
 version: "0.2.0"
-author: Your Name <email@example.com>
+author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
   - simd

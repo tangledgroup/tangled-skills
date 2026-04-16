@@ -2,7 +2,7 @@
 name: numpy-2-4-4
 description: Complete toolkit for NumPy 2.4.4, the fundamental package for scientific computing with Python, providing powerful n-dimensional arrays, comprehensive mathematical functions, linear algebra routines, Fourier transforms, random number generation, and high-performance numerical operations with support for modern Python typing and Array API standard compatibility.
 license: MIT
-author: Generated from NumPy 2.4.4 Documentation
+author: Tangled <noreply@tangledgroup.com>
 version: "2.4.4"
 tags:
   - numpy

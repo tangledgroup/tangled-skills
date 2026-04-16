@@ -2,7 +2,7 @@
 name: aiohttp-cors-0-8-1
 description: A skill for implementing Cross-Origin Resource Sharing (CORS) support in aiohttp web applications using aiohttp-cors 0.8.1, enabling secure cross-origin HTTP requests with configurable origins, credentials, headers, and preflight caching.
 version: "0.2.0"
-author: Your Name <email@example.com>
+author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
   - cors

@@ -2,7 +2,7 @@
 name: cryptography-46
 description: Comprehensive toolkit for Python cryptographic operations using the cryptography library. Use when implementing encryption, decryption, hashing, digital signatures, key derivation, X.509 certificate handling, and other cryptographic primitives in Python applications.
 version: "0.2.0"
-author: Your Name <email@example.com>
+author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
   - cryptography

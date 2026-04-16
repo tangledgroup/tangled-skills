@@ -2,7 +2,7 @@
 name: zeromq-wiki-3-2
 description: A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and best practices. Use when building distributed applications, implementing messaging patterns like REQ/REP, PUB/SUB, PUSH/PULL, designing multi-threaded architectures, working with ZMTP protocol, CURVE security, or understanding ØMQ internals for performance tuning and troubleshooting.
 version: "0.2.0"
-author: Your Name <email@example.com>
+author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
   - messaging

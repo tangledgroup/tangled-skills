@@ -2,7 +2,7 @@
 name: networkxternal-0-3
 description: NetworkX-compatible interface for external memory graphs persisted in databases (SQLite, PostgreSQL, MySQL, MongoDB, Neo4J). Use when working with Terabyte-Petabyte graphs that won't fit into RAM, migrating from NetworkX to persistent storage, or building graph applications requiring database-backed storage without changing application code.
 license: MIT
-author: Generated from ashvardanian/NetworkXternal v0.3.0
+author: Tangled <noreply@tangledgroup.com>
 version: "0.3.0"
 tags:
   - graph

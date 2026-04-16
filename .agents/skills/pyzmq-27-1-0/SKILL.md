@@ -2,7 +2,7 @@
 name: pyzmq-27-1-0
 description: Complete toolkit for Python bindings to ZeroMQ (pyzmq 27.x) covering socket types, messaging patterns, async/await integration, security mechanisms, and distributed computing architectures. Use when building Python applications requiring high-performance messaging, pub/sub systems, request-reply patterns, load balancing, or inter-process communication with ZeroMQ's decentralized architecture.
 version: "0.2.0"
-author: Your Name <email@example.com>
+author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
   - zeromq

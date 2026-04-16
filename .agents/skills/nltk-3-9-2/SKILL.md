@@ -1,8 +1,8 @@
 ---
 name: nltk-3-9-2
 description: Complete toolkit for Natural Language Processing with NLTK 3.9.2, covering tokenization, stemming, lemmatization, POS tagging, parsing, WordNet integration, corpus access, text classification, and semantic analysis for Python applications.
-license: Apache-2.0
-author: NLTK Project <nltk.team@gmail.com>
+license: MIT
+author: Tangled <noreply@tangledgroup.com>
 version: "3.9.2"
 tags:
   - nlp

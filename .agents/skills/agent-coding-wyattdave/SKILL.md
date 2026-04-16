@@ -2,7 +2,7 @@
 name: agent-coding-wyattdave
 description: A toolkit for creating custom AI coding agents using prompt engineering, instruction files, and skill modules. Use when building bespoke coding assistants for niche domains where general LLM training data is insufficient or misleading, particularly for specialized frameworks like Power Platform Code Apps with vanilla JavaScript.
 version: "0.2.0"
-author: Your Name <email@example.com>
+author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
   - ai-agents

@@ -1,8 +1,8 @@
 ---
 name: qwen3-vl-embedding
 description: Complete toolkit for Qwen3-VL-Embedding 0.1.0 multimodal embedding models (2B and 8B) supporting text, images, screenshots, videos, and mixed-modal inputs. Use when generating semantic embeddings for retrieval, clustering, similarity search, RAG pipelines, or cross-modal understanding with Matryoshka dimension flexibility and 30+ language support.
-license: Apache-2.0
-author: Qwen Team <qwen@alibaba.com>
+license: MIT
+author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"
 tags:
   - embedding

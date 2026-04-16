@@ -2,7 +2,7 @@
 name: sentence-transformers-5-4-1
 description: A comprehensive toolkit for computing text embeddings, semantic search, and reranking using Sentence Transformers v5.4.1. Provides dense, sparse, and cross-encoder models for semantic textual similarity, paraphrase mining, clustering, retrieve-and-rerank pipelines, and multimodal applications with support for 100+ languages and extensive training capabilities.
 license: MIT
-author: Tangled Skills <skills@tangled.dev>
+author: Tangled <noreply@tangledgroup.com>
 version: "5.4.1"
 tags:
   - embeddings

@@ -2,7 +2,7 @@
 name: textblob-0-20-0
 description: Python library for simplified natural language processing (NLP) tasks including sentiment analysis, part-of-speech tagging, noun phrase extraction, tokenization, classification, word inflection, lemmatization, and spelling correction. Use when building text processing applications requiring quick NLP operations without complex setup, or when integrating with NLTK and pattern libraries.
 license: MIT
-author: Steven Loria <oss@stevenloria.com>
+author: Tangled <noreply@tangledgroup.com>
 version: "0.20.0"
 tags:
   - nlp

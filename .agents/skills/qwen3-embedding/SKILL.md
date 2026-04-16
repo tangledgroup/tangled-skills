@@ -2,7 +2,7 @@
 name: qwen3-embedding
 description: Complete toolkit for Qwen3 Embedding models (0.6B, 4B, 8B) and Qwen3 Reranker models providing state-of-the-art text embedding, semantic search, reranking, and multilingual retrieval with support for Sentence Transformers, raw Transformers, vLLM, and TEI inference engines. Use when generating text embeddings, building semantic search or RAG pipelines, performing cross-lingual retrieval, code retrieval, text classification/clustering, or reranking search results with Qwen3-Embedding or Qwen3-Reranker models.
 license: MIT
-author: Tangled Skills Team <skills@tangled.dev>
+author: Tangled <noreply@tangledgroup.com>
 version: "1.0.0"
 tags:
   - embedding

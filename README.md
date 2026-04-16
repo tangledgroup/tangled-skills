@@ -16,7 +16,7 @@ All skills in this repository are automatically generated using the `write-skill
 
 | Skill | Project | Version | Technologies | Description |
 |-------|---------|---------|--------------|-------------|
-| agent-coding-mini-rasbt | - | 0.2.0 | coding-agent, ollama, local-llm, python, automation | A minimal standalone coding agent framework backed by Ollama that provides workspace context collection, structured t... |
+| agent-coding-mini-rasbt | - | 0.3.0 | coding-agent, ollama, local-llm, python, agent-harness | A minimal standalone coding agent framework by Sebastian Raschka backed by Ollama that provides workspace context col... |
 | agent-coding-wyattdave | - | 0.2.0 | ai-agents, prompt-engineering, vscode-extensions, coding-assistants, customization | A toolkit for creating custom AI coding agents using prompt engineering, instruction files, and skill modules. Use wh... |
 | agentmemory-0-8-10 | agentmemory | 0.8.10 | ai-agents, memory, persistent-context, mcp-server, iii-engine | Persistent memory engine for AI coding agents providing automatic cross-session context capture, hybrid search (BM25 ... |
 | agentmemory-0-8-9 | agentmemory | 0.8.9 | ai-agents, memory, mcp-server, persistent-context, vector-search | Persistent memory engine for AI coding agents providing automatic cross-session context capture, hybrid search (BM25 ... |
@@ -50,11 +50,13 @@ All skills in this repository are automatically generated using the `write-skill
 | deno-2-7 | deno | 0.2.0 | javascript, typescript, runtime, web-server, cli-tools | A comprehensive toolkit for the Deno 2.x JavaScript/TypeScript runtime, covering installation, permissions, built-in ... |
 | duckdb-1-5-2 | duckdb | 1.5.2 | sql, analytics, embedded-database, olap, data-science | High-performance analytical SQL database with support for nested types, vectorized execution, and seamless integratio... |
 | esbuild-0-28 | esbuild | 0.28.0 | javascript, bundler, typescript, jsx, css | Complete toolkit for esbuild v0.28 JavaScript bundler providing CLI, JavaScript API, and Go API access for bundling, ... |
-| git | - | 0.3.0 | version-control, collaboration, repository, branching, conventional-commits | A skill for using Git version control system to track changes, collaborate, and manage code repositories. Use when wo... |
+| git | - | 0.2.0 | git, version-control, conventional-commits, semver, devops | > |
 | htm-3-1 | htm | 0.2.0 | jsx-alternative, tagged-templates, preact, react, virtual-dom | A skill for using htm 3.1, a tagged template syntax library that provides JSX-like markup in plain JavaScript without... |
 | htmx-2 | htmx | 0.2.0 | htmx, html, ajax, web-development, frontend | A skill for building interactive web applications with htmx 2.x, a JavaScript library that allows accessing modern br... |
 | htmx-4 | htmx | 0.2.0 | htmx, hypermedia, ajax, html, web-development | A skill for building interactive web applications with htmx 4.0, a JavaScript library that provides HTML attributes f... |
 | jinja2-3-1-6 | jinja2 | 0.2.0 | templating, python, html, web-development, template-engine | Complete toolkit for Jinja2 v3.1.6 templating engine covering template design, Python API integration, custom filters... |
+| jq-1-8-1 | jq | 1.8.1 | JSON, command-line, data transformation, shell scripting, text processing | Complete toolkit for jq 1.8.1, the lightweight and flexible command-line JSON processor. Use when parsing, transformi... |
+| jsonpath-rfc-9535 | jsonpath-rfc | 1.0.0 | JSON, query language, data selection, extraction, IETF standard | Complete reference for JSONPath RFC 9535, the IETF Standards Track specification defining a string syntax for selecti... |
 | lingua-py-2-2-0 | lingua-py | 2.2.0 | nlp, language-detection, text-processing, multilingual, natural-language-processing | Accurate natural language detection library for Python supporting 75 languages with high accuracy on short text and m... |
 | llama-cpp-b8789 | - | 1.0.0 | llm, inference, gguf, quantization, cuda | C/C++ LLM inference library providing GGUF model support, quantization, GPU acceleration (CUDA/Metal/HIP/Vulkan/SYCL)... |
 | lodash-4-18 | lodash | 0.2.0 | javascript, utility-library, arrays, objects, strings | Complete toolkit for Lodash 4.18 utility library providing 300+ helper functions for arrays, collections, objects, st... |
@@ -117,9 +119,10 @@ All skills in this repository are automatically generated using the `write-skill
 | usearch-2-24 | usearch | 0.2.0 | vector-search, hnsw, similarity-search, approximate-nearest-neighbors, embedding-search | A skill for using USearch 2.24, a high-performance single-file similarity search and clustering engine for vectors su... |
 | uv-0-11-6 | uv | 0.2.0 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | A skill for using uv 0.11.6, an extremely fast Python package and project manager written in Rust that replaces pip, ... |
 | write-skill | - | 0.6.0 | skill-generation, automation, meta-skill | Generate fine-grained agent skills from user requirements, creating complete spec-compliant markdown files that work ... |
+| yq-4 | yq | 4.52 | yaml, json, xml, jq, command-line | Complete toolkit for yq v4.x, the lightweight portable command-line YAML, JSON, XML, INI, TOML, HCL, CSV/TSV, Propert... |
 | zeromq-wiki-3-2 | zeromq-wiki | 0.2.0 | messaging, sockets, distributed-systems, zero-mq, zmq | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and bes... |
 | zeromq-zguide-3-2 | zeromq-zguide | 0.2.0 | zeromq, zmq, messaging, sockets, distributed-systems | Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and distributed... |
 
 ## Statistics
 
-- **Total Skills**: 103
+- **Total Skills**: 106

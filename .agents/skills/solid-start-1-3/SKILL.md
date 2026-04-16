@@ -2,7 +2,7 @@
 name: solid-start-1-3
 description: Fullstack framework for SolidJS providing SSR, SSG, API routes, and file-based routing. Use when building performant web applications with unified rendering modes, server functions, and deployment adapters for Vercel, Netlify, Cloudflare, and more.
 version: "0.2.0"
-author: Your Name <email@example.com>
+author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
   - solidjs

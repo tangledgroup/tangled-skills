@@ -2,7 +2,7 @@
 name: scipy-1-17-1
 description: Comprehensive toolkit for SciPy 1.17.1 scientific computing library covering optimization, integration, interpolation, signal processing, linear algebra, statistics, clustering, spatial data, sparse matrices, FFT, image processing, and special functions. Use when performing numerical computations, scientific analysis, engineering calculations, statistical modeling, or mathematical operations in Python applications requiring robust algorithms for real-world problems.
 license: MIT
-author: SciPy Documentation Analysis
+author: Tangled <noreply@tangledgroup.com>
 version: "1.0.0"
 tags:
   - scipy

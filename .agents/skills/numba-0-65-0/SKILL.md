@@ -2,7 +2,7 @@
 name: numba-0-65-0
 description: Just-in-time compiler for numerical Python using LLVM, providing @jit, @vectorize, @guvectorize, @stencil, @jitclass, and @cfunc decorators for CPU/GPU acceleration with automatic parallelization support.
 license: MIT
-author: Numba Team
+author: Tangled <noreply@tangledgroup.com>
 version: "0.65.0"
 tags:
   - jit

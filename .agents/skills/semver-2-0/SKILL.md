@@ -2,7 +2,7 @@
 name: semver-2-0
 description: A skill for implementing and validating Semantic Versioning 2.0.0 (SemVer) to manage software version numbers, determine compatibility, compare version precedence, and validate version strings against the official specification.
 version: "0.2.0"
-author: Your Name <email@example.com>
+author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
   - semantic-versioning

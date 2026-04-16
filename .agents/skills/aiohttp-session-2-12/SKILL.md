@@ -2,7 +2,7 @@
 name: aiohttp-session-2-12
 description: A skill for implementing server-side sessions in aiohttp web applications using aiohttp-session 2.12.1, providing multiple storage backends including encrypted cookies, Redis, and Memcached for persistent user state management. Use when building aiohttp.web applications that require session-based authentication, shopping carts, user preferences, or any per-request user-specific data persistence.
 version: "0.2.0"
-author: Your Name <email@example.com>
+author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
   - aiohttp

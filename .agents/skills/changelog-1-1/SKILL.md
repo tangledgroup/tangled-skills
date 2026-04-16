@@ -2,7 +2,7 @@
 name: changelog-1-1
 description: A skill for creating and maintaining changelogs following the Keep a Changelog specification v1.1.0, providing standardized format guidelines, best practices, and examples for documenting project changes in a human-readable way.
 version: "0.2.0"
-author: Your Name <email@example.com>
+author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
   - changelog

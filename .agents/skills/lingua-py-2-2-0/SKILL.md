@@ -1,8 +1,8 @@
 ---
 name: lingua-py-2-2-0
 description: Accurate natural language detection library for Python supporting 75 languages with high accuracy on short text and mixed-language content. Use when building NLP applications requiring language identification, content routing, multilingual support, or preprocessing for text classification and spell checking.
-license: Apache-2.0
-author: Peter M. Stahl <pemistahl@gmail.com>
+license: MIT
+author: Tangled <noreply@tangledgroup.com>
 version: "2.2.0"
 tags:
   - nlp

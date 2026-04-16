@@ -2,7 +2,7 @@
 name: aiohttp-security-0-5-0
 description: A skill for implementing authentication and authorization in aiohttp.web applications using aiohttp-security 0.5.0, providing identity policies (cookies, sessions, JWT) and custom authorization policies with permission-based access control.
 version: "0.2.0"
-author: Your Name <email@example.com>
+author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
   - aiohttp

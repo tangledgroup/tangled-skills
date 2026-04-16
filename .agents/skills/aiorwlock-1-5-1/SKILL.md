@@ -2,7 +2,7 @@
 name: aiorwlock-1-5-1
 description: Async read-write lock implementation for Python asyncio providing concurrent reader access and exclusive writer access. Use when building async applications requiring fine-grained synchronization where multiple readers can access shared data simultaneously but writers need exclusive access.
 version: "0.2.0"
-author: Your Name <email@example.com>
+author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
   - asyncio

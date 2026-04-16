@@ -2,7 +2,7 @@
 name: llama-cpp-b8789
 description: C/C++ LLM inference library providing GGUF model support, quantization, GPU acceleration (CUDA/Metal/HIP/Vulkan/SYCL), OpenAI-compatible server, multimodal processing, and speculative decoding for running large language models locally with high performance across diverse hardware platforms.
 license: MIT
-author: Tangled Skills <skills@tangled.dev>
+author: Tangled <noreply@tangledgroup.com>
 version: "1.0.0"
 tags:
   - llm

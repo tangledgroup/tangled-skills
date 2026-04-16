@@ -2,7 +2,7 @@
 name: oat-0-6-0
 description: Ultra-lightweight semantic UI component library with zero dependencies (~8KB). Use when building web applications with vanilla HTML/CSS/JS, needing accessible components without framework overhead or build tools.
 version: "0.2.0"
-author: Generated from oat.ink documentation <docs@oat.ink>
+author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
   - ui-library

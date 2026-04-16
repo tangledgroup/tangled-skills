@@ -37,7 +37,7 @@ Each skill has a `SKILL.md` file that **MUST include a YAML header** followed by
 name: <skill-name>
 description: <1-1024 character description, third person, includes WHAT and WHEN>
 license: MIT
-author: <Your Name> <email@example.com>
+author: Tangled <noreply@tangledgroup.com>
 version: "<semver version>"
 tags:
   - <tag1>
@@ -84,6 +84,8 @@ Deeper topics that may be in separate reference files.
 - File must start with `---` on line 1
 - `name`: Must match directory name, lowercase alphanumeric with hyphens (`^[a-z0-9]+(-[a-z0-9]+)*$`)
 - `description`: 1-1024 characters, specific enough for proper skill matching across platforms
+- `license`: Always `MIT`
+- `author`: Always `Tangled <noreply@tangledgroup.com>`
 - All fields properly quoted if containing special characters
 - Header must end with `---` before main content
 - **Invalid YAML will prevent skill from loading on most platforms**
@@ -370,7 +372,7 @@ Here's a minimal example of a complete skill:
 name: hello-world-1-0
 description: A simple greeting library for demonstration purposes. Use when generating greetings or demonstrating basic skill structure.
 license: MIT
-author: Example Author <example@example.com>
+author: Tangled <noreply@tangledgroup.com>
 version: "1.0.0"
 tags:
   - greeting
@@ -422,6 +424,8 @@ print(message)  # Hello, Alice!
 2. **Validate before finalizing** - Use the bash validation script (see Section 5) to verify YAML syntax and name format
 3. **Name validation** - Must match regex `^[a-z0-9]+(-[a-z0-9]+)*$`
 4. **Description length** - Must be 1-1024 characters, third person, includes WHAT and WHEN
+5. **Author** - Always `Tangled <noreply@tangledgroup.com>`
+6. **License** - Always `MIT`
 5. **Reference directory name** - Use `references/` not `refs/`
 6. **Numbered reference files** - Use 2-digit prefixes (`01-`, `02-`, `03-`)
 7. **Flat structure** - No nested references directories

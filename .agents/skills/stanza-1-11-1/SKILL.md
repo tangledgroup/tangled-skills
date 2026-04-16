@@ -1,8 +1,8 @@
 ---
 name: stanza-1-11-1
 description: Stanford NLP Python library for linguistic analysis of 80+ human languages. Use when building multilingual NLP pipelines requiring tokenization, POS tagging, lemmatization, dependency parsing, NER, sentiment analysis, constituency parsing, or language identification with pretrained neural models or CoreNLP integration.
-license: Apache-2.0
-author: Tangled Skills <skills@tangled.dev>
+license: MIT
+author: Tangled <noreply@tangledgroup.com>
 version: "1.11.1"
 tags:
   - nlp

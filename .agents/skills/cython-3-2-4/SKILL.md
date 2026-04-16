@@ -1,8 +1,8 @@
 ---
 name: cython-3-2-4
 description: A skill for using Cython 3.2.4, an optimizing Python compiler that makes writing C extensions as easy as Python itself by translating Python code to C/C++ with support for calling C functions and declaring C types on variables and class attributes. Use when building high-performance Python extensions, wrapping C/C++ libraries, creating optimized numerical code with NumPy integration, implementing parallel algorithms with OpenMP, or needing fine-grained manual tuning from broad to low-level C optimizations.
-license: Apache-2.0
-author: Tangled Skills <skills@tangled.dev>
+license: MIT
+author: Tangled <noreply@tangledgroup.com>
 version: "3.2.4"
 tags:
   - python

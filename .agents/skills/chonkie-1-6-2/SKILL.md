@@ -2,7 +2,7 @@
 name: chonkie-1-6-2
 description: A skill for using Chonkie 1.6.2, a lightweight Rust-based text chunking library for RAG pipelines providing 10+ chunking strategies, pipeline orchestration, embeddings support, and vector database integrations with Python and JavaScript APIs.
 license: MIT
-author: Tangled Skills <skills@tangled.dev>
+author: Tangled <noreply@tangledgroup.com>
 version: "1.6.2"
 tags:
   - text-chunking
