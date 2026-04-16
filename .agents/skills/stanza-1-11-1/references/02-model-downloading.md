@@ -101,7 +101,12 @@ See [Biomedical Models](references/08-biomedical-models.md) for details.
 
 ## Supported Languages (80+)
 
-Stanza supports models for 80+ human languages via Universal Dependencies v2.12:
+Stanza supports models for 80+ human languages via **Universal Dependencies v2.12**. All performance metrics are based on end-to-end evaluation using the CoNLL 2018 UD shared task official evaluation script.
+
+**Performance highlights:**
+- Macro average across all languages: Tokens 99.50%, Sentences 89.23%, UPOS 94.68%, LAS 79.02%
+- Top performers: Afrikaans (LAS 77.53%), Finnish TDT (LAS 83.42%), Polish LFG (LAS 90.38%)
+- See [Model Performance](https://stanfordnlp.github.io/stanza/performance.html) for complete benchmark table
 
 ### Major European Languages
 

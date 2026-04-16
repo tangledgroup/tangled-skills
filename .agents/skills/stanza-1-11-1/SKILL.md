@@ -88,7 +88,12 @@ Stanza uses the [Universal Dependencies](https://universaldependencies.org/) fra
 pip install stanza
 ```
 
-This installs Stanza with PyTorch dependencies automatically.
+**Requirements:**
+- Python 3.9 or later
+- PyTorch 1.13.0 or above (auto-installed)
+
+**Core dependencies:**
+- emoji, numpy, platformdirs, protobuf>=3.15.0, requests, networkx, torch>=1.13.0, tqdm, udtools>=0.2.4
 
 ### Alternative Installation Methods
 

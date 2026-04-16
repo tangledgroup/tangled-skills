@@ -16,6 +16,8 @@ cd stanza
 pip install -e .
 ```
 
+**Note:** Stanza 1.11.1 requires Python 3.9 or later. The package depends on PyTorch >=1.13.0, which should be installed automatically.
+
 ### Configure Environment
 
 Edit `scripts/config.sh` to set environment variables:
