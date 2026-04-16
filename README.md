@@ -18,10 +18,10 @@ All skills in this repository are automatically generated using the `write-skill
 |-------|---------|---------|--------------|-------------|
 | agent-coding-mini-rasbt | - | 0.2.0 | coding-agent, ollama, local-llm, python, automation | A minimal standalone coding agent framework backed by Ollama that provides workspace context collection, structured t... |
 | agent-coding-wyattdave | - | 0.2.0 | ai-agents, prompt-engineering, vscode-extensions, coding-assistants, customization | A toolkit for creating custom AI coding agents using prompt engineering, instruction files, and skill modules. Use wh... |
-| agent-nirzabari | - | 0.2.0 | ai-agents, coding-agents, harness-engineering, llm-systems, agent-architecture | A comprehensive guide to understanding and building coding agent harnesses, covering the 7-layer architecture, contex... |
-| agent-ralph-wiggum-fstandhartinger | - | 0.2.0 | autonomous-development, spec-driven, iterative-loops, ai-coding, ralph-wiggum | Autonomous AI coding with spec-driven development combining iterative bash loops and SpecKit-style specifications for... |
 | agentmemory-0-8-10 | agentmemory | 0.8.10 | ai-agents, memory, persistent-context, mcp-server, iii-engine | Persistent memory engine for AI coding agents providing automatic cross-session context capture, hybrid search (BM25 ... |
 | agentmemory-0-8-9 | agentmemory | 0.8.9 | ai-agents, memory, mcp-server, persistent-context, vector-search | Persistent memory engine for AI coding agents providing automatic cross-session context capture, hybrid search (BM25 ... |
+| agent-nirzabari | - | 0.2.0 | ai-agents, coding-agents, harness-engineering, llm-systems, agent-architecture | A comprehensive guide to understanding and building coding agent harnesses, covering the 7-layer architecture, contex... |
+| agent-ralph-wiggum-fstandhartinger | - | 0.2.0 | autonomous-development, spec-driven, iterative-loops, ai-coding, ralph-wiggum | Autonomous AI coding with spec-driven development combining iterative bash loops and SpecKit-style specifications for... |
 | aiohttp-3-13 | aiohttp | 0.2.0 | async, python, web-server, websocket | Async HTTP client/server for Python asyncio. Use when building async web applications, REST APIs, or making concurren... |
 | aiohttp-cors-0-8-1 | aiohttp-cors | 0.2.0 | cors, aiohttp, web-security, cross-origin | A skill for implementing Cross-Origin Resource Sharing (CORS) support in aiohttp web applications using aiohttp-cors ... |
 | aiohttp-jinja2-1-6 | aiohttp-jinja2 | 0.2.0 | jinja2, templating, aiohttp, web-framework, html-rendering | Jinja2 template renderer for aiohttp.web applications providing decorator-based rendering, context processors, URL he... |
@@ -76,8 +76,8 @@ All skills in this repository are automatically generated using the `write-skill
 | payloadcms-blank-3-82-1 | payloadcms-blank | 0.2.0 | cms, payload, nextjs, mongodb, headless-cms | Minimal Payload CMS 3.82.1 starter template providing a clean foundation for building custom headless CMS application... |
 | payloadcms-ecommerce-3-82-1 | payloadcms-ecommerce | 0.2.0 | payloadcms, nextjs, typescript, ecommerce, mongodb | Complete guide for Payload CMS ecommerce template v3.82.1 providing production-ready online store with products, vari... |
 | payloadcms-website-3-82-1 | payloadcms-website | 0.2.0 | payloadcms, nextjs, typescript, website, blog | Complete guide for Payload CMS website template v3.82.1 providing production-ready starter for content-driven website... |
-| pi-mono-0-66-1 | pi-mono | 0.2.0 | TypeScript, AI agents, LLM, terminal UI, coding agents | Complete implementation guide for pi-mono monorepo architecture covering provider abstraction, agent runtime, termina... |
 | picocss-2-1 | picocss | 0.2.0 | css-framework, semantic-html, responsive-design, light-dark-mode, minimal-css | A skill for using Pico CSS v2.1, a minimalist CSS framework that styles semantic HTML elements elegantly by default w... |
+| pi-mono-0-66-1 | pi-mono | 0.2.0 | TypeScript, AI agents, LLM, terminal UI, coding agents | Complete implementation guide for pi-mono monorepo architecture covering provider abstraction, agent runtime, termina... |
 | pinecone-router-7-5 | pinecone-router | 0.2.0 | alpinejs, routing, client-side-routing, single-page-application, javascript | A comprehensive toolkit for building client-side routing in Alpine.js applications using Pinecone Router v7.5, provid... |
 | podman-5-8-1 | podman | 0.2.0 | containers, podman, docker-alternative, rootless-containers, pods | Comprehensive toolkit for Podman 5.8.1 container engine providing daemonless container management with Docker-compati... |
 | podman-compose-1-5-0 | podman-compose | 0.2.0 | podman, compose, containers, orchestration, devops | Orchestrates multi-container applications using Compose specification files with Podman backend. Use when deploying c... |
@@ -97,10 +97,10 @@ All skills in this repository are automatically generated using the `write-skill
 | scipy-1-17-1 | scipy | 1.0.0 | scipy, scientific-computing, optimization, statistics, linear-algebra | Comprehensive toolkit for SciPy 1.17.1 scientific computing library covering optimization, integration, interpolation... |
 | semver-2-0 | semver | 0.2.0 | semantic-versioning, semver, versioning, software-versions, dependency-management | A skill for implementing and validating Semantic Versioning 2.0.0 (SemVer) to manage software version numbers, determ... |
 | sentence-transformers-5-4-1 | sentence-transformers | 5.4.1 | embeddings, semantic-search, reranking, nlp, pytorch | A comprehensive toolkit for computing text embeddings, semantic search, and reranking using Sentence Transformers v5.... |
+| solidjs-1-19 | solidjs | 0.2.0 | javascript, typescript, frontend, reactivity, jsx | A comprehensive toolkit for building reactive user interfaces with SolidJS 1.19, a declarative JavaScript framework u... |
 | solid-meta-0-29 | solid-meta | 0.29.7 | solidjs, meta-tags, ssr, document-head, seo | A skill for managing document head tags in SolidJS applications with @solidjs/meta v0.29, providing asynchronous SSR-... |
 | solid-router-0-16 | solid-router | 0.2.0 | solidjs, router, routing, navigation, ssr | A skill for using Solid Router v0.16, the universal router for SolidJS that provides fine-grained reactivity for rout... |
 | solid-start-1-3 | solid-start | 0.2.0 | solidjs, fullstack, ssr, ssg, api-routes | Fullstack framework for SolidJS providing SSR, SSG, API routes, and file-based routing. Use when building performant ... |
-| solidjs-1-19 | solidjs | 0.2.0 | javascript, typescript, frontend, reactivity, jsx | A comprehensive toolkit for building reactive user interfaces with SolidJS 1.19, a declarative JavaScript framework u... |
 | spacy-3-8-14 | spacy | 3.8.14 | nlp, natural-language-processing, text-analysis, machine-learning, python | Industrial-strength NLP library for Python providing tokenization, named entity recognition, dependency parsing, text... |
 | spec-kit-0-6-1 | spec-kit | 0.6.1 | specification-driven-development, sdd, ai-assisted-development, project-management, workflow-automation | A skill for implementing Spec-Driven Development (SDD) using GitHub's Spec Kit v0.6.1 toolkit, enabling specification... |
 | sqlalchemy-2-0 | sqlalchemy | 0.2.0 | database, orm, sql, python, postgresql | Complete SQLAlchemy 2.0 toolkit for database operations, ORM mapping, and SQL expression construction. Use when build... |
@@ -123,4 +123,3 @@ All skills in this repository are automatically generated using the `write-skill
 ## Statistics
 
 - **Total Skills**: 103
-- **Last Updated**: 2026-04-16

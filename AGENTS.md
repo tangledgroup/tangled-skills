@@ -125,7 +125,7 @@ For large topics (> 500 lines in SKILL.md), break content into modular reference
 4. **Determine structure** based on content size:
    - < 500 lines: Keep everything in SKILL.md (no references/)
    - > 500 lines: Move detailed topics to `references/` with numbered files
-5. **Validate YAML header** using Python yaml.safe_load before finalizing
+5. **Validate YAML header** using the bash validation script (see Section 5) before finalizing
 6. **Update README.md** by adding a new row to the skills table
 
 ### 5. YAML Header Field Requirements
@@ -144,7 +144,22 @@ For large topics (> 500 lines in SKILL.md), break content into modular reference
 
 **Validation:**
 ```bash
-python3 -c "import yaml; data=yaml.safe_load(open('SKILL.md').read().split('---',2)[1].split('---')[0]); print('✓ Valid' if 'name' in data and 'description' in data else '✗ Invalid')"
+# Validate YAML header: checks for name + description fields and name format
+skill_file="SKILL.md"
+yaml_block=$(sed -n '1,/^---$/p' "$skill_file" | sed '1d;$d')
+if [ -z "$yaml_block" ]; then
+    echo "✗ Invalid (no YAML block)"
+elif grep -q '^name:' <<< "$yaml_block" && grep -q '^description:' <<< "$yaml_block"; then
+    name=$(echo "$yaml_block" | grep '^name:' | head -1 | sed 's/^name:[[:space:]]*//')
+    desc=$(echo "$yaml_block" | grep '^description:' | head -1 | sed 's/^description:[[:space:]]*//')
+    if [[ "$name" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
+        echo "✓ Valid (name=$name, desc_len=${#desc})"
+    else
+        echo "✗ Invalid (name format: $name)"
+    fi
+else
+    echo "✗ Invalid (missing name or description)"
+fi
 ```
 
 ### 6. Skill Content Guidelines
@@ -175,74 +190,103 @@ Example update:
 
 ### Auto-Generate Skills Table (Recommended)
 
-When adding, removing, or replacing skills, **generate a fresh `README.md`** by running this Python script on-the-fly. It scans every skill directory, extracts YAML metadata, and produces an accurate, sorted table with correct counts — zero hallucination risk.
+When adding, removing, or replacing skills, **generate a fresh `README.md`** by running this bash script on-the-fly. It scans every skill directory, extracts YAML metadata, and produces an accurate, sorted table with correct counts — zero hallucination risk.
 
 **Run this from the repository root:**
 
 ```bash
-python3 << 'PYEOF'
-import os, re, datetime
+# Auto-generate README.md skills table by scanning .agents/skills/
+# Extracts YAML metadata (name, description, version, tags) and builds a sorted markdown table.
+set -euo pipefail
 
-SKILLS_DIR = '.agents/skills'
-README_PATH = 'README.md'
+# Helper: strip YAML value (whitespace + surrounding quotes)
+strip_yaml_val() {
+    local val="$1"
+    val=$(echo "$val" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    case "$val" in
+        \"*) val="${val:1:${#val}-2}" ;;
+    esac
+    echo "$val"
+}
 
-# Collect skill data
-skills = []
-skipped = []
-for dir_name in sorted(os.listdir(SKILLS_DIR)):
-    skill_dir = os.path.join(SKILLS_DIR, dir_name)
-    skill_file = os.path.join(skill_dir, 'SKILL.md')
-    if not os.path.isdir(skill_dir) or not os.path.isfile(skill_file):
+SKILLS_DIR=".agents/skills"
+README_PATH="README.md"
+TMPFILE=$(mktemp)
+trap 'rm -f "$TMPFILE"' EXIT
+
+total=0
+skipped=0
+skip_list=""
+
+for dir_name in $(ls -1 "$SKILLS_DIR" | sort); do
+    skill_file="$SKILLS_DIR/$dir_name/SKILL.md"
+    [ -f "$skill_file" ] || continue
+
+    content=$(cat "$skill_file")
+
+    # Extract YAML block between first pair of ---
+    yaml_block=$(echo "$content" | sed -n '1,/^---$/p' | sed '1d;$d')
+    if [ -z "$yaml_block" ]; then
+        total=$((total + 1))
+        skipped=$((skipped + 1))
+        skip_list="$skip_list $dir_name (no YAML header)"
         continue
-    with open(skill_file) as f:
-        content = f.read()
-    match = re.match(r'^---\n(.*?)\n---', content, re.DOTALL)
-    if not match:
-        skipped.append(dir_name + ' (no YAML header)')
-        continue
-    yaml_text = match.group(1)
-    name = desc = version = ''
-    tags = []
-    in_tags = False
-    for line in yaml_text.split('\n'):
-        if line.startswith('name:'):
-            name = re.sub(r'^name:\s*', '', line).strip().strip('"').strip("'")
-            in_tags = False
-        elif line.startswith('description:'):
-            desc = re.sub(r'^description:\s*', '', line).strip().strip('"').strip("'")
-            in_tags = False
-        elif line.startswith('version:'):
-            version = re.sub(r'^version:\s*', '', line).strip().strip('"').strip("'")
-            in_tags = False
-        elif line.startswith('tags:'):
-            in_tags = True
-            continue
-        elif in_tags and line.strip().startswith('- '):
-            tag = line.strip()[2:].strip()
-            if not tag.startswith('http') and not tag.startswith('url:'):
-                tags.append(tag)
-        elif in_tags and not line.strip().startswith('- ') and not line.strip().startswith('#'):
-            in_tags = False
-    if not name:
-        name = dir_name
-    desc_short = desc[:117] + '...' if len(desc) > 120 else desc
-    if name.startswith('agent-') or name in ['write-skill']:
-        project = '-'
-    else:
-        m = re.match(r'^(.+?)-(\d)', name)
-        project = m.group(1) if m else '-'
-    skills.append({
-        'name': name,
-        'project': project,
-        'version': version if version else '-',
-        'tags': tags[:5],
-        'desc': desc_short,
-    })
+    fi
 
-skills.sort(key=lambda s: s['name'])
+    # Extract name, description, version using grep + sed + helper
+    name=$(strip_yaml_val "$(echo "$yaml_block" | grep '^name:' | head -1 | sed 's/^name:[[:space:]]*//')")
+    [ -z "$name" ] && name="$dir_name"
 
-with open(README_PATH, 'w') as f:
-    f.write("""# tangled-skills
+    desc=$(strip_yaml_val "$(echo "$yaml_block" | grep '^description:' | head -1 | sed 's/^description:[[:space:]]*//')")
+
+    version=$(strip_yaml_val "$(echo "$yaml_block" | grep '^version:' | head -1 | sed 's/^version:[[:space:]]*//')")
+    [ -z "$version" ] && version="-"
+
+    # Extract tags using awk (up to 5, filtering URLs)
+    tags=$(echo "$yaml_block" | awk 'BEGIN{in_tags=0;count=0;tags=""}
+        /^tags:/ { in_tags=1; next }
+        in_tags && /^[[:space:]]*- / {
+            tag = $0
+            sub(/^[[:space:]]*- [[:space:]]*/, "", tag)
+            if (tag !~ /^http/ && tag !~ /^url:/) {
+                if (count < 5) {
+                    if (tags != "") tags = tags ","
+                    tags = tags tag
+                    count++
+                }
+            }
+            next
+        }
+        in_tags { in_tags=0 }
+        END{print tags}')
+
+    # Truncate description to 117 chars + "..." if over 120
+    desc_len=${#desc}
+    if [ "$desc_len" -gt 120 ]; then
+        desc_short="${desc:0:117}..."
+    else
+        desc_short="$desc"
+    fi
+
+    # Derive project name from skill name pattern
+    if [[ "$name" == agent-* ]] || [ "$name" = "write-skill" ]; then
+        project="-"
+    else
+        project=$(echo "$name" | sed 's/-[0-9].*//')
+        [ "$project" = "$name" ] && project="-"
+    fi
+
+    total=$((total + 1))
+    echo "${name}|${project}|${version}|${tags}|${desc_short}" >> "$TMPFILE"
+done
+
+# Sort by skill name and generate README.md
+sort -t'|' -k1,1 "$TMPFILE" > "${TMPFILE}.sorted"
+mv "${TMPFILE}.sorted" "$TMPFILE"
+
+# Write README header
+cat > "$README_PATH" << 'README_HEADER'
+# tangled-skills
 Tangled Skills for Agents
 
 ## About
@@ -260,18 +304,29 @@ All skills in this repository are automatically generated using the `write-skill
 
 | Skill | Project | Version | Technologies | Description |
 |-------|---------|---------|--------------|-------------|
-""")
-    for s in skills:
-        f.write(f"| {s['name']} | {s['project']} | {s['version']} | {', '.join(s['tags'])} | {s['desc']} |\n")
-    f.write(f"\n## Statistics\n\n- **Total Skills**: {len(skills)}\n- **Last Updated**: {datetime.date.today().isoformat()}\n")
+README_HEADER
 
-print(f'Generated README.md with {len(skills)} skills')
-if skipped:
-    print(f'Skipped {len(skipped)}: {', '.join(skipped[:5])}')
-PYEOF
+# Write table rows
+while IFS='|' read -r name project version tags desc; do
+    # Convert comma-separated tags to space-comma format
+    tags_display=$(echo "$tags" | sed 's/,/, /g')
+    echo "| $name | $project | $version | $tags_display | $desc |" >> "$README_PATH"
+done < "$TMPFILE"
+
+# Write statistics section
+echo "" >> "$README_PATH"
+echo "## Statistics" >> "$README_PATH"
+echo "" >> "$README_PATH"
+echo "- **Total Skills**: $total" >> "$README_PATH"
+
+# Report results
+echo "Generated README.md with $total skills"
+if [ "$skipped" -gt 0 ]; then
+    echo "Skipped $skipped:$skip_list"
+fi
 ```
 
-**What the script does:**
+**What the script does:
 1. Scans every directory in `.agents/skills/` for a `SKILL.md` file
 2. Parses the YAML header to extract `name`, `description`, `version`, and `tags`
 3. Filters out URLs from tags (they belong in `external_references`, not technologies)
@@ -364,7 +419,7 @@ print(message)  # Hello, Alice!
 ## Important Notes
 
 1. **YAML header is REQUIRED** - Every skill must have valid YAML starting on line 1
-2. **Validate before finalizing** - Use yaml.safe_load to verify YAML syntax
+2. **Validate before finalizing** - Use the bash validation script (see Section 5) to verify YAML syntax and name format
 3. **Name validation** - Must match regex `^[a-z0-9]+(-[a-z0-9]+)*$`
 4. **Description length** - Must be 1-1024 characters, third person, includes WHAT and WHEN
 5. **Reference directory name** - Use `references/` not `refs/`
