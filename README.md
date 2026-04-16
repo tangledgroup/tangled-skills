@@ -50,6 +50,7 @@ All skills in this repository are automatically generated using the `write-skill
 | daisyui-5-5 | daisyui | 0.2.0 | tailwindcss, daisyui, ui-components, theming, css-framework | A skill for using DaisyUI 5.5, a component library for Tailwind CSS 4 that provides semantic class names for common U... |
 | dayjs-1-11 | dayjs | 0.2.0 | date, time, parsing, formatting, manipulation | Complete toolkit for date and time manipulation using Day.js 1.11, a minimalist 2kB library with Moment.js-compatible... |
 | deno-2-7 | deno | 0.2.0 | javascript, typescript, runtime, web-server, cli-tools | A comprehensive toolkit for the Deno 2.x JavaScript/TypeScript runtime, covering installation, permissions, built-in ... |
+| docker-docs-2026-04-16 | docker-docs | 2026.4.16 | containers, docker-engine, docker-desktop, docker-compose, dockerfile | Comprehensive reference for Docker platform including Docker Engine, Docker Desktop, Docker Compose, Docker Build/Bui... |
 | duckdb-1-5-2 | duckdb | 1.5.2 | sql, analytics, embedded-database, olap, data-science | High-performance analytical SQL database with support for nested types, vectorized execution, and seamless integratio... |
 | esbuild-0-28 | esbuild | 0.28.0 | javascript, bundler, typescript, jsx, css | Complete toolkit for esbuild v0.28 JavaScript bundler providing CLI, JavaScript API, and Go API access for bundling, ... |
 | git | - | 0.3.0 | git, version-control, conventional-commits, keep-a-changelog, semver | > |
@@ -63,12 +64,14 @@ All skills in this repository are automatically generated using the `write-skill
 | lingua-py-2-2-0 | lingua-py | 2.2.0 | nlp, language-detection, text-processing, multilingual, natural-language-processing | Accurate natural language detection library for Python supporting 75 languages with high accuracy on short text and m... |
 | llama-cpp-b8789 | - | 1.0.0 | llm, inference, gguf, quantization, cuda | C/C++ LLM inference library providing GGUF model support, quantization, GPU acceleration (CUDA/Metal/HIP/Vulkan/SYCL)... |
 | lodash-4-18 | lodash | 0.2.0 | javascript, utility-library, arrays, objects, strings | Complete toolkit for Lodash 4.18 utility library providing 300+ helper functions for arrays, collections, objects, st... |
+| logfire-4-32-1 | logfire | 4.32.1 | observability, tracing, OpenTelemetry, logging, metrics | Complete toolkit for Pydantic Logfire 4.32.1 — production-grade AI observability built on OpenTelemetry. Use when ins... |
 | matplotlib-3-10-8 | matplotlib | 3.10.8 | plotting, visualization, charts, graphs, data-visualization | Comprehensive toolkit for Matplotlib 3.10.8, the Python plotting library for creating static, animated, and interacti... |
 | mem0-1-0-11 | mem0 | 1.0.0 | memory, llm, ai-agents, vector-search, langchain | A skill for using Mem0 v1.0.11, a universal self-improving memory layer for LLM applications that enables persistent ... |
 | mempalace-3-3-0 | mempalace | 3.3.0 | ai-memory, rag, chromadb, local-ai, mcp-server | Local AI memory system that mines projects and conversations into a searchable palace using ChromaDB for vector searc... |
 | networkx-3-6-1 | networkx | 1.0.0 | graph-theory, network-analysis, complex-networks, algorithms, data-science | A comprehensive toolkit for NetworkX 3.6.1, the Python package for creating, manipulating, and studying complex netwo... |
 | networkxternal-0-3 | networkxternal | 0.3 | graph, database, networkx, sqlite, postgresql | NetworkX-compatible interface for external memory MultiDiGraphs persisted in databases (SQLite, PostgreSQL, MySQL, Mo... |
 | nextjs-16-2-3 | nextjs | 0.2.0 | nextjs, react, web-development, ssr, ssg | A skill for building production-ready React applications with Next.js 16.2.3, providing App Router and Pages Router s... |
+| nginx-1-30-0 | nginx | 1.30.0 | HTTP server, reverse proxy, load balancer, SSL/TLS, caching | Complete toolkit for Nginx 1.30.0 high-performance HTTP server, reverse proxy, and load balancer covering configurati... |
 | nltk-3-9-2 | nltk | 3.9.2 | nlp, natural-language-processing, python, text-processing, wordnet | Complete toolkit for Natural Language Processing with NLTK 3.9.2, covering tokenization, stemming, lemmatization, POS... |
 | nodejs-24-14 | nodejs | 0.2.0 | nodejs, javascript, runtime, server-side, async | Complete Node.js 24.14 runtime toolkit covering core modules, async programming, HTTP servers, file system operations... |
 | nuitka-4-0-8 | nuitka | 0.2.0 | python-compiler, native-code, c-generation, standalone-executables, performance-optimization | Python compiler that translates Python code to C and native executables. Use when compiling Python applications for d... |
@@ -77,7 +80,11 @@ All skills in this repository are automatically generated using the `write-skill
 | numpy-2-4-4 | numpy | 2.4.4 | numpy, arrays, scientific-computing, linear-algebra, numerical-analysis | Complete toolkit for NumPy 2.4.4, the fundamental package for scientific computing with Python, providing powerful n-... |
 | oat-0-6-0 | oat | 0.2.0 | ui-library, css-framework, semantic-html, zero-dependency, webcomponents | Ultra-lightweight semantic UI component library with zero dependencies (~8KB). Use when building web applications wit... |
 | openai-2-31 | openai | 0.2.0 | openai, python, llm, chat-completions, embeddings | Python SDK for OpenAI API v2.31 providing type-safe access to Responses API, Chat Completions, embeddings, audio tran... |
+| opentelemetry-1-55-0 | opentelemetry | 1.55.0 | distributed-tracing, metrics, logging, observability, OTLP | Complete OpenTelemetry 1.55.0 specification toolkit for implementing distributed tracing, metrics collection, and log... |
+| opentelemetry-collector-1-56-0 | opentelemetry-collector | 1.56.0 | observability, tracing, metrics, logging, otel | Complete toolkit for OpenTelemetry Collector 1.56 covering configuration, deployment patterns (agent/gateway), pipeli... |
+| opentelemetry-python-1-41-0 | opentelemetry-python | 1.41.0 | observability, distributed-tracing, metrics, logging, opentelemetry | Complete OpenTelemetry Python toolkit v1.41.0 for distributed tracing, metrics collection, and log management with su... |
 | pacote-21-5 | pacote | 0.2.0 | npm, packages, npx, download, extract | Use pacote 21.5 via npx to inspect, download, and extract npm packages without installing them first. Supports regist... |
+| paramiko-4-0-0 | paramiko | 4.0.0 | SSH, SFTP, SCP, networking, remote execution | Complete toolkit for Paramiko 4.0.0, a pure-Python SSHv2 implementation providing both client and server functionalit... |
 | payloadcms-3-82-1 | payloadcms | 0.2.0 | cms, headless-cms, content-management, nextjs, typescript | Complete toolkit for Payload CMS v3.82.1 headless CMS development including collections, fields, access control, auth... |
 | payloadcms-blank-3-82-1 | payloadcms-blank | 0.2.0 | cms, payload, nextjs, mongodb, headless-cms | Minimal Payload CMS 3.82.1 starter template providing a clean foundation for building custom headless CMS application... |
 | payloadcms-ecommerce-3-82-1 | payloadcms-ecommerce | 0.2.0 | payloadcms, nextjs, typescript, ecommerce, mongodb | Complete guide for Payload CMS ecommerce template v3.82.1 providing production-ready online store with products, vari... |
@@ -117,6 +124,8 @@ All skills in this repository are automatically generated using the `write-skill
 | tailwindcss-4-2 | tailwindcss | 0.2.0 | css, tailwind, styling, frontend, utility-first | A skill for using Tailwind CSS v4.2, a utility-first CSS framework with CSS-based configuration, OKLCH color space, c... |
 | tailwindcss-browser-4-2 | tailwindcss-browser | 0.2.0 | css, tailwind, browser, prototyping, no-build | A skill for using Tailwind CSS v4.2 browser build (@tailwindcss/browser) that enables in-browser Tailwind compilation... |
 | textblob-0-20-0 | textblob | 0.20.0 | nlp, text-processing, sentiment-analysis, pos-tagging, classification | Python library for simplified natural language processing (NLP) tasks including sentiment analysis, part-of-speech ta... |
+| tinycc-0-9-27 | tinycc | 0.9.27 | C compiler, x86, libtcc, dynamic code generation, C scripting | Complete toolkit for TinyCC 0.9.27, a small hyper-fast C compiler that generates x86 code directly without external a... |
+| tinypy-1-1 | tinypy | 1.1.0 | python, embedded, vm, bytecode, c-api | TinyPy 1.1 — a minimalist Python implementation in ~64k of code featuring a Lua-esque bytecode VM, garbage collection... |
 | tokenizers-0-22-3 | tokenizers | 0.22.3 | nlp, tokenization, rust, python, transformers | Fast state-of-the-art tokenizers library for NLP written in Rust with Python, Node.js, and Ruby bindings. Use when tr... |
 | transformers-5-5-4 | transformers | 1.0.0 | nlp, machine-learning, deep-learning, pytorch, huggingface | Complete toolkit for Hugging Face Transformers 5.5.4 providing state-of-the-art pretrained models for NLP, computer v... |
 | ty-0-0-29 | ty | 0.2.0 | python, type-checking, static-analysis, language-server, mypy-alternative | A skill for using ty 0.0.29, an extremely fast Python type checker and language server written in Rust that is 10x-10... |
@@ -130,4 +139,4 @@ All skills in this repository are automatically generated using the `write-skill
 
 ## Statistics
 
-- **Total Skills**: 111
+- **Total Skills**: 120
