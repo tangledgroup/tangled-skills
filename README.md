@@ -38,19 +38,22 @@ All skills in this repository are automatically generated using the `write-skill
 | bcrypt-5-0 | bcrypt | 0.2.0 | password-hashing, cryptography, security, authentication, key-derivation | A skill for password hashing and key derivation using bcrypt 5.0 in Python. Use when implementing secure password sto... |
 | boto3-1-42-89 | boto3 | 1.0.0 | aws, boto3, cloud, python, sdk | Complete toolkit for AWS SDK for Python (Boto3) 1.42.89 providing high-level resource interface and low-level client ... |
 | bun-1-3-12 | bun | 0.2.0 | javascript, typescript, runtime, package-manager, bundler | Complete toolkit for Bun 1.3.12 JavaScript runtime, package manager, bundler, and test runner. Use when building high... |
+| caddy-2-11-2 | caddy | 2.11.2 | web server, reverse proxy, HTTPS, Caddyfile, automatic SSL | Complete Caddy 2.11.2 web server toolkit covering Caddyfile configuration, JSON API, CLI commands, automatic HTTPS wi... |
 | caveman-1-5-1 | caveman | 1.5.1 | communication, token-optimization, brevity, efficiency | Ultra-compressed communication mode that cuts token usage by ~75% while maintaining full technical accuracy. Supports... |
 | cffi-2-0-0 | cffi | 2.0.0 | cffi, c-integration, ffi, foreign-function-interface, python-c-bindings | Python C Foreign Function Interface for calling C libraries from Python with C-like declarations. Use when interfacin... |
 | changelog-1-1 | changelog | 0.2.0 | changelog, documentation, versioning, semver, release-notes | A skill for creating and maintaining changelogs following the Keep a Changelog specification v1.1.0, providing standa... |
 | chonkie-1-6-2 | chonkie | 1.6.2 | text-chunking, rag, nlp, embeddings, vector-databases | A skill for using Chonkie 1.6.2, a lightweight Rust-based text chunking library for RAG pipelines providing 10+ chunk... |
 | crun-1-27 | crun | 0.2.0 | oci-runtime, containers, podman, checkpointing, criu | Lightweight OCI container runtime written in C for running Linux containers with low memory footprint and high perfor... |
 | cryptography-46 | cryptography | 0.2.0 | cryptography, encryption, hashing, asymmetric, symmetric | Comprehensive toolkit for Python cryptographic operations using the cryptography library. Use when implementing encry... |
+| curl-8-19-0 | curl | 8.19.0 | HTTP client, FTP, URL transfer, libcurl, CLI tool | Complete toolkit for curl 8.19.0 CLI tool and libcurl C library covering command-line usage, URL syntax, HTTP/HTTPS/F... |
 | cython-3-2-4 | cython | 3.2.4 | python, compiler, c-extension, performance, optimization | A skill for using Cython 3.2.4, an optimizing Python compiler that makes writing C extensions as easy as Python itsel... |
 | daisyui-5-5 | daisyui | 0.2.0 | tailwindcss, daisyui, ui-components, theming, css-framework | A skill for using DaisyUI 5.5, a component library for Tailwind CSS 4 that provides semantic class names for common U... |
 | dayjs-1-11 | dayjs | 0.2.0 | date, time, parsing, formatting, manipulation | Complete toolkit for date and time manipulation using Day.js 1.11, a minimalist 2kB library with Moment.js-compatible... |
 | deno-2-7 | deno | 0.2.0 | javascript, typescript, runtime, web-server, cli-tools | A comprehensive toolkit for the Deno 2.x JavaScript/TypeScript runtime, covering installation, permissions, built-in ... |
 | duckdb-1-5-2 | duckdb | 1.5.2 | sql, analytics, embedded-database, olap, data-science | High-performance analytical SQL database with support for nested types, vectorized execution, and seamless integratio... |
 | esbuild-0-28 | esbuild | 0.28.0 | javascript, bundler, typescript, jsx, css | Complete toolkit for esbuild v0.28 JavaScript bundler providing CLI, JavaScript API, and Go API access for bundling, ... |
-| git | - | 0.2.0 | git, version-control, conventional-commits, semver, devops | > |
+| git | - | 0.3.0 | git, version-control, conventional-commits, keep-a-changelog, semver | > |
+| haproxy-3-3-0 | haproxy | 3.3.0 | load balancing, reverse proxy, SSL termination, high availability, HTTP proxy | Complete HAProxy 3.3.0 toolkit for load balancing, reverse proxying, SSL/TLS termination, and traffic management. Use... |
 | htm-3-1 | htm | 0.2.0 | jsx-alternative, tagged-templates, preact, react, virtual-dom | A skill for using htm 3.1, a tagged template syntax library that provides JSX-like markup in plain JavaScript without... |
 | htmx-2 | htmx | 0.2.0 | htmx, html, ajax, web-development, frontend | A skill for building interactive web applications with htmx 2.x, a JavaScript library that allows accessing modern br... |
 | htmx-4 | htmx | 0.2.0 | htmx, hypermedia, ajax, html, web-development | A skill for building interactive web applications with htmx 4.0, a JavaScript library that provides HTML attributes f... |
@@ -60,10 +63,11 @@ All skills in this repository are automatically generated using the `write-skill
 | lingua-py-2-2-0 | lingua-py | 2.2.0 | nlp, language-detection, text-processing, multilingual, natural-language-processing | Accurate natural language detection library for Python supporting 75 languages with high accuracy on short text and m... |
 | llama-cpp-b8789 | - | 1.0.0 | llm, inference, gguf, quantization, cuda | C/C++ LLM inference library providing GGUF model support, quantization, GPU acceleration (CUDA/Metal/HIP/Vulkan/SYCL)... |
 | lodash-4-18 | lodash | 0.2.0 | javascript, utility-library, arrays, objects, strings | Complete toolkit for Lodash 4.18 utility library providing 300+ helper functions for arrays, collections, objects, st... |
+| matplotlib-3-10-8 | matplotlib | 3.10.8 | plotting, visualization, charts, graphs, data-visualization | Comprehensive toolkit for Matplotlib 3.10.8, the Python plotting library for creating static, animated, and interacti... |
 | mem0-1-0-11 | mem0 | 1.0.0 | memory, llm, ai-agents, vector-search, langchain | A skill for using Mem0 v1.0.11, a universal self-improving memory layer for LLM applications that enables persistent ... |
 | mempalace-3-3-0 | mempalace | 3.3.0 | ai-memory, rag, chromadb, local-ai, mcp-server | Local AI memory system that mines projects and conversations into a searchable palace using ChromaDB for vector searc... |
 | networkx-3-6-1 | networkx | 1.0.0 | graph-theory, network-analysis, complex-networks, algorithms, data-science | A comprehensive toolkit for NetworkX 3.6.1, the Python package for creating, manipulating, and studying complex netwo... |
-| networkxternal-0-3 | networkxternal | 0.3.0 | graph, database, networkx, sqlite, postgresql | NetworkX-compatible interface for external memory graphs persisted in databases (SQLite, PostgreSQL, MySQL, MongoDB, ... |
+| networkxternal-0-3 | networkxternal | 0.3 | graph, database, networkx, sqlite, postgresql | NetworkX-compatible interface for external memory MultiDiGraphs persisted in databases (SQLite, PostgreSQL, MySQL, Mo... |
 | nextjs-16-2-3 | nextjs | 0.2.0 | nextjs, react, web-development, ssr, ssg | A skill for building production-ready React applications with Next.js 16.2.3, providing App Router and Pages Router s... |
 | nltk-3-9-2 | nltk | 3.9.2 | nlp, natural-language-processing, python, text-processing, wordnet | Complete toolkit for Natural Language Processing with NLTK 3.9.2, covering tokenization, stemming, lemmatization, POS... |
 | nodejs-24-14 | nodejs | 0.2.0 | nodejs, javascript, runtime, server-side, async | Complete Node.js 24.14 runtime toolkit covering core modules, async programming, HTTP servers, file system operations... |
@@ -125,4 +129,4 @@ All skills in this repository are automatically generated using the `write-skill
 
 ## Statistics
 
-- **Total Skills**: 106
+- **Total Skills**: 110
