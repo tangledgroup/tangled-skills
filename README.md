@@ -91,6 +91,7 @@ All skills in this repository are automatically generated using the `write-skill
 | python-scrypt | - | 0.2.0 | cryptography, key-derivation, password-hashing, scrypt, kdf | Python toolkit for scrypt-based key derivation and password hashing. Use when implementing secure password storage, d... |
 | pywebview-6-2 | pywebview | 0.2.0 | python, desktop-gui, webview, cross-platform, native-apps | A skill for building cross-platform desktop applications with native webview components using pywebview 6.2, enabling... |
 | pyzmq-27-1-0 | pyzmq | 0.2.0 | zeromq, zmq, messaging, networking, sockets | Complete toolkit for Python bindings to ZeroMQ (pyzmq 27.x) covering socket types, messaging patterns, async/await in... |
+| quickjs-2025-09-13 | quickjs | 2025.9.13 | JavaScript, engine, C API, bytecode, embedding | Small and fast JavaScript engine supporting ES2023 with C API for embedding, qjs REPL interpreter, and qjsc bytecode ... |
 | qwen3-embedding | - | 1.0.0 | embedding, semantic-search, retrieval, multilingual, reranking | Complete toolkit for Qwen3 Embedding models (0.6B, 4B, 8B) and Qwen3 Reranker models providing state-of-the-art text ... |
 | qwen3-reranker | - | 1.0.0 | reranking, text-ranking, retrieval, cross-encoder, multilingual | Comprehensive toolkit for Qwen3 Reranker models (0.6B, 4B, 8B) — state-of-the-art cross-encoder text reranking with 1... |
 | qwen3-vl-embedding | - | 0.1.0 | embedding, multimodal, vision-language, retrieval, semantic-search | Complete toolkit for Qwen3-VL-Embedding 0.1.0 multimodal embedding models (2B and 8B) supporting text, images, screen... |
@@ -129,4 +130,4 @@ All skills in this repository are automatically generated using the `write-skill
 
 ## Statistics
 
-- **Total Skills**: 110
+- **Total Skills**: 111
