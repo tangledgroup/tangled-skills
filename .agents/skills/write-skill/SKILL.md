@@ -176,16 +176,66 @@ python3 -c "import yaml; data=yaml.safe_load(open('SKILL.md').read().split('---'
 
 See [Validation Checklist](references/07-validation-checklist.md) for complete YAML validation requirements.
 
-### Step 5: Structure and Content Validation
+### Step 5: Comprehensive Skill Validation (REQUIRED)
 
-After YAML validation passes, verify:
+**Before presenting any skill, run comprehensive validation covering THREE aspects:**
 
-- ✅ Structure matches type (simple vs complex)
-- ✅ Relative links resolve correctly
-- ✅ Code snippets complete and valid
-- ✅ No placeholder values in examples
-- ✅ Troubleshooting section present
+1. **Directory structure** - Ensure `references/` used (not `refs/` or `ref/`)
+2. **Reference numbering** - Validate sequential prefixes (`01-`, `02-`, `03-`)
+3. **YAML header validity** - Verify required fields, format, and length
 
+**Run on-the-fly validation script:**
+
+```bash
+# Generate and execute comprehensive validation
+skill_dir=".agents/skills/<skill-name>"
+skill_file="$skill_dir/SKILL.md"
+
+echo "=== Comprehensive Skill Validation ==="
+validation_failed=0
+
+# [1/3] Directory Structure
+if [ -d "$skill_dir/refs" ] || [ -d "$skill_dir/ref" ]; then
+    echo "✗ ERROR: Found incorrect directory (refs/ or ref/)"
+    validation_failed=1
+else
+    echo "✓ Directory structure valid"
+fi
+
+# [2/3] Reference Numbering (if references exist)
+if [ -d "$skill_dir/references" ]; then
+    invalid=$(find "$skill_dir/references" -maxdepth 1 -name "*.md" ! -regex ".*/[0-9][0-9]-.*\.md" | wc -l)
+    if [ $invalid -eq 0 ]; then
+        echo "✓ Reference numbering valid"
+    else
+        echo "✗ ERROR: Found $invalid files with invalid numbering"
+        validation_failed=1
+    fi
+else
+    echo "✓ Simple skill (no references)"
+fi
+
+# [3/3] YAML Header
+if head -n1 "$skill_file" | grep -q '^---$' && \
+   grep -q '^name:' "$skill_file" && \
+   grep -q '^description:' "$skill_file"; then
+    echo "✓ YAML header valid"
+else
+    echo "✗ ERROR: YAML header invalid or missing fields"
+    validation_failed=1
+fi
+
+if [ $validation_failed -eq 1 ]; then
+    echo "\n✗ VALIDATION FAILED - Fix errors before presenting skill"
+    exit 1
+else
+    echo "\n✓ ALL VALIDATIONS PASSED - Skill ready for review"
+fi
+```
+
+**CRITICAL:** Do not present skill for review until validation passes with exit code 0.
+
+See [Directory Validation](references/09-directory-validation.md) for complete validation scripts with detailed output and auto-fix suggestions.
 See [Validation Checklist](references/07-validation-checklist.md) for complete requirements.
 
 ## Reference Files
@@ -203,6 +253,7 @@ See [Validation Checklist](references/07-validation-checklist.md) for complete r
 - [`references/06-skill-templates.md`](references/06-skill-templates.md) - Simple and complex skill templates, frontmatter requirements
 - [`references/07-validation-checklist.md`](references/07-validation-checklist.md) - Complete validation requirements and cross-platform notes
 - [`references/08-interaction-examples.md`](references/08-interaction-examples.md) - Detailed examples with expected outputs
+- [`references/09-directory-validation.md`](references/09-directory-validation.md) - **On-the-fly bash scripts for comprehensive validation** (directory structure, reference numbering, YAML header)
 
 ## Output Structure
 

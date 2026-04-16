@@ -205,7 +205,7 @@ helm install rustfs rustfs/rustfs \
   --set service.type=LoadBalancer
 ```
 
-See [Installation Guide](refs/01-installation.md) for complete installation options.
+See [Installation Guide](references/01-installation.md) for complete installation options.
 
 ### Method 5: Nix Flake
 
@@ -299,9 +299,9 @@ mc cp my-file.txt myrustfs/my-bucket/
 mc ls myrustfs/my-bucket/
 ```
 
-See [Configuration Reference](refs/02-configuration.md) for environment variables and settings.
+See [Configuration Reference](references/02-configuration.md) for environment variables and settings.
 
 
 ## See Also
 
-- [Advanced Features](references/01-advanced-features.md) - Advanced configuration, observability, troubleshooting, and performance tuning
+- [Advanced Features](references/03-advanced-features.md) - Advanced configuration, observability, troubleshooting, and performance tuning

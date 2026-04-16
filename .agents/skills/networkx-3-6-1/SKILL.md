@@ -174,7 +174,7 @@ print(f"Number of components: {nx.number_connected_components(G)}")
 
 ### Shortest Paths
 
-See [Shortest Path Algorithms](refs/02-shortest-paths.md) for comprehensive coverage.
+See [Shortest Path Algorithms](references/02-shortest-paths.md) for comprehensive coverage.
 
 ```python
 # Single shortest path
@@ -193,7 +193,7 @@ paths = nx.single_source_shortest_path(G, "A")
 
 ### Centrality Measures
 
-See [Centrality and Importance](refs/03-centrality.md) for detailed explanations.
+See [Centrality and Importance](references/03-centrality.md) for detailed explanations.
 
 ```python
 # Degree centrality (normalized degree)
@@ -214,7 +214,7 @@ pr = nx.pagerank(G)
 
 ### Community Detection
 
-See [Community Detection](refs/04-community-detection.md) for algorithms and examples.
+See [Community Detection](references/04-community-detection.md) for algorithms and examples.
 
 ```python
 from networkx.algorithms import community
@@ -234,7 +234,7 @@ mod = community.modularity(G, louvain_communities)
 
 ### Graph Drawing
 
-See [Visualization](refs/05-visualization.md) for layout algorithms and styling.
+See [Visualization](references/05-visualization.md) for layout algorithms and styling.
 
 ```python
 import matplotlib.pyplot as plt
@@ -260,7 +260,7 @@ plt.show()
 
 ### Reading and Writing Graphs
 
-See [File Formats](refs/06-file-formats.md) for format-specific details.
+See [File Formats](references/06-file-formats.md) for format-specific details.
 
 ```python
 # GraphML (XML-based, preserves attributes)
@@ -290,13 +290,13 @@ G = nx.node_link_graph(json.load(open("graph.json")))
 
 ## Advanced Topics
 
-- [Shortest Path Algorithms](refs/02-shortest-paths.md) - BFS, Dijkstra, Bellman-Ford, Floyd-Warshall, Johnson
-- [Centrality and Importance](refs/03-centrality.md) - Degree, betweenness, closeness, eigenvector, PageRank, and 15+ other measures
-- [Community Detection](refs/04-community-detection.md) - Louvain, label propagation, Girvan-Newman, spectral clustering
-- [Visualization](refs/05-visualization.md) - Layout algorithms, matplotlib integration, graphviz, styling options
-- [File Formats](refs/06-file-formats.md) - GraphML, GEXF, GML, JSON, edge lists, adjacency matrices
-- [Graph Generators](refs/07-generators.md) - Random graphs, classic graphs, small-world, scale-free networks
-- [Backends and Performance](refs/08-backends.md) - GPU acceleration, parallel processing, third-party backends
+- [Shortest Path Algorithms](references/02-shortest-paths.md) - BFS, Dijkstra, Bellman-Ford, Floyd-Warshall, Johnson
+- [Centrality and Importance](references/03-centrality.md) - Degree, betweenness, closeness, eigenvector, PageRank, and 15+ other measures
+- [Community Detection](references/04-community-detection.md) - Louvain, label propagation, Girvan-Newman, spectral clustering
+- [Visualization](references/05-visualization.md) - Layout algorithms, matplotlib integration, graphviz, styling options
+- [File Formats](references/06-file-formats.md) - GraphML, GEXF, GML, JSON, edge lists, adjacency matrices
+- [Graph Generators](references/07-generators.md) - Random graphs, classic graphs, small-world, scale-free networks
+- [Backends and Performance](references/08-backends.md) - GPU acceleration, parallel processing, third-party backends
 
 ## Algorithm Complexity Reference
 

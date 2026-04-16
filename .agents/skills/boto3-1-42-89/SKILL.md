@@ -336,12 +336,12 @@ adaptive_config = Config(
 
 See the following reference files for detailed coverage:
 
-- [Configuration and Credentials](refs/01-configuration-credentials.md) - Complete guide to credential providers, config files, environment variables, IAM roles, SSO, and advanced configuration options
-- [Clients and Resources](refs/02-clients-resources.md) - Deep dive into client vs resource interfaces, thread safety, metadata access, and when to use each approach
-- [Error Handling](refs/03-error-handling.md) - Comprehensive error handling patterns, exception types, parsing error responses, and best practices for production code
-- [Pagination and Collections](refs/04-pagination-collections.md) - Working with paginators, resource collections, filtering, JMESPath queries, and batch operations
-- [Sessions and Threading](refs/05-sessions-threading.md) - Session management, multi-threaded applications, connection pooling, and concurrency patterns
-- [AWS Service Examples](refs/06-service-examples.md) - Practical examples for S3, EC2, DynamoDB, SQS, Lambda, IAM, and other commonly used services
+- [Configuration and Credentials](references/01-configuration-credentials.md) - Complete guide to credential providers, config files, environment variables, IAM roles, SSO, and advanced configuration options
+- [Clients and Resources](references/02-clients-resources.md) - Deep dive into client vs resource interfaces, thread safety, metadata access, and when to use each approach
+- [Error Handling](references/03-error-handling.md) - Comprehensive error handling patterns, exception types, parsing error responses, and best practices for production code
+- [Pagination and Collections](references/04-pagination-collections.md) - Working with paginators, resource collections, filtering, JMESPath queries, and batch operations
+- [Sessions and Threading](references/05-sessions-threading.md) - Session management, multi-threaded applications, connection pooling, and concurrency patterns
+- [AWS Service Examples](references/06-service-examples.md) - Practical examples for S3, EC2, DynamoDB, SQS, Lambda, IAM, and other commonly used services
 
 ## Best Practices
 

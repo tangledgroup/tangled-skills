@@ -205,6 +205,8 @@ For simple skills with single-file structure:
 - [ ] No unnecessary sections or empty headings
 - [ ] Complete examples included directly in main file
 - [ ] Troubleshooting section present with common issues
+- [ ] **No refs/ or ref/ directories** - Only references/ is valid (if complex skill)
+- [ ] **YAML header valid** - Starts with ---, has name and description fields
 
 ### Simple Skill Validation Script
 
@@ -514,6 +516,48 @@ echo "✅ Skill is ready for user review and deployment"
 
 **Never skip YAML validation.** A skill with invalid YAML will fail to load on all platforms.
 
+## Comprehensive Three-Way Validation (On-the-Fly Bash)
+
+For complete validation covering directory structure, reference numbering, AND YAML header, use the comprehensive bash scripts from [Directory Validation](09-directory-validation.md).
+
+### What Gets Validated
+
+| Aspect | Checks | Errors Caught |
+|--------|--------|---------------|
+| **Directory Structure** | Wrong dirs (`refs/`, `ref/`) ❌<br>Correct dir exists with files ✅ | Structural errors, wrong directory names |
+| **Reference Numbering** | Sequential prefixes (`01-`, `02-`, `03-`) ✅<br>No invalid formats | Missing numbers, wrong format (`1-` vs `01-`) |
+| **YAML Header** | Required fields present ✅<br>Format valid (`name` regex) ✅<br>Length valid (`description` 1-1024) ✅ | Missing fields, invalid format, wrong length |
+
+### Quick Validation Command
+
+```bash
+# Run comprehensive validation on a skill
+skill_dir=".agents/skills/<skill-name>"
+
+# Check directory structure
+if [ -d "$skill_dir/refs" ] || [ -d "$skill_dir/ref" ]; then
+    echo "✗ ERROR: Found incorrect directory"
+    exit 1
+fi
+
+# Check reference numbering (if references exist)
+if [ -d "$skill_dir/references" ]; then
+    invalid=$(find "$skill_dir/references" -maxdepth 1 -name "*.md" ! -regex ".*/[0-9][0-9]-.*\.md" | wc -l)
+    [ $invalid -gt 0 ] && echo "✗ ERROR: Invalid numbering" && exit 1
+fi
+
+# Check YAML header
+skill_file="$skill_dir/SKILL.md"
+head -n1 "$skill_file" | grep -q '^---$' || { echo "✗ ERROR: No YAML header"; exit 1; }
+grep -q '^name:' "$skill_file" && grep -q '^description:' "$skill_file" || { echo "✗ ERROR: Missing fields"; exit 1; }
+
+echo "✓ All validations passed"
+```
+
+### Full Validation Script
+
+For the complete validation script with detailed output and auto-fix suggestions, see [Directory Validation](09-directory-validation.md#complete-on-the-fly-validation-script).
+
 ## Summary
 
 - **Frontmatter:** `name` and `description` required, valid format, specific description for proper matching
@@ -523,4 +567,5 @@ echo "✅ Skill is ready for user review and deployment"
 - **Links:** All relative links resolve correctly in complex skills (flat structure only)
 - **Validation:** Run checklist before presenting skill for user approval
 
+See [Directory Validation](09-directory-validation.md) for comprehensive on-the-fly bash validation scripts.
 See [Interaction Examples](08-interaction-examples.md) for complete workflow examples including validation steps.
