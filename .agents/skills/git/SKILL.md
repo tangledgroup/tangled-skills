@@ -2,22 +2,26 @@
 name: git
 description: >
   Complete Git v2.53 toolkit covering version control workflows, Conventional Commits v1.0.0,
-  and Semantic Versioning 2.0.0. Use when managing repositories, writing structured commit messages,
+  Keep a Changelog message bodies, and Semantic Versioning 2.0.0. Use when managing repositories,
+  writing structured commit messages with conventional types and changelog-style bodies,
   bumping versions, or analyzing codebase health through git history.
-version: "0.2.0"
+version: "0.3.0"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
   - git
   - version-control
   - conventional-commits
+  - keep-a-changelog
   - semver
   - devops
 category: development
 external_references:
   - https://git-scm.com/cheat-sheet
   - https://git-scm.com/docs/user-manual.html
+  - https://www.conventionalcommits.org/en/v1.0.0/
   - https://raw.githubusercontent.com/conventional-commits/conventionalcommits.org/refs/heads/master/content/v1.0.0/index.md
+  - https://semver.org/spec/v2.0.0.html
   - https://raw.githubusercontent.com/semver/semver/refs/heads/master/semver.md
   - https://keepachangelog.com/en/1.1.0/
   - https://piechowski.io/post/git-commands-before-reading-code/
@@ -30,7 +34,7 @@ A comprehensive toolkit for Git version control covering core workflows, the Con
 ## When to Use
 
 - Setting up a new repository or cloning an existing one
-- Writing structured, machine-readable commit messages following Conventional Commits
+- Writing structured commit messages: Conventional Commits type on line 1 + Keep a Changelog categories in body
 - Determining MAJOR/MINOR/PATCH version bumps using SemVer rules
 - Analyzing codebase health through git history (churn, bug clusters, bus factor)
 - Rewriting history interactively with rebase, cherry-pick, or reset
@@ -67,18 +71,112 @@ A comprehensive toolkit for Git version control covering core workflows, the Con
 
 | Type | SemVer Impact | Description |
 |------|--------------|-------------|
-| `feat:` | MINOR | New feature |
-| `fix:` | PATCH | Bug fix |
-| `docs:` | — | Documentation only |
-| `style:` | — | Code style (formatting, semicolons) |
-| `refactor:` | — | Code change that fixes neither bug nor adds feature |
-| `perf:` | PATCH | Performance improvement |
-| `test:` | — | Adding or correcting tests |
-| `build:` | — | Build system or dependency changes |
-| `ci:` | — | CI configuration changes |
-| `chore:` | — | Other changes (no production code) |
+| `feat` | MINOR | New feature |
+| `fix` | PATCH | Bug fix |
+| `docs` | — | Documentation only |
+| `style` | — | Code style (formatting, semicolons) |
+| `refactor` | — | Code change that fixes neither bug nor adds feature |
+| `perf` | PATCH | Performance improvement |
+| `test` | — | Adding or correcting tests |
+| `build` | — | Build system or dependency changes |
+| `ci` | — | CI configuration changes |
+| `chore` | — | Other changes (no production code) |
 
 Breaking changes: append `!` before `:` or add `BREAKING CHANGE:` footer.
+
+## Commit Message Format
+
+Every commit message combines **Conventional Commits** (first line) with **Keep a Changelog** categories (body).
+
+### Structure
+
+```
+<type>[optional scope]: <description>
+
+[optional body with Keep a Changelog categories]
+
+[optional footer(s)]
+```
+
+- **Line 1 (subject):** Conventional Commits — `<type>[scope]!: <description>`
+- **Body paragraphs:** Keep a Changelog change categories — `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
+- **Footers:** References, breaking changes, related issues
+
+### Subject Line (Line 1)
+
+The subject line follows the Conventional Commits spec:
+
+```
+type[scope]!: description
+```
+
+| Element | Required | Example |
+|---------|----------|---------|
+| `type` | Yes | `feat`, `fix`, `docs`, `refactor`, etc. |
+| `[scope]` | No | `(auth)`, `(api)`, `(cli)` |
+| `!` | Optional (breaking) | `feat!:`, `feat(api)!:` |
+| `: ` | Yes | Always colon + space after type/scope/! |
+| `description` | Yes | Short imperative summary, lowercase |
+
+### Body Paragraphs (Keep a Changelog Categories)
+
+The body organizes changes using Keep a Changelog categories. Each category is a heading followed by bullet points:
+
+```
+Added: for new features.
+Changed: for changes in existing functionality.
+Deprecated: for soon-to-be removed features.
+Removed: for now removed features.
+Fixed: for any bug fixes.
+Security: in case of vulnerabilities.
+```
+
+**Rules:**
+- One blank line separates the subject from the body
+- Each category heading is a paragraph starting with the category name followed by a colon
+- Bullet points under each category describe specific changes
+- Only include categories that have relevant changes (omit empty sections)
+- Group related changes together under the same category
+
+### Complete Example
+
+```
+feat(auth): add OAuth2 social login
+
+Added:
+- Google and GitHub OAuth2 login providers
+- Social login button on authentication page
+- Session creation via OAuth callback handler
+
+Changed:
+- Refactored user registration flow to support multiple auth methods
+- Updated database migration for provider foreign keys
+
+Fixed:
+- Race condition in session token generation
+```
+
+### Breaking Change Example
+
+```
+feat(api)!: drop v1 endpoints, require v2 requests
+
+BREAKING CHANGE: All /api/v1/ routes removed. Clients must migrate to /api/v2/.
+The response format has changed from snake_case to camelCase.
+
+Changed:
+- Migrated all route handlers to v2 namespace
+- Updated response serialization to use camelCase
+- Added v2 middleware for request transformation
+
+Deprecated:
+- /api/v1/users endpoint — removed in v3
+- /api/v1/products endpoint — removed in v3
+```
+
+### Reference Files
+
+- [`references/03-conventional-commits.md`](references/03-conventional-commits.md) — Conventional Commits v1.0.0: structure, types, scopes, breaking changes, examples
 
 ### SemVer Bump Rules
 

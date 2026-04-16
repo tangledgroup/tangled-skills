@@ -197,5 +197,100 @@ No! If you use a squash-based workflow on Git, lead maintainers can clean up the
 
 Use SemVer to release your own extensions to this specification.
 
+## Combining with Keep a Changelog Body Categories
+
+The recommended commit message format uses **Conventional Commits** on line 1 and **Keep a Changelog** categories in the body. This combines machine-readable type information with human-readable change documentation.
+
+### Complete Commit Message Structure
+
+```
+type[scope]!: description
+
+Added:
+- New feature or capability introduced
+
+Changed:
+- Modification to existing functionality
+
+Deprecated:
+- Features scheduled for removal
+
+Removed:
+- Features no longer available
+
+Fixed:
+- Bug fixes and corrections
+
+Security:
+- Vulnerability patches
+
+[optional footers]
+BREAKING CHANGE: description of breaking change
+Refs: #123, abc1234
+```
+
+### Mapping Conventional Commits Types to Keep a Changelog Categories
+
+| Conventional Commits Type | Keep a Changelog Body Category |
+|--------------------------|--------------------------------|
+| `feat` | `Added` |
+| `fix` | `Fixed` |
+| `perf` | `Changed` (performance improvements) or `Fixed` (if fixing slow behavior) |
+| `refactor` | `Changed` |
+| `style`, `docs`, `test`, `build`, `ci`, `chore` | Usually no body category needed, or `Changed` for notable changes |
+
+### Example: Feature Commit
+
+```
+feat(auth): add OAuth2 social login
+
+Added:
+- Google and GitHub OAuth2 login providers
+- Social login button on authentication page
+- Session creation via OAuth callback handler
+
+Changed:
+- Refactored user registration flow to support multiple auth methods
+```
+
+### Example: Bug Fix Commit
+
+```
+fix(api): handle null response from payment gateway
+
+Fixed:
+- Payment gateway returning null instead of error object caused 500 errors
+- Added null check and fallback to default error response
+
+Refs: #456
+```
+
+### Example: Breaking Change Commit
+
+```
+feat(api)!: drop v1 endpoints, require v2 requests
+
+BREAKING CHANGE: All /api/v1/ routes removed. Clients must migrate to /api/v2/.
+The response format has changed from snake_case to camelCase.
+
+Changed:
+- Migrated all route handlers to v2 namespace
+- Updated response serialization to use camelCase
+- Added v2 middleware for request transformation
+
+Deprecated:
+- /api/v1/users endpoint — removed in v3
+- /api/v1/products endpoint — removed in v3
+```
+
+### Key Principles
+
+1. **Line 1 is machine-readable** — Conventional Commits type enables automated tooling (changelog generation, version bumping, CI/CD triggers)
+2. **Body is human-readable** — Keep a Changelog categories make it easy for users to scan what changed between versions
+3. **Omit empty categories** — Don't include `Added:` or `Removed:` if nothing applies; keep the changelog clean
+4. **Be specific in bullets** — Each bullet should describe a concrete change, not repeat the subject line
+5. **Use footers for references** — Link to issues, PRs, and related commits using conventional footer syntax
+
+See [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/) for the full specification of change categories.
 See [SemVer 2.0.0](../04-semver-2-0-0.md) for versioning rules that complement Conventional Commits.
 See [Core Git Commands](../01-core-git-commands.md) for the `git commit` command reference.
