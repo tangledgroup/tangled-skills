@@ -1,25 +1,29 @@
 # Tool Reference: Complete API Documentation
 
-This document provides complete reference information for all agent tools, including schemas, validation rules, examples, and output formats.
+This document provides complete reference information for all agent tools, including schemas, validation rules, examples, and output formats. The mini-coding-agent implements **7 tools** organized into safe tools (no approval), risky tools (require approval), and conditional tools (delegation).
 
 ## Tool Response Formats
 
-The model must emit tool calls in one of two formats:
+The model must emit tool calls in one of two XML-enclosed formats:
 
 ### JSON Format (within `<tool>` tags)
+
+Used for simple tool calls with short arguments:
 
 ```xml
 <tool>{"name":"list_files","args":{"path":"."}}</tool>
 <tool>{"name":"read_file","args":{"path":"README.md","start":1,"end":80}}</tool>
-<tool>{"name":"run_shell","args":{"command":"python --version","timeout":20}}</tool>
+<tool>{"name":"run_shell","args":{"command":"uv run --with pytest python -m pytest -q","timeout":20}}</tool>
 ```
 
 ### XML Format (for multi-line content)
 
+Used for `write_file`, `patch_file`, and other tools with large text bodies:
+
 ```xml
 <tool name="write_file" path="binary_search.py">
-<content>
-def binary_search(nums, target):
+<content>def binary_search(nums, target):
+    """Iterative binary search implementation."""
     left, right = 0, len(nums) - 1
     while left <= right:
         mid = (left + right) // 2
@@ -29,8 +33,7 @@ def binary_search(nums, target):
             left = mid + 1
         else:
             right = mid - 1
-    return -1
-</content>
+    return -1</content>
 </tool>
 ```
 
@@ -38,14 +41,12 @@ def binary_search(nums, target):
 
 ```xml
 <tool name="patch_file" path="binary_search.py">
-<old_text>
-return -1
-</old_text>
-<new_text>
-raise ValueError("Target not found")
-</new_text>
+<old_text>return -1</old_text>
+<new_text>raise ValueError("Target not found in sorted list")</new_text>
 </tool>
 ```
+
+---
 
 ## Safe Tools (No Approval Required)
 
@@ -53,31 +54,21 @@ raise ValueError("Target not found")
 
 List files and directories in the workspace.
 
-**Schema:**
-```json
-{
-  "path": "str='.'"
-}
-```
+**Schema:** `{"path": "str='.'"}`
 
-**Arguments:**
-- `path` (string, default: "."): Directory path to list (relative to workspace root)
+| Argument | Type | Default | Description |
+|----------|------|---------|-------------|
+| `path` | string | `"."` | Directory path to list (relative to workspace root) |
 
 **Validation:**
-- Path must exist
-- Path must be a directory
+- Path must exist and be a directory
 - Path must be within workspace root
 
 **Examples:**
 
-List current directory:
 ```xml
 <tool>{"name":"list_files","args":{"path":"."}}</tool>
-```
-
-List specific directory:
-```xml
-<tool>{"name":"list_files","args":{"path":"src"}}</tool>
+<tool>{"name":"list_files","args":{"path":"src"}}}</tool>
 ```
 
 **Output Format:**
@@ -89,10 +80,9 @@ List specific directory:
 [F] main.py
 ```
 
-Directories shown with `[D]`, files with `[F]`, sorted with directories first, then files alphabetically. Limited to 200 entries.
+Directories shown with `[D]`, files with `[F]`. Sorted with directories first, then files alphabetically. Limited to 200 entries.
 
-**Ignored Directories:**
-The following are automatically excluded: `.git`, `.mini-coding-agent`, `__pycache__`, `.pytest_cache`, `.ruff_cache`, `.venv`, `venv`
+**Ignored Directories:** `.git`, `.mini-coding-agent`, `__pycache__`, `.pytest_cache`, `.ruff_cache`, `.venv`, `venv`
 
 ---
 
@@ -100,41 +90,25 @@ The following are automatically excluded: `.git`, `.mini-coding-agent`, `__pycac
 
 Read a UTF-8 file by line range.
 
-**Schema:**
-```json
-{
-  "path": "str",
-  "start": "int=1",
-  "end": "int=200"
-}
-```
+**Schema:** `{"path": "str", "start": "int=1", "end": "int=200"}`
 
-**Arguments:**
-- `path` (string, required): File path to read (relative to workspace root)
-- `start` (integer, default: 1): Starting line number (1-indexed)
-- `end` (integer, default: 200): Ending line number (inclusive)
+| Argument | Type | Default | Description |
+|----------|------|---------|-------------|
+| `path` | string | **required** | File path to read (relative to workspace root) |
+| `start` | integer | `1` | Starting line number (1-indexed) |
+| `end` | integer | `200` | Ending line number (inclusive) |
 
 **Validation:**
-- Path must exist
-- Path must be a file (not a directory)
+- Path must exist and be a file
 - Path must be within workspace root
-- `start` >= 1
-- `end` >= `start`
+- `start >= 1`
+- `end >= start`
 
 **Examples:**
 
-Read first 50 lines:
 ```xml
 <tool>{"name":"read_file","args":{"path":"README.md","start":1,"end":50}}</tool>
-```
-
-Read specific range:
-```xml
 <tool>{"name":"read_file","args":{"path":"src/main.py","start":25,"end":75}}</tool>
-```
-
-Read entire small file (first 200 lines by default):
-```xml
 <tool>{"name":"read_file","args":{"path":"config.json"}}</tool>
 ```
 
@@ -149,7 +123,6 @@ Read entire small file (first 200 lines by default):
    6: ```bash
    7: pip install -r requirements.txt
    8: ```
-...
 ```
 
 Lines are numbered and right-aligned. File path shown as header.
@@ -158,19 +131,14 @@ Lines are numbered and right-aligned. File path shown as header.
 
 ### search
 
-Search the workspace for a pattern using ripgrep (rg) or fallback to Python-based search.
+Search the workspace for a pattern using ripgrep (`rg`) or fallback to Python-based search.
 
-**Schema:**
-```json
-{
-  "pattern": "str",
-  "path": "str='.'"
-}
-```
+**Schema:** `{"pattern": "str", "path": "str='.'"}`
 
-**Arguments:**
-- `pattern` (string, required): Search pattern (regex supported with rg)
-- `path` (string, default: "."): Directory or file to search in
+| Argument | Type | Default | Description |
+|----------|------|---------|-------------|
+| `pattern` | string | **required** | Search pattern (regex supported with rg) |
+| `path` | string | `"."` | Directory or file to search in |
 
 **Validation:**
 - `pattern` must not be empty or whitespace-only
@@ -178,32 +146,17 @@ Search the workspace for a pattern using ripgrep (rg) or fallback to Python-base
 
 **Examples:**
 
-Search for function definition:
 ```xml
 <tool>{"name":"search","args":{"pattern":"def binary_search","path":"."}}</tool>
-```
-
-Case-sensitive search in specific directory:
-```xml
 <tool>{"name":"search","args":{"pattern":"TODO","path":"src"}}</tool>
-```
-
-Search for class:
-```xml
 <tool>{"name":"search","args":{"pattern":"class.*Agent","path":"."}}</tool>
 ```
 
-**Output Format (with rg):**
+**Output Format:**
 ```
 src/main.py:12:def binary_search(nums, target):
 src/utils.py:45:def binary_search_recursive(arr, left, right, target):
 tests/test_search.py:8:    def test_binary_search(self):
-```
-
-**Output Format (fallback):**
-```
-src/main.py:12:def binary_search(nums, target):
-src/utils.py:45:def binary_search_recursive(arr, left, right, target):
 ```
 
 Format: `filepath:line_number:matching_line`
@@ -218,19 +171,14 @@ Limited to 200 matches. Returns "(no matches)" if nothing found.
 
 ### run_shell
 
-Execute a shell command in the repository root.
+Execute a shell command in the repository root directory.
 
-**Schema:**
-```json
-{
-  "command": "str",
-  "timeout": "int=20"
-}
-```
+**Schema:** `{"command": "str", "timeout": "int=20"}`
 
-**Arguments:**
-- `command` (string, required): Shell command to execute
-- `timeout` (integer, default: 20): Timeout in seconds (1-120)
+| Argument | Type | Default | Description |
+|----------|------|---------|-------------|
+| `command` | string | **required** | Shell command to execute |
+| `timeout` | integer | `20` | Timeout in seconds (1–120) |
 
 **Validation:**
 - `command` must not be empty or whitespace-only
@@ -239,24 +187,10 @@ Execute a shell command in the repository root.
 
 **Examples:**
 
-Run tests:
 ```xml
 <tool>{"name":"run_shell","args":{"command":"uv run --with pytest python -m pytest -q","timeout":60}}</tool>
-```
-
-Check Python version:
-```xml
 <tool>{"name":"run_shell","args":{"command":"python --version","timeout":10}}</tool>
-```
-
-Run linting:
-```xml
 <tool>{"name":"run_shell","args":{"command":"ruff check .","timeout":30}}</tool>
-```
-
-Build project:
-```xml
-<tool>{"name":"run_shell","args":{"command":"make build","timeout":120}}</tool>
 ```
 
 **Output Format:**
@@ -277,10 +211,10 @@ stderr:
 Always includes exit code, stdout, and stderr sections. Empty sections show "(empty)".
 
 **Security Notes:**
-- Commands run in workspace root directory
-- Shell injection possible (use approval gates!)
-- Timeout prevents hanging commands
-- Requires explicit approval in interactive mode
+- Commands run in workspace root directory (`cwd=self.root`)
+- Shell injection is possible — use approval gates!
+- Timeout prevents hanging commands (max 120 seconds)
+- Requires explicit approval in interactive mode (`--approval ask`)
 
 ---
 
@@ -288,17 +222,12 @@ Always includes exit code, stdout, and stderr sections. Empty sections show "(em
 
 Create or overwrite a text file.
 
-**Schema:**
-```json
-{
-  "path": "str",
-  "content": "str"
-}
-```
+**Schema:** `{"path": "str", "content": "str"}`
 
-**Arguments:**
-- `path` (string, required): File path to create/overwrite (relative to workspace root)
-- `content` (string, required): File contents
+| Argument | Type | Default | Description |
+|----------|------|---------|-------------|
+| `path` | string | **required** | File path to create/overwrite (relative to workspace root) |
+| `content` | string | **required** | File contents |
 
 **Validation:**
 - Path must not be an existing directory
@@ -314,11 +243,9 @@ Create or overwrite a text file.
 
 **Examples (XML format for multi-line content):**
 
-Create Python file:
 ```xml
 <tool name="write_file" path="binary_search.py">
-<content>
-def binary_search(nums, target):
+<content>def binary_search(nums, target):
     """Iterative binary search implementation."""
     left, right = 0, len(nums) - 1
     
@@ -338,24 +265,6 @@ def binary_search(nums, target):
 if __name__ == "__main__":
     test_nums = [1, 3, 5, 7, 9, 11, 13]
     print(binary_search(test_nums, 7))  # Output: 3
-    print(binary_search(test_nums, 2))  # Output: -1
-</content>
-</tool>
-```
-
-Create configuration file:
-```xml
-<tool name="write_file" path="config.json">
-<content>
-{
-    "database": {
-        "host": "localhost",
-        "port": 5432
-    },
-    "logging": {
-        "level": "INFO"
-    }
-}
 </content>
 </tool>
 ```
@@ -365,13 +274,7 @@ Create configuration file:
 wrote binary_search.py (847 chars)
 ```
 
-Shows relative path and character count.
-
-**Notes:**
-- Creates parent directories if they don't exist
-- Overwrites existing files completely
-- UTF-8 encoding used
-- Prefer XML format for multi-line content to avoid JSON escaping issues
+Shows relative path and character count. Creates parent directories if they don't exist. UTF-8 encoding used. Prefer XML format for multi-line content to avoid JSON escaping issues.
 
 ---
 
@@ -379,19 +282,13 @@ Shows relative path and character count.
 
 Replace one exact text block in an existing file.
 
-**Schema:**
-```json
-{
-  "path": "str",
-  "old_text": "str",
-  "new_text": "str"
-}
-```
+**Schema:** `{"path": "str", "old_text": "str", "new_text": "str"}`
 
-**Arguments:**
-- `path` (string, required): File path to modify (relative to workspace root)
-- `old_text` (string, required): Exact text to find and replace
-- `new_text` (string, required): Replacement text
+| Argument | Type | Default | Description |
+|----------|------|---------|-------------|
+| `path` | string | **required** | File path to modify (relative to workspace root) |
+| `old_text` | string | **required** | Exact text to find and replace |
+| `new_text` | string | **required** | Replacement text |
 
 **Validation:**
 - Path must exist and be a file
@@ -406,25 +303,18 @@ Replace one exact text block in an existing file.
 Simple text replacement:
 ```xml
 <tool name="patch_file" path="binary_search.py">
-<old_text>
-return -1
-</old_text>
-<new_text>
-raise ValueError("Target not found in sorted list")
-</new_text>
+<old_text>return -1</old_text>
+<new_text>raise ValueError("Target not found in sorted list")</new_text>
 </tool>
 ```
 
 Add validation:
 ```xml
 <tool name="patch_file" path="binary_search.py">
-<old_text>
-def binary_search(nums, target):
+<old_text>def binary_search(nums, target):
     """Iterative binary search implementation."""
-    left, right = 0, len(nums) - 1
-</old_text>
-<new_text>
-def binary_search(nums, target):
+    left, right = 0, len(nums) - 1</old_text>
+<new_text>def binary_search(nums, target):
     """Iterative binary search implementation.
     
     Args:
@@ -434,28 +324,10 @@ def binary_search(nums, target):
     Raises:
         ValueError: If nums is not sorted in ascending order
     """
-    # Validate input is sorted
     if any(nums[i] > nums[i+1] for i in range(len(nums)-1)):
         raise ValueError("Input list must be sorted in ascending order")
     
-    left, right = 0, len(nums) - 1
-</new_text>
-</tool>
-```
-
-Fix bug:
-```xml
-<tool name="patch_file" path="src/calculator.py">
-<old_text>
-def divide(a, b):
-    return a / b
-</old_text>
-<new_text>
-def divide(a, b):
-    if b == 0:
-        raise ValueError("Cannot divide by zero")
-    return a / b
-</new_text>
+    left, right = 0, len(nums) - 1</new_text>
 </tool>
 ```
 
@@ -466,13 +338,9 @@ patched binary_search.py
 
 **Error Cases:**
 
-If `old_text` not found:
+If `old_text` not found or found multiple times:
 ```
 error: invalid arguments for patch_file: old_text must occur exactly once, found 0
-```
-
-If `old_text` found multiple times:
-```
 error: invalid arguments for patch_file: old_text must occur exactly once, found 3
 ```
 
@@ -492,17 +360,12 @@ Ask a bounded read-only child agent to investigate a subtask.
 
 **Availability:** Only available if current `depth < max_depth` (default: depth 0, max_depth 1)
 
-**Schema:**
-```json
-{
-  "task": "str",
-  "max_steps": "int=3"
-}
-```
+**Schema:** `{"task": "str", "max_steps": "int=3"}`
 
-**Arguments:**
-- `task` (string, required): Task description for the subagent
-- `max_steps` (integer, default: 3): Maximum tool/model iterations for subagent
+| Argument | Type | Default | Description |
+|----------|------|---------|-------------|
+| `task` | string | **required** | Task description for the subagent |
+| `max_steps` | integer | `3` | Maximum tool/model iterations for subagent |
 
 **Validation:**
 - `task` must not be empty or whitespace-only
@@ -511,20 +374,9 @@ Ask a bounded read-only child agent to investigate a subtask.
 
 **Examples:**
 
-Investigate a file:
 ```xml
 <tool>{"name":"delegate","args":{"task":"Read and summarize the architecture in src/main.py","max_steps":3}}</tool>
-```
-
-Research code patterns:
-```xml
 <tool>{"name":"delegate","args":{"task":"Search for all uses of WorkspaceContext and report findings","max_steps":5}}</tool>
-```
-
-Quick investigation:
-```xml
-<tool name="delegate" task="What testing framework is used in this project?">
-</tool>
 ```
 
 **Output Format:**
@@ -545,12 +397,6 @@ The project appears to follow standard pytest conventions with test_*.py naming 
 - Cannot create further subagents (depth limit reached)
 - Gets compressed parent history as context notes
 
-**Use Cases:**
-- Investigate specific files without modifying them
-- Research code patterns before making changes
-- Scoped fact-finding with limited context
-- Parallel exploration (manually invoke multiple delegations)
-
 ---
 
 ## Final Answer Format
@@ -558,14 +404,7 @@ The project appears to follow standard pytest conventions with test_*.py naming 
 When the agent has completed its task, it should emit a final answer:
 
 ```xml
-<final>
-I've created binary_search.py with an iterative implementation that:
-- Takes a sorted list of integers and a target value
-- Returns the index if found, -1 if not found
-- Includes input validation to check if list is sorted
-
-The file is 847 characters and includes a __main__ block with example usage.
-</final>
+<final>I've created binary_search.py with an iterative implementation that:</final>
 ```
 
 Or for simple answers:
@@ -583,15 +422,15 @@ Or for simple answers:
 
 ## Tool Call Parsing
 
-The agent parses tool calls using multiple strategies:
+The agent parses tool calls using multiple strategies to accommodate different model output styles:
 
 ### Strategy 1: JSON within `<tool>` tags
-```python
+```xml
 <tool>{"name":"read_file","args":{"path":"file.py"}}</tool>
 ```
 
 ### Strategy 2: XML-style with attributes
-```python
+```xml
 <tool name="write_file" path="file.py">
 <content>...</content>
 </tool>
@@ -599,8 +438,7 @@ The agent parses tool calls using multiple strategies:
 
 ### Strategy 3: XML body as content
 For `write_file` and `delegate`, if no `<content>` or `<task>` tag exists, the raw body text is used:
-
-```python
+```xml
 <tool name="write_file" path="file.py">
 def hello():
     print("world")
@@ -615,4 +453,18 @@ If tool parsing fails, the agent returns a retry notice:
 Runtime notice: model returned malformed tool JSON. Reply with a valid <tool> call or a non-empty <final> answer. For multi-line files, prefer <tool name="write_file" path="file.py"><content>...</content></tool>.
 ```
 
-The model should then retry with properly formatted output.
+The model should then retry with properly formatted output. The agent counts these as attempts but not as tool steps — the step limit only applies to successful tool executions.
+
+---
+
+## Tool Summary Table
+
+| Tool | Risky | Approval | Description | Key Validation |
+|------|-------|----------|-------------|----------------|
+| `list_files` | No | None | List directory contents | Path is a directory, in workspace |
+| `read_file` | No | None | Read file by line range | File exists, valid line range |
+| `search` | No | None | Search for pattern in files | Pattern not empty |
+| `run_shell` | Yes | ask/auto/never | Execute shell command | Command not empty, timeout 1-120s |
+| `write_file` | Yes | ask/auto/never | Create/overwrite file | Content present, path not a directory |
+| `patch_file` | Yes | ask/auto/never | Replace exact text block | old_text occurs exactly once |
+| `delegate` | No | N/A (conditional) | Spawn bounded subagent | depth < max_depth, task not empty |

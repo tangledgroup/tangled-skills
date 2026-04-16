@@ -101,8 +101,8 @@ session = {
 ```
 
 The session ID combines:
-- Timestamp: `20260413-143022` (YYYYMMDD-HHMMSS)
-- Random suffix: `a1b2c3` (6 hex characters for uniqueness)
+- **Timestamp**: `20260413-143022` (YYYYMMDD-HHMMSS) — for chronological ordering and identification
+- **Random suffix**: `a1b2c3` (6 hex characters from UUID) — for uniqueness when multiple sessions start at the same second
 
 ### Session Persistence
 
@@ -115,15 +115,16 @@ def record(self, item):
 ```
 
 This ensures:
-- No data loss if agent crashes
-- Session can be resumed from any point
-- Transcript is always up-to-date on disk
+- No data loss if agent crashes mid-task
+- Session can be resumed from any point in the conversation
+- Transcript is always up-to-date on disk for inspection
 
 ### Session Loading
 
 To resume a session:
 
 ```python
+@classmethod
 def from_session(cls, model_client, workspace, session_store, session_id, **kwargs):
     session = session_store.load(session_id)
     return cls(
@@ -136,13 +137,13 @@ def from_session(cls, model_client, workspace, session_store, session_id, **kwar
 ```
 
 The loaded session includes:
-- Full history transcript
-- Distilled memory (task, files, notes)
+- Full history transcript with timestamps
+- Distilled memory (task summary, tracked files, operation notes)
 - Original workspace root path
 
 ## Memory Distillation
 
-Memory is a compact, distilled representation of the session state that stays bounded in size.
+Memory is a compact, distilled representation of the session state that stays bounded in size. It survives across turns even as the full history grows and gets compressed.
 
 ### Memory Structure
 
@@ -163,9 +164,9 @@ if not memory["task"]:
     memory["task"] = clip(user_message.strip(), 300)
 ```
 
-This provides a persistent summary of what the session is about, even after many turns.
+This provides a persistent summary of what the session is about, even after dozens of turns. The task remains visible in `/memory` output throughout the session.
 
-### File Tracking
+### File Tracking (LRU List)
 
 Files are automatically tracked when read, written, or patched:
 
@@ -175,7 +176,7 @@ def note_tool(self, name, args, result):
         self.remember(memory["files"], str(args["path"]), limit=8)
 ```
 
-The `remember()` function implements LRU (Least Recently Used) behavior:
+The `remember()` function implements **LRU (Least Recently Used)** behavior:
 
 ```python
 @staticmethod
@@ -187,11 +188,11 @@ def remember(bucket, item, limit):
         bucket.remove(item)
     # Append new item
     bucket.append(item)
-    # Trim to limit
+    # Trim to limit (drop oldest from front)
     del bucket[:-limit]
 ```
 
-**Example:**
+**Example progression:**
 ```python
 # After reading file A
 files = ["src/main.py"]
@@ -199,7 +200,7 @@ files = ["src/main.py"]
 # After reading file B  
 files = ["src/main.py", "src/utils.py"]
 
-# After reading file A again (moved to end)
+# After reading file A again (moved to end, most recent)
 files = ["src/utils.py", "src/main.py"]
 
 # After 8 files, oldest is dropped when new one added
@@ -214,6 +215,8 @@ note = f"{name}: {clip(str(result).replace('\n', ' '), 220)}"
 self.remember(memory["notes"], note, limit=5)
 ```
 
+Notes are truncated to 220 characters and newlines are replaced with spaces for compactness. The LRU list keeps only the 5 most recent notes.
+
 **Examples:**
 ```
 write_file: wrote binary_search.py (847 chars)
@@ -223,81 +226,80 @@ patch_file: patched config.json
 search: src/main.py:12:def binary_search(...)
 ```
 
-Notes are truncated to 220 characters and newlines are replaced with spaces for compactness.
-
 ### Final Answer Notes
 
-Final answers also generate notes:
+Final answers also generate notes, capturing the agent's conclusion in memory:
 
 ```python
 final = (payload or raw).strip()
 self.remember(memory["notes"], clip(final, 220), 5)
 ```
 
-This captures the agent's conclusion in memory.
-
 ## Transcript Management
 
-The history transcript contains the full conversation but is compressed for prompt efficiency.
+The history transcript contains the full conversation but is compressed for prompt efficiency. The `history_text()` method handles all compression logic.
 
 ### History Compression Strategy
 
 ```python
 def history_text(self):
     history = self.session["history"]
-    
-    # Show last 6 turns in full detail, compress older ones
-    recent_start = max(0, len(history) - 6)
+    if not history:
+        return "- empty"
+
+    lines = []
+    seen_reads = set()
+    recent_start = max(0, len(history) - 6)  # Last 6 turns are "recent"
     
     for index, item in enumerate(history):
         recent = index >= recent_start
         
-        if item["role"] == "tool":
-            limit = 900 if recent else 180  # Compress old tool outputs
-        else:
-            limit = 900 if recent else 220  # Compress old messages
+        # Skip duplicate reads in older history
+        if item["role"] == "tool" and item["name"] == "read_file" and not recent:
+            path = str(item["args"].get("path", ""))
+            if path in seen_reads:
+                continue
+            seen_reads.add(path)
         
-        lines.append(f"[{item['role']}] {clip(item['content'], limit)}")
+        # Apply different compression limits based on recency
+        if item["role"] == "tool":
+            limit = 900 if recent else 180
+            lines.append(f"[tool:{item['name']}] {json.dumps(item['args'], sort_keys=True)}")
+            lines.append(clip(item["content"], limit))
+        else:
+            limit = 900 if recent else 220
+            lines.append(f"[{item['role']}] {clip(item['content'], limit)}")
     
-    return clip("\n".join(lines), MAX_HISTORY)  # Final 12000 char limit
+    # Final cap on entire history text
+    return clip("\n".join(lines), MAX_HISTORY)  # MAX_HISTORY = 12000
 ```
 
 ### Compression Levels
 
-| Turn Age | Tool Output Limit | Message Limit |
-|----------|------------------|---------------|
-| Recent (last 6) | 900 chars | 900 chars |
-| Older | 180 chars | 220 chars |
-| Total history | - | 12000 chars |
+| Turn Age | Tool Output Limit | Message Limit | Dedup Reads |
+|----------|------------------|---------------|-------------|
+| Recent (last 6) | 900 chars | 900 chars | No |
+| Older | 180 chars | 220 chars | Yes (skip duplicates) |
+| **Total history** | — | **12,000 chars** | — |
 
 ### Read Deduplication
 
-Repeated reads of the same file are suppressed in older history:
+Repeated reads of the same file are suppressed in older history to prevent transcript bloat:
 
 ```python
-seen_reads = set()
-for item in history:
-    if item["role"] == "tool" and item["name"] == "read_file" and not recent:
-        path = item["args"]["path"]
-        if path in seen_reads:
-            continue  # Skip duplicate read
-        seen_reads.add(path)
-    
-    # Write/patch clears the "seen" status
-    if item["name"] in ("write_file", "patch_file"):
-        path = item["args"].get("path")
-        seen_reads.discard(path)
+# Write/patch operations clear the "seen" status for that file
+if item["role"] == "tool" and item["name"] in ("write_file", "patch_file"):
+    path = str(item["args"].get("path", ""))
+    seen_reads.discard(path)
 ```
 
-This prevents transcript bloat from repeated reads of unchanged files.
-
-**Example:**
+**Example with deduplication:**
 ```
 Turn 3: read_file src/main.py (included)
 Turn 5: read_file src/main.py (included, first repeat)
-Turn 7: read_file src/main.py (skipped, duplicate)
+Turn 7: read_file src/main.py (skipped, duplicate in older history)
 Turn 8: patch_file src/main.py (clears "seen" for this file)
-Turn 9: read_file src/main.py (included again, file changed)
+Turn 9: read_file src/main.py (included again, file was modified)
 ```
 
 ### History Format in Prompts
@@ -310,7 +312,7 @@ Transcript:
 [tool:write_file] {"path": "binary_search.py"}
 wrote binary_search.py (847 chars)
 [user] Add validation for unsorted input
-[tool:patch_file] {"path": "binary_search.py", ...}
+[tool:patch_file] {"new_text": "...", "old_text": "...", "path": "binary_search.py"}
 patched binary_search.py
 [assistant] I've updated the implementation to...
 ```
@@ -323,7 +325,7 @@ patched binary_search.py
 python mini_coding_agent.py --resume latest
 ```
 
-Finds the most recently modified session file and loads it.
+Finds the most recently modified session file (by `st_mtime`) and loads it.
 
 ### Resume Specific Session
 
@@ -331,7 +333,7 @@ Finds the most recently modified session file and loads it.
 python mini_coding_agent.py --resume 20260413-143022-a1b2c3
 ```
 
-Loads a specific session by ID.
+Loads a specific session by ID from the filename.
 
 ### List Available Sessions
 
@@ -342,22 +344,22 @@ ls -lt .mini-coding-agent/sessions/
 Shows all sessions sorted by modification time:
 ```
 -rw-r--r-- 1 user user 12345 Apr 13 15:00 20260413-143022-a1b2c3.json
--rw-r--r-- 1 user user 8765 Apr 13 10:22 20260413-102211-d4e5f6.json
+-rw-r--r-- 1 user user  8765 Apr 13 10:22 20260413-102211-d4e5f6.json
 ```
 
 ### Resumption Behavior
 
-When resuming:
+When resuming a session:
 1. Session history and memory are loaded from disk
-2. Workspace context is **rebuilt** (may have changed)
+2. **Workspace context is rebuilt** (git status, recent commits, project docs may have changed)
 3. Agent continues with full conversation history preserved
 4. New turns append to existing history
 
-**Important:** Workspace context (git status, recent commits, project docs) is always fresh, even in resumed sessions.
+**Important:** Workspace context is always fresh even in resumed sessions — git state and project docs are re-collected at the start of each new session (including resumed ones).
 
 ## Interactive Commands
 
-Slash commands are handled directly by the agent and not sent to the model:
+Slash commands are handled directly by the agent REPL and **not sent to the model**:
 
 ### /help
 
@@ -412,40 +414,47 @@ session reset
 ```
 
 This:
-- Clears `history` array
-- Resets `memory` to empty defaults
-- Keeps same session ID
+- Clears `history` array (full transcript)
+- Resets `memory` to empty defaults (task, files, notes)
+- Keeps the same session ID
 - Saves cleared state to disk
+- User stays in the REPL for new interactions
 
-Useful for starting fresh without exiting the REPL.
+Useful for starting fresh without exiting the agent.
 
 ### /exit and /quit
 
 Exit the interactive session:
 ```
 mini-coding-agent> /exit
+# or:
+mini-coding-agent> /quit
 ```
 
-Both `/exit` and `/quit` are aliases that cleanly terminate the agent.
+Both `/exit` and `/quit` are aliases that cleanly terminate the agent. The session is saved to disk before exit so it can be resumed later.
 
 ## Session Management Best Practices
 
 ### When to Resume
 
-- **Continue interrupted work**: Agent crashed or you closed terminal
-- **Multi-day projects**: Pick up where you left off
-- **Iterative development**: Build on previous changes
-- **Debugging issues**: Review what was tried before
+| Scenario | Action |
+|----------|--------|
+| Agent crashed or terminal closed | `--resume latest` |
+| Multi-day project, pick up where left off | `--resume latest` |
+| Specific session needed | `--resume <session_id>` |
+| Iterative development building on previous work | `--resume latest` |
 
 ### When to Start Fresh
 
-- **Different task**: New unrelated feature or bugfix
-- **Context pollution**: Session has too much irrelevant history
-- **Clean slate needed**: Previous attempts went down wrong path
+| Scenario | Action |
+|----------|--------|
+| Different task (unrelated feature) | New session (no `--resume`) |
+| Context pollution (too much irrelevant history) | `/reset` or new session |
+| Clean slate needed (previous attempts went wrong) | `/reset` or new session |
 
 ### Manual Session Backup
 
-Before major changes:
+Before major changes, back up the current session:
 ```bash
 cp .mini-coding-agent/sessions/20260413-143022-a1b2c3.json \
    ~/backups/session-before-refactor.json
@@ -477,15 +486,15 @@ rm .mini-coding-agent/sessions/20260413-143022-a1b2c3.json
 
 If memory isn't tracking files:
 - Check that tool calls are succeeding (not failing validation)
-- Verify session is being saved (`/session` path should update mtime)
-- Inspect raw session JSON for memory structure
+- Verify session is being saved (`/session` path should update mtime after each turn)
+- Inspect raw session JSON for correct memory structure
 
 ### History Too Long
 
-If prompts are getting truncated:
-- Use `/reset` to clear history
+If prompts are getting truncated due to long history:
+- Use `/reset` to clear history and start fresh
 - Start a new session with focused scope
-- Consider breaking large tasks into multiple sessions
+- Consider breaking large tasks into multiple separate sessions
 
 ## Programmatic Session Access
 
@@ -501,11 +510,31 @@ session = json.loads(session_path.read_text())
 
 # Inspect history
 for turn in session["history"]:
-    print(f"{turn['role']}: {turn.get('name', '')} - {turn['content'][:100]}...")
+    role = turn.get("role", "?")
+    tool_name = turn.get("name", "")
+    content_preview = turn.get("content", "")[:100]
+    print(f"{role}:{tool_name} - {content_preview}...")
 
 # Check memory
 print("Task:", session["memory"]["task"])
 print("Files:", session["memory"]["files"])
 ```
 
-This enables custom tooling for session analysis, backup, or migration.
+This enables custom tooling for session analysis, backup automation, or migration between projects.
+
+## Test Coverage
+
+The project includes pytest tests in `tests/test_mini_coding_agent.py` that verify:
+- Tool execution and final answer generation
+- Retry behavior after malformed model output
+- Session persistence and loading
+- Workspace context building
+- File path validation and security checks
+
+Run tests with:
+```bash
+cd mini-coding-agent
+uv run pytest
+# or without uv:
+python -m pytest tests/
+```
