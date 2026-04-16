@@ -157,7 +157,9 @@ python3 -c "import yaml; data=yaml.safe_load(open('SKILL.md').read().split('---'
 
 ## Important: Updating README.md
 
-**Every time a new skill is added, the table in `README.md` MUST be updated.**
+**Every time a new skill is added or removed, the skills table in `README.md` MUST be regenerated.**
+
+### Manual Update (Not Recommended)
 
 Add a new row to the skills table with:
 | Skill | Project | Version | Technologies |
@@ -168,6 +170,121 @@ Example update:
 ```markdown
 | uv-0-11-6 | uv | 0.11.6 | Python, package manager |
 ```
+
+**Warning:** Manual updates are error-prone and LLMs frequently hallucinate version numbers, skip skills, or produce malformed markdown. Use the auto-generation script below instead.
+
+### Auto-Generate Skills Table (Recommended)
+
+When adding, removing, or replacing skills, **generate a fresh `README.md`** by running this Python script on-the-fly. It scans every skill directory, extracts YAML metadata, and produces an accurate, sorted table with correct counts — zero hallucination risk.
+
+**Run this from the repository root:**
+
+```bash
+python3 << 'PYEOF'
+import os, re, datetime
+
+SKILLS_DIR = '.agents/skills'
+README_PATH = 'README.md'
+
+# Collect skill data
+skills = []
+skipped = []
+for dir_name in sorted(os.listdir(SKILLS_DIR)):
+    skill_dir = os.path.join(SKILLS_DIR, dir_name)
+    skill_file = os.path.join(skill_dir, 'SKILL.md')
+    if not os.path.isdir(skill_dir) or not os.path.isfile(skill_file):
+        continue
+    with open(skill_file) as f:
+        content = f.read()
+    match = re.match(r'^---\n(.*?)\n---', content, re.DOTALL)
+    if not match:
+        skipped.append(dir_name + ' (no YAML header)')
+        continue
+    yaml_text = match.group(1)
+    name = desc = version = ''
+    tags = []
+    in_tags = False
+    for line in yaml_text.split('\n'):
+        if line.startswith('name:'):
+            name = re.sub(r'^name:\s*', '', line).strip().strip('"').strip("'")
+            in_tags = False
+        elif line.startswith('description:'):
+            desc = re.sub(r'^description:\s*', '', line).strip().strip('"').strip("'")
+            in_tags = False
+        elif line.startswith('version:'):
+            version = re.sub(r'^version:\s*', '', line).strip().strip('"').strip("'")
+            in_tags = False
+        elif line.startswith('tags:'):
+            in_tags = True
+            continue
+        elif in_tags and line.strip().startswith('- '):
+            tag = line.strip()[2:].strip()
+            if not tag.startswith('http') and not tag.startswith('url:'):
+                tags.append(tag)
+        elif in_tags and not line.strip().startswith('- ') and not line.strip().startswith('#'):
+            in_tags = False
+    if not name:
+        name = dir_name
+    desc_short = desc[:117] + '...' if len(desc) > 120 else desc
+    if name.startswith('agent-') or name in ['write-skill']:
+        project = '-'
+    else:
+        m = re.match(r'^(.+?)-(\d)', name)
+        project = m.group(1) if m else '-'
+    skills.append({
+        'name': name,
+        'project': project,
+        'version': version if version else '-',
+        'tags': tags[:5],
+        'desc': desc_short,
+    })
+
+skills.sort(key=lambda s: s['name'])
+
+with open(README_PATH, 'w') as f:
+    f.write("""# tangled-skills
+Tangled Skills for Agents
+
+## About
+
+All skills in this repository are automatically generated using the `write-skill` skill. Each skill is created from public references, official documentation URLs, and other publicly available resources to ensure accuracy and completeness.
+
+### Skill Design Principles
+
+- **Detailed yet concise**: Skills provide comprehensive coverage while staying within typical LLM context limits
+- **Modular reference files**: Large topics are broken down into separate reference files that can be loaded on demand
+- **Markdown only**: All skill files are plain Markdown documents - no scripts or executable code
+- **Reference-driven**: Each skill links to official documentation and public resources for further exploration
+
+## Skills Table
+
+| Skill | Project | Version | Technologies | Description |
+|-------|---------|---------|--------------|-------------|
+""")
+    for s in skills:
+        f.write(f"| {s['name']} | {s['project']} | {s['version']} | {', '.join(s['tags'])} | {s['desc']} |\n")
+    f.write(f"\n## Statistics\n\n- **Total Skills**: {len(skills)}\n- **Last Updated**: {datetime.date.today().isoformat()}\n")
+
+print(f'Generated README.md with {len(skills)} skills')
+if skipped:
+    print(f'Skipped {len(skipped)}: {', '.join(skipped[:5])}')
+PYEOF
+```
+
+**What the script does:**
+1. Scans every directory in `.agents/skills/` for a `SKILL.md` file
+2. Parses the YAML header to extract `name`, `description`, `version`, and `tags`
+3. Filters out URLs from tags (they belong in `external_references`, not technologies)
+4. Derives the project name from the skill name pattern (`<project>-<version>` → `<project>`, or `-` for agent/meta skills)
+5. Sorts all skills alphabetically by name
+6. Writes the complete `README.md` with header, skills table, and statistics section
+7. Reports total count and any skipped skills (missing YAML headers)
+
+**When to run:**
+- After adding a new skill to `.agents/skills/`
+- After removing or replacing a skill
+- Before committing changes to verify the table is accurate
+- Whenever an LLM-generated manual update looks suspicious
 
 ## Using the write-skill Skill
 
