@@ -1,6 +1,6 @@
 ---
 name: coding-guidelines-0-1-0
-description: Behavioral guidelines to reduce common LLM coding mistakes including overcomplication, hidden assumptions, and orthogonal edits. Use when writing, reviewing, or refactoring code to enforce simplicity, surgical changes, explicit reasoning, and verifiable success criteria. Derived from Andrej Karpathy's observations on LLM pitfalls, curated by Forrest Chang.
+description: Behavioral guidelines to reduce common LLM coding mistakes including overcomplication, hidden assumptions, orthogonal edits, and weak success criteria. Use when writing, reviewing, or refactoring code to enforce simplicity, surgical changes, explicit reasoning, and verifiable outcomes. Derived from Andrej Karpathy's observations on LLM coding pitfalls, curated by Forrest Chang.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"
@@ -17,13 +17,17 @@ external_references:
 
 # Coding Guidelines v0.1.0
 
+Behavioral guidelines to reduce common LLM coding mistakes, derived from observations on LLM coding pitfalls.
+
+> **Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
+
 ## When to Use
 
-- **Writing new code** — Apply before implementation to enforce simplicity and reasoning
-- **Code review** — Check diffs against each principle
-- **Refactoring** — Ensure surgical scope, no drive-by changes
-- **Bug fixing** — Define verifiable success criteria before starting
-- **AGENTS.md / agent configuration** — Include as behavioral guardrails
+- **Writing new code** - Apply before implementation to enforce simplicity and reasoning
+- **Code review** - Check diffs against each principle
+- **Refactoring** - Ensure surgical scope, no drive-by changes
+- **Bug fixing** - Define verifiable success criteria before starting
+- **AGENTS.md / agent configuration** - Include as behavioral guardrails
 
 ## The Four Principles
 
@@ -34,7 +38,7 @@ external_references:
 Before implementing:
 
 - State your assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them — don't pick silently.
+- If multiple interpretations exist, present them - don't pick silently.
 - If a simpler approach exists, say so. Push back when warranted.
 - If something is unclear, stop. Name what's confusing. Ask.
 
@@ -61,7 +65,7 @@ When editing existing code:
 - Don't "improve" adjacent code, comments, or formatting.
 - Don't refactor things that aren't broken.
 - Match existing style, even if you'd do it differently.
-- If you notice unrelated dead code, mention it — don't delete it.
+- If you notice unrelated dead code, mention it - don't delete it.
 
 When your changes create orphans:
 
@@ -92,11 +96,22 @@ For multi-step tasks, state a brief plan:
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
 
+## Combining the Principles
+
+These principles reinforce each other:
+
+1. **Think** → identify the simplest correct approach
+2. **Simplify** → strip away everything not requested
+3. **Go surgical** → touch only what's necessary
+4. **Verify** → confirm with concrete criteria
+
+When in doubt, ask: "What would the simplest thing that could possibly work look like?" Then do that.
+
 ## How to Know It's Working
 
 These guidelines are working if you see:
 
-- **Fewer unnecessary changes in diffs** — Only requested changes appear
-- **Fewer rewrites due to overcomplication** — Code is simple the first time
-- **Clarifying questions come before implementation** — Not after mistakes
-- **Clean, minimal PRs** — No drive-by refactoring or "improvements"
+- **Fewer unnecessary changes in diffs** - Only requested changes appear
+- **Fewer rewrites due to overcomplication** - Code is simple the first time
+- **Clarifying questions come before implementation** - Not after mistakes
+- **Clean, minimal PRs** - No drive-by refactoring or "improvements"
