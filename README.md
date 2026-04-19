@@ -43,7 +43,7 @@ All skills in this repository are automatically generated using the `write-skill
 | cffi-2-0-0 | cffi | 2.0.0 | cffi, c-integration, ffi, foreign-function-interface, python-c-bindings | Python C Foreign Function Interface for calling C libraries from Python with C-like declarations. Use when interfacin... |
 | changelog-1-1 | changelog | 0.2.0 | changelog, documentation, versioning, semver, release-notes | A skill for creating and maintaining changelogs following the Keep a Changelog specification v1.1.0, providing standa... |
 | chonkie-1-6-2 | chonkie | 1.6.2 | text-chunking, rag, nlp, embeddings, vector-databases | A skill for using Chonkie 1.6.2, a lightweight Rust-based text chunking library for RAG pipelines providing 10+ chunk... |
-| coding-guidelines-0-1-0 | coding-guidelines | 0.1.0 | behavioral-guidelines, code-quality, simplicity, llm-best-practices | Behavioral guidelines to reduce common LLM coding mistakes including overcomplication, hidden assumptions, and orthog... |
+| coding-guidelines-0-1-0 | coding-guidelines | 0.1.0 | behavioral-guidelines, code-quality, simplicity, llm-best-practices | Behavioral guidelines to reduce common LLM coding mistakes including overcomplication, hidden assumptions, orthogonal... |
 | crun-1-27 | crun | 0.2.0 | oci-runtime, containers, podman, checkpointing, criu | Lightweight OCI container runtime written in C for running Linux containers with low memory footprint and high perfor... |
 | cryptography-46 | cryptography | 0.2.0 | cryptography, encryption, hashing, asymmetric, symmetric | Comprehensive toolkit for Python cryptographic operations using the cryptography library. Use when implementing encry... |
 | curl-8-19-0 | curl | 8.19.0 | HTTP client, FTP, URL transfer, libcurl, CLI tool | Complete toolkit for curl 8.19.0 CLI tool and libcurl C library covering command-line usage, URL syntax, HTTP/HTTPS/F... |
@@ -130,6 +130,7 @@ All skills in this repository are automatically generated using the `write-skill
 | tokenizers-0-22-3 | tokenizers | 0.22.3 | nlp, tokenization, rust, python, transformers | Fast state-of-the-art tokenizers library for NLP written in Rust with Python, Node.js, and Ruby bindings. Use when tr... |
 | transformers-5-5-4 | transformers | 1.0.0 | nlp, machine-learning, deep-learning, pytorch, huggingface | Complete toolkit for Hugging Face Transformers 5.5.4 providing state-of-the-art pretrained models for NLP, computer v... |
 | ty-0-0-29 | ty | 0.2.0 | python, type-checking, static-analysis, language-server, mypy-alternative | A skill for using ty 0.0.29, an extremely fast Python type checker and language server written in Rust that is 10x-10... |
+| tzip | - | 0.2.0 | token-compression, sparse-representation, efficiency | > |
 | upx-5-1-1 | upx | 0.2.0 | compression, executable, packer, optimization, deployment | A skill for using UPX (Ultimate Packer for eXecutables) v5.1.1 to compress and decompress executable files across mul... |
 | usearch-2-24 | usearch | 0.2.0 | vector-search, hnsw, similarity-search, approximate-nearest-neighbors, embedding-search | A skill for using USearch 2.24, a high-performance single-file similarity search and clustering engine for vectors su... |
 | uv-0-11-6 | uv | 0.2.0 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | A skill for using uv 0.11.6, an extremely fast Python package and project manager written in Rust that replaces pip, ... |
@@ -140,4 +141,4 @@ All skills in this repository are automatically generated using the `write-skill
 
 ## Statistics
 
-- **Total Skills**: 121
+- **Total Skills**: 122

@@ -24,6 +24,8 @@ external_references:
 
 Activate tzip mode: compress to concepts and associations only. Decompress when context requires clarity.
 
+**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
+
 ## Two-Layer Token Savings
 
 **Layer 1 (prose):** Compress output text — drop filler, abbreviate, fragments.
@@ -50,7 +52,7 @@ Activate tzip mode: compress to concepts and associations only. Decompress when 
 - State assumptions explicitly. If uncertain, ask.
 - Surface tradeoffs — don't pick silently among multiple interpretations.
 - If a simpler approach exists, say so. Push back when warranted.
-- Name what's confusing before implementing.
+- Name what's confusing before implementing. Stop. Ask.
 
 ### Simplicity First
 - No features beyond what was asked.
@@ -58,29 +60,26 @@ Activate tzip mode: compress to concepts and associations only. Decompress when 
 - No "flexibility" or "configurability" that wasn't requested.
 - No error handling for impossible scenarios.
 - If you write 200 lines and it could be 50, rewrite it.
+- Ask: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
 
 ### Surgical Changes
 - Don't "improve" adjacent code, comments, or formatting.
 - Don't refactor things that aren't broken.
 - Match existing style, even if you'd do it differently.
+- If you notice unrelated dead code, mention it — don't delete it.
 - When your changes create orphans: remove only what YOUR changes made unused.
 - Test: Every changed line should trace directly to the user's request.
 
 ### Goal-Driven Execution
-- Transform tasks into verifiable goals.
-- For multi-step tasks, state a brief plan with verification steps.
+- Transform tasks into verifiable goals:
+  - "Add validation" → "Write tests for invalid inputs, then make them pass"
+  - "Fix the bug" → "Write a test that reproduces it, then make it pass"
+- Multi-step plan format: `[Step] → verify: [check]`
 - Strong success criteria let you loop independently.
 
 ## Safety
 
 Drop tzip mode for: security warnings, irreversible actions, multi-step sequences where fragments risk misread. Resume tzip after clear part done.
-
-Example — destructive op:
-> **Warning:** This will permanently delete all rows in the `users` table and cannot be undone.
-> ```sql
-> DROP TABLE users;
-> ```
-> Tzip resume. Verify backup exist first.
 
 ## Decompression
 
@@ -92,4 +91,4 @@ When context requires clarity (or user requests):
 
 ## Persistence
 
-ACTIVE EVERY RESPONSE. No revert after many turns. Still active if unsure. Off only: "stop tzip" / "normal mode".
+ACTIVE EVERY RESPONSE. No revert after many turns. Still active if unsure. Off only: "stop tzip", "tzip off", "normal mode".
