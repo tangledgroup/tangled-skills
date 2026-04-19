@@ -10,7 +10,9 @@ All skills in this repository are automatically generated using the `write-skill
 Install / Update
 
 ```bash
-mkdir -p .agents/skills && curl -L https://github.com/tangledgroup/tangled-skills/archive/refs/heads/main.tar.gz | tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skills
+mkdir -p .agents/skills && \
+curl -L https://github.com/tangledgroup/tangled-skills/archive/refs/heads/main.tar.gz | \
+tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skills
 ```
 
 ### Skill Design Principles
