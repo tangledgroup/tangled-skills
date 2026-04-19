@@ -130,7 +130,7 @@ All skills in this repository are automatically generated using the `write-skill
 | tokenizers-0-22-3 | tokenizers | 0.22.3 | nlp, tokenization, rust, python, transformers | Fast state-of-the-art tokenizers library for NLP written in Rust with Python, Node.js, and Ruby bindings. Use when tr... |
 | transformers-5-5-4 | transformers | 1.0.0 | nlp, machine-learning, deep-learning, pytorch, huggingface | Complete toolkit for Hugging Face Transformers 5.5.4 providing state-of-the-art pretrained models for NLP, computer v... |
 | ty-0-0-29 | ty | 0.2.0 | python, type-checking, static-analysis, language-server, mypy-alternative | A skill for using ty 0.0.29, an extremely fast Python type checker and language server written in Rust that is 10x-10... |
-| tzip | - | 0.2.0 | token-compression, sparse-representation, efficiency | > |
+| tzip | - | 0.3.1 | token-compression, efficiency | > |
 | upx-5-1-1 | upx | 0.2.0 | compression, executable, packer, optimization, deployment | A skill for using UPX (Ultimate Packer for eXecutables) v5.1.1 to compress and decompress executable files across mul... |
 | usearch-2-24 | usearch | 0.2.0 | vector-search, hnsw, similarity-search, approximate-nearest-neighbors, embedding-search | A skill for using USearch 2.24, a high-performance single-file similarity search and clustering engine for vectors su... |
 | uv-0-11-6 | uv | 0.2.0 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | A skill for using uv 0.11.6, an extremely fast Python package and project manager written in Rust that replaces pip, ... |
