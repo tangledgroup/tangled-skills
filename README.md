@@ -42,12 +42,14 @@ All skills in this repository are automatically generated using the `write-skill
 | caveman-1-5-1 | caveman | 1.5.1 | communication, token-optimization, brevity, efficiency | Ultra-compressed communication mode that cuts token usage by ~75% while maintaining full technical accuracy. Supports... |
 | cffi-2-0-0 | cffi | 2.0.0 | cffi, c-integration, ffi, foreign-function-interface, python-c-bindings | Python C Foreign Function Interface for calling C libraries from Python with C-like declarations. Use when interfacin... |
 | changelog-1-1 | changelog | 0.2.0 | changelog, documentation, versioning, semver, release-notes | A skill for creating and maintaining changelogs following the Keep a Changelog specification v1.1.0, providing standa... |
+| chart-js-4-5-1 | chart-js | 4.5.1 | charts, canvas, data-visualization, javascript, html5 | Complete toolkit for Chart.js 4.5.1, the most popular open-source JavaScript charting library using HTML5 Canvas rend... |
 | chonkie-1-6-2 | chonkie | 1.6.2 | text-chunking, rag, nlp, embeddings, vector-databases | A skill for using Chonkie 1.6.2, a lightweight Rust-based text chunking library for RAG pipelines providing 10+ chunk... |
 | coding-guidelines-0-1-0 | coding-guidelines | 0.1.0 | behavioral-guidelines, code-quality, simplicity, llm-best-practices | Behavioral guidelines to reduce common LLM coding mistakes including overcomplication, hidden assumptions, orthogonal... |
 | crun-1-27 | crun | 0.2.0 | oci-runtime, containers, podman, checkpointing, criu | Lightweight OCI container runtime written in C for running Linux containers with low memory footprint and high perfor... |
 | cryptography-46 | cryptography | 0.2.0 | cryptography, encryption, hashing, asymmetric, symmetric | Comprehensive toolkit for Python cryptographic operations using the cryptography library. Use when implementing encry... |
 | curl-8-19-0 | curl | 8.19.0 | HTTP client, FTP, URL transfer, libcurl, CLI tool | Complete toolkit for curl 8.19.0 CLI tool and libcurl C library covering command-line usage, URL syntax, HTTP/HTTPS/F... |
 | cython-3-2-4 | cython | 3.2.4 | python, compiler, c-extension, performance, optimization | A skill for using Cython 3.2.4, an optimizing Python compiler that makes writing C extensions as easy as Python itsel... |
+| d3-7-9-0 | d3 | 7.9.0 | JavaScript, visualization, SVG, Canvas, data-visualization | Complete toolkit for D3.js 7.9.0, the JavaScript library for bespoke data-driven documents providing SVG and Canvas-b... |
 | daisyui-5-5 | daisyui | 0.2.0 | tailwindcss, daisyui, ui-components, theming, css-framework | A skill for using DaisyUI 5.5, a component library for Tailwind CSS 4 that provides semantic class names for common U... |
 | dayjs-1-11 | dayjs | 0.2.0 | date, time, parsing, formatting, manipulation | Complete toolkit for date and time manipulation using Day.js 1.11, a minimalist 2kB library with Moment.js-compatible... |
 | deno-2-7 | deno | 0.2.0 | javascript, typescript, runtime, web-server, cli-tools | A comprehensive toolkit for the Deno 2.x JavaScript/TypeScript runtime, covering installation, permissions, built-in ... |
@@ -143,4 +145,4 @@ All skills in this repository are automatically generated using the `write-skill
 
 ## Statistics
 
-- **Total Skills**: 124
+- **Total Skills**: 126
