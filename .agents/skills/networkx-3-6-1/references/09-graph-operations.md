@@ -458,8 +458,70 @@ rv2 = nx.restricted_view(G, 1)     # Remove node 1 and its edges
 es = G.edge_subgraph([(1, 2), (2, 3)])
 ```
 
+## CoreViews — Filtered Graph Data Structures
+
+CoreViews provide filtered views into graph adjacency data without copying. Used internally by `subgraph_view`, `restricted_view`, and filter functions.
+
+```python
+from networkx.classes.coreviews import (
+    AtlasView, AdjacencyView, MultiAdjacencyView,
+    UnionAtlas, UnionAdjacency, UnionMultiInner, UnionMultiAdjacency,
+    FilterAtlas, FilterAdjacency, FilterMultiInner
+)
+
+# AtlasView — dict-like view of node attributes (node → attr_dict)
+av = AtlasView(G.nodes)
+print(av[1])  # {"color": "red"}
+
+# AdjacencyView — dict-like view of neighbors (node → neighbor→attr)
+av2 = AdjacencyView(G.adj)
+print(av2[1][2])  # {"weight": 0.5}
+
+# MultiAdjacencyView — for MultiGraph (node → neighbor → edge_key → attr)
+mav = MultiAdjacencyView(MG.adj)
+
+# UnionAtlas/UnionAdjacency — union views combining multiple adjacencies
+# Used internally when composing graphs with overlapping nodes
+ua = UnionAtlas([adj1, adj2])
+
+# UnionMultiInner / UnionMultiAdjacency — multigraph versions
+umi = UnionMultiInner([inner1, inner2])
+
+# FilterAtlas / FilterAdjacency / FilterMultiInner — filtered views
+# Used by subgraph_view and restricted_view to lazily filter nodes/edges
+fa = FilterAtlas(G.nodes, filter_func=lambda n: n % 2 == 0)
+
+# no_filter — identity filter (passes all elements)
+from networkx.classes.filters import no_filter, hide_nodes, show_nodes
+filtered = G.subgraph_view(filter_node=no_filter)  # No filtering
+```
+
+### Filter Functions (for subgraph_view / restricted_view)
+
+```python
+from networkx.classes.filters import (
+    no_filter, show_nodes, hide_nodes,
+    show_edges, hide_edges,
+    show_multiedges, hide_multiedges
+)
+
+# Hide nodes matching predicate
+sub = nx.subgraph_view(G, filter_node=lambda n: n % 2 == 0)
+
+# Hide edges matching predicate
+filtered = nx.restricted_view(G, filter_edge=lambda e: e[2].get("weight", 1) > 1)
+
+# Combine node and edge filters
+sub = nx.subgraph_view(
+    G,
+    filter_node=lambda n: n % 2 == 0,
+    filter_edge=lambda e: True  # show all edges
+)
+```
+
 ## Summary of Key Methods
 
+### Node/Edge Operations
 | Method | Description |
 |--------|-------------|
 | `add_node(n, **attr)` | Add single node with attributes |
@@ -470,14 +532,66 @@ es = G.edge_subgraph([(1, 2), (2, 3)])
 | `remove_edge(u, v)` | Remove single edge |
 | `has_node(n)` / `n in G` | Check if node exists |
 | `has_edge(u, v)` / `v in G[u]` | Check if edge exists |
+
+### Node Queries
+| Function | Description |
+|----------|-------------|
 | `nodes()` / `G.nodes` | Node view (iterable) |
-| `edges()` / `G.edges` | Edge view (iterable) |
+| `number_of_nodes()` | Count of nodes |
 | `neighbors(n)` / `G[n]` | Neighbor view |
-| `degree(n)` | Degree of node n |
-| `subgraph(nodes)` | Subgraph view |
+| `all_neighbors(G, n)` | All neighbors (both dirs in DiGraph) |
+| `non_neighbors(G, n)` | Nodes not connected to n |
+| `common_neighbors(G, u, v)` | Nodes connected to both u and v |
+
+### Edge Queries
+| Function | Description |
+|----------|-------------|
+| `edges()` / `G.edges` | Edge view (iterable) |
+| `number_of_edges()` | Count of edges |
+| `selfloop_edges()` | Edges where u == v |
+| `number_of_selfloops()` | Count of self-loops |
+| `nodes_with_selfloops()` | Nodes with self-loops |
+| `non_edges(G)` | All non-connected node pairs |
+
+### Graph Properties
+| Function | Description |
+|----------|-------------|
+| `is_directed(G)` | True if DiGraph |
+| `is_empty(G)` | True if no nodes |
+| `density(G)` | Ratio of edges to max possible |
+| `is_weighted(G, u, v, weight)` | Edge has positive weight |
+| `is_negatively_weighted(G, u, v, weight)` | Edge has negative weight |
+| `is_path(G, path)` | Check if sequence is valid path |
+| `path_weight(G, path, weight)` | Sum of weights along path |
+| `create_empty_copy(G)` | Same type, no data |
+| `freeze(G)` | Immutable read-only copy |
+| `is_frozen(G)` | True if frozen |
+
+### Subgraph Views
+| Function | Description |
+|----------|-------------|
+| `subgraph(nodes)` | Induced subgraph view |
+| `induced_subgraph(nodes)` | Alias for subgraph |
+| `edge_subgraph(edges)` | Subgraph from edge list |
+| `restricted_view(G, *remove)` | Remove nodes/edges, return view |
+| `subgraph_view(G, filter_node)` | Filter-based subgraph view |
+
+### Conversion
+| Method | Description |
+|--------|-------------|
 | `copy()` | Independent copy |
 | `reverse()` | Reverse directed graph |
 | `to_directed()` | Convert to DiGraph |
 | `to_undirected()` | Convert to Graph |
-| `freeze()` | Immutable read-only copy |
 | `relabel_nodes(mapping)` | Relabel nodes |
+
+### CoreViews (Filtered Data Structures)
+| Class | Description |
+|-------|-------------|
+| `AtlasView` | Dict-like node attribute view |
+| `AdjacencyView` | Dict-like neighbor view |
+| `MultiAdjacencyView` | MultiGraph adjacency view |
+| `UnionAtlas/UnionAdjacency` | Union views for composed graphs |
+| `FilterAtlas/FilterAdjacency/FilterMultiInner` | Filtered views for subgraph_view |
+| `no_filter, hide_nodes, show_nodes` | Filter function constants |
+| `show_edges, hide_edges, show_multiedges, hide_multiedges` | Edge filter functions |

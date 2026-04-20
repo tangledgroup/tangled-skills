@@ -231,14 +231,29 @@ H = nx.read_weighted_pajek("graph.net")
 
 ## LEDA Format
 
-Format for the LEDA graph library.
+Format for the LEDA (Lehrbuch Algorithmischer und Experimenteller Graphentheorie) graph library. Simple text format.
 
 ```python
+from networkx.readwrite.leda import *
+
 # Write LEDA format
 nx.write_leda(G, "graph.g")
 
 # Read LEDA format
 H = nx.read_leda("graph.g")
+
+# Parse LEDA from string
+leda_string = """
+$Edges
+1 2
+2 3
+"""
+H = nx.parse_leda(leda_string)
+
+# Generate LEDA lines (for streaming/custom output)
+lines = nx.generate_leda(G)
+for line in lines:
+    print(line)  # "$Nodes\n1\n2\n...\n$Edges\n1 2\n..."
 ```
 
 ## DOT Format
@@ -288,21 +303,25 @@ graph {
 
 ## Matrix Market Format
 
-For adjacency matrices.
+For adjacency matrices in sparse format.
 
 ```python
-# Write sparse matrix
 from scipy import sparse
 
+# Write sparse matrix to Matrix Market format
 matrix = nx.adjacency_matrix(G)
 nx.write_matrix_market(matrix, "graph.mtx")
 
-# Read sparse matrix
+# Read sparse matrix from Matrix Market format
 matrix = nx.read_matrix_market("graph.mtx")
 G = nx.from_scipy_sparse_array(matrix)
 
 # With weights
 matrix_weighted = nx.weighted_adjacency_matrix(G, weight="weight")
+nx.write_matrix_market(matrix_weighted, "weighted.mtx")
+
+# Supported extensions: .mtx (Matrix Market exchange format)
+# Supports: integer, real, complex, sparse formats
 ```
 
 ## CSV Format
@@ -414,7 +433,51 @@ def load_graph(db_path="graph.db"):
     return G
 ```
 
-## Additional Read/Write Functions
+### JSON Format Subtypes (Complete Reference)
+
+NetworkX supports 5 JSON graph representations, each optimized for different use cases.
+
+```python
+import json
+
+# === Node-Link Format (default, most flexible) ===
+# Nodes and edges as separate arrays. Best for general-purpose.
+data = nx.node_link_data(G, edges="links")  # 'links' or 'edges' key name
+H = nx.node_link_graph(data)
+
+# With directed graph support
+DG = nx.node_link_graph(data, directed=True)
+
+# === Adjacency Format (compact for dense graphs) ===
+# Each node maps to its neighbors. No separate edge list.
+data = nx.adjacency_data(G)
+H = nx.adjacency_graph(data)
+
+# === Cytoscape.js Format (web visualization) ===
+# Standard format for Cytoscape.js JavaScript library
+data = nx.cytoscape_data(G)
+H = nx.cytoscape_graph(data)
+
+# === Tree Format (hierarchical/directed trees only) ===
+# Nested structure with parent→children relationships
+data = nx.tree_data(T, root="root")  # T is a DiGraph tree
+T2 = nx.tree_graph(data, create_using=nx.DiGraph)
+
+# === Writing/Reading JSON files ===
+with open("graph.json", "w") as f:
+    json.dump(nx.node_link_data(G), f, indent=2)
+
+with open("graph.json", "r") as f:
+    data = json.load(f)
+H = nx.node_link_graph(data)
+```
+
+| Format | Function (to) | Function (from) | Best For |
+|--------|--------------|-----------------|----------|
+| Node-link | `node_link_data(G)` | `node_link_graph(data)` | General purpose |
+| Adjacency | `adjacency_data(G)` | `adjacency_graph(data)` | Dense graphs |
+| Cytoscape | `cytoscape_data(G)` | `cytoscape_graph(data)` | Web visualization |
+| Tree | `tree_data(T, root)` | `tree_graph(data)` | Hierarchical data |
 
 ### Adjacency List Variants
 

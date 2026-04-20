@@ -181,37 +181,113 @@ with open('graph.tex', 'w') as f:
     f.write(latex_code)
 ```
 
-## Graphviz Integration
+## Graphviz Integration (nx_agraph — PyGraphviz)
+
+Full Graphviz integration via pygraphviz. Provides layout algorithms and DOT export/import.
 
 ```python
-# Using pygraphviz (preferred, full Graphviz support)
-try:
-    import pygraphviz as pgv
-    
-    A = nx.nx_agraph.to_agraph(G)
-    A.layout(prog="dot")  # dot, neato, twopi, circo, fdp, sfdp
-    A.draw("graph.png")
-    
-    # Read back
-    A2 = pgv.AGraph("graph.dot")
-    H = nx.nx_agraph.from_agraph(A2)
-    
-except ImportError:
-    print("pygraphviz not installed")
+from networkx.drawing.nx_agraph import *
 
-# Using pydot (lighter dependency)
-try:
-    import pydot
-    
-    P = nx.nx_pydot.to_pydot(G)
-    P.write_dot("graph.dot")
-    
-    # Read back
-    P2 = pydot.graph_from_dot_file("graph.dot")[0]
-    H = nx.nx_pydot.from_pydot(P2)
-    
-except ImportError:
-    print("pydot not installed")
+# Convert NetworkX graph to PyGraphviz AGraph object
+A = nx.nx_agraph.to_agraph(G)
+
+# Layout using Graphviz engines:
+#   "dot"    — hierarchical/directed layout (default)
+#   "neato"  — spring model / force-directed
+#   "twopi"  — radial layout
+#   "circo"  — circular layout for graphs with cycles
+#   "fdp"    — force-directed (undirected)
+#   "sfdp"   - scalable force-directed (large graphs)
+A.layout(prog="dot")
+
+# Export to various formats
+A.draw("graph.png")       # PNG
+A.draw("graph.pdf")       # PDF
+A.draw("graph.svg")       # SVG
+A.write("graph.dot")      # DOT source text
+
+# Read from AGraph/DOT file
+import pygraphviz as pgv
+A2 = pgv.AGraph("graph.dot")
+H = nx.nx_agraph.from_agraph(A2)
+
+# Convert back to NetworkX
+G_back = nx.nx_agraph.from_agraph(A)
+
+# Graphviz layout function (returns position dict)
+pos = nx.nx_agraph.graphviz_layout(G, prog="dot")
+pos_neato = nx.nx_agraph.graphviz_layout(G, prog="neato")
+
+# PyGraphviz-specific layout
+pos_pg = nx.nx_agraph.pygraphviz_layout(G, prog="dot")
+```
+
+## Graphviz Integration (nx_pydot — PyDot)
+
+Lighter-weight Graphviz integration via pydot (no C extension needed).
+
+```python
+from networkx.drawing.nx_pydot import *
+
+# Convert to PyDot graph object
+P = nx.nx_pydot.to_pydot(G)
+
+# Export DOT source
+dot_source = P.to_string()  # DOT text string
+P.write_dot("graph.dot")     # Write to file
+
+# Read from DOT file
+import pydot
+P2 = pydot.graph_from_dot_file("graph.dot")[0]
+H = nx.nx_pydot.from_pydot(P2)
+
+# Convert back to NetworkX
+G_back = nx.nx_pydot.from_pydot(P)
+
+# Graphviz layout (returns position dict)
+pos = nx.nx_pydot.graphviz_layout(G, prog="dot")
+
+# Read DOT file directly
+H = nx.nx_pydot.read_dot("graph.dot")
+
+# Write DOT file directly
+nx.nx_pydot.write_dot(G, "graph.dot")
+```
+
+## LaTeX/TikZ Export (nx_latex)
+
+Generate LaTeX/TikZ code for embedding graphs in documents.
+
+```python
+from networkx.drawing.nx_latex import *
+
+# Generate TikZ LaTeX code
+latex_code = nx.to_latex_raw(G, root_node=None,
+                              edge_label_func=None,
+                              preamble=r'\usepackage{tikz}',
+                              position_func=lambda n: (0, 0))
+
+# Or use convenience function (applies default formatting)
+latex_full = nx.to_latex(G, root_node="root",
+                          edge_label_func=lambda e: str(e[2].get('weight', '')),
+                          preamble=r'\usepackage{tikz}',
+                          position_func=lambda n: pos[n])
+
+# Write to file
+nx.write_latex(G, 'graph.tex')
+
+# With computed positions
+pos = nx.spring_layout(G)
+latex_code = nx.to_latex(
+    G,
+    root_node=None,
+    edge_label_func=lambda e: str(e[2].get('weight', '')),
+    position_func=lambda n: pos[n],  # Use computed layout positions
+    preamble=r'\usepackage{tikz}'
+)
+
+with open('graph.tex', 'w') as f:
+    f.write(latex_code)
 ```
 
 ## Layout Function Reference

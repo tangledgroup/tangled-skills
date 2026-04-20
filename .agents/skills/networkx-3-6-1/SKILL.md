@@ -298,29 +298,29 @@ G = nx.node_link_graph(json.load(open("graph.json")))
 - [Centrality and Importance](references/03-centrality.md) - Degree, betweenness, closeness, eigenvector, PageRank, and 15+ other measures
 - [Community Detection](references/04-community-detection.md) - Louvain, label propagation, Girvan-Newman, spectral clustering
 - [Visualization](references/05-visualization.md) - Layout algorithms, matplotlib integration, graphviz, styling options
-- [File Formats](references/06-file-formats.md) - GraphML, GEXF, GML, JSON, edge lists, adjacency matrices
-- [Graph Generators](references/07-generators.md) - Random graphs, classic graphs, small-world, scale-free networks
+- [File Formats](references/06-file-formats.md) - GraphML, GEXF, GML, JSON (node-link/tree/adjacency/cytoscape), edge lists, adjacency lists, Matrix Market, LEDA, Graph6/Sparse6, text export
+- [Graph Generators](references/07-generators.md) - Random graphs, classic graphs, small-world, scale-free, expanders, atlas, geometric, community, degree sequence generators
 - [Backends and Performance](references/08-backends.md) - GPU acceleration, parallel processing, third-party backends
-- [Graph Class Methods and Operations](references/09-graph-operations.md) - add_node, remove_edge, subgraph, copy, reverse, freeze, graph operators (union, intersection, product), attribute management
+- [Graph Class Methods and Operations](references/09-graph-operations.md) - add_node, remove_edge, subgraph, copy, reverse, freeze, CoreViews (AtlasView, AdjacencyView, FilterAtlas, etc.), filter functions, node/edge queries (all_neighbors, non_neighbors, common_neighbors), graph operators (union, intersection, product), attribute management
 - [DAG Algorithms and Network Flow](references/10-dag-and-flow.md) - Topological sort, longest path, transitive closure, max flow (Edmonds-Karp, Boykov-Kolmogorov), min-cut, min-cost flow, Gomory-Hu tree
 - [Connectivity and Components](references/11-connectivity-components.md) - Connected components, strongly connected, articulation points, bridges, edge/node connectivity, condensation
 - [Clustering, Core Decomposition, Cycles](references/12-clustering-core-cycles.md) - Clustering coefficient, transitivity, k-core/k-shell/k-truss, clique percolation, cycle basis, recursive_simple_cycles, Eulerian paths
 - [Isomorphism, Matching, Coloring](references/13-isomorphism-matching-coloring.md) - VF2++, subgraph isomorphism, maximum matching, bipartite matching, graph coloring, triadic census, reciprocity, assortativity, structural holes
-- [Linear Algebra and Matrix Conversion](references/14-linalg-conversion.md) - Adjacency/Laplacian matrices, spectrum, algebraic connectivity, Fiedler vector, numpy/scipy/pandas conversion, graph relabeling
+- [Linear Algebra and Matrix Conversion](references/14-linalg-conversion.md) - Adjacency/Laplacian/Modularity/Attribute matrices, spectrum (5 types), algebraic connectivity, Fiedler vector, spectral bisection/ordering, to_networkx_graph(), numpy/scipy/pandas/dict conversion, graph relabeling
 - [Graph Traversal and Trees](references/15-traversal-and-trees.md) - BFS, DFS, beam search, edge traversal, spanning trees, arborescences, Prufer sequences, nested tuples, junction trees
 - [Link Prediction and Analysis](references/16-link-prediction-and-analysis.md) - Jaccard, Adamic-Adar, resource allocation, preferential attachment, HITS, PageRank google_matrix
 - [Specialized Algorithms A](references/17-specialized-algorithms.md) - Dominating sets, dominance frontiers, edge covers, chordal graphs, D-separation (Bayesian networks), moral graphs, flow hierarchy, threshold graphs
 - [Specialized Algorithms B](references/18-specialized-algorithms-2.md) - Simple paths, lowest common ancestor, closeness vitality, small-world metrics (σ/ω), s-metric, spanners, graph summarization, chromatic/Tutte polynomials, regular graphs, distance-regular graphs
 - [Specialized Algorithms C](references/19-specialized-algorithms-3.md) - Efficiency measures, non-randomness, time-dependent centrality, tournaments, Voronoi cells, walk counting, chemical indices (Wiener/Schultz/Gutman), communicability, chain decomposition, node classification, approximation algorithms
-- [Niche Algorithms](references/20-niche-algorithms.md) - NetworkX configuration, random utilities, Sparse6/Graph6 formats, text export, Graphviz DOT, broadcast trees, perfect graphs, planar embeddings
+- [Niche Algorithms](references/20-niche-algorithms.md) - Configuration, random utilities, Sparse6/Graph6 formats, text export, Graphviz DOT, broadcast trees, perfect graphs, planar embeddings, non-randomness measure
 - [Graphical Degree Sequences](references/21-graphical-and-sequence.md) - Erdős–Gallai, Havel-Hakimi, graph type validation (simple/directed/multigraph/pseudograph)
 - [Bipartite Networks](references/22-bipartite-networks.md) - Bipartite generators, projections (weighted/overlap/collaboration), matching (Hopcroft-Karp/Eppstein), biadjacency matrices, bipartite centrality/clustering, BiRANK ranking
 - [Planarity and Embeddings](references/23-planarity-and-embeddings.md) - Planarity testing, PlanarEmbedding (cyclic edge order), combinatorial embedding to 2D positions
 - [Graph Polynomials and Perfect Graphs](references/24-graph-polynomials-and-perfect.md) - Chromatic polynomial P(G,k), Tutte polynomial T(G;x,y), perfect graph property
 - [Approximation Algorithms](references/25-approximation-algorithms.md) - NP-hard approximations: max clique, independent set, vertex cover, Steiner tree, TSP (Christofides/Asadpour/greedy/SA), max cut, densest subgraph, dominating set, treewidth
 - [Graph Similarity and Edit Distance](references/26-similarity-and-edit-distance.md) - Graph edit distance (optimal paths), Panther similarity, SimRank random walk similarity, random path generation
-- [Utils, Randomness, Configuration](references/27-utils-randomness-config.md) - Random permutations, power-law sequences, reservoir sampling, backend config, decorator utilities (argmap, np_random_state, py_random_state, open_file)
-- [Complete Drawing and Layouts](references/28-drawing-layouts-complete.md) - All 46+ layout functions (spring, kamada-kawai, ARF, ForceAtlas2, BFS, multipartite, spiral), drawing primitives, LaTeX/TikZ export, Graphviz integration
+- [Utils, Randomness, Configuration](references/27-utils-randomness-config.md) - Random permutations, power-law sequences, reservoir sampling, backend config, decorator utilities (argmap, nodes_or_number, np_random_state, py_random_state, open_file, creation), misc utilities (flatten, pairwise, groups, dict_to_numpy_array), UnionFind data structure
+- [Complete Drawing and Layouts](references/28-drawing-layouts-complete.md) - All 46+ layout functions (spring, kamada-kawai, ARF, ForceAtlas2, BFS, multipartite, spiral), drawing primitives, LaTeX/TikZ export, Graphviz integration (pygraphviz + pydot), DOT read/write
 - [Exceptions and Concepts](references/29-exceptions-and-concepts.md) - Full exception hierarchy (13 exceptions), frozen graphs, graph views vs copies, filter functions, fundamental graph concepts
 
 ## Algorithm Complexity Reference
@@ -404,6 +404,12 @@ Where V = number of nodes, E = number of edges, k = iterations, f = flow value.
 - Views: `.nodes`, `.edges`, `.neighbors`, `.degree()`, `.subgraph()`
 - Conversion: `.copy()`, `.reverse()`, `.to_directed()`, `.to_undirected()`, `.freeze()`
 - Attributes: `set_node_attributes()`, `get_node_attributes()`, `set_edge_attributes()`, `get_edge_attributes()`
+- Node queries: `all_neighbors()`, `non_neighbors()`, `common_neighbors()`
+- Edge queries: `selfloop_edges()`, `number_of_selfloops()`, `nodes_with_selfloops()`, `non_edges()`
+- Properties: `is_directed()`, `is_empty()`, `density()`, `is_weighted()`, `is_negatively_weighted()`, `is_path()`, `path_weight()`
+- Subgraph views: `subgraph()`, `induced_subgraph()`, `edge_subgraph()`, `restricted_view()`, `subgraph_view()`
+- CoreViews: `AtlasView`, `AdjacencyView`, `MultiAdjacencyView`, `UnionAtlas`, `UnionAdjacency`, `UnionMultiInner`, `UnionMultiAdjacency`, `FilterAtlas`, `FilterAdjacency`, `FilterMultiInner`
+- Filters: `no_filter`, `hide_nodes`, `show_nodes`, `show_edges`, `hide_edges`, `show_multiedges`, `hide_multiedges`
 
 ### Algorithms by Category
 - **Shortest paths**: BFS, Dijkstra, Bellman-Ford, Floyd-Warshall, Johnson, k-shortest paths
@@ -444,10 +450,10 @@ Where V = number of nodes, E = number of edges, k = iterations, f = flow value.
 - **Percolation centrality**
 - **Trophic levels** (directed networks)
 - **Graph generators**: 50+ generators including classic, random, geometric, social, lattice, tree, duplication-divergence
-- **Matrix representations**: Adjacency, Laplacian, normalized Laplacian, incidence, Bethe Hessian, modularity matrices
-- **Spectral properties**: Adjacency/Laplacian spectrum, algebraic connectivity, Fiedler vector, spectral bisection/ordering
+- **Matrix representations**: Adjacency, Laplacian, normalized Laplacian, directed Laplacian, combinatorial Laplacian, incidence, Bethe Hessian, modularity (directed), attribute matrices (dense/sparse)
+- **Spectral properties**: Adjacency/Laplacian/Bethe/Modularity spectrum, algebraic connectivity, Fiedler vector, spectral bisection/ordering
 - **Relabeling**: `relabel_nodes()`, `convert_node_labels_to_integers()`
-- **Conversion**: to/from numpy arrays, scipy sparse, pandas DataFrames, dict of dicts/lists, edgelists
+- **Conversion**: to_networkx_graph(), to/from numpy arrays, scipy sparse, pandas DataFrames, dict of dicts/lists, dict of weighted dicts, edgelists
 - **Backends**: cuGraph (GPU), nx-parallel (multi-core CPU), GraphBLAS, Rustworkx
 - **Traversal**: BFS, DFS, beam search, edge-based traversal, labeled edges (tree/back/forward/cross), predecessors/successors/layers
 - **Link analysis**: HITS (hubs/authorities), google_matrix, personalized PageRank
@@ -476,9 +482,12 @@ Where V = number of nodes, E = number of edges, k = iterations, f = flow value.
 - **Distance-regular**: is_distance_regular, intersection_array, global_parameters
 - **Regular graphs**: is_k_regular, k_factor
 - **Threshold graphs**: is_threshold_graph, find_threshold_graph
-- **Configuration NetworkXConfig for backend/drawing settings
-- **Randomness**: random_permutation, arbitrary_element, random_sample, powerlaw_sequence, reservoir sampling
-- **File formats**: Graph6, Sparse6, text export, Graphviz DOT
+- **Configuration**: backend_priority (algos/generators/classes), fallback_to_nx, cache_converted_graphs, drawing.element_limit, drawing.np_float_weighted
+- **Randomness**: random_permutation, arbitrary_element, random_sample, powerlaw_sequence, reservoir sampling, random_node, random_edge
+- **Decorators**: @argmap, @nodes_or_number, @not_implemented_for, @np_random_state, @py_random_state, @open_file, @creation
+- **Misc utilities**: flatten, make_list_of_ints, dict_to_numpy_array, pairwise, groups, create_py_random_state, create_random_state
+- **UnionFind**: union(), find(), same_set(), size(), equivalence classes
+- **File formats**: GraphML, GEXF, GML, JSON (node-link/tree/adjacency/cytoscape), edge lists, adjacency lists, multiline adjacency lists, Pajek, LEDA, DOT/Graphviz (pygraphviz + pydot), Matrix Market, CSV via pandas, Graph6, Sparse6, text export
 
 ### File Formats
 - GraphML, GEXF, GML, JSON (node-link/tree/adjacency/cytoscape), edge lists, adjacency lists, multiline adjacency lists, Pajek, LEDA, DOT/Graphviz, Matrix Market, CSV via pandas, Graph6, Sparse6, text export

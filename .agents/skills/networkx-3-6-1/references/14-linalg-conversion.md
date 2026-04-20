@@ -116,6 +116,35 @@ edge_attr_mat = nx.attr_matrix(G, edges=[(1, 2)], edge_attr="weight")
 sparse_attr = nx.attr_sparse_matrix(G, nodelist=[1, 2, 3])
 ```
 
+## to_networkx_graph — Universal Graph Constructor
+
+Convert any Python object to a NetworkX graph. This is the most flexible conversion function, accepting edge lists, dicts, numpy arrays, and more.
+
+```python
+import networkx as nx
+
+# From edge list (most common)
+G = nx.to_networkx_graph([(1, 2), (2, 3)])
+
+# From dict of dicts
+G = nx.to_networkx_graph({1: {2: {}, 3: {}}, 2: {1: {}, 3: {}}, 3: {1: {}, 2: {}}})
+
+# From numpy array (creates weighted Graph)
+import numpy as np
+arr = np.array([[0, 1, 1], [1, 0, 0], [1, 0, 0]])
+G = nx.to_networkx_graph(arr)
+
+# Specify graph type
+DG = nx.to_networkx_graph([(1, 2), (2, 3)], create_using=nx.DiGraph)
+MG = nx.to_networkx_graph([(1, 2), (1, 2), (2, 3)], create_using=nx.MultiGraph)
+
+# From single edge tuple
+G = nx.to_networkx_graph((1, 2))  # Single-edge graph
+
+# From string (creates path graph)
+G = nx.to_networkx_graph("abc")  # Path: a-b-c
+```
+
 ## Matrix Conversions
 
 ### From Various Formats to NetworkX
@@ -153,13 +182,21 @@ df = pd.DataFrame({
 })
 G_edgelist = nx.from_pandas_edgelist(df, source='source', target='target', edge_attr='weight')
 
-# From dict of dicts
+# From dict of dicts (node → {neighbor: attr})
 dod = {1: {2: {"weight": 0.5}}, 2: {1: {"weight": 0.5}}}
 G_dod = nx.from_dict_of_dicts(dod)
 
-# From dict of lists
+# With weight attribute extraction
+dod_w = {1: {2: 0.5}, 2: {1: 0.5}}
+G_dod_w = nx.from_dict_of_dicts(dod_w, edge_attr="weight")
+
+# From dict of lists (node → [neighbors])
 dol = {1: [2, 3], 2: [1, 3]}
 G_dol = nx.from_dict_of_lists(dol)
+
+# From dict of weighted dicts
+dwd = {1: {2: 0.5}, 2: {1: 0.5}}
+G_dwd = nx.from_dict_of_weighted_dicts(dwd)
 
 # From edgelist
 edges = [(1, 2), (2, 3)]
@@ -189,11 +226,14 @@ pd_adj = nx.to_pandas_adjacency(G)
 # To pandas edgelist
 pd_edges = nx.to_pandas_edgelist(G)
 
-# To dict of dicts
+# To dict of dicts (node → {neighbor: {attr}})
 dod = nx.to_dict_of_dicts(G)
 print(dod)  # {1: {2: {}}, 2: {1: {}, 3: {}}, 3: {2: {}}}
 
-# To dict of lists
+# To dict of weighted dicts (node → {neighbor: weight})
+dwd = nx.to_dict_of_weighted_dicts(G, weight="weight")
+
+# To dict of lists (node → [neighbors])
 dol = nx.to_dict_of_lists(G)
 print(dol)  # {1: [2], 2: [1, 3], 3: [2]}
 

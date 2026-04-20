@@ -299,20 +299,33 @@ G = nx.stochastic_graph(P)
 
 ## Atlas
 
-Small graph atlas (1334 graphs with up to 7 nodes).
+Small graph atlas containing all connected graphs with up to 7 nodes (1334 graphs total). Useful for testing algorithms on small exhaustive graph families.
 
 ```python
-# Get all graphs in atlas
+from networkx.generators.atlas import *
+
+# Get all graphs in atlas (list of 1334 Graph objects)
 atlas = nx.graph_atlas_g()
+print(len(atlas))  # 1334
 
-# Find a specific graph by index
-G = atlas[273]  # Petersen graph is at index 273 (actually needs 10 nodes)
+# Access by index
+G0 = atlas[0]    # Null graph (0 nodes)
+G1 = atlas[1]    # Trivial graph (1 node, 0 edges)
+G273 = atlas[273]  # One of the larger graphs in atlas
 
-# Search for graphs with properties
+# Search for specific properties
 for i, G in enumerate(atlas):
     if nx.number_of_nodes(G) == 6 and nx.is_complete_graph(G):
-        print(f"Complete graph K₆ at index {i}")
+        print(f"K₆ at index {i}")  # Complete graph K₆
+    if nx.number_of_edges(G) == 0:
+        print(f"Empty graph with {nx.number_of_nodes(G)} nodes at index {i}")
+
+# Get specific graph by size
+graphs_with_4_nodes = [G for G in atlas if nx.number_of_nodes(G) == 4]
+print(len(graphs_with_4_nodes))  # All connected graphs on 4 nodes
 ```
+
+**Note**: The atlas contains only *connected* graphs. Disconnected graphs can be constructed via `disjoint_union`.
 
 ## Chordal Graphs
 
@@ -323,22 +336,31 @@ G = nx.chordal_graph(10)
 
 ## Expanders
 
+Expander graphs have strong connectivity properties — every small set of nodes has many edges leaving it. Used in coding theory, network design, and derandomization.
+
 ```python
-# Margulis-Gabber-Galil expander graph
-G = nx.margulis_gabber_galil_graph(4)
+from networkx.generators.expanders import *
 
-# Chordal cycle expander
-G = nx.chordal_cycle_graph(10)
+# Margulis-Gabber-Galil expander (explicit construction)
+G = nx.margulis_gabber_galil_graph(4)  # 16 nodes, 4-regular
 
-# Paley graph (quadratic residue graph)
-G = nx.paley_graph(17)  # Must be prime ≡ 1 (mod 4)
+# Chordal cycle graph (circular k-ary tree structure)
+G = nx.chordal_cycle_graph(10)  # 10 nodes
 
-# Random regular expander
+# Paley graph — quadratic residue graph (prime p ≡ 1 mod 4)
+G = nx.paley_graph(17)  # 17 nodes, each connected to 8 others
+
+# Random regular expander graph
 G = nx.random_regular_expander_graph(4, 100)  # 4-regular, 100 nodes
 
-# Check if graph is expander
-is_expander = nx.is_regular_expander(G)
+# Maybe-regular expander (tries to produce regular graph)
+G = nx.maybe_regular_expander_graph(4, 100, tries=10)
+
+# Directed expander
+G = nx.directed_expander_graph(4, 100)  # 4-out-regular
 ```
+
+**Properties**: Expanders have spectral gap ≥ 1 - 2√(d-1)/d where d = degree. Higher gap = better expansion.
 
 ## Specialized Graphs
 
