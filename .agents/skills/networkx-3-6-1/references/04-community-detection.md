@@ -186,7 +186,55 @@ communities_weighted = list(community.asyn_fluid_communities(G, weight="weight")
 communities = list(community.asyn_fluid_communities(G, max_iter=1000))
 ```
 
-## Quality Metrics
+## Graph Cut Quality Metrics
+
+NetworkX provides built-in functions for evaluating graph cuts and partition quality.
+
+```python
+import networkx as nx
+
+G = nx.karate_club_graph()
+communities = list(community.louvain_communities(G))
+
+# Volume: sum of degrees of nodes in a set
+vol = nx.cuts.volume(G, set(communities[0]))
+print(f"Volume of community 0: {vol}")
+
+# Conductance: ratio of boundary edges to total volume
+cond = nx.cuts.conductance(G, set(communities[0]))
+print(f"Conductance: {cond:.4f}")
+
+# Cut size: number of edges crossing the partition
+cut_sz = nx.cuts.cut_size(G, set(communities[0]))
+print(f"Cut size: {cut_sz}")
+
+# Edge expansion: cut_size / min(volume(S), volume(V\S))
+edge_exp = nx.cuts.edge_expansion(G, set(communities[0]))
+print(f"Edge expansion: {edge_exp:.4f}")
+
+# Node expansion: |boundary(S)| / min(|S|, |V\S|)
+node_exp = nx.cuts.node_expansion(G, set(communities[0]))
+print(f"Node expansion: {node_exp:.4f}")
+
+# Boundary expansion: |edge_boundary(S)| / min(|S|, |V\S|)
+bound_exp = nx.cuts.boundary_expansion(G, set(communities[0]))
+print(f"Boundary expansion: {bound_exp:.4f}")
+
+# Normalized cut size: cut_size / (volume(S) × volume(V\S))
+norm_cut = nx.cuts.normalized_cut_size(G, set(communities[0]))
+print(f"Normalized cut: {norm_cut:.6f}")
+
+# Mixing expansion (for node classification)
+mix_exp = nx.cuts.mixing_expansion(G, set(communities[0]))
+```
+
+**Quality metrics interpretation:**
+- **Conductance**: Lower is better. 0 = perfect community, 1 = no internal edges.
+- **Cut size**: Absolute number of crossing edges. Lower is better.
+- **Edge expansion**: Per-node boundary cost. Lower is better.
+- **Normalized cut**: Balanced measure penalizing small partitions.
+
+## Custom Quality Metrics
 
 Beyond modularity, evaluate community quality:
 
@@ -307,15 +355,133 @@ for snapshot in evolution:
           f"modularity={snapshot['modularity']:.4f}")
 ```
 
+## Leiden Algorithm
+
+Improved version of Louvain that guarantees well-connected communities.
+
+```python
+# Basic Leiden community detection
+communities = list(community.leiden_communities(G, weight="weight"))
+
+# Get all partitions at each optimization level
+partitions = list(community.leiden_partitions(G, seed=42))
+best_partition = next(partitions)
+
+# With resolution and timeout parameters
+communities = list(community.leiden_communities(G, resolution_parameter=1.0,
+                                                seed=42, max_iter=10,
+                                                threshold=1e-7))
+```
+
+**Advantage over Louvain**: Always produces well-connected communities; better partition quality.
+
+## Greedy Modularity Community Detection
+
+Fast agglomerative algorithm that merges communities greedily.
+
+```python
+# Standard greedy modularity (uses heap for efficiency)
+greedy_comms = list(community.greedy_modularity_communities(G, weight="weight"))
+
+# Naive version (slower, but simpler implementation)
+naive_comms = list(community.naive_greedy_modularity_communities(G))
+```
+
+## k-Clique Community Detection
+
+Finds communities as unions of all k-cliques sharing k-1 nodes.
+
+```python
+# Find k-clique communities
+k = 4
+communities = list(community.k_clique_communities(G, k))
+
+# Check if a node partition is valid
+is_valid = community.community_utils.is_partition(communities)
+```
+
+**Use case**: Good for overlapping community detection when communities are dense.
+
+## Local Greedy Community Detection
+
+Fast local algorithm based on source expansion.
+
+```python
+communities = list(community.local.greedy_source_expansion(G, weight="weight"))
+```
+
+## Edge Betweenness Partitioning
+
+Divisive method using edge betweenness to split communities recursively.
+
+```python
+# Standard edge betweenness partition
+partitions = community.divisive.edge_betweenness_partition(G)
+
+# Current flow betweenness variant
+partitions_cf = community.divisive.edge_current_flow_betweenness_partition(G)
+```
+
+## Lukes Partitioning
+
+Hierarchical clustering method for finding communities.
+
+```python
+partition = community.lukes.lukes_partitioning(G, weight="weight")
+# Returns list of sets (community partition)
+```
+
+## Bipartite Community Methods
+
+Community detection methods specific to bipartite graphs.
+
+```python
+from networkx.algorithms.community import bipartitions
+
+# Kernighan-Lin bisection
+partition = bipartitions.kernighan_lin_bisection(G, partition)
+
+# Greedy node swap for bipartition
+greedy_part = bipartitions.greedy_node_swap_bipartition(G, partition)
+
+# Spectral modularity-based bipartition
+spectral_part = bipartitions.spectral_modularity_bipartition(G, n_clusters=2)
+```
+
+## Community Detection Function Reference
+
+| Function | Module | Description |
+|----------|--------|-------------|
+| `louvain_communities(G, weight=None)` | community.louvain | Fast modularity optimization |
+| `louvain_partitions(G, seed=None)` | community.louvain | All partition levels |
+| `leiden_communities(G, seed=None)` | community.leiden | Well-connected communities |
+| `leiden_partitions(G, seed=None)` | community.leiden | All Leiden partition levels |
+| `label_propagation_communities(G)` | community.label_propagation | Fast label propagation |
+| `asyn_lpa_communities(G)` | community.label_propagation | Asynchronous LPA |
+| `fast_label_propagation_communities(G)` | community.label_propagation | Optimized LPA |
+| `girvan_newman(G)` | community.centrality | Hierarchical edge removal |
+| `greedy_modularity_communities(G)` | community.modularity_max | Greedy agglomerative merge |
+| `naive_greedy_modularity_communities(G)` | community.modularity_max | Naive greedy (slower) |
+| `k_clique_communities(G, k)` | community.kclique | k-clique union communities |
+| `greedy_source_expansion(G, weight=None)` | community.local | Local source expansion |
+| `lukes_partitioning(G, weight=None)` | community.lukes | Hierarchical clustering |
+| `edge_betweenness_partition(G)` | community.divisive | Divisive edge betweenness |
+| `edge_current_flow_betweenness_partition(G)` | community.divisive | Divisive CF betweenness |
+| `modularity(G, communities)` | community.quality | Partition quality measure |
+| `partition_quality(G, communities)` | community.quality | Full partition quality metrics |
+| `is_partition(communities)` | community.community_utils | Validate partition |
+
 ## Practical Tips
 
-1. **Louvain** is the best general-purpose algorithm (fast, good quality)
+1. **Louvain/Leiden** are the best general-purpose algorithms (fast, good quality)
 2. **Label propagation** for very large graphs (millions of nodes)
 3. **Girvan-Newman** only for small graphs (< 500 nodes)
 4. **Try multiple algorithms** and compare modularity scores
-5. **Use resolution parameter** in Louvain to find communities at different scales
+5. **Use resolution parameter** in Louvain/Leiden to find communities at different scales
 6. **Validate results** with domain knowledge when possible
 7. **Check stability** by running stochastic algorithms multiple times
+8. **Leiden > Louvain**: Leiden guarantees connected communities and typically finds better partitions
+9. **k-clique** for overlapping communities where dense subgraphs matter
 
 ## Common Pitfalls
 

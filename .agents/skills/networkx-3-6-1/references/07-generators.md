@@ -407,6 +407,208 @@ G = nx.complete_graph(5, name="K5")
 print(G.graph['name'])  # "K5"
 ```
 
+## Tree Generators
+
+Various random tree generation methods.
+
+```python
+# Random labeled rooted tree
+T = nx.random_labeled_rooted_tree(100)
+
+# Random labeled rooted forest (collection of trees)
+F = nx.random_labeled_rooted_forest(100, 5)  # 100 nodes, 5 roots
+
+# Random unlabeled rooted tree (uniform over shapes)
+T = nx.random_unlabeled_rooted_tree(100)
+
+# Random unlabeled rooted forest
+F = nx.random_unlabeled_rooted_forest(100, 3)
+
+# Random labeled tree (unrooted)
+T = nx.random_labeled_tree(100)
+
+# Random unlabeled tree
+T = nx.random_unlabeled_tree(100)
+
+# Prefix tree (trie from sequences)
+T = nx.prefix_tree(["abc", "abd", "bcd"])
+
+# Prefix tree from nested tuple structure
+nested = (("a", (("b", None),)),)
+T2 = nx.from_nested_tuple(nested)
+```
+
+### Tree Encoding/Decoding
+
+```python
+# Prufer sequence encoding
+sequence = nx.to_prufer_sequence(T)
+T2 = nx.from_prufer_sequence(sequence)
+
+# Nested tuple encoding (for trees with labeled children)
+nested = nx.to_nested_tuple(T, root="root")
+T3 = nx.from_nested_tuple(nested)
+```
+
+## Lattice Generators
+
+```python
+# 2D grid graph
+G = nx.grid_graph([5, 7])  # 5x7 grid
+
+# Hexagonal lattice
+G = nx.hexagonal_lattice_graph(3, 4)  # 3 rows, 4 columns
+
+# Triangular lattice
+G = nx.triangular_lattice_graph(5, 5)
+
+# Hypercube graph (d-dimensional)
+G = nx.hypercube_graph(3)  # 3D cube (8 nodes)
+```
+
+## Community Graph Generators
+
+Graphs with built-in community structure.
+
+```python
+from networkx.generators.community import *
+
+# Caveman graph (k cliques of size l connected in a ring)
+G = nx.caveman_graph(3, 5)  # 3 cliques of 5 nodes each
+
+# Connected caveman (remove one edge per clique to connect)
+G = nx.connected_caveman_graph(3, 5)
+
+# Ring of cliques
+G = nx.ring_of_cliques(4, 5)  # 4 cliques of 5 nodes
+
+# Relaxed caveman (add random edges between cliques)
+G = nx.relaxed_caveman_graph(3, 5, p=0.1)
+
+# Windmill graph (k cliques sharing one node)
+G = nx.windmill_graph(4, 3)  # 4 cliques of 3 nodes
+
+# Gaussian random partition graph
+G = nx.gaussian_random_partition_graph(10, 10, 5)
+
+# Planted partition graph
+G = nx.planted_partition_graph(4, 5, p_in=0.6, p_out=0.02)
+
+# Random partition graph
+G = nx.random_partition_graph([10, 10, 10], p_in=0.5, p_out=0.05)
+```
+
+## Degree Sequence Generators
+
+```python
+from networkx.generators.degree_seq import *
+
+# Degree sequence tree (constructs tree from degree sequence)
+T = nx.degree_sequence_tree([3, 2, 2, 1, 1, 1])
+
+# Expected degree graph (Strogatz model)
+G = nx.expected_degree_graph([5, 5, 3, 3, 2, 2], seed=42)
+
+# Random degree sequence graph (configuration model without self-loops)
+G = nx.random_degree_sequence_graph([3, 3, 2, 2, 1, 1])
+```
+
+## Joint Degree Sequence Generators
+
+```python
+from networkx.generators.joint_degree_seq import *
+
+# Validate joint degree sequence
+valid = nx.is_valid_joint_degree([2, 1], [1, 2])
+
+# Generate graph from joint degree sequence
+G = nx.joint_degree_graph([2, 1], [1, 2], method='vr')
+
+# Directed version
+valid_d = nx.is_valid_directed_joint_degree([2, 1], [1, 2])
+G_d = nx.directed_joint_degree_graph([2, 1], [1, 2])
+```
+
+## Interval Graphs
+
+```python
+from networkx.generators.interval_graph import *
+
+# Generate interval graph from intervals
+intervals = [(1, 3), (2, 4), (3, 5), (6, 8)]
+G = nx.interval_graph(intervals)
+```
+
+## Mycielskian Graphs
+
+Construct triangle-free graphs with high chromatic number.
+
+```python
+from networkx.generators.mycielski import *
+
+# Mycielskian of a graph (adds 1 chromatic number)
+G = nx.mycielskian(nx.path_graph(3))  # Grötzsch graph, χ=4
+
+# Standard Mycielski graphs
+G0 = nx.mycielski_graph(0)  # Single node
+G1 = nx.mycielski_graph(1)  # Edge
+G2 = nx.mycielski_graph(2)  # Cycle C5
+G3 = nx.mycielski_graph(3)  # Grötzsch graph (11 nodes, χ=4)
+G4 = nx.mycielski_graph(4)  # Mycielskian of G3 (χ=5)
+```
+
+## Random Clustered Graphs
+
+```python
+from networkx.generators.random_clustered import *
+
+# Generate graph with specified clustering coefficients
+G = nx.random_clustered_graph([0.1, 0.2, 0.3, ...], seed=42)
+```
+
+## Sudoku Graph
+
+```python
+from networkx.generators.sudoku import *
+
+# Create sudoku constraint graph (9x9 puzzle)
+G = nx.sudoku_graph()
+```
+
+## Spectral Graph Forge
+
+Generate graphs with a target spectrum.
+
+```python
+from networkx.generators.spectral_graph_forge import *
+
+# Generate graph with specified adjacency matrix spectrum
+A_target = np.array([[0, 1, 1], [1, 0, 1], [1, 1, 0]])
+G = nx.spectral_graph_forge(A_target, n_nodes=5)
+```
+
+## Visibility Graph
+
+```python
+from networkx.generators.time_series import *
+
+# Generate graph from time series data
+time_series = [1, 3, 2, 5, 4, 6]
+G = nx.visibility_graph(time_series)
+```
+
+## Non-Isomorphic Trees
+
+```python
+from networkx.generators.nonisomorphic_trees import *
+
+# Generate all non-isomorphic trees with n nodes
+trees = list(nonisomorphic_trees(6))  # Returns list of all distinct tree shapes
+
+# Count without generating
+n_trees = nx.number_of_nonisomorphic_trees(7)  # 116 for n=7
+```
+
 ## Creating Custom Generators
 
 ```python

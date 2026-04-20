@@ -72,7 +72,39 @@ pos = nx.arf_layout(G)
 
 # ForceAtlas2 layout (for large networks)
 pos = nx.forceatlas2_layout(G)
+
+# Multipartite layout (for layered/multi-set graphs)
+partitions = [[1, 2], [3, 4], [5, 6]]
+pos = nx.multipartite_layout(G, subset=partitions)
+
+# Rescale layout (normalize to specific range)
+pos_rescaled = nx.rescale_layout(pos, scale=(0, 1))
+pos_dict = nx.rescale_layout_dict(pos)
+
+# Bipartite layout (alternative, from bipartite module)
+from networkx.drawing import bipartite_layout
+pos_bip = nx.bipartite_layout(G, top_nodes)
 ```
+
+### Layout Function Reference
+
+| Function | Description | Best For |
+|----------|-------------|----------|
+| `spring_layout(G, k=None, ...)` | Force-directed (Fruchterman-Reingold) | General purpose, default |
+| `circular_layout(G)` | Nodes on circle | Cyclic structure |
+| `planar_layout(G)` | Planar embedding | Planar graphs only |
+| `spectral_layout(G, weight=None)` | Eigenvector-based | Clusters, spectral properties |
+| `random_layout(G, scale=1, seed=None)` | Random placement | Baseline, animation |
+| `shell_layout(G, nlist=None, ...)` | Concentric rings | Layered structure |
+| `kamada_kawai_layout(G, dist=None)` | Energy-minimizing | Small graphs, clarity |
+| `bfs_layout(G, source, reverse=False)` | BFS tree ordering | Tree-like graphs |
+| `multipartite_layout(G, subset, ...)` | Nodes in partitions | Bipartite/layered graphs |
+| `arf_layout(G, seed=None)` | Adaptive Repulsion/Force | Large graphs |
+| `spiral_layout(G, edge_pos, ...)` | Spiral arrangement | Visual variety |
+| `forceatlas2_layout(G, ...)` | ForceAtlas2 (Gephi's algorithm) | Large social networks |
+| `rescale_layout(pos, scale)` | Normalize position dict | Consistent scaling |
+| `rescale_layout_dict(pos, scale)` | Dict version of rescale | Preserves node labels |
+| `bipartite_layout(G, top)` | Bipartite-specific layout | Bipartite graphs |
 
 ### Drawing Components Separately
 

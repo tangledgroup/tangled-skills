@@ -427,10 +427,57 @@ for iteration in range(100):
 print(f"Cascade reached {len(active)} nodes")
 ```
 
+## Complete Centrality Function Reference
+
+| Function | Module | Description |
+|----------|--------|-------------|
+| `degree_centrality(G)` | centrality | Normalized degree count |
+| `in_degree_centrality(G)` | centrality | Incoming connections (directed) |
+| `out_degree_centrality(G)` | centrality | Outgoing connections (directed) |
+| `betweenness_centrality(G, k=None)` | centrality | Shortest-path betweenness |
+| `betweenness_centrality_subset(G, s, t)` | centrality | Betweenness for node subsets |
+| `edge_betweenness_centrality(G)` | centrality | Edge-level betweenness |
+| `edge_betweenness_centrality_subset(G, s, t)` | centrality | Edge betweenness for subsets |
+| `closeness_centrality(G, wf_improved=True)` | centrality | Inverse average distance |
+| `eigenvector_centrality(G, max_iter=100)` | centrality | Neighbor-weighted importance |
+| `eigenvector_centrality_numpy(G)` | centrality | NumPy-based (faster) |
+| `pagerank(G, alpha=0.85)` | centrality | Damped random walk importance |
+| `katz_centrality(G, alpha=0.1, beta=1.0)` | centrality | Walk-length attenuated importance |
+| `katz_centrality_numpy(G)` | centrality | NumPy-based Katz |
+| `current_flow_betweenness_centrality(G)` | centrality | Random walk betweenness |
+| `current_flow_betweenness_centrality_subset(G, s, t)` | centrality | CF betweenness for subsets |
+| `current_flow_closeness_centrality(G)` | centrality | Current flow closeness |
+| `edge_current_flow_betweenness_centrality(G)` | centrality | Edge-level current flow betweenness |
+| `edge_current_flow_betweenness_centrality_subset(G, s, t)` | centrality | Edge CF betweenness subsets |
+| `approximate_current_flow_betweenness_centrality(G, niter=10)` | centrality | Approximated CF betweenness |
+| `load_centrality(G)` | centrality | Fraction of shortest paths through node |
+| `edge_load_centrality(G)` | centrality | Edge-level load |
+| `harmonic_centrality(G, distance=None)` | centrality | Harmonic mean of distances |
+| `subgraph_centrality(G, attr=None)` | centrality | Closed walk counts (matrix exp) |
+| `subgraph_centrality_exp(G)` | centrality | Stable subgraph centrality |
+| `estrada_index(G)` | centrality | Sum of all subgraph centralities |
+| `information_centrality(G)` | centrality | Based on current flow closeness |
+| `dispersion(G, attr=None)` | centrality | Neighbor dispersion (structural holes) |
+| `local_reaching_centrality(G)` | centrality | Local reachability centrality |
+| `global_reaching_centrality(G)` | centrality | Global reachability centrality |
+| `percolation_centrality(G)` | centrality | Percolation process importance |
+| `group_degree_centrality(G, group)` | centrality | Group-level degree importance |
+| `group_betweenness_centrality(G, group)` | centrality | Group-level betweenness |
+| `group_closeness_centrality(G, group)` | centrality | Group-level closeness |
+| `group_in_degree_centrality(DG, group)` | centrality | Group in-degree (directed) |
+| `group_out_degree_centrality(DG, group)` | centrality | Group out-degree (directed) |
+| `prominent_group(G, k=5)` | centrality | Most prominent node group of size k |
+| `incremental_closeness_centrality(G)` | centrality | Dynamic closeness for evolving graphs |
+| `trophic_levels(DG)` | centrality | Hierarchical position (food webs) |
+| `trophic_differences(DG)` | centrality | Edge-level trophic differences |
+| `trophic_incoherence_parameter(DG)` | centrality | How well levels fit hierarchy |
+| `voterank(G)` | centrality | Voting-based with diminishing returns |
+| `laplacian_centrality(G)` | centrality | Laplacian eigenvalue-based |
+
 ## Performance Tips
 
 1. **Use approximations for large graphs**: `k` parameter in betweenness centrality
 2. **Cache results** when comparing multiple measures on same graph
 3. **Parallelize** independent calculations (e.g., closeness for each node)
-4. **Use NumPy versions** when available (`eigenvector_centrality_numpy`)
+4. **Use NumPy versions** when available (`eigenvector_centrality_numpy`, `katz_centrality_numpy`)
 5. **For very large graphs**, consider sampling or using backends

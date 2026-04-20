@@ -12,6 +12,7 @@ tags:
   - data-science
 category: data-science
 external_references:
+  - https://networkx.org/documentation/stable/reference/index.html
   - https://github.com/networkx/networkx/tree/networkx-3.6.1
   - https://networkx.org/en/
 ---
@@ -34,12 +35,15 @@ With NetworkX you can:
 
 Use this skill when:
 - **Building graph analysis applications** - Social networks, biological pathways, infrastructure systems
-- **Implementing network algorithms** - Shortest paths, centrality measures, community detection, flow optimization
-- **Generating test networks** - Random graphs (Erdős-Rényi, Barabási-Albert), classic graphs (Petersen, grid)
-- **Analyzing network structure** - Connectivity, clustering, degree distributions, path lengths
-- **Working with graph data** - Import/export in GraphML, GEXF, GML, JSON, edge lists, adjacency matrices
-- **Visualizing networks** - Layout algorithms, matplotlib integration, graphviz output
-- **Research and education** - Prototyping graph algorithms, teaching graph theory concepts
+- **Implementing network algorithms** - Shortest paths, centrality measures, community detection, flow optimization, DAG scheduling, matching, isomorphism
+- **Generating test networks** - Random graphs (Erdős-Rényi, Barabási-Albert), classic graphs (Petersen, grid), geometric graphs, social models
+- **Analyzing network structure** - Connectivity, clustering, k-core decomposition, cycles, bridges, articulation points, planarity
+- **Working with graph data** - Import/export in 15+ formats (GraphML, GEXF, GML, JSON, edge lists, adjacency matrices, Pajek, LEDA, DOT, Matrix Market)
+- **Converting between representations** - Graph ↔ numpy arrays, scipy sparse matrices, pandas DataFrames, dict of dicts/lists
+- **Visualizing networks** - Layout algorithms (15+), matplotlib integration, Graphviz, LaTeX/TikZ export, iplotx
+- **Graph manipulation** - Union, intersection, difference, composition, graph products, relabeling, freezing, subgraph views
+- **Optimization** - Max flow/min-cut, min-cost flow, maximum matching, graph coloring, minimum vertex cover
+- **Research and education** - Prototyping graph algorithms, teaching graph theory concepts, spectral graph analysis
 
 ## Core Concepts
 
@@ -297,8 +301,31 @@ G = nx.node_link_graph(json.load(open("graph.json")))
 - [File Formats](references/06-file-formats.md) - GraphML, GEXF, GML, JSON, edge lists, adjacency matrices
 - [Graph Generators](references/07-generators.md) - Random graphs, classic graphs, small-world, scale-free networks
 - [Backends and Performance](references/08-backends.md) - GPU acceleration, parallel processing, third-party backends
+- [Graph Class Methods and Operations](references/09-graph-operations.md) - add_node, remove_edge, subgraph, copy, reverse, freeze, graph operators (union, intersection, product), attribute management
+- [DAG Algorithms and Network Flow](references/10-dag-and-flow.md) - Topological sort, longest path, transitive closure, max flow (Edmonds-Karp, Boykov-Kolmogorov), min-cut, min-cost flow, Gomory-Hu tree
+- [Connectivity and Components](references/11-connectivity-components.md) - Connected components, strongly connected, articulation points, bridges, edge/node connectivity, condensation
+- [Clustering, Core Decomposition, Cycles](references/12-clustering-core-cycles.md) - Clustering coefficient, transitivity, k-core/k-shell/k-truss, clique percolation, cycle basis, recursive_simple_cycles, Eulerian paths
+- [Isomorphism, Matching, Coloring](references/13-isomorphism-matching-coloring.md) - VF2++, subgraph isomorphism, maximum matching, bipartite matching, graph coloring, triadic census, reciprocity, assortativity, structural holes
+- [Linear Algebra and Matrix Conversion](references/14-linalg-conversion.md) - Adjacency/Laplacian matrices, spectrum, algebraic connectivity, Fiedler vector, numpy/scipy/pandas conversion, graph relabeling
+- [Graph Traversal and Trees](references/15-traversal-and-trees.md) - BFS, DFS, beam search, edge traversal, spanning trees, arborescences, Prufer sequences, nested tuples, junction trees
+- [Link Prediction and Analysis](references/16-link-prediction-and-analysis.md) - Jaccard, Adamic-Adar, resource allocation, preferential attachment, HITS, PageRank google_matrix
+- [Specialized Algorithms A](references/17-specialized-algorithms.md) - Dominating sets, dominance frontiers, edge covers, chordal graphs, D-separation (Bayesian networks), moral graphs, flow hierarchy, threshold graphs
+- [Specialized Algorithms B](references/18-specialized-algorithms-2.md) - Simple paths, lowest common ancestor, closeness vitality, small-world metrics (σ/ω), s-metric, spanners, graph summarization, chromatic/Tutte polynomials, regular graphs, distance-regular graphs
+- [Specialized Algorithms C](references/19-specialized-algorithms-3.md) - Efficiency measures, non-randomness, time-dependent centrality, tournaments, Voronoi cells, walk counting, chemical indices (Wiener/Schultz/Gutman), communicability, chain decomposition, node classification, approximation algorithms
+- [Niche Algorithms](references/20-niche-algorithms.md) - NetworkX configuration, random utilities, Sparse6/Graph6 formats, text export, Graphviz DOT, broadcast trees, perfect graphs, planar embeddings
+- [Graphical Degree Sequences](references/21-graphical-and-sequence.md) - Erdős–Gallai, Havel-Hakimi, graph type validation (simple/directed/multigraph/pseudograph)
+- [Bipartite Networks](references/22-bipartite-networks.md) - Bipartite generators, projections (weighted/overlap/collaboration), matching (Hopcroft-Karp/Eppstein), biadjacency matrices, bipartite centrality/clustering, BiRANK ranking
+- [Planarity and Embeddings](references/23-planarity-and-embeddings.md) - Planarity testing, PlanarEmbedding (cyclic edge order), combinatorial embedding to 2D positions
+- [Graph Polynomials and Perfect Graphs](references/24-graph-polynomials-and-perfect.md) - Chromatic polynomial P(G,k), Tutte polynomial T(G;x,y), perfect graph property
+- [Approximation Algorithms](references/25-approximation-algorithms.md) - NP-hard approximations: max clique, independent set, vertex cover, Steiner tree, TSP (Christofides/Asadpour/greedy/SA), max cut, densest subgraph, dominating set, treewidth
+- [Graph Similarity and Edit Distance](references/26-similarity-and-edit-distance.md) - Graph edit distance (optimal paths), Panther similarity, SimRank random walk similarity, random path generation
+- [Utils, Randomness, Configuration](references/27-utils-randomness-config.md) - Random permutations, power-law sequences, reservoir sampling, backend config, decorator utilities (argmap, np_random_state, py_random_state, open_file)
+- [Complete Drawing and Layouts](references/28-drawing-layouts-complete.md) - All 46+ layout functions (spring, kamada-kawai, ARF, ForceAtlas2, BFS, multipartite, spiral), drawing primitives, LaTeX/TikZ export, Graphviz integration
+- [Exceptions and Concepts](references/29-exceptions-and-concepts.md) - Full exception hierarchy (13 exceptions), frozen graphs, graph views vs copies, filter functions, fundamental graph concepts
 
 ## Algorithm Complexity Reference
+
+### Shortest Paths
 
 | Algorithm | Time Complexity | Use Case |
 |-----------|----------------|----------|
@@ -307,11 +334,163 @@ G = nx.node_link_graph(json.load(open("graph.json")))
 | Bellman-Ford | O(VE) | Graphs with negative weights |
 | Floyd-Warshall | O(V³) | All-pairs shortest paths, dense graphs |
 | Johnson | O(V(V + E) log V) | All-pairs with negative weights |
-| Betweenness centrality | O(VE) | Node importance via shortest paths |
-| Eigenvector centrality | O(k(V + E)) | k iterations, importance propagation |
-| Louvain community detection | O(kE) | k iterations, modularity optimization |
 
-Where V = number of nodes, E = number of edges.
+### Centrality and Analysis
+
+| Algorithm | Time Complexity | Use Case |
+|-----------|----------------|----------|
+| Degree centrality | O(V + E) | Direct neighbor count |
+| Betweenness centrality | O(VE) | Node importance via shortest paths |
+| Closeness centrality | O(V(V + E)) | Average distance to all nodes |
+| Eigenvector centrality | O(k(V + E)) | k iterations, importance propagation |
+| PageRank | O(kV) | k iterations, web-like networks |
+
+### Connectivity and Components
+
+| Algorithm | Time Complexity | Use Case |
+|-----------|----------------|----------|
+| Connected components (BFS/DFS) | O(V + E) | Undirected graph components |
+| Strongly connected (Tarjan/Kosaraju) | O(V + E) | Directed graph SCCs |
+| Articulation points | O(V + E) | Cut vertices in undirected graphs |
+| Bridges | O(V + E) | Critical edges |
+| Edge connectivity | O(V·max_flow) | Min edges to disconnect |
+| Node connectivity | O(V·max_flow) | Min nodes to disconnect |
+
+### DAG and Flow
+
+| Algorithm | Time Complexity | Use Case |
+|-----------|----------------|----------|
+| Topological sort | O(V + E) | Linear ordering of DAG |
+| Longest path in DAG | O(V + E) | Critical path method |
+| Transitive closure | O(V·(V + E)) | Reachability matrix |
+| Max flow (Edmonds-Karp) | O(VE²) | Network capacity optimization |
+| Min-cost flow | O(VE × f) | Flow with cost constraints |
+
+### Community and Clustering
+
+| Algorithm | Time Complexity | Use Case |
+|-----------|----------------|----------|
+| Louvain community detection | O(kE) | k iterations, modularity optimization |
+| Label propagation | O(kE) | k iterations, very fast |
+| Girvan-Newman | O(VE²) | Hierarchical edge removal |
+| Average clustering | O(V + E) | Local triangle density |
+| Transitivity | O(V + E) | Global clustering coefficient |
+
+### Matching and Isomorphism
+
+| Algorithm | Time Complexity | Use Case |
+|-----------|----------------|----------|
+| Maximum matching | O(E√V) | Bipartite/weighted matching |
+| Max weight clique | O(3^(V/3)) | NP-hard, exact for small graphs |
+| Graph isomorphism (VF2++) | O(2^V) worst case | Practical: fast for most graphs |
+| Subgraph isomorphism | O(2^V) | NP-complete |
+
+### Core Decomposition and Cycles
+
+| Algorithm | Time Complexity | Use Case |
+|-----------|----------------|----------|
+| k-core decomposition | O(V + E) | Peeling by minimum degree |
+| Cycle basis | O(V²E) | Fundamental cycle set |
+| Simple cycles (directed) | O(E·C) | C = number of simple cycles |
+| Girth | O(VE) | Shortest cycle length |
+
+Where V = number of nodes, E = number of edges, k = iterations, f = flow value.
+
+## Complete Reference Index
+
+### Core API
+- Graph types: `Graph`, `DiGraph`, `MultiGraph`, `MultiDiGraph`
+- Node/edge methods: `add_node()`, `remove_node()`, `add_edge()`, `remove_edge()`
+- Views: `.nodes`, `.edges`, `.neighbors`, `.degree()`, `.subgraph()`
+- Conversion: `.copy()`, `.reverse()`, `.to_directed()`, `.to_undirected()`, `.freeze()`
+- Attributes: `set_node_attributes()`, `get_node_attributes()`, `set_edge_attributes()`, `get_edge_attributes()`
+
+### Algorithms by Category
+- **Shortest paths**: BFS, Dijkstra, Bellman-Ford, Floyd-Warshall, Johnson, k-shortest paths
+- **Centrality**: Degree, betweenness, closeness, eigenvector, PageRank, Katz, current flow, harmonic, load, subgraph, group centrality, dispersion, Laplacian, VoteRank
+- **Community detection**: Louvain, label propagation, Girvan-Newman, spectral clustering, Walktrap, leading eigenvector, asyn_fluid, edge cluster
+- **DAG algorithms**: Topological sort, all_topological_sorts, lexicographical topological sort, longest path, transitive closure, transitive_closure_dag, reduction, ancestors/descendants, antichains
+- **Network flow**: Maximum flow (Edmonds-Karp, Boykov-Kolmogorov, Dinitz), min-cut, min-cost flow, capacity scaling, Gomory-Hu tree
+- **Connectivity**: Connected components, strongly connected, weakly connected, biconnected components, articulation points, bridges, edge/node connectivity
+- **Clustering**: Local clustering coefficient, average clustering, transitivity, triangles, k-clique percolation, modularity matrix
+- **Core decomposition**: k-core, k-shell, k-crust, k-truss, core number, onion layers
+- **Cycles**: Cycle basis, find cycle, simple cycles (directed), chordless cycles, girth, Eulerian paths/circuits
+- **Graph operations**: Union, intersection, difference, composition, disjoint union, cartesian/tensor/strong/lexicographic products, complement, contraction, batch operators (union_all, compose_all, intersection_all, disjoint_union_all)
+- **Isomorphism**: VF2++, ISMAGS, subgraph isomorphism, tree isomorphism, graph hashing (Weisfeiler-Lehman)
+- **Matching**: Maximum cardinality matching, maximum weight matching, bipartite matching, vertex cover, independent set
+- **Coloring**: Greedy coloring with 7+ strategies, equitable coloring
+- **Bipartite**: `is_bipartite`, bipartite sets/color, projections, bipartite centrality
+- **Link prediction**: Jaccard coefficient, Adamic-Adar index, cn_soundarajan_hopcroft, preferential attachment, resource allocation, RA index, common neighbor centrality
+- **Trees**: Spanning trees, branchings, arborescences (max/min), Prufer sequences, nested tuples, junction trees
+- **Planarity**: `is_planar()`, `check_planarity()`, PlanarEmbedding, planar drawing
+- **Cliques**: `find_cliques()`, `find_cliques_recursive()`, max weight clique, enumerate all cliques, clique number
+- **Distance measures**: Eccentricity, center, periphery, radius, diameter, resistance distance, effective graph resistance, harmonic diameter, Kemeny constant, barycenter
+- **Simple paths**: All simple paths, all simple edge paths, shortest simple paths
+- **Structural holes**: Constraint, effective size, local constraint
+- **Triads**: Triadic census, triad types (300, 030T, etc.), all triads
+- **Reciprocity**: Overall reciprocity, per-node reciprocity
+- **Assortativity**: Degree assortativity, attribute assortativity, weighted degree assortativity
+- **Rich club**: Rich club coefficient (normalized/unnormalized)
+- **Swap operations**: Double edge swap, connected double edge swap, directed edge swap
+- **Minors**: Contracted edges/nodes, quotient graph, identified nodes, equivalence classes
+- **Graph hashing**: Weisfeiler-Lehman graph hash, subgraph hashes
+- **Graph edit distance**: Optimal edit paths, optimized GED, random path generation
+- **Graphical degree sequences**: Erdős–Gallai, Havel-Hakimi, is_graphical, is_digraphical, is_multigraphical, is_pseudographical, sequence validation
+- **Graph cuts**: Conductance, volume, edge/node expansion, cut_size, boundary_expansion, mixing_expansion, normalized_cut_size
+- **Matching (bipartite)**: Maximum matching, minimum vertex cover, maximum independent set, minimum edge cover
+- **Bridges/boundaries**: Bridges, local bridges, node boundary, edge boundary
+- **Coloring**: Graph coloring with greedy strategies
+- **Eulerian**: Eulerian circuit, Eulerian path, eulerize()
+- **Percolation centrality**
+- **Trophic levels** (directed networks)
+- **Graph generators**: 50+ generators including classic, random, geometric, social, lattice, tree, duplication-divergence
+- **Matrix representations**: Adjacency, Laplacian, normalized Laplacian, incidence, Bethe Hessian, modularity matrices
+- **Spectral properties**: Adjacency/Laplacian spectrum, algebraic connectivity, Fiedler vector, spectral bisection/ordering
+- **Relabeling**: `relabel_nodes()`, `convert_node_labels_to_integers()`
+- **Conversion**: to/from numpy arrays, scipy sparse, pandas DataFrames, dict of dicts/lists, edgelists
+- **Backends**: cuGraph (GPU), nx-parallel (multi-core CPU), GraphBLAS, Rustworkx
+- **Traversal**: BFS, DFS, beam search, edge-based traversal, labeled edges (tree/back/forward/cross), predecessors/successors/layers
+- **Link analysis**: HITS (hubs/authorities), google_matrix, personalized PageRank
+- **Domination**: Dominating sets, dominance frontiers, immediate dominators, edge covers, maximal independent set
+- **Chordal graphs**: is_chordal, chordal_graph_cliques, treewidth, complete_to_chordal, induced nodes
+- **Bayesian networks**: D-separation, minimal d-separators, moral graph, flow hierarchy
+- **Polynomials**: Chromatic polynomial, Tutte polynomial
+- **Perfect graphs**: is_perfect_graph (chromatic number = clique number for all induced subgraphs)
+- **Lowest common ancestor**: LCA, all_pairs_lca, tree_all_pairs_lca
+- **Small-world metrics**: sigma (σ), omega (ω), lattice/random reference graphs
+- **S-metric**: Network robustness measure
+- **Spanners**: t-spanner (distance-preserving subgraph)
+- **Summarization**: dedensify, snap_aggregation
+- **Efficiency measures**: local/global/individual efficiency
+- **Non-randomness**: Non-randomness measure
+- **Time-dependent**: CD index (communicability diffusion)
+- **Tournaments**: is_tournament, hamiltonian_path, score_sequence, random_tournament, tournament_matrix
+- **Voronoi cells**: Distance-based node partitioning
+- **Walks**: number_of_walks (walk counting via matrix powers)
+- **Chemical indices**: Wiener, Schultz, Gutman, hyper-Wiener indices
+- **Communicability**: communicability, communicability_exp (graph eigenvalue-based)
+- **Chain decomposition**: Cycle/path decomposition
+- **Node classification**: harmonic_function, local_and_global_consistency (semi-supervised learning)
+- **Approximation**: max_clique, clique_removal, large_clique_size, maximum_independent_set
+- **Asteroidal triples**: find_asteroidal_triple, is_at_free
+- **Distance-regular**: is_distance_regular, intersection_array, global_parameters
+- **Regular graphs**: is_k_regular, k_factor
+- **Threshold graphs**: is_threshold_graph, find_threshold_graph
+- **Configuration NetworkXConfig for backend/drawing settings
+- **Randomness**: random_permutation, arbitrary_element, random_sample, powerlaw_sequence, reservoir sampling
+- **File formats**: Graph6, Sparse6, text export, Graphviz DOT
+
+### File Formats
+- GraphML, GEXF, GML, JSON (node-link/tree/adjacency/cytoscape), edge lists, adjacency lists, multiline adjacency lists, Pajek, LEDA, DOT/Graphviz, Matrix Market, CSV via pandas, Graph6, Sparse6, text export
+
+### Visualization
+- Matplotlib: `draw()`, `draw_networkx_*`, layouts (spring, circular, spectral, Kamada-Kawai, shell, planar, BFS, spiral, ARF, ForceAtlas2, multipartite)
+- Graphviz: pygraphviz and pydot integration
+- LaTeX/TikZ export via `to_latex()`
+- iplotx for interactive web visualization
+
+### Exceptions
+`NetworkXException`, `NetworkXError`, `NetworkXAlgorithmError`, `NetworkXNoPath`, `NetworkXNoCycle`, `NetworkXUnfeasible`, `NetworkXNotImplemented`, `NodeNotFound`, `AmbiguousSolution`, `ExceededMaxIterations`, `PowerIterationFailedConvergence`, `HasACycle`, `NetworkXPointlessConcept`
 
 ## References
 

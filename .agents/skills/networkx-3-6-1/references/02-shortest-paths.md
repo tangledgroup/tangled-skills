@@ -283,7 +283,75 @@ radius = nx.radius(G)
 
 # Center (nodes with minimum eccentricity)
 center = nx.center(G)
+
+# Periphery (nodes with maximum eccentricity)
+periphery = nx.periphery(G)
+print(f"Periphery nodes: {periphery}")
+
+# Barycenter (node minimizing sum of distances to all others)
+barycenter = nx.barycenter(G)
+print(f"Barycenter: {barycenter}")
 ```
+
+## Electrical Distance Measures
+
+Measures based on modeling the graph as an electrical network.
+
+```python
+# Resistance distance (effective resistance between nodes)
+# Models each edge as a 1-ohm resistor
+res_dist = nx.resistance_distance(G)
+print(res_dist[(1, 2)])  # Effective resistance between node 1 and 2
+
+# Pairwise resistance distance
+pair_res = nx.resistance_distance(G, 1, 2)
+print(f"Resistance distance (1→2): {pair_res:.4f}")
+
+# Effective graph resistance (Kirchhoff index)
+eff_resistance = nx.effective_graph_resistance(G)
+print(f"Effective graph resistance: {eff_resistance:.4f}")
+# Sum of all pairwise resistance distances; relates to spanning tree count
+
+# Harmonic diameter (based on harmonic mean of distances)
+harmonic_diam = nx.harmonic_diameter(G)
+print(f"Harmonic diameter: {harmonic_diam:.4f}")
+# 1 / (1/n² × Σ 1/d(i,j)) — robust to disconnected components
+
+# Kemeny constant (expected time for random walk to reach steady state)
+kemeny = nx.kemeny_constant(G)
+print(f"Kemeny constant: {kemeny:.4f}")
+# Sum of reciprocals of non-zero Laplacian eigenvalues
+# Lower = faster mixing, better connectivity
+```
+
+## A* Algorithm
+
+Best when you have a heuristic function estimating distance to target. Faster than Dijkstra for large graphs.
+
+```python
+import math
+
+def manhattan_heuristic(a, b):
+    """Euclidean distance heuristic (admissible for geometric graphs)."""
+    return math.sqrt(sum((a[i] - b[i])**2 for i in range(len(a))))
+
+# Single-pair A* with heuristic
+path = nx.astar_path(G, "source", "target", weight="weight", heuristic=manhattan_heuristic)
+length = nx.astar_path_length(G, "source", "target", weight="weight", heuristic=manhattan_heuristic)
+```
+
+**Time complexity**: O((V + E) log V), often much faster with good heuristic
+
+## Goldfarb-Radzik Algorithm
+
+Alternative shortest path algorithm for weighted graphs. Handles negative weights (but not negative cycles).
+
+```python
+# Single-source shortest paths using Goldberg-Radzik
+pred, dist = nx.goldberg_radzik(G, "source", weight="weight")
+```
+
+**Time complexity**: O(VE) worst case; faster in practice on many graphs
 
 ## Algorithm Selection Guide
 
@@ -291,12 +359,17 @@ center = nx.center(G)
 |----------|----------------------|
 | Unweighted, single-pair | `bidirectional_shortest_path` |
 | Unweighted, single-source | `single_source_shortest_path` (BFS) |
-| Weighted (non-negative), single-pair | `bidirectional_dijkstra` |
+| Unweighted, single-target | `single_target_shortest_path` |
+| Weighted (non-negative), single-pair | `bidirectional_dijkstra` or `astar_path` with heuristic |
 | Weighted (non-negative), single-source | `single_source_dijkstra` |
+| Weighted (non-negative), multi-source | `multi_source_dijkstra` |
 | Weighted (negative edges), single-source | `single_source_bellman_ford` |
 | All pairs, dense graph | `floyd_warshall` |
 | All pairs, sparse graph | `all_pairs_dijkstra` |
-| All pairs, negative weights | `johnson` |
+| All pairs, negative weights | `johnson` or `all_pairs_bellman_ford_path` |
+| Has heuristic to target | `astar_path` |
+| Negative cycle detection | `negative_edge_cycle`, `find_negative_cycle` |
+| Goldfarb-Radzik alternative | `goldberg_radzik` |
 
 ## Error Handling
 

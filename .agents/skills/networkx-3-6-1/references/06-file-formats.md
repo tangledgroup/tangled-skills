@@ -414,6 +414,94 @@ def load_graph(db_path="graph.db"):
     return G
 ```
 
+## Additional Read/Write Functions
+
+### Adjacency List Variants
+
+```python
+# Standard adjacency list
+nx.write_adjlist(G, "graph.adjlist")
+H = nx.read_adjlist("graph.adjlist", nodetype=int)
+
+# Generate adjacency list to file-like object (for streaming)
+lines = nx.generate_adjlist(G)
+with open("graph.adjlist", "w") as f:
+    for line in lines:
+        f.write(line + "\n")
+
+# Parse from string
+H = nx.parse_adjlist("1 2 3\n2 1 3")
+
+# Multiline adjacency list (supports attributes)
+nx.write_multiline_adjlist(G, "graph.madjlist")
+H = nx.read_multiline_adjlist("graph.madjlist", nodetype=int)
+lines = nx.generate_multiline_adjlist(G)
+H2 = nx.parse_multiline_adjlist("1 2\n  3\n2 1", comments="#")
+```
+
+### Edge List Variants
+
+```python
+# Standard edge list
+nx.write_edgelist(G, "graph.edgelist")
+H = nx.read_edgelist("graph.edgelist", nodetype=int)
+lines = nx.generate_edgelist(G)
+H2 = nx.parse_edgelist("1 2\n2 3")
+
+# Weighted edge list (third column = weight)
+nx.write_weighted_edgelist(G, "graph.edgelist")
+H = nx.read_weighted_edgelist("graph.edgelist", nodetype=int)
+```
+
+### JSON Format Variants
+
+```python
+import json
+
+# Node-link format (standard)
+data = nx.node_link_data(G, edges="edges")  # 'edges' or 'links'
+H = nx.node_link_graph(data)
+
+# Adjacency format (compact for dense graphs)
+data = nx.adjacency_data(G)
+H = nx.adjacency_graph(data)
+
+# Cytoscape.js format (for web visualization)
+data = nx.cytoscape_data(G)
+H = nx.cytoscape_graph(data)
+
+# Tree format (for hierarchical/directed trees)
+data = nx.tree_data(T, root="root")
+T2 = nx.tree_graph(data, create_using=nx.DiGraph())
+```
+
+### Relabel Nodes
+
+```python
+import networkx as nx
+
+G = nx.Graph()
+G.add_edge("a", "b")
+G.add_edge("b", "c")
+
+# Rename nodes with a mapping
+H = nx.relabel_nodes(G, {"a": 1, "b": 2, "c": 3})
+
+# Relabel using a function
+H2 = nx.relabel_nodes(G, lambda x: x.upper())
+
+# In-place relabeling (modifies G)
+nx.relabel_nodes(G, {"a": "A", "b": "B"}, copy=False)
+```
+
+### Text Export
+
+```python
+# Write graph as text format (one edge per line, node attributes)
+nx.write_network_text(G, "graph.txt")
+lines = nx.generate_network_text(G)
+```
+
 ## Format Selection Guide
 
 | Use Case | Recommended Format |
@@ -426,6 +514,11 @@ def load_graph(db_path="graph.db"):
 | Scientific computing | Matrix Market |
 | Large-scale data | CSV + pandas |
 | Persistent storage | SQLite |
+| Streaming/large files | `generate_*` functions |
+| Cytoscape.js visualization | Cytoscape JSON |
+| Adjacency format (dense) | Adjacency JSON |
+| Tree structures | Tree JSON / DOT |
+| Custom CSV import | pandas + `from_pandas_edgelist` |
 
 ## Reading Multiple Formats
 
