@@ -5,16 +5,6 @@ Tangled Skills for Agents
 
 All skills in this repository are automatically generated using the `write-skill` skill. Each skill is created from public references, official documentation URLs, and other publicly available resources to ensure accuracy and completeness.
 
-## Skills
-
-Install / Update
-
-```bash
-mkdir -p .agents/skills && \
-curl -L https://github.com/tangledgroup/tangled-skills/archive/refs/heads/main.tar.gz | \
-tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skills
-```
-
 ### Skill Design Principles
 
 - **Detailed yet concise**: Skills provide comprehensive coverage while staying within typical LLM context limits
@@ -106,6 +96,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | podman-5-8-1 | podman | 0.2.0 | containers, podman, docker-alternative, rootless-containers, pods | Comprehensive toolkit for Podman 5.8.1 container engine providing daemonless container management with Docker-compati... |
 | podman-compose-1-5-0 | podman-compose | 0.2.0 | podman, compose, containers, orchestration, devops | Orchestrates multi-container applications using Compose specification files with Podman backend. Use when deploying c... |
 | podman-py-5-8-0 | podman-py | 0.2.0 | podman, containers, python, docker-alternative, containerization | Python client library for Podman container engine providing programmatic access to containers, images, pods, networks... |
+| pulp-3-3-0 | pulp | 3.3.0 | linear-programming, optimization, mip, operations-research, python | Complete toolkit for PuLP 3.3.0, a Python linear and mixed-integer programming (MIP) modeling library that generates ... |
 | python-scrypt | - | 0.2.0 | cryptography, key-derivation, password-hashing, scrypt, kdf | Python toolkit for scrypt-based key derivation and password hashing. Use when implementing secure password storage, d... |
 | pywebview-6-2 | pywebview | 0.2.0 | python, desktop-gui, webview, cross-platform, native-apps | A skill for building cross-platform desktop applications with native webview components using pywebview 6.2, enabling... |
 | pyzmq-27-1-0 | pyzmq | 0.2.0 | zeromq, zmq, messaging, networking, sockets | Complete toolkit for Python bindings to ZeroMQ (pyzmq 27.x) covering socket types, messaging patterns, async/await in... |
@@ -119,6 +110,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | rqlite-9-4 | rqlite | 0.2.0 | database, distributed-systems, sqlite, raft, high-availability | Comprehensive toolkit for rqlite 9.4, a lightweight distributed relational database built on SQLite with Raft consens... |
 | ruff-0-4-10 | ruff | 0.2.0 | python, linting, formatting, code-quality, flake8-alternative | A skill for using Ruff 0.4.10, an extremely fast Python linter and formatter written in Rust that replaces Flake8, is... |
 | rustfs-1-0-0-alpha-93 | rustfs | 1.0.0-alpha.93 | object-storage, s3, swift, distributed-systems, observability | High-performance distributed object storage system with S3-compatible API, OpenStack Swift support, and comprehensive... |
+| scikit-learn-1-8-0 | scikit-learn | 1.8.0 | machine learning, classification, regression, clustering, preprocessing | Complete toolkit for scikit-learn 1.8.0 machine learning library covering supervised/unsupervised algorithms, pipelin... |
 | scipy-1-17-1 | scipy | 1.0.0 | scipy, scientific-computing, optimization, statistics, linear-algebra | Comprehensive toolkit for SciPy 1.17.1 scientific computing library covering optimization, integration, interpolation... |
 | semver-2-0 | semver | 0.2.0 | semantic-versioning, semver, versioning, software-versions, dependency-management | A skill for implementing and validating Semantic Versioning 2.0.0 (SemVer) to manage software version numbers, determ... |
 | sentence-transformers-5-4-1 | sentence-transformers | 5.4.1 | embeddings, semantic-search, reranking, nlp, pytorch | A comprehensive toolkit for computing text embeddings, semantic search, and reranking using Sentence Transformers v5.... |
@@ -151,4 +143,4 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 
 ## Statistics
 
-- **Total Skills**: 122
+- **Total Skills**: 124
