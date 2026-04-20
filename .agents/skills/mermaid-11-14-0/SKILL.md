@@ -1,6 +1,6 @@
 ---
 name: mermaid-11-14-0
-description: Complete Mermaid 11.14.0 toolkit for creating diagrams and visualizations using text-based syntax including flowcharts, sequence diagrams, class diagrams, state diagrams, Gantt charts, ER diagrams, pie charts, mindmaps, C4 diagrams, block diagrams, timeline, kanban, sankey, radar, venn, and more. Use when generating diagram code, explaining Mermaid syntax, configuring rendering, customizing themes, or integrating Mermaid into web applications and documentation workflows.
+description: Complete Mermaid 11.14.0 toolkit for creating diagrams and visualizations using text-based syntax including flowcharts, sequence diagrams, class diagrams, state diagrams, Gantt charts, ER diagrams, pie charts, mindmaps, C4 diagrams, block diagrams, timeline, kanban, sankey, radar, venn, treeview, treemap, architecture, ishikawa, use case, quadrant chart, xychart, waveform plot, zenuml, packet, and wardley maps. Use when generating diagram code, explaining Mermaid syntax, configuring rendering, customizing themes, accessibility, icons, math, or integrating Mermaid into web applications and documentation workflows.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "11.14.0"
@@ -23,7 +23,7 @@ external_references:
 
 ## Overview
 
-Mermaid is a JavaScript-based diagramming and charting tool that renders Markdown-inspired text definitions to create and modify diagrams dynamically. It supports **25+ diagram types** including flowcharts, sequence diagrams, class diagrams, state diagrams, Gantt charts, entity-relationship diagrams, pie charts, mindmaps, C4 diagrams, block diagrams, timeline, kanban, sankey, radar, venn, and more.
+Mermaid is a JavaScript-based diagramming and charting tool that renders Markdown-inspired text definitions to create and modify diagrams dynamically. It supports **30+ diagram types** including flowcharts, sequence diagrams, class diagrams, state diagrams, Gantt charts, entity-relationship diagrams, pie charts, mindmaps, C4 diagrams, block diagrams, timeline, kanban, sankey, radar, venn, treeview, treemap, architecture, ishikawa, use case, quadrant chart, xychart, waveform plot, zenuml, packet, and wardley maps.
 
 The main purpose of Mermaid is to help documentation keep pace with development — "Doc-Rot" is solved by enabling easily modifiable diagrams written as plain text.
 
@@ -113,6 +113,7 @@ if (result) {
 | TreeMap | `treemap-beta` | Nested rectangle area charts |
 | Ishikawa | `ishikawa-beta` | Fishbone / cause-effect diagrams |
 | Use Case | `useCaseDiagram` | UML use case diagrams |
+| Use Case | `useCaseDiagram` | UML use case diagrams |
 | Waveform | `waveformPlot` | Signal/waveform visualization |
 | Packet | `packet` | Binary packet layout diagrams |
 | Wardley Map | `wardley-beta` | Value chain strategic maps (v11.14.0+) |
@@ -137,6 +138,35 @@ if (result) {
 ### Flowchart Directions
 
 `TB` (top-down), `TD` (top-down same), `BT` (bottom-top), `RL` (right-left), `LR` (left-right)
+
+### Flowchart Interaction
+
+Requires `securityLevel='loose'`:
+```mermaid
+flowchart LR
+    A-->B
+    click A "https://github.com" "Open GitHub" _blank
+    click B call myCallback() "Tooltip"
+```
+### Flowchart Icons
+
+FontAwesome icons: `fa:fa-twitter`, `fab:fab-react`, etc. Requires FA CSS or registered icon packs.
+```mermaid
+flowchart TD
+    B["fa:fa-twitter for peace"]
+    B-->C[fa:fa-ban forbidden]
+```
+
+### Subgraph Direction Override
+
+Subgraphs can override parent direction:
+```mermaid
+flowchart LR
+  subgraph TOP
+    direction TB
+    A --> B
+  end
+```
 
 ## Configuration & Theming
 
@@ -295,6 +325,7 @@ For detailed syntax reference on each diagram type, see the reference files:
 - [`references/06-other-diagrams.md`](references/06-other-diagrams.md) — ER, pie, mindmap, gitgraph, C4, block, timeline, kanban, sankey, radar, venn, and more
 - [`references/07-configuration-theming.md`](references/07-configuration-theming.md) — Full configuration reference, directives, theming variables, security
 - [`references/08-setup-api.md`](references/08-setup-api.md) — API usage, rendering, TypeScript interfaces, webpack integration
+- [`references/09-accessibility-icons-math.md`](references/09-accessibility-icons-math.md) — Accessibility (accTitle/accDescr), icon packs, FontAwesome, KaTeX math, layout algorithms
 
 ## References
 

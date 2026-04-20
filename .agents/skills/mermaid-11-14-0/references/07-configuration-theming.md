@@ -244,6 +244,62 @@ flowchart TD
 }
 ```
 
+### Mindmap Config
+
+```javascript
+{
+    mindmap: {
+        useMaxWidth: false,
+        padding: 8
+    }
+}
+```
+
+### Class Diagram Config
+
+```javascript
+{
+    class: {
+        useMaxWidth: false,
+        wordWrap: 50,
+        arrowMarkerAbsolute: false
+    }
+}
+```
+
+### ER Diagram Config
+
+```javascript
+{
+    er: {
+        useMaxWidth: true,
+        padding: 8
+    }
+}
+```
+
+### Pie Chart Config
+
+```javascript
+{
+    pie: {
+        textPosition: 0.75,
+        useMaxWidth: false
+    }
+}
+```
+
+### Sankey Config
+
+```javascript
+{
+    sankey: {
+        showValues: true,
+        useMaxWidth: false
+    }
+}
+```
+
 ## Deterministic IDs
 
 For files checked into git that should not change unless content changes:

@@ -44,47 +44,99 @@ flowchart LR
     markdown["`This **is** _Markdown_`"]
 ```
 
-## Edges (Connections)
+## Links Between Nodes
 
-| Syntax | Arrow Type |
+### Arrow Types
+
+| Syntax | Type |
 |---|---|
 | `A --> B` | Solid arrow |
-| `A --- B` | Dashed line |
+| `A --- B` | Open/dashed line |
 | `A ==> B` | Thick arrow |
 | `A -.-> B` | Dotted line |
 | `A -.- B` | Dotted with space |
 | `A ~~> B` | Curved arrow |
-| `A == Link == B` | Bidirectional thick |
-| `A <===> B` | Bidirectional solid |
-| `A <== B` | Left-pointing arrow |
-| `A ==> B` | Right-pointing arrow |
-| `A -- Text --> B` | Labeled edge |
-| `A -.->|label| B` | Dotted with label |
-| `A == Label == B` | Thick bidirectional label |
 
-### Arrowhead Types
+### Labeled Edges
+
+```mermaid
+flowchart LR
+    A-- This is text ---B
+    A---|This is text|B
+    A-->|text|B
+    A-- text -->B
+    A -.->|dotted| B
+    A == Label == B
+    A <===> B
+    A <== B
+```
+
+### Arrowhead Modifiers
 
 Append to the arrow head: `o` (circle), `x` (cross), `o-x` (combined)
 
 ```mermaid
 flowchart LR
-    A -->|label| B
-    A -.->|dotted| C
-    A ==>|thick| D
-    A -->B -->C -->D
+    A -->o B
+    A --x> B
+    A o--o B
+```
+
+### Multi-directional Arrows
+
+```mermaid
+flowchart LR
+    A === Link === B
+    A <===> B
 ```
 
 ## Subgraphs
 
+### Basic Subgraph
+
 ```mermaid
 flowchart TB
-    subgraph Section ["Section Title"]
-        A --> B
-        B --> C
+    c1-->a2
+    subgraph one
+        a1-->a2
+    end
+    subgraph two
+        b1-->b2
+    end
+    one --> two
+    two --> c2
+```
+
+### Named Subgraph with ID
+
+```mermaid
+flowchart TB
+    subgraph ide1 [one]
+        a1-->a2
     end
 ```
 
-Subgraphs can be nested and styled:
+### Direction in Subgraphs
+
+Subgraphs can override the parent direction:
+
+```mermaid
+flowchart LR
+  subgraph TOP
+    direction TB
+    subgraph B1
+        direction RL
+        i1 -->f1
+    end
+    subgraph B2
+        direction BT
+        i2 -->f2
+    end
+  end
+  A --> TOP --> B
+```
+
+### Nested Subgraphs
 
 ```mermaid
 flowchart TB
@@ -96,7 +148,58 @@ flowchart TB
     style cluster fill:#f9f,stroke:#333,stroke-width:2px
 ```
 
-## Styling Nodes & Edges
+## Interaction (Click Events)
+
+Requires `securityLevel='loose'` or `'antiscript'`.
+
+### Click to URL
+
+```mermaid
+flowchart LR
+    A-->B
+    B-->C
+    click A "https://www.github.com" "Open GitHub" _blank
+    click B href "https://www.github.com" "Tooltip" _self
+```
+
+### Click to JavaScript Callback
+
+```html
+<script>
+  window.callback = function () {
+    alert('A callback was triggered');
+  };
+</script>
+```
+
+```mermaid
+flowchart LR
+    A-->B
+    click A callback "Tooltip for a callback"
+    click C call callback() "Tooltip"
+```
+
+Click syntax: `click nodeId url [tooltip] [target]`
+
+Target options: `_self`, `_blank`, `_parent`, `_top`.
+
+## FontAwesome Icons
+
+Use syntax `fa:#icon class name#`:
+
+```mermaid
+flowchart TD
+    B["fa:fa-twitter for peace"]
+    B-->C[fa:fa-ban forbidden]
+    B-->D(fa:fa-spinner)
+    B-->E(A fa:fa-camera-retro perhaps?)
+```
+
+Supported prefixes: `fa`, `fab`, `fas`, `far`, `fal`, `fad`.
+
+Requires Font Awesome CSS on the page, or registered icon packs via `mermaid.registerIconPacks()`.
+
+## Styling and Classes
 
 ### Class-based Styling
 
@@ -120,18 +223,37 @@ flowchart LR
     style B fill:#bbf,stroke:#f66,stroke-width:2px,color:#fff
 ```
 
-## New Shapes in v11.3.0+
-
-Mermaid introduced 30+ new shapes using the `@{ shape: name }` syntax:
+### Styling Edges
 
 ```mermaid
-flowchart RL
-    A@{ shape: manual-file, label: "File Handling"}
-    B@{ shape: manual-input, label: "User Input"}
-    C@{ shape: docs, label: "Multiple Documents"}
-    D@{ shape: procs, label: "Process Automation"}
-    E@{ shape: paper-tape, label: "Paper Records"}
+flowchart LR
+    A --> B
+    linkStyle 0 stroke:red,stroke-width:2px;
 ```
+
+## Configuration
+
+### Renderer
+
+Default renderer is `dagre`. Can switch to `elk` for complex diagrams:
+
+```javascript
+{
+    flowchart: {
+        defaultRenderer: "elk",
+        htmlLabels: true,
+        curve: 'basis',  // linear | basis | monotoneX | cardinal
+        diagramPadding: 8,
+        useMaxWidth: false,
+        handDrawnSeed: 0,
+        width: 1000
+    }
+}
+```
+
+## New Shapes in v11.3.0+
+
+Mermaid introduced 30+ new shapes using the `@{ shape: name, label: "Text" }` syntax:
 
 ### Shape Reference Table (v11.3.0+)
 
@@ -176,3 +298,11 @@ flowchart RL
 | `text` / `text-block` | — | Text block |
 
 Usage: `Node@{ shape: name, label: "Text" }`
+
+## Special Characters That Break Syntax
+
+| Character/Word | Cause | Fix |
+|---|---|---|
+| `end` (lowercase) | Keyword conflict in flowcharts | Use "End", "END", or wrap in quotes |
+| `o` or `x` at node start | Creates circle/cross edge | Add space before: `"dev --- ops"` |
+| `%%{}%%` in comments | Confuses with directives | Avoid "{}" inside `%%` comments |

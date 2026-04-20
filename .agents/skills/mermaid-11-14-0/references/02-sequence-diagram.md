@@ -97,6 +97,18 @@ sequenceDiagram
     destroy Bob
 ```
 
+### Autonumber
+
+```mermaid
+sequenceDiagram
+    autonumber
+    Alice->>John: Hello John, how are you?
+    John->>Alice: Great!
+    Alice->>John: See you later!
+```
+
+Autonumber can be customized with a range: `autonumber 10 5` (start at 10, increment by 5).
+
 ## Messages
 
 | Syntax | Type |
@@ -110,12 +122,27 @@ sequenceDiagram
 | `A->)B: msg` | Dotted filled arrow |
 | `A-x>>B: msg` | Cross return arrow |
 | `A--)B: msg` | Dashed cross return |
-| `A Note right of B: text` | Note on right |
-| `A Note left of B: text` | Note on left |
-| `Note right of B: text` | Note without participant |
-| `Note over A,B: text` | Note over both participants |
 
-### Notes
+### Self-References
+
+```mermaid
+sequenceDiagram
+    Alice->>Alice: Internal processing
+    Alice->>Bob: External call
+```
+
+### Central Connections (v11.12.3+)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant A as Alice
+    participant B as Bob
+    A-)B: Request
+    B--)A: Response
+```
+
+## Notes
 
 ```mermaid
 sequenceDiagram
@@ -124,6 +151,106 @@ sequenceDiagram
     John->>Alice: Hi!
     Note left of Alice: Alice thinks back
     Note over Alice,John: Both talking
+```
+
+| Syntax | Position |
+|---|---|
+| `Note right of B: text` | Right side of participant |
+| `Note left of B: text` | Left side of participant |
+| `Note over A,B: text` | Spanning both participants |
+| `A Note right of B: text` | From participant A, positioned right of B |
+
+## Loops
+
+```mermaid
+sequenceDiagram
+    loop Every minute
+        Alice->>John: Heartbeat
+        John-->>Alice: Heartbeat response
+    end
+```
+
+Can include condition: `loop if healthy`.
+
+## Alt (Conditional)
+
+```mermaid
+sequenceDiagram
+    Alice->>Bob: Hello
+    alt is case
+        Bob->>Alice: Happy
+    else
+        Bob->>Alice: Sad
+    end
+```
+
+Multiple `else` branches supported:
+```mermaid
+sequenceDiagram
+    Alice->>Bob: Request
+    opt optional part
+        Bob->>Alice: Optional response
+    end
+    alt success
+        Bob->>Alice: Result
+    else error
+        Bob->>Alice: Error message
+    end
+```
+
+## Parallel (par)
+
+```mermaid
+sequenceDiagram
+    par Parallel request
+        Alice->>Bob: Hello Bob
+        Alice->>Carol: Hello Carol
+    and
+        Bob->>Alice: Hello Alice
+    and
+        Carol->>Alice: Hello Alice
+    end
+```
+
+## Critical Region
+
+```mermaid
+sequenceDiagram
+    critical section
+        Alice->>Bob: Important operation
+    option Rollback
+        Bob->>Alice: Error
+    end
+```
+
+## Activations
+
+### Auto-Activate/Deactivate
+
+```mermaid
+sequenceDiagram
+    participant A
+    participant B
+    activate A
+    A->>B: Hello
+    deactivate A
+    activate B
+    B->>A: Reply
+    deactivate B
+```
+
+### Nested Activations
+
+```mermaid
+sequenceDiagram
+    Alice->>John: Hello John
+    activate John
+    Alice->>John: Another message
+    activate John
+    John-->>Alice: OK
+    deactivate John
+    John-->>Alice: Bye
+    deactivate John
 ```
 
 ## Grouping / Boxes
@@ -140,51 +267,74 @@ sequenceDiagram
     end
     A->>J: Hello John
     A->>B: Hello Bob
-    B->>C: Hello Charley
 ```
 
 Box colors: `box Purple Title`, `box rgb(33,66,99)`, `box rgba(33,66,99,0.5)`, `box transparent Title`
 
-## Auto-Activate / Deactivate
+## Comments
 
 ```mermaid
 sequenceDiagram
-    participant A
-    participant B
-    activate A
-    A->>B: Hello
-    deactivate A
-    activate B
-    B->>A: Reply
-    deactivate B
-```
-
-Multiple activations (nesting):
-
-```mermaid
-sequenceDiagram
+    %% This is a comment
     Alice->>John: Hello John
-    activate John
-    Alice->>John: Another message
-    activate John
-    John-->>Alice: OK
-    deactivate John
-    John-->>Alice: Bye
-    deactivate John
+    % Single-line comment
+    John->>Alice: Hi
 ```
 
-## Self-References
+## Styling
+
+### Class-based Styling
 
 ```mermaid
 sequenceDiagram
-    Alice->>Alice: Internal processing
-    Alice->>Bob: External call
+    classDef active fill:#90EE90,stroke:#333,stroke-width:2px;
+    classDef important stroke-dasharray: 5 5;
+    Alice->>John: Hello
+    John->>Alice: Hi
+    class Alice,John active;
 ```
 
-## Sequence Numbers
+### Styling Activation Boxes
 
-Enable with config: `sequence: { showSequenceNumbers: true }`
+```mermaid
+sequenceDiagram
+    activate John
+    Alice->>John: Hello
+    deactivate John
+    style activationBox1 fill:#f9f,stroke:#333
+```
 
-## Wrapping Long Messages
+## Line Breaks in Messages
 
-Enable with config: `sequence: { wrap: true }`
+Use `<br/>` for line breaks:
+```mermaid
+sequenceDiagram
+    Alice->>John: This is<br/>a multi-line message
+```
+
+## Configuration
+
+```javascript
+{
+    sequence: {
+        width: 200,
+        height: 20,
+        messageAlign: 'left' | 'center' | 'right',
+        mirrorActors: true,
+        useMaxWidth: false,
+        rightAngles: true,
+        showSequenceNumbers: false,
+        wrap: false
+    }
+}
+```
+
+## Entity Codes for Special Characters
+
+| Code | Character |
+|---|---|
+| `&lt;` | < |
+| `&gt;` | > |
+| `&amp;` | & |
+| `&quot;` | " |
+| `&#39;` | ' |

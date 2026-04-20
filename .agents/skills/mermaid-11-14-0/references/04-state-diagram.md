@@ -36,6 +36,25 @@ stateDiagram-v2
     state "This is a description" as s2
 ```
 
+### Spaces in State Names
+
+Use double quotes for names with spaces:
+```mermaid
+stateDiagram-v2
+    "My State Name" : A state with spaces
+```
+
+## Setting Diagram Direction
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> A
+    A --> B
+```
+
+Supported directions: `TB`, `BT`, `LR`, `RL`.
+
 ## Start & End States
 
 | Syntax | Meaning |
@@ -75,21 +94,22 @@ stateDiagram-v2
     s3 --> s1: failure
 ```
 
-## Entry/Exit Actions
+## Choice Nodes
+
+Diamond-shaped decision points using `<<choice>>`:
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Active
-    Active -->Inactive : deactivate
-    Inactive -->Active : activate
-    state Active {
-        [*] --> Running
-        Running -->Paused : pause
-        Paused -->Running : resume
-    }
+    state if_state <<choice>>
+    [*] --> IsPositive
+    IsPositive --> if_state
+    if_state --> False: if n < 0
+    if_state --> True : if n >= 0
 ```
 
-## Fork & Join
+## Forks
+
+Split execution into parallel paths:
 
 ```mermaid
 stateDiagram-v2
@@ -105,6 +125,28 @@ stateDiagram-v2
     }
 ```
 
+## Concurrency
+
+Use `--` within composite states to define concurrent regions:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Active
+    state Active {
+        [*] --> NumLockOff
+        NumLockOff --> NumLockOn : EvNumLockPressed
+        NumLockOn --> NumLockOff : EvNumLockPressed
+        --
+        [*] --> CapsLockOff
+        CapsLockOff --> CapsLockOn : EvCapsLockPressed
+        CapsLockOn --> CapsLockOff : EvCapsLockPressed
+        --
+        [*] --> ScrollLockOff
+        ScrollLockOff --> ScrollLockOn : EvScrollLockPressed
+        ScrollLockOn --> ScrollLockOff : EvScrollLockPressed
+    }
+```
+
 ## Notes
 
 ```mermaid
@@ -116,9 +158,80 @@ stateDiagram-v2
     note bottom of State2 : Third note
 ```
 
+## Styling with classDefs
+
+```mermaid
+stateDiagram-v2
+    classDef done fill:#9f9,stroke:#333;
+    classDef active fill:#ff9,stroke:#333;
+    [*] --> Still
+    Still --> Moving
+    Moving --> Crash
+    Crash --> [*]
+    class Still active;
+    class Crash done;
+```
+
+### classDef Syntax
+
+```txt
+classDef styleName property:value,property2:value2;
+class state1,state2 styleName;
+state :::styleName
+```
+
+**Limitations:**
+- Cannot be applied to start/end states
+- Cannot be applied within composite states
+
+### Apply via `class` statement
+
+```mermaid
+stateDiagram-v2
+    classDef done fill:#9f9,stroke:#333;
+    classDef active fill:#ff9,stroke:#333;
+    [*] --> Still
+    Still --> Moving
+    Moving --> Crash
+    Crash --> [*]
+    class Still,Moving active;
+    class Crash done;
+```
+
+### Apply via `:::` operator
+
+```mermaid
+stateDiagram-v2
+    classDef done fill:#9f9,stroke:#333;
+    [*] --> Still
+    Still --> Moving :::done
+    Moving --> Crash
+    Crash --> [*]
+```
+
+## Setting Diagram Direction
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> A
+    A --> B
+```
+
+Supported directions: `TB`, `BT`, `LR`, `RL`.
+
+## Comments
+
+```mermaid
+stateDiagram-v2
+    [*] --> State1
+    %% This is a comment
+    State1 --> State2
+```
+
 ## Configuration
 
-Sequence diagram-specific config:
+State diagram-specific config:
 ```
 sequence:
     width: number
