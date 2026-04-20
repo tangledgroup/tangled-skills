@@ -107,14 +107,36 @@ if (result) {
 | Quadrant | `quadrantChart` | 2x4 quadrant analysis |
 | User Journey | `userJourney` | User experience journeys |
 | Requirement | `requirementDiagram` | Software requirement modeling |
-| Architecture | `architecture` | Cloud/architecture diagrams (AWS/Azure/GCP) |
+| Architecture | `architecture-beta` | Cloud/architecture diagrams (AWS/Azure/GCP) |
 | ZenUML | `zenuml` | Simple sequence/interaction diagrams |
-| TreeView | `treeView` | Hierarchical tree structures |
-| TreeMap | `treemap` | Nested rectangle area charts |
-| Ishikawa | `ishikawa` | Fishbone / cause-effect diagrams |
+| TreeView | `treeView-beta` | Hierarchical tree structures |
+| TreeMap | `treemap-beta` | Nested rectangle area charts |
+| Ishikawa | `ishikawa-beta` | Fishbone / cause-effect diagrams |
 | Use Case | `useCaseDiagram` | UML use case diagrams |
 | Waveform | `waveformPlot` | Signal/waveform visualization |
 | Packet | `packet` | Binary packet layout diagrams |
+| Wardley Map | `wardley-beta` | Value chain strategic maps (v11.14.0+) |
+
+### Flowchart Node Shapes
+
+| Syntax | Shape | Example |
+|---|---|---|
+| `id` | Rectangle | `A` |
+| `id[Text]` | Rounded rect | `id1[Rounded]` |
+| `id(Round)` | Round | `id1((Round))` |
+| `id([Stadium])` | Stadium | `id1([Stadium])` |
+| `id[[Subroutine]]` | Subroutine | `id1[[Subroutine]]` |
+| `id[(Database)]` | Cylinder | `id1[(DB)]` |
+| `id{Diamond}` | Decision | `id1{Decision?}` |
+| `id{{Hexagon}}` | Hexagon | `id1{{Hex}}` |
+| `id>Input]` | Asymmetric | `id>Input]` |
+| `id[/Parallelogram/]` | Parallelogram | `id[/Data/]` |
+| `A[/Trapezoid\]` | Trapezoid | `A[/Top\]` |
+| `id(((Double circle)))` | Double circle | `id1(((Circle)))` |
+
+### Flowchart Directions
+
+`TB` (top-down), `TD` (top-down same), `BT` (bottom-top), `RL` (right-left), `LR` (left-right)
 
 ## Configuration & Theming
 
@@ -134,8 +156,31 @@ mermaid.initialize({
     securityLevel: 'strict', // strict | antiscript | loose | sandbox
     fontFamily: 'trebuchet ms, verdana, arial',
     logLevel: 5,             // 1=debug, 2=info, 3=warn, 4=error, 5=fatal-only
+    look: 'neo',             // neo | classic | handDrawn (v11.x+)
+    layout: 'dagre',         // dagre | elk
+    maxTextSize: 9000,
+    handDrawnSeed: 0,        // Seed for handDrawn look reproducibility
 });
 ```
+
+### Layout Algorithms
+
+| Algorithm | Description |
+|---|---|
+| `dagre` (default) | Classic layout, good balance of simplicity and clarity |
+| `elk` | Advanced layout for complex diagrams, reduces edge crossings |
+
+ELK support must be added when integrating Mermaid for sites/apps that want ELK layout.
+
+### Looks
+
+| Look | Description |
+|---|---|
+| `neo` (default) | Modern clean appearance |
+| `classic` | Traditional Mermaid style |
+| `handDrawn` | Sketch-like, hand-drawn quality |
+
+Select a look in frontmatter: `config: { look: handDrawn }`
 
 ### Security Levels
 
