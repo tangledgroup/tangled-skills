@@ -176,6 +176,30 @@ print(f"Is connected: {nx.is_connected(G)}")
 print(f"Number of components: {nx.number_connected_components(G)}")
 ```
 
+### Core Graph Operations
+
+See [Core Concepts and Graph Classes](references/01-core-concepts.md) for graph types, views, attributes, set operations, and relabeling.
+
+```python
+import networkx as nx
+
+# Graph creation from scratch
+g = nx.Graph()
+g.add_node(1)
+g.add_edges_from([(1, 2), (2, 3)])
+
+# Set operations
+G1 | G2   # union
+G1 & G2   # intersection
+G1 - G2   # difference
+
+# Relabeling
+H = nx.relabel_nodes(G, {1: "a", 2: "b"})
+
+# Frozen graphs
+g.freeze()  # prevents modification
+```
+
 ### Shortest Paths
 
 See [Shortest Path Algorithms](references/02-shortest-paths.md) for comprehensive coverage.
@@ -294,6 +318,7 @@ G = nx.node_link_graph(json.load(open("graph.json")))
 
 ## Advanced Topics
 
+- [Core Concepts and Graph Classes](references/01-core-concepts.md) - Graph types, nodes/edges, attributes, views, CoreViews, filters, set operations, products, relabeling, frozen graphs, non-edges
 - [Shortest Path Algorithms](references/02-shortest-paths.md) - BFS, Dijkstra, Bellman-Ford, Floyd-Warshall, Johnson
 - [Centrality and Importance](references/03-centrality.md) - Degree, betweenness, closeness, eigenvector, PageRank, and 15+ other measures
 - [Community Detection](references/04-community-detection.md) - Louvain, label propagation, Girvan-Newman, spectral clustering
