@@ -71,6 +71,7 @@ All skills in this repository are automatically generated using the `write-skill
 | matplotlib-3-10-8 | matplotlib | 3.10.8 | plotting, visualization, charts, graphs, data-visualization | Comprehensive toolkit for Matplotlib 3.10.8, the Python plotting library for creating static, animated, and interacti... |
 | mem0-1-0-11 | mem0 | 1.0.0 | memory, llm, ai-agents, vector-search, langchain | A skill for using Mem0 v1.0.11, a universal self-improving memory layer for LLM applications that enables persistent ... |
 | mempalace-3-3-0 | mempalace | 3.3.0 | ai-memory, rag, chromadb, local-ai, mcp-server | Local AI memory system that mines projects and conversations into a searchable palace using ChromaDB for vector searc... |
+| mermaid-11-14-0 | mermaid | 11.14.0 | diagrams, visualization, flowchart, sequence-diagram, class-diagram | Complete Mermaid 11.14.0 toolkit for creating diagrams and visualizations using text-based syntax including flowchart... |
 | networkx-3-6-1 | networkx | 1.0.0 | graph-theory, network-analysis, complex-networks, algorithms, data-science | A comprehensive toolkit for NetworkX 3.6.1, the Python package for creating, manipulating, and studying complex netwo... |
 | networkxternal-0-3 | networkxternal | 0.3 | graph, database, networkx, sqlite, postgresql | NetworkX-compatible interface for external memory MultiDiGraphs persisted in databases (SQLite, PostgreSQL, MySQL, Mo... |
 | nextjs-16-2-3 | nextjs | 0.2.0 | nextjs, react, web-development, ssr, ssg | A skill for building production-ready React applications with Next.js 16.2.3, providing App Router and Pages Router s... |
@@ -110,6 +111,7 @@ All skills in this repository are automatically generated using the `write-skill
 | redis-om-python-1-1 | redis-om-python | 0.2.0 | redis, orm, pydantic, redisearch, redisjson | A skill for using Redis OM Python v1.1.0, an object mapping library that provides declarative models, automatic secon... |
 | redis-py-7-4 | redis-py | 0.2.0 | redis, database, key-value-store, caching, async | Comprehensive Python client for Redis database and key-value store. Use when building Python applications requiring R... |
 | rqlite-9-4 | rqlite | 0.2.0 | database, distributed-systems, sqlite, raft, high-availability | Comprehensive toolkit for rqlite 9.4, a lightweight distributed relational database built on SQLite with Raft consens... |
+| rsync-3-4-1 | rsync | 3.4.1 | file-transfer, synchronization, backup, mirroring, remote-copy | Complete toolkit for rsync 3.4.1, the fast and versatile file-copying tool using delta-transfer algorithm for efficie... |
 | ruff-0-4-10 | ruff | 0.2.0 | python, linting, formatting, code-quality, flake8-alternative | A skill for using Ruff 0.4.10, an extremely fast Python linter and formatter written in Rust that replaces Flake8, is... |
 | rustfs-1-0-0-alpha-93 | rustfs | 1.0.0-alpha.93 | object-storage, s3, swift, distributed-systems, observability | High-performance distributed object storage system with S3-compatible API, OpenStack Swift support, and comprehensive... |
 | scikit-learn-1-8-0 | scikit-learn | 1.8.0 | machine learning, classification, regression, clustering, preprocessing | Complete toolkit for scikit-learn 1.8.0 machine learning library covering supervised/unsupervised algorithms, pipelin... |
@@ -145,4 +147,4 @@ All skills in this repository are automatically generated using the `write-skill
 
 ## Statistics
 
-- **Total Skills**: 126
+- **Total Skills**: 128
