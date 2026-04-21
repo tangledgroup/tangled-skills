@@ -1,157 +1,113 @@
 ---
 name: write-skill
 description: Generate fine-grained agent skills from user requirements, creating complete spec-compliant markdown files that work across pi, opencode, claude, and codex platforms. Use when creating new skills or converting existing documentation into skill format.
-version: "0.6.0"
+version: "0.7.1"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
+  - skill-writing
   - skill-generation
-  - automation
   - meta-skill
+  - automation
 category: tooling
-external_references:
-  - url: https://opencode.ai/docs/skills
-    description: OpenCode skills documentation and specification
-  - url: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/skills.md
-    description: pi-mono agent skills implementation and format details
-  - url: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
-    description: Claude agent skills best practices and guidelines
-  - url: https://developers.openai.com/codex/skills
-    description: OpenAI Codex skills documentation
 ---
 
-# write-skill
+# write-skill — Generate Agent Skills
 
-A meta-skill that generates other agent skills by analyzing user requirements and creating complete, spec-compliant markdown files. Skills use standard agent tools (read, write, edit, bash) to perform their tasks.
+## Overview
+
+Generates spec-compliant, cross-platform agent skills from user requirements. Takes project/tool name, version, and documentation sources (URLs or filesystem paths), then produces complete SKILL.md files that work on pi, opencode, Claude Code, and Codex platforms.
+
+Skills are Markdown-only — no scripts or assets. If OS-level operations are needed, inline bash or Python with built-in modules is used instead.
 
 ## When to Use
 
-Load this skill when:
-- User asks to "create a skill" or "generate a skill" for a specific task/domain
-- User provides URLs to documentation that should be analyzed
-- User wants to extract workflows from existing codebases/projects
-- User describes complex requirements that should become a reusable skill
-- Quick skill bootstrapping from minimal descriptions is needed
+- Creating a new agent skill from scratch for a project, library, or tool
+- Converting existing documentation into a skill format
+- Generating skills from official documentation URLs or local codebases
+- Any task that requires producing spec-compliant `.agents/skills/<name>/SKILL.md` files
 
-## Quick Start
+## Core Concepts
 
-### From Minimal Prompt
+### Source Types
 
+The user provides at least one source:
+
+- **URLs** — HTTP(S) links to web pages, documentation, or raw files
+- **Filesystem paths** — absolute or relative paths to directories or files
+- **Mixed** — combination of both
+
+### Output Structure
+
+Generated skills are created in `.agents/skills/<skill-name>/`:
+
+**Simple skill** (SKILL.md < 500 lines):
 ```
-User: "Create a skill for managing Docker containers"
-
-Workflow:
-1. Check available tools (bash/curl preferred)
-2. Fetch documentation via curl
-3. Extract commands and patterns
-4. Generate validated skill
-5. Present for review
-```
-
-See [Interaction Examples](references/08-interaction-examples.md) for detailed walkthroughs.
-
-### From Documentation URLs
-
-```
-User: "Create a skill for GitHub Actions. Check https://docs.github.com/en/actions"
-
-Workflow:
-1. Extract base domain (docs.github.com)
-2. Run BFS crawl to discover all related pages
-3. Deep dive with DFS on key sections
-4. Convert HTML to Markdown
-5. Generate comprehensive skill with references/
+my-skill/
+└── SKILL.md              # All content inline
 ```
 
-See [URL Crawling Strategies](references/02-url-crawling.md) for crawling scripts.
-
-### From Directory Analysis
-
+**Complex skill** (SKILL.md > 500 lines):
 ```
-User: "Create a skill for the deployment workflow. Analyze ./infra"
-
-Workflow:
-1. Scan directory structure with find/grep
-2. Discover configs, scripts, env vars
-3. Extract patterns and workflows
-4. Generate skill with discovered requirements
-5. Run git introspection (if repository exists)
-6. Identify most important files from git history
-7. Refine skill based on file importance
+my-skill/
+├── SKILL.md              # Overview + navigation hub
+└── references/           # Flat structure, numbered files
+    ├── 01-core-concepts.md
+    └── 02-advanced-topics.md
 ```
 
-See [Directory Analysis](references/05-directory-analysis.md) for scanning patterns.
-See [Git Introspection](references/04-git-introspection.md) for post-analysis enhancement.
+### Complexity Decision
 
-## Core Workflow
+While analyzing content, estimate total output lines:
+- `< 500` → simple (single SKILL.md)
+- `≥ 500` → complex (SKILL.md + references/)
 
-### Step 1: Tool Detection
+Split into references when:
+- Total expected output exceeds ~500 lines
+- Content naturally falls into distinct topics
+- Dense reference material benefits from progressive disclosure
 
-Check for available tools before processing:
+## Generation Workflow
 
-```bash
-# Primary method (preferred)
-curl --version
+### Step 1: Validate Input
 
-# Optional enhancement tools
-command -v pandoc        # HTML → Markdown conversion
-command -v pdftotext     # PDF text extraction (best quality)
-command -v gs            # PDF fallback
-```
+Check that the skill name matches `^[a-z0-9]+(-[a-z0-9]+)*$` and version follows SemVer 2.0.0 format (`MAJOR.MINOR.PATCH`).
 
-**Fallback hierarchy:**
-1. bash/curl for web fetching and file operations
-2. web_search/web_fetch tools if available
-3. read tool for local files
-4. write tool for creating skill files
+### Step 2: Crawl and Collect Content
 
-See [Tool Detection](references/01-tool-detection.md) for complete detection logic.
+Follow the crawling strategy below to gather all source material.
 
-### Step 2: Content Research
+### Step 3: Analyze and Determine Structure
 
-**For URLs:** Use hybrid BFS+DFS crawling to discover documentation comprehensively.
+Assess collected content to decide simple vs complex output structure.
 
-**For PDFs:** Extract text with layout preservation using best available method.
+### Step 4: Generate YAML Header
 
-**For Directories:** 
-1. **Directory scanning first** - Discover configs, scripts, env vars, and dependencies
-2. **Extract patterns** - Identify workflows and requirements from content
-3. **Git introspection** (if repository exists) - Enhance understanding with file importance
-4. **Read priority files** - Focus on most modified/recently changed files
+Create a valid YAML header with validated name, description, version, and metadata fields.
 
-See [Directory Analysis](references/05-directory-analysis.md) for scanning patterns.
-See [Git Introspection](references/04-git-introspection.md) for post-analysis enhancement.
-See [Content Extraction](references/03-content-extraction.md) for processing workflows.
+### Step 5: Write Output Files
 
-### Step 3: Skill Structure Selection
+Write SKILL.md (simple) or SKILL.md + references/ (complex).
 
-Auto-detect whether to create **simple** or **complex** skill:
+### Step 6: Validate
 
-| Criteria | Simple Skill | Complex Skill |
-|----------|--------------|---------------|
-| Line count | < 500 lines in SKILL.md | > 500 lines in SKILL.md |
-| Topics | Single focused task | Multiple topics (3+) |
-| Structure | Single SKILL.md | SKILL.md + references/ |
-| Use case | One specific workflow | APIs, frameworks, extensive docs |
+Run the validation checklist before considering the skill complete.
 
-**When to use reference files:**
-- SKILL.md approaches 500 lines
-- User explicitly requests reference files
-- User indicates the skill is complex with many topics
+### Step 7: Report
 
-See [Skill Templates](references/06-skill-templates.md) for structure details.
+Report success with file tree and validation results.
 
-### Step 4: YAML Header Validation (REQUIRED)
+## YAML Header Rules
 
-**Every skill MUST have a valid YAML header.** This is non-negotiable for cross-platform compatibility.
+Every generated skill MUST have a valid YAML header. Invalid YAML prevents loading on all platforms.
 
 ```yaml
 ---
 name: <skill-name>
-description: <1-1024 character description>
+description: <1-1024 char description, third person, includes WHAT and WHEN>
 license: MIT
-author: <Your Name> <email@example.com>
-version: "<semver version>"
+author: Tangled <noreply@tangledgroup.com>
+version: "<semver>"
 tags:
   - <tag1>
   - <tag2>
@@ -161,193 +117,282 @@ external_references:
 ---
 ```
 
-**Validation requirements:**
-- ✅ File starts with `---` on line 1
-- ✅ YAML syntax is valid (use Python yaml.safe_load to verify)
-- ✅ `name` matches directory name exactly and passes regex: `^[a-z0-9]+(-[a-z0-9]+)*$`
-- ✅ `description` is 1-1024 characters, uses third person, includes WHAT and WHEN
-- ✅ All string values properly quoted if containing special characters
-- ✅ Header ends with `---` before main content
+### Field Rules
 
-**Run YAML validation script:**
+| Field | Required | Constraints |
+|-------|----------|-------------|
+| `name` | Yes | 1-64 chars, regex `^[a-z0-9]+(-[a-z0-9]+)*$`, matches directory name |
+| `description` | Yes | 1-1024 chars, third person, includes WHAT and WHEN |
+| `license` | No | License name (default: MIT) |
+| `author` | No | Format: `Name <email@example.com>` |
+| `version` | No | SemVer 2.0.0 format |
+| `tags` | No | Array of string tags |
+| `category` | No | Skill category classification |
+| `external_references` | No | User-provided starting URLs only |
+| `compatibility` | No | Max 500 chars, environment requirements |
+| `metadata` | No | String-to-string map |
+| `allowed-tools` | No | Pre-approved tools (experimental, pi only) |
+| `disable-model-invocation` | No | Hidden from system prompt (pi only) |
+
+### Name Validation
+
+```
+^[a-z0-9]+(-[a-z0-9]+)*$
+```
+
+Valid: `pdf-processing`, `data-analysis`, `fastapi-0-115`
+Invalid: `PDF-Processing`, `-pdf`, `pdf--processing`, `pdf processing`
+
+### SemVer 2.0.0 Rules
+
+- Format: `MAJOR.MINOR.PATCH` (e.g., `1.0.0`)
+- Pre-release: `1.0.0-alpha`, `1.0.0-beta.2`, `1.0.0-rc.1`
+- Build metadata: `1.0.0+20130313144700` (ignored in precedence)
+- MAJOR: backward incompatible changes
+- MINOR: backward compatible additions
+- PATCH: backward compatible fixes
+- No leading zeros in numeric identifiers
+
+### Description Best Practices
+
+```yaml
+# Good — specific, third person, includes WHAT and WHEN
+description: Extracts text and tables from PDF files and merges multiple PDFs. Use when working with PDF documents.
+
+# Poor — too vague
+description: Helps with PDFs.
+```
+
+## Crawling Strategy
+
+When sources are provided (URLs or filesystem paths), recursively crawl by default unless the user specifies otherwise.
+
+### URL Crawling
+
+Recursively follow all links within the same domain and subdomains:
+
+1. Fetch and parse the initial URL
+2. Extract all relative links from the page
+3. For each link, check if it resolves to the same domain or subdomain:
+   - Same domain (`example.com`) → include
+   - Subdomain (`api.example.com`) → include
+   - Different domain (`other.com`) → skip, note as external
+4. Fetch each included URL using the appropriate tool
+5. Repeat for every fetched page (depth-first)
+6. Track visited URLs to prevent cycles
+
+**Domain matching:** Base domain strips `www.` prefix. Include subdomains; exclude different domains. Do not follow login pages, auth flows, or authenticated API endpoints.
+
+**Cycle prevention:**
+- Maintain a visited URL set
+- Skip already-visited URLs
+- Maximum depth: 5 levels from initial URL
+- Maximum pages: 50 per crawl
+
+### Filesystem Path Crawling
+
+Recursively visit all files and directories:
+
+1. Read the initial path (file or directory)
+2. If file → analyze content directly
+3. If directory → list entries
+4. For each entry:
+   - Directory → recurse
+   - File → check analyzable extension, then read
+5. Repeat for all nested directories
+
+**Analyzable extensions:**
+
+| Category | Extensions | Tool |
+|----------|-----------|------|
+| Markdown | `.md`, `.markdown`, `.mkd` | Direct read |
+| Text/Code | `.txt`, `.rst`, `.adoc` | Direct read |
+| HTML | `.html`, `.htm` | `pandoc -f html -t markdown`, fallback raw |
+| PDF | `.pdf` | `pdftotext -layout` or `gs` |
+| Config | `.yaml`, `.yml`, `.json`, `.toml`, `.ini`, `.cfg` | Direct read |
+| Scripts | `.sh`, `.bash`, `.py`, `.c`, `.h`, `.cpp`, `.rs`, `.go`, `.js`, `.ts` | Direct read |
+| Man pages | `.1`–`.9` | Direct read |
+
+**Skip rules:**
+- Binary files (`.png`, `.jpg`, `.gif`, `.zip`, `.tar`, `.gz`, `.whl`, `.pyc`, `.so`, `.dll`, `.exe`)
+- Hidden files/directories (`.` prefix) unless explicitly requested
+- Version control dirs (`.git/`, `.svn/`, `.hg/`) always
+- **Do not skip by size** — large files may be complex text documents
+
+### Mixed Sources
+
+When both URLs and filesystem paths are provided:
+1. Process independently in parallel
+2. Merge collected content, deduplicating by URL or path
+3. Prefer the most specific/authoritative source on overlap
+4. Note external links encountered (skipped per domain rules)
+
+### Custom Instructions Override
+
+Default recursive crawling can be overridden:
+
+```
+"Just analyze this one page" → skip recursion
+"Only look at src/ and docs/" → apply path filters
+"Follow 3 pages max" → override depth/limit
+```
+
+Always prioritize user instructions. Document any deviations from default behavior.
+
+## URL Handling Tools
+
+| Type | Tool | Output |
+|------|------|--------|
+| `.md` (GitHub raw) | `curl -sL` | Parse Markdown |
+| Man pages (`.en`) | `curl -sL` | Extract text |
+| PDF (`.pdf`) | `pdftotext -layout` or `gs` | Rendered text |
+| Static HTML | `pandoc -f html -t markdown` first, fallback raw | Clean Markdown |
+| SPA-rendered | Note limitation | Available text only |
+
+## Output File Templates
+
+### SKILL.md Template
+
+```markdown
+---
+name: <skill-name>
+description: <specific description with WHAT and WHEN>
+license: MIT
+author: Tangled <noreply@tangledgroup.com>
+version: "<semver>"
+tags:
+  - <tag1>
+  - <tag2>
+category: <category>
+external_references:
+  - https://<user-provided-url>
+---
+
+# <Project Name> <Version>
+
+## Overview
+
+Brief description of what the project/tool does and its primary use cases.
+
+## When to Use
+
+Clear guidance on when this skill should be invoked. Include specific scenarios.
+
+## Core Concepts
+
+Key concepts, terminology, and fundamental ideas related to the topic.
+
+## Installation / Setup
+
+How to install or set up the tool (if applicable).
+
+## Usage Examples
+
+Common patterns and code examples. Include copy-pasteable code blocks with language tags.
+
+## Advanced Topics
+
+Deeper topics. For complex skills, link to reference files:
+- [Reference: Core Concepts](references/01-core-concepts.md)
+
+## References
+
+- Official documentation: <URL>
+- GitHub repository: <URL>
+```
+
+### Reference File Template
+
+```markdown
+# <Topic Name>
+
+> **Source:** <original URL or document name>
+> **Loaded from:** SKILL.md (via progressive disclosure)
+
+## <Subsection>
+Content here...
+```
+
+## Skills Are Markdown-Only
+
+No `scripts/` or `assets/` directories. If a skill needs to perform operations:
+
+- **Bash** for OS-level commands (file manipulation, package installation)
+- **Python with built-in modules** for other scripting (no external packages)
+
+Example inline guidance:
+
+```markdown
+To install dependencies:
 ```bash
-python3 -c "import yaml; data=yaml.safe_load(open('SKILL.md').read().split('---',2)[1].split('---')[0]); print('✓ Valid' if 'name' in data and 'description' in data else '✗ Invalid')"
+pip install requests
 ```
 
-See [Validation Checklist](references/07-validation-checklist.md) for complete YAML validation requirements.
-
-### Step 5: Comprehensive Skill Validation (REQUIRED)
-
-**Before presenting any skill, run comprehensive validation covering THREE aspects:**
-
-1. **Directory structure** - Ensure `references/` used (not `refs/` or `ref/`)
-2. **Reference numbering** - Validate sequential prefixes (`01-`, `02-`, `03-`)
-3. **YAML header validity** - Verify required fields, format, and length
-
-**Run on-the-fly validation script:**
-
-```bash
-# Generate and execute comprehensive validation
-skill_dir=".agents/skills/<skill-name>"
-skill_file="$skill_dir/SKILL.md"
-
-echo "=== Comprehensive Skill Validation ==="
-validation_failed=0
-
-# [1/3] Directory Structure
-if [ -d "$skill_dir/refs" ] || [ -d "$skill_dir/ref" ]; then
-    echo "✗ ERROR: Found incorrect directory (refs/ or ref/)"
-    validation_failed=1
-else
-    echo "✓ Directory structure valid"
-fi
-
-# [2/3] Reference Numbering (if references exist)
-if [ -d "$skill_dir/references" ]; then
-    invalid=$(find "$skill_dir/references" -maxdepth 1 -name "*.md" ! -regex ".*/[0-9][0-9]-.*\.md" | wc -l)
-    if [ $invalid -eq 0 ]; then
-        echo "✓ Reference numbering valid"
-    else
-        echo "✗ ERROR: Found $invalid files with invalid numbering"
-        validation_failed=1
-    fi
-else
-    echo "✓ Simple skill (no references)"
-fi
-
-# [3/3] YAML Header
-if head -n1 "$skill_file" | grep -q '^---$' && \
-   grep -q '^name:' "$skill_file" && \
-   grep -q '^description:' "$skill_file"; then
-    echo "✓ YAML header valid"
-else
-    echo "✗ ERROR: YAML header invalid or missing fields"
-    validation_failed=1
-fi
-
-if [ $validation_failed -eq 1 ]; then
-    echo "\n✗ VALIDATION FAILED - Fix errors before presenting skill"
-    exit 1
-else
-    echo "\n✓ ALL VALIDATIONS PASSED - Skill ready for review"
-fi
+To process a file:
+```python
+import json
+with open("data.json") as f:
+    data = json.load(f)
 ```
 
-**CRITICAL:** Do not present skill for review until validation passes with exit code 0.
+## Validation Checklist
 
-See [Directory Validation](references/09-directory-validation.md) for complete validation scripts with detailed output and auto-fix suggestions.
-See [Validation Checklist](references/07-validation-checklist.md) for complete requirements.
+### YAML Header
+- [ ] File starts with `---` on line 1
+- [ ] Valid YAML block between first pair of `---` delimiters
+- [ ] `name` present and matches directory name
+- [ ] `name` matches regex `^[a-z0-9]+(-[a-z0-9]+)*$`
+- [ ] `description` present (1-1024 characters)
+- [ ] `license` is "MIT"
+- [ ] `author` format: `Name <email@example.com>`
+- [ ] `version` follows SemVer 2.0.0
+- [ ] Header ends with `---` before main content
 
-## Reference Files
+### Structure
+- [ ] Directory name matches skill name
+- [ ] SKILL.md exists
+- [ ] If complex: `references/` with numbered files (`01-`, `02-`, etc.)
+- [ ] No nested `references/` directories
+- [ ] SKILL.md under 500 lines (if references exist)
 
-### Core Workflows
+### Content
+- [ ] "Overview" section present
+- [ ] "When to Use" with specific scenarios
+- [ ] At least one code example
+- [ ] "References" with official documentation URLs
+- [ ] No hallucinated content — all from downloaded sources
 
-- [`references/01-tool-detection.md`](references/01-tool-detection.md) - Tool detection, negotiation, and fallback strategies
-- [`references/02-url-crawling.md`](references/02-url-crawling.md) - BFS, DFS, and hybrid crawling scripts for documentation discovery
-- [`references/03-content-extraction.md`](references/03-content-extraction.md) - PDF processing, HTML conversion, content extraction patterns
-- [`references/04-git-introspection.md`](references/04-git-introspection.md) - Git-based codebase analysis before reading files
-- [`references/05-directory-analysis.md`](references/05-directory-analysis.md) - Directory scanning, pattern detection, auto-detection heuristics
+## Behavioral Guidelines (Karpathy)
 
-### Templates and Validation
+### Think Before Coding
+- State assumptions explicitly
+- Present multiple interpretations if they exist
+- Push back if the request is too vague or conflicts with existing skills
 
-- [`references/06-skill-templates.md`](references/06-skill-templates.md) - Simple and complex skill templates, frontmatter requirements
-- [`references/07-validation-checklist.md`](references/07-validation-checklist.md) - Complete validation requirements and cross-platform notes
-- [`references/08-interaction-examples.md`](references/08-interaction-examples.md) - Detailed examples with expected outputs
-- [`references/09-directory-validation.md`](references/09-directory-validation.md) - **On-the-fly bash scripts for comprehensive validation** (directory structure, reference numbering, YAML header)
+### Simplicity First
+- Minimum content that solves the problem
+- No abstractions for single-use code
+- If a simpler approach exists, use it
 
-## Output Structure
+### Surgical Changes
+- Don't modify unrelated skills when adding/updating one
+- Match existing repository style
+- Mention dead code in other files — don't delete it
 
-Generated skills are created in `.agents/skills/<skill-name>/`:
-
-**Simple skills (SKILL.md < 500 lines):**
+### Goal-Driven Execution
+Define success criteria before generating:
 ```
-my-skill/
-└── SKILL.md              # All content inline, no references directory
-```
-
-**Complex skills (SKILL.md > 500 lines):**
-```
-my-skill/
-├── SKILL.md              # Overview + navigation hub (under 500 lines)
-└── references/           # Flat structure only, no nested references
-    ├── 01-core-concepts.md
-    ├── 02-advanced-workflow.md
-    └── 03-api-reference.md
-```
-
-**Note:** Reference files can exceed 500 lines if needed. Only SKILL.md should stay under 500 lines.
-
-## Important Notes
-
-1. **Check tools first** - Test available tools (bash/curl preferred), don't ask user
-2. **Prefer bash/curl** - Primary method for web fetching and file operations
-3. **Respect rate limits** - Add delays between URL requests, check robots.txt
-4. **YAML validation REQUIRED** - Every skill MUST have valid YAML header (use Python yaml.safe_load to verify)
-5. **Validate output** - Run full checklist before presenting generated skill
-6. **Auto-detect structure** - Use single-file for < 500 lines, multi-file for > 500 lines
-7. **User review** - Always present generated skill for approval before writing
-8. **Flat reference structure** - No nested references (all refs one level deep from SKILL.md)
-9. **Numbered reference files** - Use 2-digit prefixes (`01-`, `02-`, `03-`) for consistent ordering
-10. **Cross-platform compatible** - Generate skills for pi, opencode, claude, and codex
-11. **external_references field** - Include only user-provided starting URLs, not all crawled pages
-12. **Markdown-only skills** - Skills use agent tools (read, write, edit, bash), no bundled scripts/assets required
-13. **Clear descriptions** - Write specific descriptions for proper skill matching across platforms
-
-**CRITICAL:** Never skip YAML validation. A skill with invalid YAML will fail to load on all platforms.
-
-## Cross-Platform Compatibility
-
-Generated skills work across these platforms:
-
-| Platform | Validation | Notes |
-|----------|-----------|-------|
-| **pi** | Lenient | Warns on violations but loads skill |
-| **opencode** | Strict | Missing `description` prevents loading |
-| **claude** | Strict | Rejects invalid frontmatter |
-| **codex** | Strict | Requires valid name and description |
-| **hermes** | Flexible | Supports platform filtering and env passthrough |
-
-### Required Fields (All Platforms)
-
-- `name`: 1-64 chars, lowercase alphanumeric with hyphens (`^[a-z0-9]+(-[a-z0-9]+)*$`)
-- `description`: 1-1024 characters, specific enough for proper skill matching
-
-### Optional Fields (Union Across Platforms)
-
-- `license` (pi, opencode)
-- `compatibility` (pi, opencode)
-- `metadata` - string-to-string map (pi, opencode)
-- `allowed-tools` (pi - experimental)
-- `disable-model-invocation` (pi)
-- `agents/openai.yaml` for codex UI metadata and policy
-
-See [Validation Checklist](references/07-validation-checklist.md) for detailed requirements.
-
-## Limitations
-
-- Tool availability depends on agent configuration (bash/curl assumed available)
-- Generated skills should be tested before production use
-- Skills are markdown-only by default (use agent tools for execution)
-- **Name validation** - Must match regex `^[a-z0-9]+(-[a-z0-9]+)*$`
-- **Description length** - Must be 1-1024 characters
-
-## Optional Tools for Enhanced Processing
-
-Install these tools for better content processing:
-
-| Tool | Purpose | Install Commands |
-|------|---------|------------------|
-| **pandoc** or **pandoc-bin** | HTML → Markdown with structure preservation | Debian/Ubuntu: `apt install pandoc`<br>Arch: `pacman -S pandoc`<br>macOS: `brew install pandoc`<br>Nix: `nix-shell -p pandoc`<br>Docker: `docker run pandoc/core`<br>Podman: `podman run docker.io/pandoc/core` |
-| **poppler-utils** (pdftotext) | Best quality PDF text extraction with layout | Debian/Ubuntu: `apt install poppler-utils`<br>Arch: `pacman -S poppler`<br>macOS: `brew install poppler`<br>Nix: `nix-shell -p poppler`<br>Docker: `docker run minidocks/poppler`<br>Podman: `podman run docker.io/minidocks/poppler` |
-| **ghostscript** (gs) | Alternative PDF processor | Debian/Ubuntu: `apt install ghostscript`<br>Arch: `pacman -S ghostscript`<br>macOS: `brew install ghostscript`<br>Nix: `nix-shell -p ghostscript`<br>Docker: `docker run minidocks/ghostscript`<br>Podman: `podman run docker.io/minidocks/ghostscript` |
-
-**NixOS users:** Add to `/etc/nixos/configuration.nix`:
-```nix
-environment.systemPackages = with pkgs; [ pandoc poppler ghostscript ];
+1. Generate SKILL.md → verify: YAML parses, name matches directory
+2. Validate content → verify: all required sections present
+3. Check structure → verify: references/ numbered correctly
 ```
 
-Without these tools, the skill uses basic text extraction which may lose formatting but remains functional.
+## References
 
-See [Tool Detection](references/01-tool-detection.md) for installation details and benefits.
-
-
+- SemVer 2.0.0: https://semver.org
+- Agent Skills Standard: https://agentskills.io/specification
+- pi-mono skills spec: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/skills.md
+- OpenCode skills: https://opencode.ai/docs/skills
+- Pandoc manual: https://man.archlinux.org/man/pandoc.1
+- pdftotext manual: https://man.archlinux.org/man/pdftotext.1.en
+- Ghostscript manual: https://man.archlinux.org/man/gs.1.en
