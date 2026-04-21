@@ -343,6 +343,45 @@ fi
 - Before committing changes to verify the table is accurate
 - Whenever an LLM-generated manual update looks suspicious
 
+## How Skills Are Installed / Updated
+
+### Installation
+
+Skills are installed by cloning or extracting the repository into `.agents/skills/`. Agents (pi, opencode, Claude Code, Codex, etc.) automatically discover skills from this directory.
+
+**Install / Update:**
+```bash
+mkdir -p .agents/skills && \
+curl -L https://github.com/tangledgroup/tangled-skills/archive/refs/heads/main.tar.gz | \
+tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skills
+```
+
+This command:
+1. Creates the `.agents/skills/` directory if it doesn't exist
+2. Downloads the latest `main` branch archive from GitHub
+3. Extracts only the `.agents/skills/` contents, stripping the top-level directory prefix
+
+### How Agents Discover Skills
+
+Agents scan `.agents/skills/<skill-name>/SKILL.md` for valid YAML headers. Each skill directory must contain at minimum a `SKILL.md` file with:
+- A valid YAML header (see **How Skills Are Written → Section 2**)
+- The `name` field matching the directory name
+
+### File Responsibilities
+
+| File | Purpose |
+|------|---------|
+| `AGENTS.md` (this file) | How to write, structure, and validate skills |
+| `README.md` | Auto-generated skills table + install instructions (see **## Skills** section below) |
+| `.agents/skills/<name>/SKILL.md` | Individual skill definitions |
+| `.agents/skills/<name>/references/*.md` | Optional modular reference files for large skills |
+
+### Updating the Skills Table
+
+**Never manually edit the skills table in `README.md`.** Use the auto-generation script documented above (see **Auto-Generate Skills Table**). After adding/removing skills, run the script from the repository root — it scans all `.agents/skills/` directories and regenerates `README.md` atomically.
+
+---
+
 ## Using the write-skill Skill
 
 The `write-skill` skill can generate new skills automatically. To use it:

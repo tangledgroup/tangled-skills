@@ -5,6 +5,16 @@ Tangled Skills for Agents
 
 All skills in this repository are automatically generated using the `write-skill` skill. Each skill is created from public references, official documentation URLs, and other publicly available resources to ensure accuracy and completeness.
 
+## Skills
+
+Install / Update
+
+```bash
+mkdir -p .agents/skills && \
+curl -L https://github.com/tangledgroup/tangled-skills/archive/refs/heads/main.tar.gz | \
+tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skills
+```
+
 ### Skill Design Principles
 
 - **Detailed yet concise**: Skills provide comprehensive coverage while staying within typical LLM context limits
