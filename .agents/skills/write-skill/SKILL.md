@@ -315,24 +315,48 @@ Content here...
 
 ## Skills Are Markdown-Only
 
-No `scripts/` or `assets/` directories. If a skill needs to perform operations:
+No `scripts/` or `assets/` directories. Generated skills must never instruct installing packages (`pip`, `npm`, `cargo`, etc.). Use only tools already available on the system.
 
-- **Bash** for OS-level commands (file manipulation, package installation)
-- **Python with built-in modules** for other scripting (no external packages)
+### Tool Preference Hierarchy
 
-Example inline guidance:
+1. **Bash first** — file manipulation, validation, parsing, YAML checks, directory operations, URL fetching with `curl`, text processing with `sed`/`awk`/`grep`
+2. **Python stdlib only** — use when Bash is awkward (JSON parsing, complex string manipulation, SemVer validation). Only standard library modules: `json`, `pathlib`, `urllib`, `re`, `hashlib`, etc.
+3. **System tools** — `pandoc` for HTML→Markdown conversion, `pdftotext`/`gs` for PDFs, `jq` for JSON processing
 
-```markdown
-To install dependencies:
+### Inline Bash Examples
+
+Bash scripts are preferred for validation and file operations. Write them inline where the skill needs to perform checks.
+
+To validate a YAML header:
 ```bash
-pip install requests
+yaml_block=$(sed -n '1,/^---$/p' SKILL.md | sed '1d;$d')
+
+if [ -z "$yaml_block" ]; then
+    echo "✗ Invalid (no YAML block)"
+else
+    echo "✓ Valid"
+fi
 ```
 
-To process a file:
+To count lines in a skill:
+```bash
+wc -l SKILL.md | awk '{print $1}'
+```
+
+### Inline Python Examples
+
+Use Python stdlib only when Bash is impractical:
+
 ```python
-import json
+import json, pathlib
+
+# Read and parse JSON data
 with open("data.json") as f:
     data = json.load(f)
+
+# List all .md files in a directory
+for p in pathlib.Path(".").rglob("*.md"):
+    print(p)
 ```
 
 ## Validation Checklist
@@ -362,7 +386,7 @@ with open("data.json") as f:
 - [ ] "References" with official documentation URLs
 - [ ] No hallucinated content — all from downloaded sources
 
-## Behavioral Guidelines (Karpathy)
+## Behavioral Guidelines
 
 ### Think Before Coding
 - State assumptions explicitly
@@ -387,12 +411,14 @@ Define success criteria before generating:
 3. Check structure → verify: references/ numbered correctly
 ```
 
-## References
+### No External Dependencies
+- Never instruct installing packages (`pip install`, `npm install`, `cargo install`, etc.)
+- Use only tools available on the system: `bash`, `python3`, `curl`, `jq`, `pandoc`, `pdftotext`, `gs`, `grep`, `sed`, `awk`
+- If a required tool is missing, note it rather than generating install instructions
 
-- SemVer 2.0.0: https://semver.org
-- Agent Skills Standard: https://agentskills.io/specification
-- pi-mono skills spec: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/skills.md
-- OpenCode skills: https://opencode.ai/docs/skills
-- Pandoc manual: https://man.archlinux.org/man/pandoc.1
-- pdftotext manual: https://man.archlinux.org/man/pdftotext.1.en
-- Ghostscript manual: https://man.archlinux.org/man/gs.1.en
+### Prefer Simple References Over Tables
+- **Do not use markdown tables unless nothing else fits better.** This is the default, not an exception.
+- Reference file links must use simple text references: `[Reference: Core Concepts](references/01-core-concepts.md)`
+- Express examples, concepts, and guidance as prose, lists, or code blocks — tables are the last resort
+- YAML field rules are acceptable as a table since each row is a key-value pair with no simpler alternative
+- Extension mappings are acceptable as a table when listing many file types concisely
