@@ -19,6 +19,7 @@ Solver runs as an external process. PuLP writes the model to a file, invokes the
 | `CHOCO_CMD` | `choco` | CHOCO constraint solver |
 | `MIPCL_CMD` | `MipCl` | MIPCL solver |
 | `SCIP_CMD` | `scip` | SCIP solver |
+| `HiGHS_CMD` | `highs` | HiGHS high-performance LP/MIP solver |
 | `XPRESS_CMD` | `xprimesolve` | FICO Xpress |
 
 **Common CMD parameters:**
@@ -44,6 +45,7 @@ Solver runs in-process via its Python library. No file I/O needed for model tran
 | `XPRESS` | `xpress` | FICO Xpress Python API |
 | `PYGLPK` | `cyglpk` or `pyglpk` | GLPK Python bindings |
 | `SCIP_PY` | `pyscipopt` | SCIP Python API |
+| `HiGHS` | `highspy` | HiGHS high-performance LP/MIP solver (Python API) |
 
 **Common Python API parameters:**
 - `mip` — treat as MIP
@@ -56,7 +58,7 @@ Solver runs in-process via its Python library. No file I/O needed for model tran
 
 ## COIN_CMD (CBC) — Default Solver
 
-The default solver. CBC binary is bundled with PuLP for Linux (i32/i64/arm64), macOS (i64), and Windows (i32/i64). Falls back to system `PATH` if not bundled.
+The default solver. CBC is **no longer bundled** with PuLP. Install via `pip install pulp[cbc]` (uses cbcbox wheel) or ensure the `cbc`/`cbc.exe` binary is on your system PATH.
 
 ```python
 from pulp import *
@@ -83,6 +85,24 @@ solver = COIN_CMD(
     timeMode='elapsed',     # 'elapsed' (wall-clock) or 'cpu'
     maxNodes=None,          # Max branch-and-bound nodes
 )
+```
+
+> **Breaking change:** `PULP_CBC_CMD` has been removed. Use `COIN_CMD` instead. If no path is given, PuLP resolves the CBC binary in this order: (1) bundled via `cbcbox` package if installed, (2) system PATH.
+
+### COIN_CMD Resolution Order
+
+```bash
+# Option 1: Install bundled CBC
+pip install pulp[cbc]
+
+# Option 2: System install
+sudo apt install coinor-cbc          # Debian/Ubuntu
+brew install coin-or-cbc             # macOS
+```
+
+```python
+# Explicit path (always works)
+solver = COIN_CMD(path='/usr/bin/cbc')
 ```
 
 ## GLPK_CMD

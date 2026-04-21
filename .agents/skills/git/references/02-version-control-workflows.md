@@ -159,13 +159,27 @@ git pull origin main                    # Pull specific branch from specific rem
 git push                                # Push to configured upstream branch
 git push origin main                    # Push 'main' to 'origin'
 git push --set-upstream origin main     # Set upstream tracking for new branch
-git push -f                             # Force push (rewrite remote history — DANGEROUS)
-git push --force-with-lease             # Safer force push (fails if remote changed)
+git push -u origin main                 # Shorthand for --set-upstream
 git push --tags                         # Push all tags
 git push origin --delete <branch>       # Delete remote branch
 ```
 
-**`--force-with-lease` vs `--force`:** `--force-with-lease` checks that the remote branch hasn't been updated by someone else since your last fetch. It's significantly safer for shared branches.
+**Force-Pushing (Rewritten History):**
+
+When you've rebased, amended, or squashed commits, you need to force-push to update the remote:
+
+```bash
+git push --force-with-lease             # Safe: fails if someone pushed in the meantime
+git push -f                             # Dangerous: overwrites remote regardless
+git push --force                        # Same as -f
+```
+
+**Always prefer `--force-with-lease`.** It checks that the remote branch hasn't been updated by someone else since your last fetch. A plain `-f` will silently overwrite a collaborator's commits.
+
+**When force-push is appropriate:**
+- ✅ Rebasing/amending your own local, unpushed commits
+- ✅ Squashing commits before the first push
+- ❌ Rewriting history on shared branches (coordinate with team)
 
 ## Tags
 

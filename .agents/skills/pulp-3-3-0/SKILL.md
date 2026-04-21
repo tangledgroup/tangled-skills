@@ -1,6 +1,6 @@
 ---
 name: pulp-3-3-0
-description: Complete toolkit for PuLP 3.3.0, a Python linear and mixed-integer programming (MIP) modeling library that generates MPS/LP files and calls solvers like CBC, GLPK, CPLEX, Gurobi, MOSEK, and COPT. Use when formulating optimization problems in Python, solving LP/MIP models, working with variables/constraints/objectives, configuring solver backends, or performing sensitivity/what-if analysis on linear programs.
+description: Complete toolkit for PuLP 3.3.0, a Python linear and mixed-integer programming (MIP) modeling library that generates MPS/LP/JSON files and calls solvers like CBC, GLPK, CPLEX, Gurobi, MOSEK, HiGHS, COPT, and SCIP. Use when formulating optimization problems in Python, solving LP/MIP models, working with variables/constraints/objectives, configuring solver backends, or performing model export/import for external solver use.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "3.3.0"
@@ -18,16 +18,16 @@ external_references:
 
 # PuLP 3.3.0
 
-PuLP (Python Linear Programming) is an LP modeler written in Python. It generates MPS or LP files and calls solvers such as CBC, GLPK, CPLEX, Gurobi, MOSEK, COPT, CHOCO, MIPCL, and SCIP to solve linear programming and mixed-integer programming problems.
+PuLP (Python Linear Programming) is an LP modeler written in Python. It generates MPS, LP, or JSON files and calls solvers such as CBC, GLPK, CPLEX, Gurobi, MOSEK, COPT, CHOCO, MIPCL, HiGHS, SCIP, and XPRESS to solve linear programming (LP) and mixed-integer programming (MIP) problems.
 
 ## When to Use
 
 - Formulating and solving linear programming (LP) problems in Python
 - Mixed-integer programming (MIP) with binary, integer, or continuous variables
-- Transportation, blending, scheduling, assignment, and resource allocation problems
-- Sensitivity analysis on optimal solutions
-- Model export to MPS/LP/JSON formats for external solver use
+- Transportation, blending, scheduling, assignment, set partitioning, and resource allocation problems
+- Model export/import to MPS/LP/JSON formats for external solver use
 - Multi-scenario stochastic optimization
+- MIP warm-starting (providing initial feasible solutions to guide the solver)
 
 ## Core Concepts
 
@@ -55,8 +55,8 @@ PuLP models this through three building blocks: **variables**, **objective funct
 
 PuLP separates model formulation from solving. Solvers integrate via two patterns:
 
-- **CMD solvers** - invoke solver as external binary (e.g., `COIN_CMD`, `GLPK_CMD`, `CPLEX_CMD`). Configured via `path=` for custom binary location.
-- **Python API solvers** - use solver's Python library directly (e.g., `GUROBI`, `CPLEX_PY`, `MOSEK`). Accessed as solver objects.
+- **CMD solvers** — invoke solver as external binary (e.g., `COIN_CMD`, `GLPK_CMD`, `CPLEX_CMD`). Configured via `path=` for custom binary location.
+- **Python API solvers** — use solver's Python library directly (e.g., `GUROBI`, `CPLEX_PY`, `MOSEK`). Accessed as solver objects.
 
 Check available solvers:
 
@@ -73,14 +73,26 @@ solver = pulp.getSolver('COIN_CMD', timeLimit=60)
 ## Installation
 
 ```bash
-pip install pulp                    # Core library (CBC binary bundled for Linux/macOS/Windows)
-uvx pip install "pulp"              # With uv
+pip install pulp                    # Core library
+uv pip install pulp                 # With uv
+```
+
+### CBC Solver
+
+> **Important:** CBC is no longer bundled with PuLP. Install it via the `cbc` extra or ensure the `cbc` binary is on your system `PATH`.
+
+```bash
+pip install pulp[cbc]               # Bundled CBC binary (via cbcbox wheel)
+# OR: install cbc separately and ensure it's on PATH
+sudo apt install coinor-cbc         # Debian/Ubuntu
+brew install coin-or-cbc            # macOS
 ```
 
 ### Solver Extras
 
 | Extra | Package | Description |
 |-------|---------|-------------|
+| `cbc` | `cbcbox` | Bundled CBC binary (replaces PULP_CBC_CMD) |
 | `gurobi` | `gurobipy` | Gurobi Python API |
 | `cplex` | `cplex` | CPLEX Python API (Python < 3.12 on macOS) |
 | `mosek` | `mosek` | MOSEK Python API |
@@ -98,13 +110,13 @@ pip install pulp[mosek]             # MOSEK support
 pip install pulp[highs]             # HiGHS support
 ```
 
-PuLP requires **Python 3.9+**. CBC is bundled with PuLP for Linux (i32/i64/arm64), macOS (i64), and Windows (i32/i64).
+PuLP requires **Python 3.9+**.
 
-## Quick Start
+## Quick Start — Blending Problem (Canonical Example)
 
-### Basic LP - Dog Food Problem (Whiskas)
+The official PuLP case study: minimize cost of cat food while meeting nutritional requirements.
 
-Minimize cost of dog food while meeting nutritional requirements:
+### Simplified Version (2 Ingredients)
 
 ```python
 from pulp import *
@@ -113,20 +125,20 @@ from pulp import *
 prob = LpProblem("The Whiskas Problem", LpMinimize)
 
 # Decision variables: % of chicken and beef per can
-x1 = LpVariable("ChickenPercent", lowBound=0, cat='Integer')  # >= 0
-x2 = LpVariable("BeefPercent", lowBound=0)                      # >= 0 (no upper bound)
+x1 = LpVariable("ChickenPercent", lowBound=0, cat='Integer')
+x2 = LpVariable("BeefPercent", lowBound=0)
 
-# Objective: minimize cost (costs per unit)
-prob += 0.013 * x1 + 0.008 * x2, "Total Cost"
+# Objective: minimize cost (costs per gram)
+prob += 0.013 * x1 + 0.008 * x2, "Total Cost of Ingredients per can"
 
 # Constraints
-prob += x1 + x2 == 100, "PercentagesSum"                          # must sum to 100%
-prob += 0.100 * x1 + 0.200 * x2 >= 8.0, "ProteinRequirement"     # >= 8% protein
-prob += 0.080 * x1 + 0.100 * x2 >= 6.0, "FatRequirement"         # >= 6% fat
-prob += 0.001 * x1 + 0.005 * x2 <= 2.0, "FibreRequirement"       # <= 2% fibre
-prob += 0.002 * x1 + 0.005 * x2 <= 0.4, "SaltRequirement"        # <= 0.4% salt
+prob += x1 + x2 == 100, "PercentagesSum"
+prob += 0.100 * x1 + 0.200 * x2 >= 8.0, "ProteinRequirement"
+prob += 0.080 * x1 + 0.100 * x2 >= 6.0, "FatRequirement"
+prob += 0.001 * x1 + 0.005 * x2 <= 2.0, "FibreRequirement"
+prob += 0.002 * x1 + 0.005 * x2 <= 0.4, "SaltRequirement"
 
-# Solve with default solver
+# Solve
 prob.solve()
 
 # Results
@@ -136,49 +148,60 @@ for v in prob.variables():
 print("Total Cost =", value(prob.objective))
 ```
 
-### MIP - Sudoku Solver
+**Optimal solution:** Chicken = 33.33%, Beef = 66.67%, Total cost = $0.96/can.
 
-Use binary variables and `lpSum` for constraint programming:
+### Full Version (All Six Ingredients)
 
 ```python
 from pulp import *
 
-VALS = ROWS = COLS = range(1, 10)
-Boxes = [
-    [(3*i + k + 1, 3*j + l + 1) for k in range(3) for l in range(3)]
-    for i in range(3) for j in range(3)
-]
+# Parameters
+Ingredients = ["CHICKEN", "BEEF", "MUTTON", "RICE", "WHEAT", "GEL"]
+costs = {
+    "CHICKEN": 0.013, "BEEF": 0.008, "MUTTON": 0.010,
+    "RICE": 0.002, "WHEAT": 0.005, "GEL": 0.001
+}
+proteinPercent = {
+    "CHICKEN": 0.100, "BEEF": 0.200, "MUTTON": 0.150,
+    "RICE": 0.000, "WHEAT": 0.040, "GEL": 0.000
+}
+fatPercent = {
+    "CHICKEN": 0.080, "BEEF": 0.100, "MUTTON": 0.110,
+    "RICE": 0.010, "WHEAT": 0.010, "GEL": 0.000
+}
+fibrePercent = {
+    "CHICKEN": 0.001, "BEEF": 0.005, "MUTTON": 0.003,
+    "RICE": 0.100, "WHEAT": 0.150, "GEL": 0.000
+}
+saltPercent = {
+    "CHICKEN": 0.002, "BEEF": 0.005, "MUTTON": 0.007,
+    "RICE": 0.002, "WHEAT": 0.008, "GEL": 0.000
+}
 
-prob = LpProblem("Sudoku Problem")
+# Decision variables: percentage of each ingredient
+ingredient_vars = prob.add_variable_dict(
+    "Ingr", Ingredients, lowBound=0, cat='Continuous'
+)
 
-# Binary decision variables: value v at position (r, c)
-choices = LpVariable.dicts("Choice", (VALS, ROWS, COLS), cat='Binary')
+prob = LpProblem("The Whiskas Problem", LpMinimize)
 
-# Each cell has exactly one value
-for r in ROWS:
-    for c in COLS:
-        prob += lpSum(choices[v][r][c] for v in VALS) == 1
+# Objective: minimize total cost
+prob += lpSum(costs[i] * ingredient_vars[i] for i in Ingredients), "Total Cost"
 
-# Each value appears once per row, column, and box
-for v in VALS:
-    for r in ROWS:
-        prob += lpSum(choices[v][r][c] for c in COLS) == 1
-    for c in COLS:
-        prob += lpSum(choices[v][r][c] for r in ROWS) == 1
-    for b in Boxes:
-        prob += lpSum(choices[v][r][c] for (r, c) in b) == 1
-
-# Fixed clues as constraints
-clues = [(5,1,1),(6,2,1),(8,4,1),(4,5,1),(7,6,1),
-         (3,1,2),(9,3,2),(6,7,2),(8,3,3),(1,2,4)]
-for v, r, c in clues:
-    prob += choices[v][r][c] == 1
+# Constraints
+prob += lpSum(ingredient_vars[i] for i in Ingredients) == 100, "PercentagesSum"
+prob += lpSum(proteinPercent[i] * ingredient_vars[i] for i in Ingredients) >= 8.0, "ProteinRequirement"
+prob += lpSum(fatPercent[i] * ingredient_vars[i] for i in Ingredients) >= 6.0, "FatRequirement"
+prob += lpSum(fibrePercent[i] * ingredient_vars[i] for i in Ingredients) <= 2.0, "FibreRequirement"
+prob += lpSum(saltPercent[i] * ingredient_vars[i] for i in Ingredients) <= 0.4, "SaltRequirement"
 
 prob.solve()
-
-# Extract solution
-solution = [[value(choices[v][r][c]) for v in VALS] for r in ROWS for c in COLS]
+for i in Ingredients:
+    print(f"  {i}: {value(ingredient_vars[i]):.1f}%")
+print(f"Total Cost: ${value(prob.objective):.2f}")
 ```
+
+**Optimal solution:** 60% Beef, 40% Gel — Total cost = $0.52/can.
 
 ## Variables
 
@@ -211,16 +234,34 @@ print(z.isFixed())                # True if fixed
 
 | Category | Values | Use case |
 |----------|--------|----------|
-| `'Continuous'` | (-∞, ∞) or bounded range | Standard LP variables |
-| `'Integer'` | {..., -2, -1, 0, 1, 2, ...} | MIP: counts, quantities |
+| `'Continuous'` (or `LpContinuous`) | (-∞, ∞) or bounded range | Standard LP variables |
+| `'Integer'` (or `LpInteger`) | {..., -2, -1, 0, 1, 2, ...} | MIP: counts, quantities |
 | `'Binary'` | {0, 1} | MIP: yes/no, on/off, selection |
+
+### Variable Dictionary Methods
+
+```python
+# prob.add_variable_dict(prefix, keys, lowBound=0, upBound=None, cat='Continuous')
+x = prob.add_variable_dict("Prod", ["A", "B", "C"], lowBound=0)
+print(x["A"])       # LpVariable object
+
+# Matrix-style variable dicts (nested keys)
+y = prob.add_variable_dict("Ship", (plants, markets), lowBound=0)
+print(y["Seattle"]["New_York"])  # specific variable
+
+# Tuples as composite keys (common in transportation / assignment)
+z = prob.add_variable_dict("Route", (Warehouses, Bars), 0, None, LpInteger)
+print(z["A", "1"])  # route from warehouse A to bar 1
+```
 
 ### Fixing Variable Values
 
 ```python
-x.fixValue()           # Fixes to initial bound value
+x.fixValue()           # Fixes to initial bound value (sets lb == ub == current value)
 # or set bounds equal:
 x = LpVariable("x", lowBound=5, upBound=5)  # effectively fixed at 5
+# Check if fixed:
+print(x.isFixed())     # True if lowBound == upBound
 ```
 
 ## Problem Object
@@ -275,7 +316,7 @@ prob.setObjective(3*x + 5*y)
 prob.solve()
 
 # Solve with specific solver
-solver = pulp.GUROBI(timeLimit=300, mip= True)
+solver = pulp.GUROBI(timeLimit=300, mip=True)
 prob.solve(solver)
 
 # Or inline
@@ -300,7 +341,7 @@ print(LpStatus[prob.status])
 
 ### LpAffineExpression
 
-Linear combinations of variables: `a1x1 + a2x2 + ... + c`
+Linear combinations of variables: `a1x1 + a2x2 + ... + c`. A thin wrapper around Rust's `AffineExpr`.
 
 ```python
 from pulp import *
@@ -313,6 +354,8 @@ expr1 = x + 2*y + 3                    # arithmetic
 expr2 = lpSum([x, y, 2*x])             # sum a list
 expr3 = LpAffineExpression.from_dict({x: 2, y: 3})  # dict of {var: coeff}
 expr4 = LpAffineExpression.empty()     # empty expression
+expr5 = LpAffineExpression.from_variable(x)  # single variable
+expr6 = LpAffineExpression.from_constant(5)  # constant only
 
 # Use in constraints
 prob += expr1 <= 10, "my_constraint"
@@ -320,7 +363,7 @@ prob += expr1 <= 10, "my_constraint"
 
 ### lpSum
 
-Sums a list/vector of variables or expressions - the most common aggregation function:
+Sums a list/vector of variables or expressions — the most common aggregation function:
 
 ```python
 # Sum all x[i] for i in range(n)
@@ -331,25 +374,6 @@ costs = [1.2, 0.8, 1.5]
 prob += lpSum(c * x[i] for i, c in enumerate(costs)), "total_cost"
 ```
 
-### Adding Constraints
-
-```python
-# Syntax: prob += expression + "constraint_name"
-# The comparison operator (=, <=, >=) sets the constraint sense
-
-prob += x + y == 100, "sum_to_100"       # equality
-prob += 2*x + 3*y <= 50, "resource_limit" # less-than-or-equal
-prob += x >= 5, "min_x"                   # greater-than-or-equal
-
-# Indexed constraints (common pattern)
-demands = [10, 20, 15]
-for i, d in enumerate(demands):
-    prob += lpSum(x[i][j] for j in range(3)) >= d, f"demand_{i}"
-
-# Access constraints after creation
-print(prob.constraints["resource_limit"])  # LpConstraint object
-```
-
 ### Getting Solution Values
 
 ```python
@@ -357,11 +381,11 @@ print(prob.constraints["resource_limit"])  # LpConstraint object
 for v in prob.variables():
     print(f"{v.name} = {v.varValue}")
 
-# Or using value() function
-x_val = value(x)        # returns float or None if not solved
+# Or using value() function — returns float or None if not solved,
+# or returns the number itself if given a numeric argument
+x_val = value(x)               # returns float or None
 obj_val = value(prob.objective)
-
-# Shadow prices (dual values) and slack - access via solver-specific attributes
+scalar = value(42)             # returns 42 (passthrough for numbers)
 ```
 
 ## Solvers
@@ -383,7 +407,7 @@ Every solver accepts common parameters:
 ```python
 from pulp import *
 
-# CBC - default open-source solver (included with PuLP via cbcbox)
+# CBC — default open-source solver (install via pip install pulp[cbc])
 prob.solve(pulp.COIN_CMD(timeLimit=60, msg=True))
 
 # GLPK
@@ -394,6 +418,9 @@ prob.solve(pulp.CPLEX_CMD(timeLimit=300, mip=True, gapRel=0.01))
 
 # Gurobi
 prob.solve(pulp.GUROBI_CMD(timeLimit=600, mipGap=0.001))
+
+# HiGHS
+prob.solve(HiGHS_CMD(path='/usr/bin/highs', timeLimit=120))
 
 # SCIP
 prob.solve(pulp.SCIP_CMD(timeLimit=120))
@@ -416,9 +443,13 @@ prob.solve(cplex_solver)
 mosek_solver = pulp.MOSEK(msg=True)
 prob.solve(mosek_solver)
 
-# COPT (Requires copt installed)
+# COPT (requires coptpy installed)
 copt_solver = pulp.COPT(timeLimit=300, mipGap=0.01)
 prob.solve(copt_solver)
+
+# HiGHS (requires highspy installed)
+highs_solver = HiGHS(timeLimit=300, msg=True, parallel='off')
+prob.solve(highs_solver)
 ```
 
 ### Solver Parameters (Python API)
@@ -448,103 +479,247 @@ solver = pulp.CPLEX_PY(
 ### Export Formats
 
 ```python
-# Write .lp file (PuLP native format)
-prob.writeLP("model.lp")
+# Write .lp file (PuLP native format) — returns list of variables
+variables = prob.writeLP("model.lp")
 
-# Write .mps file
-prob.writeMPS("model.mps", mpsSense=0, rename=True, mip=True)
+# Write .mps file — returns (var_names, con_names, obj_name, pulp_names)
+result = prob.writeMPS("model.mps", mpsSense=0, rename=True, mip=True)
 
-# Write JSON
+# Write JSON — preserves complete model state including solution values
 prob.toJson("model.json")
+
+# Export to dictionary (in-memory)
+data = prob.to_dict()
 ```
 
-### Import from JSON
+### Import from File
 
 ```python
-# Load model and variables from JSON file
+from pulp import *
+
+# Load from JSON — returns (variables_dict, problem)
 variables_dict, loaded_prob = LpProblem.fromJson("model.json")
+
+# Load from MPS — returns (variables_dict, problem)
+variables_dict, loaded_prob = LpProblem.fromMPS("model.mps")
+
+# Use the loaded model
+loaded_prob.solve()
+for name, var in variables_dict.items():
+    print(f"  {name} = {var.varValue}")
+```
+
+### Export/Import Considerations
+
+- **JSON format** preserves complete model state including status, solution values, shadow prices, and reduced costs. It is the most comprehensive format.
+- **MPS format** is an industry standard but only stores variables, constraints, and objective — it does not store variable values or shadow prices.
+- **Variable names must be unique** for import/export to work correctly (PuLP uses internal IDs, but these are not exported).
+- Variables are exported flat — if you had nested dictionaries, grouping is not restored automatically.
+- For JSON export with NumPy/pandas data types, provide a custom encoder:
+
+```python
+import json, numpy as np
+
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return super().default(obj)
+
+prob.toJson("model.json", cls=NpEncoder)
 ```
 
 ## Advanced Patterns
 
-### Indexed/Parametric Models
+### Set Partitioning — Wedding Seating Problem
 
-The recommended pattern for real-world models uses dictionaries and list comprehensions:
+Determine optimal guest seating to maximize table happiness (from official case study). A set partitioning problem partitions items into subsets where every item appears in exactly one subset.
 
 ```python
-from pulp import *
+import pulp
 
-# Parameters
-plants = ["Seattle", "San_Diego"]
-markets = ["New_York", "Chicago", "Topeka"]
-capacity = {"Seattle": 355, "San_Diego": 600}
-demand = {"New_York": 325, "Chicago": 300, "Topeka": 275}
-distance = {
-    ("Seattle", "New_York"): 2.5, ("Seattle", "Chicago"): 1.7,
-    ("Seattle", "Topeka"): 1.8,   ("San_Diego", "New_York"): 2.5,
-    ("San_Diego", "Chicago"): 1.8, ("San_Diego", "Topeka"): 1.4
-}
-freight = 90  # cost per unit per 1000 miles
+max_tables = 5
+max_table_size = 4
+guests = "A B C D E F G I J K L M N O P Q R".split()
 
-# Decision variables: shipments from each plant to each market
-shipments = LpVariable.dicts("Ship", (plants, markets), lowBound=0, cat='Continuous')
+def happiness(table):
+    """Max distance between first and last letter of table."""
+    return abs(ord(table[0]) - ord(table[-1]))
 
-# Problem
-prob = LpProblem("Transportation Problem", LpMinimize)
+# Generate all possible table combinations (up to max_table_size guests per table)
+possible_tables = [tuple(c) for c in pulp.allcombinations(guests, max_table_size)]
 
-# Objective: minimize total shipping cost
-prob += lpSum(
-    shipments[i][j] * distance[i][j] * freight / 1000
-    for i in plants for j in markets
-), "TotalCost"
+prob = pulp.LpProblem("Wedding Seating Model", pulp.LpMinimize)
 
-# Supply constraints
-for i in plants:
-    prob += lpSum(shipments[i][j] for j in markets) <= capacity[i], f"Supply_{i}"
+# Binary variable: 1 if this table configuration is used
+_table_keys = ["_".join(t) for t in possible_tables]
+vars_by_key = prob.add_variable_dict(
+    "table_%s", (_table_keys,), lowBound=0, upBound=1, cat=pulp.LpInteger
+)
+x = {t: vars_by_key["_".join(t)] for t in possible_tables}
 
-# Demand constraints
-for j in markets:
-    prob += lpSum(shipments[i][j] for i in plants) == demand[j], f"Demand_{j}"
+# Objective: minimize total unhappiness (sum of max distances per table)
+prob += pulp.lpSum([happiness(table) * x[table] for table in possible_tables])
+
+# At most max_tables tables
+prob += pulp.lpSum([x[table] for table in possible_tables]) <= max_tables, "MaxTables"
+
+# Each guest seated at exactly one table (set partitioning constraint)
+for guest in guests:
+    prob += pulp.lpSum([x[table] for table in possible_tables if guest in table]) == 1, f"Must_seat_{guest}"
 
 prob.solve()
+print(f"The chosen tables are out of a total of {len(possible_tables)}:")
+for table in possible_tables:
+    if x[table].value() == 1.0:
+        print(table)
 ```
 
-### Stochastic / Two-Stage Optimization
+### Sudoku Solver (Constraint Satisfaction via LP)
+
+Sudoku is modeled as a pure constraint satisfaction problem with no objective function. Binary variables encode "cell (r,c) has value v".
 
 ```python
 from pulp import *
 
-# First stage: decision before uncertainty is resolved
-steel = LpVariable("SteelPurchase", lowBound=0, cat='Continuous')
+# All rows, columns and values within a Sudoku take values from 1 to 9
+VALS = ROWS = COLS = range(1, 10)
 
-# Second stage: decisions after scenario realization
-scenarios = [0, 1, 2, 3]
+# Boxes list: row and column indices of each square in each 3x3 box
+Boxes = [
+    [(3 * i + k + 1, 3 * j + l + 1) for k in range(3) for l in range(3)]
+    for i in range(3) for j in range(3)
+]
+
+# No objective function — this is a constraint satisfaction problem
+prob = LpProblem("Sudoku Problem")
+
+# Binary decision variables: choices[v, r, c] = 1 if value v is at (r, c)
+choices = prob.add_variable_dict("Choice", (VALS, ROWS, COLS), 0, 1, LpBinary)
+
+# Each cell has exactly one value
+for r in ROWS:
+    for c in COLS:
+        prob += lpSum([choices[v, r, c] for v in VALS]) == 1
+
+# Each value appears once per row, column, and box
+for v in VALS:
+    for r in ROWS:
+        prob += lpSum([choices[v, r, c] for c in COLS]) == 1
+    for c in COLS:
+        prob += lpSum([choices[v, r, c] for r in ROWS]) == 1
+    for b in Boxes:
+        prob += lpSum([choices[v, r, c] for (r, c) in b]) == 1
+
+# Given clues as constraints
+input_data = [
+    (5, 1, 1), (6, 2, 1), (8, 4, 1), (4, 5, 1), (7, 6, 1),
+    (3, 1, 2), (9, 3, 2), (6, 7, 2), (8, 3, 3), (1, 2, 4),
+    (8, 5, 4), (4, 8, 4), (7, 1, 5), (9, 2, 5), (6, 4, 5),
+    (2, 6, 5), (1, 8, 5), (8, 9, 5), (5, 2, 6), (3, 5, 6),
+    (9, 8, 6), (2, 7, 7), (6, 3, 8), (8, 7, 8), (7, 9, 8),
+    (3, 4, 9), (1, 5, 9), (6, 6, 9), (5, 8, 9),
+]
+for v, r, c in input_data:
+    prob += choices[v, r, c] == 1
+
+prob.solve()
+print("Status:", LpStatus[prob.status])
+```
+
+**Key insight:** Sudoku uses **no objective function**. PuLP allows this — the solver simply finds any feasible solution satisfying all constraints. To enumerate multiple solutions, add a constraint excluding the found solution and re-solve:
+
+```python
+# Exclude current solution and find next one
+prob += lpSum([
+    choices[v, r, c] for v in VALS for r in ROWS for c in COLS
+    if value(choices[v, r, c]) == 1
+]) <= 80  # At most 80 of 81 cells match
+```
+
+### Two-Stage Stochastic Production Planning
+
+GTC produces wrenches and pliers. Steel is purchased now; assembly capacity and earnings are uncertain and revealed next period. This is a **two-stage stochastic program** with recourse.
+
+```python
+import pulp
+
+# --- First-stage parameters (known now) ---
 products = ["wrenches", "pliers"]
-production_vars = LpVariable.dicts("Prod", (scenarios, products), lowBound=0)
+steel = [1.5, 1]          # steel per unit
+molding = [1, 1]          # molding hours per unit
+assembly = [0.3, 0.5]     # assembly hours per unit
+cap_steel = 27            # total steel available
+cap_molding = 21          # molding capacity
+capacity_ub = [15, 16]    # max demand per product
+steelprice = 58           # cost per unit of steel
 
-# Scenario probabilities and returns
-probabilities = [0.25, 0.25, 0.25, 0.25]
-returns = {0: [160, 100], 1: [160, 100], 2: [90, 100], 3: [90, 100]}
+# --- Scenario parameters (uncertain, known next period) ---
+scenarios = [0, 1, 2, 3]
+pscenario = [0.25, 0.25, 0.25, 0.25]
+wrenchearnings = [160, 160, 90, 90]
+plierearnings = [100, 100, 100, 100]
+capassembly = [8, 10, 8, 10]   # assembly capacity per scenario
 
-prob = LpProblem("Stochastic Production", LpMaximize)
+# Build parameter dictionaries
+production = [(j, i) for j in scenarios for i in products]
+price_dict = {
+    (j, i): (wrenchearnings[j], plierearnings[j])[i]
+    for j in scenarios for i in products
+}
+capacity_dict = dict(zip(products, capacity_ub * 4))
+steel_dict = dict(zip(products, steel))
+molding_dict = dict(zip(products, molding))
+assembly_dict = dict(zip(products, assembly))
+
+# --- Model ---
+prob = pulp.LpProblem("Gemstone Tool Problem", pulp.LpMaximize)
+
+# Second-stage variables: production quantity per scenario
+production_vars = prob.add_variable_dict(
+    "production", (scenarios, products), 0, None, pulp.LpContinuous
+)
+
+# First-stage variable: steel to purchase
+steelpurchase = prob.add_variable("steelpurchase", 0, None, pulp.LpContinuous)
 
 # Objective: expected profit minus steel cost
-prob += lpSum(
-    probabilities[s] * (returns[s][0]*production_vars[s][0] + returns[s][1]*production_vars[s][1])
-    for s in scenarios
-) - steel * 58, "ExpectedProfit"
+prob += (
+    pulp.lpSum([
+        pscenario[j] * price_dict[(j, i)] * production_vars[j, i]
+        for (j, i) in production
+    ]) - steelpurchase * steelprice,
+    "TotalProfit"
+)
 
-# First-stage constraint: steel budget
-prob += steel <= 27, "SteelBudget"
+# Per-scenario constraints
+for j in scenarios:
+    prob += pulp.lpSum([
+        steel_dict[i] * production_vars[j, i] for i in products
+    ]) - steelpurchase <= 0, f"Steel_{j}"
+    prob += pulp.lpSum([
+        molding_dict[i] * production_vars[j, i] for i in products
+    ]) <= cap_molding, f"Molding_{j}"
+    prob += pulp.lpSum([
+        assembly_dict[i] * production_vars[j, i] for i in products
+    ]) <= capassembly[j], f"Assembly_{j}"
+    for i in products:
+        prob += production_vars[j, i] <= capacity_dict[i], f"Demand_{j}_{i}"
 
-# Second-stage constraints per scenario
-for s in scenarios:
-    prob += production_vars[s][0] + production_vars[s][1] <= 21, f"Molding_{s}"
+prob.solve()
+print("Status:", pulp.LpStatus[prob.status])
+for v in prob.variables():
+    print(f"  {v.name} = {v.varValue}")
+print("Total Profit =", pulp.value(prob.objective))
 ```
 
 ### MIP Start (Warm Start)
 
-Pre-assign variable values before solving to guide the solver:
+Provide initial variable values to guide the solver. Supported by: CPLEX_CMD, GUROBI_CMD, COIN_CMD (CBC), CPLEX_PY, GUROBI, XPRESS, XPRESS_PY.
 
 ```python
 from pulp import *
@@ -554,21 +729,26 @@ x = LpVariable.dicts("x", range(5), cat='Binary')
 prob += lpSum(x[i] for i in range(5)) >= 3
 prob += x[0] + x[1] <= 1
 
-# Set initial values (MIP start)
-x[0].lowBound = 1; x[0].upBound = 1  # fix to 1
-# or set bounds to same value for warm start hint
+# Method 1: Set initial values via bounds (CBC)
+x[0].lowBound = 1; x[0].upBound = 1   # fix at 1
+x[2].lowBound = 0; x[2].upBound = 0    # fix at 0
 
-prob.solve(pulp.COIN_CMD(warmStart=True))
+# Method 2: Use setInitialValue + fixValue
+x[3].setInitialValue(1)
+x[3].fixValue()
+
+# Solve with warm start enabled
+prob.solve(COIN_CMD(msg=True, warmStart=True))
 ```
 
 ### Debugging and Inspection
 
 ```python
-# Print model as string
+# Print model as string (objective + constraints)
 print(prob)
 
-# Write model to file for inspection
-prob.writeLP("debug.lp")
+# Write model to file for external inspection
+variables = prob.writeLP("debug.lp")
 
 # List all constraints with names
 for name, c in prob.constraints.items():
@@ -581,13 +761,62 @@ print(f"Available solvers: {solvers}")
 
 # Get solver by name
 solver = pulp.getSolver('COIN_CMD', timeLimit=60, msg=False)
+
+# Round solution to integer (for MIP problems)
+prob.roundSolution()
+```
+
+## Utility Functions
+
+### Combinations and Permutations
+
+```python
+from pulp import *
+
+# Fixed-length combinations
+list(combination(range(4), 3))   # [(0,1,2), (0,1,3), (0,2,3), (1,2,3)]
+
+# All combinations up to length k
+list(allcombinations([1,2,3,4], 2))
+# [(1,), (2,), (3,), (4,), (1,2), (1,3), (1,4), (2,3), (2,4), (3,4)]
+
+# Fixed-length permutations
+list(permutation(range(3), 2))   # [(0,1), (0,2), (1,0), (1,2), (2,0), (2,1)]
+
+# All permutations up to length k
+list(allpermutations([1,2,3], 2))
+# [(1,), (2,), (3,), (1,2), (1,3), (2,1), (2,3), (3,1), (3,2)]
+```
+
+### Value Function
+
+```python
+from pulp import *
+
+x = LpVariable("x")
+prob += x == 42
+prob.solve()
+
+# value(x) returns the solution value, or x if it's a number
+value(x)           # 42.0
+value(3.14)        # 3.14 (passthrough)
+value(prob.objective)  # objective value after solve
 ```
 
 ## Reference Files
 
-- [`references/01-solver-reference.md`](references/01-solver-reference.md) - Complete solver API reference, all solver classes and parameters
-- [`references/02-examples.md`](references/02-examples.md) - Worked examples: transportation, blending, scheduling, stochastic optimization
-- [`references/03-guides.md`](references/03-guides.md) - Solver configuration, MIP start, model export/debugging
+- [`references/01-solver-reference.md`](references/01-solver-reference.md) — Complete solver API reference, all solver classes and parameters
+- [`references/02-examples.md`](references/02-examples.md) — Worked examples: transportation (beer distribution), blending, assignment, production planning, knapsack, diet, facility location
+- [`references/03-guides.md`](references/03-guides.md) — Solver configuration, MIP start, model export/debugging, conditional logic, SOS, piecewise linear, performance tips
+
+## Ecosystem Plugins
+
+| Plugin | Description |
+|--------|-------------|
+| [**lparray**](https://github.com/qdbp/pulp-lparray) | NumPy-style arrays for PuLP variables. Broadcasting, reshaping, axis operations. Linearize min/max, abs, clip, boolean ops. |
+| [**pytups**](https://pchtsp.github.io/pytups/) | `SuperDict` and `TupList` with pandas-like chaining. Transform nested dicts to flat lists and back. Works seamlessly with PuLP. |
+| [**amply**](https://github.com/Pyomo/amply) | AMPL data manipulation. Load AMPL data files into PuLP models. Provides `makeDict()` for converting 2D cost matrices into nested dictionaries (used in the transportation case study). |
+| [**orloge**](https://coin-or.github.io/pulp/plugins/orloge.html) | OR log parser for solver output analysis. |
 
 ## References
 
@@ -595,3 +824,4 @@ solver = pulp.getSolver('COIN_CMD', timeLimit=60, msg=False)
 - GitHub repository: https://github.com/coin-or/pulp
 - API reference: https://coin-or.github.io/pulp/technical/pulp.html
 - Solvers guide: https://coin-or.github.io/pulp/technical/solvers.html
+- Case studies: https://coin-or.github.io/pulp/CaseStudies/index.html

@@ -7,13 +7,33 @@
 ```python
 import pulp
 
-# All registered solvers
+# All registered solvers (includes unavailable ones)
 print(pulp.listSolvers())
 # ['GLPK_CMD', 'COIN_CMD', 'CPLEX_CMD', 'GUROBI_CMD', 'MOSEK', 'XPRESS_CMD', ...]
 
 # Only installed/available solvers
 print(pulp.listSolvers(onlyAvailable=True))
 # ['COIN_CMD', 'GLPK_CMD']  # depends on what's installed
+
+# Get solver by name (args passed to constructor)
+solver = pulp.getSolver('COIN_CMD', timeLimit=60, msg=False)
+```
+
+### CBC Solver Configuration
+
+> **Important:** `PULP_CBC_CMD` has been removed. Use `COIN_CMD` instead.
+
+```python
+from pulp import *
+
+# With bundled CBC (pip install pulp[cbc])
+solver = COIN_CMD(timeLimit=60)
+
+# With system binary (ensure cbc is on PATH)
+solver = COIN_CMD()
+
+# With explicit path
+solver = COIN_CMD(path='/usr/bin/cbc')
 ```
 
 ### Getting Solver by Name
@@ -48,6 +68,36 @@ Or specify `path=` parameter:
 prob.solve(pulp.GLPK_CMD(path='/opt/glpk/bin/glpksol'))
 ```
 
+## Data Utilities
+
+### makeDict — Convert 2D Arrays to Nested Dictionaries
+
+`makeDict` is from the `amply` plugin. It converts a 2D list into a nested dictionary with default values. Used in the official transportation case study.
+
+```python
+from amply import makeDict
+
+# Input: 2D cost matrix with row/column labels
+costs = [
+    [2, 4, 5, 2, 1],  # A
+    [3, 1, 3, 2, 3],  # B
+]
+Warehouses = ["A", "B"]
+Bars = ["1", "2", "3", "4", "5"]
+
+# Convert to nested dict: costs_dict["A"]["1"] = 2
+costs_dict = makeDict([Warehouses, Bars], costs, default=0)
+
+# Access by label
+print(costs_dict["A"]["1"])   # 2
+print(costs_dict["B"]["3"])   # 3
+
+# Default value for missing keys (e.g., adding a third warehouse)
+print(costs_dict["C"]["2"])   # 0 (default)
+```
+
+This pattern is essential for the transportation problem where cost matrices are naturally 2D arrays but need dictionary access by node labels.
+
 ## Model Export and Import
 
 ### Writing Models to File
@@ -61,14 +111,18 @@ y = LpVariable("y", lowBound=0)
 prob += x + y <= 10
 prob += 2*x + 3*y >= 5
 
-# .lp file — PuLP native format
-prob.writeLP("model.lp")
+# .lp file — PuLP native format (returns list of variables)
+variables = prob.writeLP("model.lp")
 
-# .mps file — standard LP interchange format
-prob.writeMPS("model.mps", mpsSense=0, rename=True, mip=True)
+# .mps file — standard LP interchange format (returns tuple)
+result = prob.writeMPS("model.mps", mpsSense=0, rename=True, mip=True)
+# result = (var_names, con_names, obj_name, pulp_names_in_column_order)
 
-# .json file
+# .json file — full model state including solution values
 prob.toJson("model.json")
+
+# In-memory export
+data = prob.to_dict()
 ```
 
 ### Reading Models from File
@@ -79,15 +133,39 @@ from pulp import *
 # Load from JSON — returns (variables_dict, problem)
 variables_dict, loaded_prob = LpProblem.fromJson("model.json")
 
+# Load from MPS — returns (variables_dict, problem)
+variables_dict, loaded_prob = LpProblem.fromMPS("model.mps")
+
 # Use the loaded model
 loaded_prob.solve()
 for name, var in variables_dict.items():
     print(f"  {name} = {var.varValue}")
 ```
 
+### Export/Import Considerations
+
+- **JSON format** preserves complete model state including status, solution values, shadow prices, and reduced costs.
+- **MPS format** is an industry standard but only stores variables, constraints, and objective — no variable values or shadow prices.
+- **Variable names must be unique** for import/export to work correctly.
+- Variables are exported flat — nested dictionary grouping is not restored automatically.
+- For JSON with NumPy/pandas data types, provide a custom encoder:
+
+```python
+import json, numpy as np
+
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer): return int(obj)
+        elif isinstance(obj, np.floating): return float(obj)
+        elif isinstance(obj, np.ndarray): return obj.tolist()
+        return super().default(obj)
+
+prob.toJson("model.json", cls=NpEncoder)
+```
+
 ## MIP Start (Warm Start)
 
-Provide initial variable values to guide the solver:
+Provide initial variable values to guide the solver. Supported by: CPLEX_CMD, GUROBI_CMD, COIN_CMD (CBC), CPLEX_PY, GUROBI, XPRESS, XPRESS_PY.
 
 ```python
 from pulp import *
@@ -97,16 +175,19 @@ x = LpVariable.dicts("x", range(5), cat='Binary')
 prob += lpSum(x[i] for i in range(5)) >= 3
 prob += x[0] + x[1] <= 1
 
-# Set initial values via bounds (CBC)
-# Fix variable to a value by setting equal bounds
+# Method 1: Set initial values via bounds (CBC)
 x[0].lowBound = 1; x[0].upBound = 1   # fix at 1
 x[2].lowBound = 0; x[2].upBound = 0    # fix at 0
 
-# Or use warmStart parameter
-prob.solve(COIN_CMD(warmStart=True))
+# Method 2: Use setInitialValue + fixValue
+x[3].setInitialValue(1)
+x[3].fixValue()
+
+# Solve with warm start enabled
+prob.solve(COIN_CMD(msg=True, warmStart=True))
 ```
 
-For Python API solvers, set values directly on solver objects:
+For Python API solvers, access solver-specific variable objects after solve:
 
 ```python
 solver = pulp.GUROBI()

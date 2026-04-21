@@ -1,6 +1,90 @@
 # Worked Examples
 
-## Transportation Problem
+## Beer Distribution Problem (Official Transportation Case Study)
+
+The canonical PuLP transportation problem: minimize shipping cost from breweries to bars.
+
+From the official [PuLP case study](https://coin-or.github.io/pulp/CaseStudies/a_transportation_problem.html):
+
+```python
+from pulp import *
+
+# Supply nodes (warehouses)
+Warehouses = ["A", "B"]
+supply = {"A": 1000, "B": 4000}
+
+# Demand nodes (bars)
+Bars = ["1", "2", "3", "4", "5"]
+demand = {
+    "1": 500, "2": 900, "3": 1800,
+    "4": 200, "5": 700
+}
+
+# Cost matrix: costs[warehouse_index][bar_index]
+costs = [
+    [2, 4, 5, 2, 1],  # A
+    [3, 1, 3, 2, 3],  # B
+]
+
+# Convert to dictionary using makeDict from amply:
+# costs_dict["A"]["1"] = 2, costs_dict["B"]["3"] = 3
+from amply import makeDict
+costs_dict = makeDict([Warehouses, Bars], costs, default=0)
+
+# Problem
+prob = LpProblem("Beer Distribution Problem", LpMinimize)
+
+# Decision variables: crates shipped from each warehouse to each bar
+vars = prob.add_variable_dict(
+    "Route", (Warehouses, Bars), lowBound=0, cat=LpInteger
+)
+
+# Objective: minimize total transportation cost
+prob += (
+    lpSum([vars[w, b] * costs_dict[w][b] for w in Warehouses for b in Bars]),
+    "TotalTransportCost"
+)
+
+# Supply constraints: each warehouse ships at most its supply
+for w in Warehouses:
+    prob += (
+        lpSum([vars[w, b] for b in Bars]) <= supply[w],
+        f"Supply_{w}"
+    )
+
+# Demand constraints: each bar receives at least its demand
+for b in Bars:
+    prob += (
+        lpSum([vars[w, b] for w in Warehouses]) >= demand[b],
+        f"Demand_{b}"
+    )
+
+prob.solve()
+print(f"Status: {LpStatus[prob.status]}")
+for w in Warehouses:
+    for b in Bars:
+        if value(vars[w, b]) > 0:
+            print(f"  Ship {vars[w, b].varValue:.0f} from {w} to {b}")
+print(f"Total Cost: ${value(prob.objective):,.0f}")
+```
+
+### Unbalanced Transportation (Supply > Demand)
+
+When total supply exceeds total demand, add a dummy demand node:
+
+```python
+# Add dummy bar D with demand = excess supply
+demand["D"] = 900  # 6000 supply - 5100 demand
+
+# Zero cost to dummy (unsatisfied supply has no shipping cost)
+costs.append([0, 0, 0, 0, 0, 0])  # costs from C to all bars + dummy
+
+# Add third warehouse
+Warehouses.append("C")
+supply["C"] = 100
+```
+
+## Transportation Problem (General)
 
 Minimize shipping cost from plants to markets:
 
@@ -294,6 +378,61 @@ prob += lpSum(build[s] for s in potential_sites) <= max_sites, "MaxFacilities"
 prob.solve()
 print("Built:", [s for s in potential_sites if value(build[s]) == 1])
 ```
+
+## Set Partitioning — Wedding Seating Problem
+
+Determine optimal guest seating to maximize table happiness (from official case study).
+
+From the [official PuLP case study](https://coin-or.github.io/pulp/CaseStudies/a_set_partitioning_problem.html):
+
+```python
+import pulp
+from typing import Tuple, Union
+
+max_tables = 5
+max_table_size = 4
+guests = "A B C D E F G I J K L M N O P Q R".split()
+
+def happiness(table: Union[Tuple[str, ...],]) -> int:
+    """Happiness = max distance between first and last letter."""
+    return abs(ord(table[0]) - ord(table[-1]))
+
+# Generate all possible table combinations (up to max_table_size guests)
+possible_tables = [tuple(c) for c in pulp.allcombinations(guests, max_table_size)]
+
+prob = pulp.LpProblem("Wedding Seating Model", pulp.LpMinimize)
+
+# Binary variable: 1 if this table configuration is used
+_table_keys = ["_".join(t) for t in possible_tables]
+vars_by_key = prob.add_variable_dict(
+    "table_%s", (_table_keys,), lowBound=0, upBound=1, cat=pulp.LpInteger
+)
+x = {t: vars_by_key["_".join(t)] for t in possible_tables}
+
+# Objective: minimize total unhappiness
+prob += pulp.lpSum([happiness(table) * x[table] for table in possible_tables])
+
+# At most max_tables tables
+prob += (
+    pulp.lpSum([x[table] for table in possible_tables]) <= max_tables,
+    "Maximum_number_of_tables"
+)
+
+# Each guest seated at exactly one table (set partitioning constraint)
+for guest in guests:
+    prob += (
+        pulp.lpSum([x[table] for table in possible_tables if guest in table]) == 1,
+        f"Must_seat_{guest}"
+    )
+
+prob.solve()
+print(f"The chosen tables are out of a total of {len(possible_tables)}:")
+for table in possible_tables:
+    if x[table].value() == 1.0:
+        print(table)
+```
+
+**Key insight:** Set partitioning problems enumerate all feasible subsets and use binary variables to select which subsets form the partition. The constraint `sum(x[table] for table containing guest) == 1` ensures each element appears in exactly one subset.
 
 ## Two-Stage Stochastic Programming
 

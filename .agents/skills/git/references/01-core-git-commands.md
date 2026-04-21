@@ -43,11 +43,38 @@ Output columns:
 
 ```bash
 git add <file>                        # Stage a specific file
-git add .                             # Stage all changes in current directory
+git add .                             # Stage all modified + new files in current dir tree (not deleted)
 git add -p                            # Interactive staging (hunk by hunk)
-git add -A                            # Stage all (tracked + new, but not deleted)
-git add -u                            # Stage modified/deleted tracked files only
+git add -A                            # Stage ALL changes: modified, new, and deleted (entire repo)
+git add -u                            # Stage only modified/deleted tracked files (ignores untracked)
 ```
+
+**Key differences between `add .`, `add -A`, and `add -u`:**
+
+| Command | New files | Modified files | Deleted files | Untracked files |
+|---------|-----------|---------------|---------------|----------------|
+| `git add .` | ✅ (in dir tree) | ✅ | ❌ | ❌ |
+| `git add -A` | ✅ | ✅ | ✅ | ❌ |
+| `git add -u` | ❌ | ✅ | ✅ | ❌ |
+
+> **Rule of thumb:** Use `git add -A` when committing all changes. Use `git add .` when you only want to stage files in the current directory tree. Use `git add -u` when working with a clean repo (no new files).
+
+### Interactive Staging (`-p`)
+
+When you've changed multiple things but want to commit them separately:
+
+```bash
+git add -p                        # Interactive: accept/reject hunks
+git add -p <file>                 # Interactive for a specific file
+```
+
+In interactive mode, Git shows **hunks** (contiguous changed blocks). Press:
+- `y` — accept this hunk
+- `n` — skip this hunk
+- `e` — manually edit which lines to stage
+- `s` — split hunk into smaller pieces
+- `q` — quit, accepting none of the remaining hunks
+- `a` — accept all remaining hunks in this file
 
 ### View Differences
 
@@ -64,14 +91,25 @@ git diff --stat                       # Summary of changes (files changed, inser
 ### Commit Changes
 
 ```bash
-git commit -m "feat: add user authentication"   # Commit with message
-git commit -a -m "message"                      # Stage modified+deleted + commit (skips add)
+git commit -m "feat: add user authentication"   # Commit with one-line message
+git commit -a -m "message"                      # Auto-stage modified+deleted + commit (skips add)
+git commit                                      # Open editor for detailed message (recommended)
 git commit --amend                              # Modify the most recent commit
 git commit --amend --no-edit                    # Amend without changing message
 git commit --verbose                            # Show diff in commit editor
 ```
 
-**Amending commits:** Use `--amend` to fix mistakes in the last commit (add forgotten files, fix typo in message). Only amend local, unpushed commits.
+**Amending commits:** Use `--amend` to fix mistakes in the last commit (add forgotten files, fix typo in message). Only amend **local, unpushed** commits.
+
+```bash
+# Workflow: commit, then realize you forgot a file
+git commit -m "feat: add user authentication"
+git add forgotten_file.py                       # Stage the missed file
+git commit --amend --no-edit                    # Fold it into previous commit
+git push --force-with-lease                     # Update remote (safe force-push)
+```
+
+**`git commit -a` vs `git add + git commit`:** `-a` auto-stages all modified and deleted tracked files before committing, but ignores untracked (new) files. Use it for quick commits when you know there are no new files to stage.
 
 ## Stashing Changes
 
