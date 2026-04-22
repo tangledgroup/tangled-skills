@@ -5,7 +5,7 @@ description: >
   Keep a Changelog message bodies, and Semantic Versioning 2.0.0. Use when managing repositories,
   writing structured commit messages with conventional types and changelog-style bodies,
   bumping versions, or analyzing codebase health through git history.
-version: "0.4.0"
+version: "0.4.1"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
