@@ -57,13 +57,6 @@ Yes: "Bug in auth middleware. Token expiry check uses `<` not `<=`. Fix:"
 | **full** | Drop articles, fragments OK, short synonyms. Classic pruning |
 | **ultra** | Abbreviate (DB/auth/config/req/res/fn/impl), strip conjunctions, arrows for causality (X → Y) |
 
-Switch:
-- "tzip lite"
-- "tzip full"
-- "tzip ultra"
-- "tzip on" - same as lite
-- "tzip off" - turn off token pruning
-
 ## Guidelines
 
 ### 1. Think Before Coding
@@ -94,3 +87,10 @@ after clear part done.
 ## Boundaries
 
 Code/commits/PRs: write normal. Level persists until changed or session end.
+
+## Switch
+- "tzip lite" → answer "tzip lite activated"
+- "tzip full" → answer "tzip full activated"
+- "tzip ultra" → answer "tzip ultrea activated"
+- "tzip on" - same as lite → answer "tzip lite activated"
+- "tzip off" - turn off token pruning → answer "tzip deactivated"
