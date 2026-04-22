@@ -55,6 +55,41 @@ Git tracks snapshots of your project through a directed acyclic graph of commits
 
 **Remotes** — Named references to other repositories (e.g., `origin`). Remotes enable collaboration: you push your commits to share them and fetch/pull others' commits to stay in sync.
 
+## Workflow Shorthands
+
+When the user says "add, commit, push" (or similar shorthand phrases), interpret this as a three-step workflow that operates on **all** changes by default, but can be scoped to specific files if the user provides them.
+
+### Default Behavior — All Changes
+
+| User says | Expands to |
+|-----------|------------|
+| "add" / "add all" | `git add .` then `git commit -m '<message>'` |
+| "commit" / "commit all" | `git add . && git commit -m '<message>'` |
+| "push" / "push all" | `git push origin <current-branch>` |
+| "add, commit, push" | All three steps above, in order |
+
+When no files are specified, **always operate on all changes**:
+```bash
+git add .
+git commit -m "<descriptive message following Conventional Commits>"
+git push origin <current-branch>
+```
+
+### File-Specific Overrides
+
+If the user names specific files or directories, scope only those:
+```bash
+git add path/to/file.py src/utils/
+git commit -m "<descriptive message following Conventional Commits>"
+git push origin <current-branch>
+```
+
+### When to Ask for Clarification
+
+- If the user says "add" without a message → propose a Conventional Commits message based on `git diff --staged` or `git status`
+- If the user says "push" but there are no commits to push → inform them and suggest checking `git log origin/<branch>..HEAD`
+- If the working directory is dirty with uncommitted changes and they say "push" → warn about pushing without committing first
+
 ## Essential Commands
 
 ### Initialize and Clone
