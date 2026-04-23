@@ -422,7 +422,6 @@ Complete reference of Tailwind CSS v4.2 utility classes with examples and usage 
 ### Background Image
 ```html
 <div class="bg-none">No background image</div>
-<div class="bg-[url('...')]">Custom URL</div>
 ```
 
 ### Background Position
