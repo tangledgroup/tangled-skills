@@ -137,6 +137,8 @@ index.view('index.usearch')   # Memory-map, no RAM load
 - [Reference: SQLite Extensions](references/05-sqlite.md)
 - [Case Study: Semantic Joins via Stable Marriages](references/06-case-semantic-joins.md) — Use when matching two datasets with one-to-one or many-to-many fuzzy mappings (job matching, advertising, content recommendation, dating apps)
 - [Case Study: Molecular Search at Scale](references/07-case-molecular-search.md) — Use when searching similar molecules by structure, working with binary fingerprints (genomics, cheminformatics), or building drug discovery pipelines
+- [Case Study: FP8 Search & KV-Caching](references/08-case-fp8-kv-caching.md) — Use when building KV-cache-aware search for LLM inference, deploying on memory-constrained hardware, or targeting E5M2/E4M3 quantization (NumKong v7, 30+ backends, Giesen magic-number upcast)
+- [Case Study: Scaling Vector Search with Intel](references/09-case-intel-scaling.md) — Use when benchmarking on Sapphire Rapids/Granite Rapids, migrating from FAISS for 10–100× speedup at 100M+ scale, or comparing CPU vs GPU vector search costs
 
 ## References
 
