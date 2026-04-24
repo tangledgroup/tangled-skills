@@ -44,6 +44,7 @@ All skills in this repository are automatically generated using the `write-skill
 | changelog-1-1 | changelog | 0.2.0 | changelog, documentation, versioning, semver, release-notes | A skill for creating and maintaining changelogs following the Keep a Changelog specification v1.1.0, providing standa... |
 | chart-js-4-5-1 | chart-js | 0.2.0 | charts, canvas, data-visualization, javascript, html5 | Complete toolkit for Chart.js 4.5.1, the most popular open-source JavaScript charting library using HTML5 Canvas rend... |
 | chonkie-1-6-2 | chonkie | 1.6.2 | text-chunking, rag, nlp, embeddings, vector-databases | A skill for using Chonkie 1.6.2, a lightweight Rust-based text chunking library for RAG pipelines providing 10+ chunk... |
+| chonkie-1-6-4 | chonkie | 0.1.0 | chunking, rag, nlp, text-processing, python | Lightweight text chunking library for fast, efficient RAG pipelines. Provides 12+ chunkers (token, sentence, recursiv... |
 | coding-guidelines-0-1-0 | coding-guidelines | 0.1.0 | behavioral-guidelines, code-quality, simplicity, llm-best-practices | Behavioral guidelines to reduce common LLM coding mistakes including overcomplication, hidden assumptions, orthogonal... |
 | crun-1-27 | crun | 0.2.0 | oci-runtime, containers, podman, checkpointing, criu | Lightweight OCI container runtime written in C for running Linux containers with low memory footprint and high perfor... |
 | cryptography-46 | cryptography | 0.2.0 | cryptography, encryption, hashing, asymmetric, symmetric | Comprehensive toolkit for Python cryptographic operations using the cryptography library. Use when implementing encry... |
@@ -147,4 +148,4 @@ All skills in this repository are automatically generated using the `write-skill
 
 ## Statistics
 
-- **Total Skills**: 128
+- **Total Skills**: 129
