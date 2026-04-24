@@ -135,6 +135,8 @@ index.view('index.usearch')   # Memory-map, no RAM load
 - [Reference: Filtering, Clustering & Joins](references/03-filtering-clustering.md)
 - [Reference: Multi-Language Bindings](references/04-bindings.md)
 - [Reference: SQLite Extensions](references/05-sqlite.md)
+- [Case Study: Semantic Joins via Stable Marriages](references/06-case-semantic-joins.md) — Use when matching two datasets with one-to-one or many-to-many fuzzy mappings (job matching, advertising, content recommendation, dating apps)
+- [Case Study: Molecular Search at Scale](references/07-case-molecular-search.md) — Use when searching similar molecules by structure, working with binary fingerprints (genomics, cheminformatics), or building drug discovery pipelines
 
 ## References
 
