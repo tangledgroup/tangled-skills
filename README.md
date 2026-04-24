@@ -1,14 +1,5 @@
 # tangled-skills
-
 Tangled Skills for Agents
-
-## Install / Update
-
-```bash
-mkdir -p .agents/skills && \
-curl -L https://github.com/tangledgroup/tangled-skills/archive/refs/heads/main.tar.gz | \
-tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skills
-```
 
 ## About
 
@@ -65,7 +56,7 @@ All skills in this repository are automatically generated using the `write-skill
 | docker-docs-2026-04-16 | docker-docs | 2026.4.16 | containers, docker-engine, docker-desktop, docker-compose, dockerfile | Comprehensive reference for Docker platform including Docker Engine, Docker Desktop, Docker Compose, Docker Build/Bui... |
 | duckdb-1-5-2 | duckdb | 1.5.2 | sql, analytics, embedded-database, olap, data-science | High-performance analytical SQL database with support for nested types, vectorized execution, and seamless integratio... |
 | esbuild-0-28 | esbuild | 0.28.0 | javascript, bundler, typescript, jsx, css | Complete toolkit for esbuild v0.28 JavaScript bundler providing CLI, JavaScript API, and Go API access for bundling, ... |
-| git | - | 0.4.0 | git, version-control, conventional-commits, keep-a-changelog, semver | > |
+| git | - | 0.5.0 | git, version-control, conventional-commits, keep-a-changelog, semver | > |
 | haproxy-3-3-0 | haproxy | 3.3.0 | load balancing, reverse proxy, SSL termination, high availability, HTTP proxy | Complete HAProxy 3.3.0 toolkit for load balancing, reverse proxying, SSL/TLS termination, and traffic management. Use... |
 | htm-3-1 | htm | 0.2.0 | jsx-alternative, tagged-templates, preact, react, virtual-dom | A skill for using htm 3.1, a tagged template syntax library that provides JSX-like markup in plain JavaScript without... |
 | htmx-2 | htmx | 0.2.0 | htmx, html, ajax, web-development, frontend | A skill for building interactive web applications with htmx 2.x, a JavaScript library that allows accessing modern br... |

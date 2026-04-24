@@ -11,8 +11,8 @@ tags:
 category: communication
 external_references:
   - https://raw.githubusercontent.com/forrestchang/andrej-karpathy-skills/refs/heads/main/skills/karpathy-guidelines/SKILL.md
-  # - https://github.com/ZLKong/Awesome-Collection-Token-Reduction/tree/main
   - https://raw.githubusercontent.com/JuliusBrussee/caveman/refs/heads/main/skills/caveman/SKILL.md
+  # - https://github.com/ZLKong/Awesome-Collection-Token-Reduction/tree/main
 ---
 
 # tzip 0.4.0
