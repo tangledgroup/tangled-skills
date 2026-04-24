@@ -51,17 +51,18 @@ Output a numbered plan under a `Plan:` header. This format is machine-parseable 
 
 ```
 Plan:
-1. First step description
-2. Second step description
-3. Third step description
+1. [ ] First step description
+2. [ ] Second step description
+3. [ ] Third step description
 ```
 
 Rules:
 
 - Header must be `Plan:` (optionally bold: `**Plan:**`)
 - Number steps sequentially starting from 1
-- Each step on its own line: `N. <description>`
+- Each step on its own line: `N. [ ] <description>`
 - Steps should be concrete and independently verifiable
+- After completing each task, change `N. [ ] <description>` to `N. [x] <description>`
 
 ## Completion Markers
 
