@@ -132,6 +132,7 @@ All skills in this repository are automatically generated using the `write-skill
 | stringzilla-4-6 | stringzilla | 0.2.0 | simd, string-processing, search, hashing, bioinformatics | High-performance SIMD-accelerated string library for search, hashing, sorting, and fuzzy matching in C/C++/Python/Rus... |
 | tailwindcss-4-2 | tailwindcss | 0.2.0 | css, tailwind, styling, frontend, utility-first | A skill for using Tailwind CSS v4.2, a utility-first CSS framework with CSS-based configuration, OKLCH color space, c... |
 | tailwindcss-browser-4-2 | tailwindcss-browser | 0.2.0 | css, tailwind, browser, prototyping, no-build | A skill for using Tailwind CSS v4.2 browser build (@tailwindcss/browser) that enables in-browser Tailwind compilation... |
+| tea-0-14-0 | tea | 0.14.0 | gitea, cli, git, ci-cd, go | Official CLI for Gitea servers. Manage issues, pull requests, releases, milestones, labels, notifications, actions/wo... |
 | textblob-0-20-0 | textblob | 0.20.0 | nlp, text-processing, sentiment-analysis, pos-tagging, classification | Python library for simplified natural language processing (NLP) tasks including sentiment analysis, part-of-speech ta... |
 | tinycc-0-9-27 | tinycc | 0.9.27 | C compiler, x86, libtcc, dynamic code generation, C scripting | Complete toolkit for TinyCC 0.9.27, a small hyper-fast C compiler that generates x86 code directly without external a... |
 | tinypy-1-1 | tinypy | 1.1.0 | python, embedded, vm, bytecode, c-api | TinyPy 1.1 — a minimalist Python implementation in ~64k of code featuring a Lua-esque bytecode VM, garbage collection... |
@@ -150,4 +151,4 @@ All skills in this repository are automatically generated using the `write-skill
 
 ## Statistics
 
-- **Total Skills**: 131
+- **Total Skills**: 132
