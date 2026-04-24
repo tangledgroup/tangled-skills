@@ -57,6 +57,7 @@ All skills in this repository are automatically generated using the `write-skill
 | docker-docs-2026-04-16 | docker-docs | 2026.4.16 | containers, docker-engine, docker-desktop, docker-compose, dockerfile | Comprehensive reference for Docker platform including Docker Engine, Docker Desktop, Docker Compose, Docker Build/Bui... |
 | duckdb-1-5-2 | duckdb | 1.5.2 | sql, analytics, embedded-database, olap, data-science | High-performance analytical SQL database with support for nested types, vectorized execution, and seamless integratio... |
 | esbuild-0-28 | esbuild | 0.28.0 | javascript, bundler, typescript, jsx, css | Complete toolkit for esbuild v0.28 JavaScript bundler providing CLI, JavaScript API, and Go API access for bundling, ... |
+| gh-2-91-0 | gh | 0.1.0 | github, cli, devops, automation, ci-cd | GitHub CLI v2.91.0 for managing repositories, pull requests, issues, releases, workflows, codespaces, and more from t... |
 | git | - | 0.5.0 | git, version-control, conventional-commits, keep-a-changelog, semver | > |
 | haproxy-3-3-0 | haproxy | 3.3.0 | load balancing, reverse proxy, SSL termination, high availability, HTTP proxy | Complete HAProxy 3.3.0 toolkit for load balancing, reverse proxying, SSL/TLS termination, and traffic management. Use... |
 | htm-3-1 | htm | 0.2.0 | jsx-alternative, tagged-templates, preact, react, virtual-dom | A skill for using htm 3.1, a tagged template syntax library that provides JSX-like markup in plain JavaScript without... |
@@ -99,6 +100,7 @@ All skills in this repository are automatically generated using the `write-skill
 | picocss-2-1 | picocss | 0.2.0 | css-framework, semantic-html, responsive-design, light-dark-mode, minimal-css | A skill for using Pico CSS v2.1, a minimalist CSS framework that styles semantic HTML elements elegantly by default w... |
 | pi-mono-0-66-1 | pi-mono | 0.2.0 | TypeScript, AI agents, LLM, terminal UI, coding agents | Complete implementation guide for pi-mono monorepo architecture covering provider abstraction, agent runtime, termina... |
 | pinecone-router-7-5 | pinecone-router | 0.2.0 | alpinejs, routing, client-side-routing, single-page-application, javascript | A comprehensive toolkit for building client-side routing in Alpine.js applications using Pinecone Router v7.5, provid... |
+| plan | - | 0.1.0 | planning, workflow, task-management, read-only | Read-only exploration mode for safe code analysis. Restricts tools to read-only operations, extracts numbered steps f... |
 | podman-5-8-1 | podman | 0.2.0 | containers, podman, docker-alternative, rootless-containers, pods | Comprehensive toolkit for Podman 5.8.1 container engine providing daemonless container management with Docker-compati... |
 | podman-compose-1-5-0 | podman-compose | 0.2.0 | podman, compose, containers, orchestration, devops | Orchestrates multi-container applications using Compose specification files with Podman backend. Use when deploying c... |
 | podman-py-5-8-0 | podman-py | 0.2.0 | podman, containers, python, docker-alternative, containerization | Python client library for Podman container engine providing programmatic access to containers, images, pods, networks... |
@@ -152,4 +154,4 @@ All skills in this repository are automatically generated using the `write-skill
 
 ## Statistics
 
-- **Total Skills**: 133
+- **Total Skills**: 135
