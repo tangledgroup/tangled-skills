@@ -140,6 +140,7 @@ All skills in this repository are automatically generated using the `write-skill
 | tzip | - | 0.4.0 | token-prune, efficiency, guidelines | Lightweight token-pruning communication mode that drops filler and hedging while keeping full sentences and professio... |
 | upx-5-1-1 | upx | 0.2.0 | compression, executable, packer, optimization, deployment | A skill for using UPX (Ultimate Packer for eXecutables) v5.1.1 to compress and decompress executable files across mul... |
 | usearch-2-24 | usearch | 0.2.0 | vector-search, hnsw, similarity-search, approximate-nearest-neighbors, embedding-search | A skill for using USearch 2.24, a high-performance single-file similarity search and clustering engine for vectors su... |
+| usearch-2-25-1 | usearch | 0.1.0 | vector-search, ann, hnsw, similarity-search, clustering | High-performance single-file similarity search and clustering engine for vectors using HNSW algorithm with user-defin... |
 | uv-0-11-6 | uv | 0.2.0 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | A skill for using uv 0.11.6, an extremely fast Python package and project manager written in Rust that replaces pip, ... |
 | write-skill | - | 0.7.1 | skill-writing, skill-generation, meta-skill, automation | Generate fine-grained agent skills from user requirements, creating complete spec-compliant markdown files that work ... |
 | yq-4 | yq | 4.52 | yaml, json, xml, jq, command-line | Complete toolkit for yq v4.x, the lightweight portable command-line YAML, JSON, XML, INI, TOML, HCL, CSV/TSV, Propert... |
@@ -148,4 +149,4 @@ All skills in this repository are automatically generated using the `write-skill
 
 ## Statistics
 
-- **Total Skills**: 129
+- **Total Skills**: 130
