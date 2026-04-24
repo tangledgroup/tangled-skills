@@ -82,6 +82,7 @@ All skills in this repository are automatically generated using the `write-skill
 | nuitka-4-0-8 | nuitka | 0.2.0 | python-compiler, native-code, c-generation, standalone-executables, performance-optimization | Python compiler that translates Python code to C and native executables. Use when compiling Python applications for d... |
 | numba-0-65-0 | numba | 0.65.0 | jit, compiler, numpy, performance, gpu | Just-in-time compiler for numerical Python using LLVM, providing @jit, @vectorize, @guvectorize, @stencil, @jitclass,... |
 | numeral-2 | numeral | 0.2.0 | number-formatting, currency, percentage, bytes, localization | A JavaScript library for formatting and manipulating numbers. Use when formatting currency, percentages, bytes, time ... |
+| numkong-7-6-0 | numkong | 0.1.0 | vector-similarity, simd, mixed-precision, dot-product, distance-metrics | Ultra-fast mixed-precision vector similarity and distance library with 2000+ SIMD kernels across x86, ARM, RISC-V. Su... |
 | numpy-2-4-4 | numpy | 2.4.4 | numpy, arrays, scientific-computing, linear-algebra, numerical-analysis | Complete toolkit for NumPy 2.4.4, the fundamental package for scientific computing with Python, providing powerful n-... |
 | oat-0-6-0 | oat | 0.2.0 | ui-library, css-framework, semantic-html, zero-dependency, webcomponents | Ultra-lightweight semantic UI component library with zero dependencies (~8KB). Use when building web applications wit... |
 | openai-2-31 | openai | 0.2.0 | openai, python, llm, chat-completions, embeddings | Python SDK for OpenAI API v2.31 providing type-safe access to Responses API, Chat Completions, embeddings, audio tran... |
@@ -149,4 +150,4 @@ All skills in this repository are automatically generated using the `write-skill
 
 ## Statistics
 
-- **Total Skills**: 130
+- **Total Skills**: 131
