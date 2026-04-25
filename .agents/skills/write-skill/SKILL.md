@@ -253,6 +253,8 @@ Always prioritize user instructions. Document any deviations from default behavi
 
 ### SKILL.md Template
 
+Every generated skill MUST include the YAML header and these core sections:
+
 ```markdown
 ---
 name: <skill-name>
@@ -281,22 +283,22 @@ Clear guidance on when this skill should be invoked. Include specific scenarios.
 ## Core Concepts
 
 Key concepts, terminology, and fundamental ideas related to the topic.
+```
 
-## Installation / Setup
+The following sections are **optional** — include only when applicable:
 
-How to install or set up the tool (if applicable).
+**`## Installation / Setup`** — Include when the tool/library requires installation, configuration, or environment setup steps. Skip for conceptual, guideline, or meta-skills that have no install process.
 
-## Usage Examples
+**`## Usage Examples`** — Include when practical code examples are relevant. Provide copy-pasteable code blocks with language tags. Skip for conceptual, guideline, or meta-skills where code examples don't apply.
 
-Common patterns and code examples. Include copy-pasteable code blocks with language tags.
+**`## Advanced Topics`** — Include **only** when the skill has companion reference files in `reference/`. Use this section as a navigation hub linking to them:
 
+```markdown
 ## Advanced Topics
 
-Deeper topics. For complex skills, link to reference files:
-**Finance**: Revenue, ARR, billing → See [reference/01-finance.md](reference/01-finance.md)
-**Sales**: Opportunities, pipeline, accounts → See [reference/02-sales.md](reference/02-sales.md)
-**Product**: API usage, features, adoption → See [reference/03-product.md](reference/03-product.md)
-**Marketing**: Campaigns, attribution, email → See [reference/04-marketing.md](reference/04-marketing.md)
+**Core Concepts**: Deep dive into fundamentals → See [reference/01-core-concepts.md](reference/01-core-concepts.md)
+**Advanced Workflow**: Complex patterns and edge cases → See [reference/02-advanced-workflow.md](reference/02-advanced-workflow.md)
+**API Reference**: Detailed function/method documentation → See [reference/03-api-reference.md](reference/03-api-reference.md)
 ```
 
 ### Reference File Template
@@ -380,7 +382,7 @@ for p in pathlib.Path(".").rglob("*.md"):
 ### Content
 - [ ] "Overview" section present
 - [ ] "When to Use" with specific scenarios
-- [ ] At least one code example
+- [ ] At least one code example (if applicable to the skill type)
 - [ ] "References" with official documentation URLs
 - [ ] No hallucinated content — all from downloaded sources
 
