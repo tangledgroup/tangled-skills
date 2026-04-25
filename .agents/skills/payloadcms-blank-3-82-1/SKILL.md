@@ -19,15 +19,6 @@ external_references:
   - https://payloadcms.com/docs
   - https://github.com/payloadcms/payload/tree/v3.82.1/templates/blank
   - https://discord.com/invite/payload
-required_environment_variables:
-  - name: DATABASE_URL
-    prompt: "What is your MongoDB connection string?"
-    help: "MongoDB connection URI (e.g., mongodb://127.0.0.1/payload or Atlas connection string)"
-    required_for: "database connectivity"
-  - name: PAYLOAD_SECRET
-    prompt: "What is your Payload secret key?"
-    help: "A random secret string for signing cookies and tokens (use: openssl rand -base64 32)"
-    required_for: "application security"
 ---
 ## Overview
 Minimal Payload CMS 3.82.1 starter template providing a clean foundation for building custom headless CMS applications with Next.js App Router, MongoDB, and Lexical editor. Use when starting new Payload projects from scratch, needing a minimal configuration without pre-built collections or content types, or requiring full control over data modeling and admin panel customization.

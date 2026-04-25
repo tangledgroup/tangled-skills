@@ -15,16 +15,6 @@ tags:
   - audio
   - vision
 category: development
-required_environment_variables:
-  - name: OPENAI_API_KEY
-    prompt: "Please provide your OpenAI API key"
-    help: "Get your API key from https://platform.openai.com/settings/organization/api-keys"
-    required_for: "full functionality"
-  - name: OPENAI_WEBHOOK_SECRET
-    prompt: "Provide your OpenAI webhook secret (optional)"
-    help: "Required for webhook signature verification, get from OpenAI platform settings"
-    required_for: "webhook verification"
-
 external_references:
   - https://platform.openai.com/docs/
   - https://github.com/openai/openai-python

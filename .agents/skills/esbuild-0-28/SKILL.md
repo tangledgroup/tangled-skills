@@ -19,8 +19,6 @@ tags:
   - esm
   - commonjs
 category: tooling
-required_environment_variables: []
-
 external_references:
   - https://esbuild.github.io/
   - https://github.com/evanw/esbuild

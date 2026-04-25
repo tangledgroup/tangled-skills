@@ -3,7 +3,6 @@ name: payloadcms-ecommerce-3-82-1
 description: Complete guide for Payload CMS ecommerce template v3.82.1 providing production-ready online store with products, variants, carts, orders, Stripe payments, multi-currency support, user accounts, guest checkout, and transaction tracking. Use when building e-commerce platforms, online stores, marketplaces, or any digital commerce project requiring product catalogs, shopping carts, order management, payment processing, customer accounts, and inventory management following official Payload best practices.
 version: "0.2.0"
 author: Tangled <noreply@tangledgroup.com>
-maintainer: Tangled Skills Community
 license: MIT
 tags:
   - payloadcms
@@ -16,28 +15,6 @@ tags:
   - online-store
   - shopping-cart
 category: development
-required_environment_variables:
-  - name: DATABASE_URL
-    prompt: "Enter your MongoDB connection string"
-    help: "For local development: mongodb://127.0.0.1/your-database-name. For production, use MongoDB Atlas or your hosted MongoDB instance."
-    required_for: database connectivity
-  - name: PAYLOAD_SECRET
-    prompt: "Enter a secret key for Payload (minimum 32 characters)"
-    help: "Generate using: node -e \"console.log(require('crypto').randomBytes(64).toString('hex'))\". Required for session encryption and JWT signing."
-    required_for: application security
-  - name: STRIPE_SECRET_KEY
-    prompt: "Enter your Stripe secret key (sk_test_... for testing)"
-    help: "Get from Stripe Dashboard > Developers > API Keys. Use test keys for development, live keys for production."
-    required_for: payment processing
-  - name: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-    prompt: "Enter your Stripe publishable key (pk_test_... for testing)"
-    help: "Get from Stripe Dashboard > Developers > API Keys. Use test keys for development, live keys for production."
-    required_for: payment processing frontend
-  - name: STRIPE_WEBHOOKS_SIGNING_SECRET
-    prompt: "Enter your Stripe webhook signing secret (whsec_...)"
-    help: "Get from Stripe Dashboard > Developers > Webhooks. Create a webhook endpoint to receive this secret."
-    required_for: payment webhook verification
-
 external_references:
   - https://payloadcms.com/docs/ecommerce/plugin
   - https://github.com/payloadcms/payload/tree/v3.82.1/templates/ecommerce

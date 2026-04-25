@@ -15,10 +15,6 @@ external_references:
   - https://pypi.org/project/aiohttp-cors/
   - https://github.com/aio-libs/aiohttp-cors
   - https://aiohttp-cors.readthedocs.io/
-required_environment_variables: []
-compatibility:
-  python: ">=3.9"
-  aiohttp: ">=3.9"
 ---
 ## Overview
 A skill for implementing Cross-Origin Resource Sharing (CORS) support in aiohttp web applications using aiohttp-cors 0.8.1, enabling secure cross-origin HTTP requests with configurable origins, credentials, headers, and preflight caching.

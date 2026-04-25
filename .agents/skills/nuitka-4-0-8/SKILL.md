@@ -13,12 +13,6 @@ tags:
   - cross-platform
   - extension-modules
 category: compilation
-required_environment_variables:
-  - name: C compiler (gcc, clang, MSVC, or MinGW64)
-    prompt: "Nuitka requires a C compiler. Which compiler should be used?"
-    help: "Install gcc/clang on Linux/macOS, or Visual Studio/MinGW64 on Windows"
-    required_for: "compilation"
-
 external_references:
   - https://nuitka.net/doc/
   - https://github.com/Nuitka/Nuitka

@@ -14,12 +14,6 @@ tags:
   - sqlite
   - async
 category: database
-required_environment_variables:
-  - name: DATABASE_URL
-    prompt: "Enter your database connection URL (e.g., postgresql://user:pass@localhost/dbname)"
-    help: "Database URL in format: dialect+driver://username:password@host:port/database"
-    required_for: "database connectivity"
-
 external_references:
   - https://docs.sqlalchemy.org/
   - https://github.com/sqlalchemy/sqlalchemy

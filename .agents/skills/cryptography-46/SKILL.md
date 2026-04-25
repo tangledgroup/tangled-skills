@@ -15,8 +15,6 @@ tags:
   - python
   - security
 category: security
-required_environment_variables: []
-
 external_references:
   - https://cryptography.io/en/latest/
   - https://github.com/pyca/cryptography

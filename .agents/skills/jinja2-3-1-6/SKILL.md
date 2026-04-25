@@ -12,8 +12,6 @@ tags:
   - template-engine
   - jinja
 category: development
-required_environment_variables: []
-
 external_references:
   - https://jinja.palletsprojects.com/
   - https://github.com/pallets/jinja

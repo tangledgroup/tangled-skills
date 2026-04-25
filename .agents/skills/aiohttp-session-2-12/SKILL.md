@@ -14,8 +14,6 @@ tags:
   - redis
   - encryption
 category: development
-required_environment_variables: []
-
 external_references:
   - https://github.com/aio-libs/aiohttp-session
   - https://aiohttp-session.readthedocs.io/

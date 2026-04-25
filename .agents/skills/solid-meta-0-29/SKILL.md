@@ -12,8 +12,6 @@ tags:
   - seo
   - server-side-rendering
 category: development
-required_environment_variables: []
-
 external_references:
   - https://github.com/solidjs/solid/tree/main/packages/dom
   - https://www.npmjs.com/package/@solidjs/meta

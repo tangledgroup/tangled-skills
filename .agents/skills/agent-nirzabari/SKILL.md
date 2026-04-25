@@ -16,9 +16,8 @@ tags:
   - opencode
   - cursor
 category: ai-agents
-required_environment_variables: []
-
 external_references:
+  - https://nirzabari.github.io/blog/2026-03-07-coding-agents
 ---
 ## Overview
 A comprehensive guide to understanding and building coding agent harnesses, covering the 7-layer architecture, context engineering, tool orchestration, safety systems, and real-world implementations from Codex, OpenCode, Cursor, and Claude Code. Use when designing agentic systems, analyzing agent architectures, implementing harness patterns, or studying production-grade coding agent implementations.
@@ -164,4 +163,3 @@ See individual deep dives in [Codex Architecture](reference/08-codex-deep-dive.m
 7. **Cost vs quality tradeoff** - $20k for 100K lines (Anthropic C compiler case) is cost-effective but needs human verification
 
 This skill is based on Nir Zabari's March 2026 analysis of coding agent architectures, supplemented with documentation from Codex, OpenCode, Cursor, and related research. The field evolves rapidly - always check latest documentation for specific implementations.
-

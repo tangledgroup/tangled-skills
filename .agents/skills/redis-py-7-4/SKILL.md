@@ -15,12 +15,6 @@ tags:
   - pipelines
   - lua-scripting
 category: database
-required_environment_variables:
-  - name: REDIS_URL
-    prompt: "What is your Redis connection URL?"
-    help: "Redis connection string (e.g., redis://localhost:6379/0 or rediss:// for TLS)"
-    required_for: "connecting to Redis server"
-
 external_references:
   - https://redis.readthedocs.io/en/latest
   - https://github.com/redis/redis-py

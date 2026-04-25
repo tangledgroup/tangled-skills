@@ -15,18 +15,6 @@ tags:
   - systemd
   - quadlet
 category: devops
-required_environment_variables: []
-compatibility:
-  platforms:
-    - linux
-    - macOS (remote client)
-    - windows (remote client, WSL2 native)
-  agents:
-    - pi
-    - opencode
-    - claude
-    - hermes
-
 external_references:
   - https://docs.podman.io/
   - https://github.com/containers/podman

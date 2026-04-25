@@ -14,8 +14,6 @@ tags:
   - server-side-rendering
   - hyperscript
 category: development
-required_environment_variables: []
-
 external_references:
   - https://github.com/developit/htm
 ---

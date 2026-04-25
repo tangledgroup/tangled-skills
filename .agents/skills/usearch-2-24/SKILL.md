@@ -15,8 +15,6 @@ tags:
   - clustering
   - semantic-search
 category: machine-learning
-required_environment_variables: []
-
 external_references:
   - https://github.com/unum-cloud/usearch
 ---

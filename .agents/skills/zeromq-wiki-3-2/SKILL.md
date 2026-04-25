@@ -16,8 +16,6 @@ tags:
   - networking
   - protocols
 category: messaging
-required_environment_variables: []
-
 external_references:
   - http://wiki.zeromq.org
   - https://github.com/zeromq

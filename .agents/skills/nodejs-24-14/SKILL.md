@@ -14,8 +14,6 @@ tags:
   - http
   - cryptography
 category: runtime
-required_environment_variables: []
-
 external_references:
   - https://nodejs.org/api/
   - https://github.com/nodejs/node

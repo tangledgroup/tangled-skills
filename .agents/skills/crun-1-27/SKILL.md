@@ -14,8 +14,6 @@ tags:
   - webassembly
   - cgroups
 category: devops
-required_environment_variables: []
-
 external_references:
   - https://github.com/containers/crun
   - https://github.com/containers/crun/blob/main/Documentation/crun.md

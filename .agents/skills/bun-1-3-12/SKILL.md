@@ -14,8 +14,6 @@ tags:
   - nodejs-alternative
   - web-development
 category: development
-required_environment_variables: []
-
 external_references:
   - https://bun.sh/docs
   - https://github.com/oven-sh/bun

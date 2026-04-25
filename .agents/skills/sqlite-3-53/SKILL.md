@@ -18,8 +18,6 @@ tags:
   - cli
   - extensions
 category: database
-required_environment_variables: []
-
 external_references:
   - https://www.sqlite.org/docs.html
 ---

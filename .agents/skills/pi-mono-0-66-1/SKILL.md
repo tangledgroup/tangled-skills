@@ -39,7 +39,6 @@ external_references:
   - https://github.com/badlogic/pi-mono
   - https://github.com/anthropics/skills
   - https://discord.com/invite/3cU7Bz4UPx
-required_environment_variables: []
 ---
 ## Overview
 Pi Mono is a minimal, terminal-based coding agent framework designed to be adapted to your workflows rather than forcing you to adapt to it. Pi ships with powerful defaults but skips features like sub-agents and plan mode - instead, you ask pi to build what you want or install third-party packages that match your workflow.

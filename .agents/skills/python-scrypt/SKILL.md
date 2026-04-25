@@ -12,8 +12,6 @@ tags:
   - kdf
   - security
 category: security
-required_environment_variables: []
-
 external_references:
   - https://datatracker.ietf.org/doc/html/rfc7914
   - https://github.com/warner/python-scrypt

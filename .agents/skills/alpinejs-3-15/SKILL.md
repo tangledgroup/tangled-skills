@@ -13,8 +13,6 @@ tags:
   - web-components
   - lightweight-framework
 category: frontend-development
-required_environment_variables: []
-
 external_references:
   - https://alpinejs.dev/
   - https://github.com/alpinejs/alpine

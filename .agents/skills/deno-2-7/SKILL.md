@@ -14,8 +14,6 @@ tags:
   - jsr
   - testing
 category: development
-required_environment_variables: []
-
 external_references:
   - https://docs.deno.com/
   - https://github.com/denoland/deno

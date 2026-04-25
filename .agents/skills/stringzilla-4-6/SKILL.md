@@ -18,7 +18,6 @@ external_references:
   - https://docs.rs/stringzilla
   - https://crates.io/crates/stringzilla
   - https://ashvardanian.com/posts/stringzilla/
-required_environment_variables: []
 ---
 ## Overview
 High-performance SIMD-accelerated string library for search, hashing, sorting, and fuzzy matching in C/C++/Python/Rust. Use when optimizing string operations for big data processing, bioinformatics, or high-throughput applications requiring up to 10x faster CPU throughput.

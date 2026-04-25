@@ -13,20 +13,6 @@ tags:
   - slash-commands
   - feature-specification
 category: development
-required_environment_variables:
-  - name: uv
-    prompt: "Install uv package manager from https://docs.astral.sh/uv/"
-    help: "Required for installing specify-cli tool"
-    required_for: "full functionality"
-  - name: git
-    prompt: "Install Git version control system"
-    help: "Required for branch management and feature tracking"
-    required_for: "full functionality"
-  - name: python
-    prompt: "Install Python 3.11 or higher"
-    help: "Required to run specify-cli"
-    required_for: "full functionality"
-
 external_references:
   - https://github.com/github/spec-kit
 ---

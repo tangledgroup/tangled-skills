@@ -12,21 +12,9 @@ tags:
   - ralph-wiggum
   - specification-based
 category: development
-required_environment_variables:
-  - name: TG_BOT_TOKEN
-    prompt: "Enter your Telegram bot token for progress notifications (optional)"
-    help: "Create a bot via @BotFather on Telegram"
-    required_for: "Telegram notifications"
-  - name: TG_CHAT_ID
-    prompt: "Enter your Telegram chat ID for notifications (optional)"
-    help: "Get from https://api.telegram.org/bot<TOKEN>/getUpdates after messaging your bot"
-    required_for: "Telegram notifications"
-  - name: CHUTES_API_KEY
-    prompt: "Enter your Chutes API key for audio TTS notifications (optional)"
-    help: "Get from https://chutes.ai for voice message support"
-    required_for: "Audio Telegram notifications"
-
 external_references:
+  - https://ralph-wiggum.ai/
+  - https://github.com/fstandhartinger/ralph-wiggum
 ---
 ## Overview
 Autonomous AI coding with spec-driven development combining iterative bash loops and SpecKit-style specifications for fully autonomous AI-assisted software development. Use when building projects that require hands-free AI implementation, working from specification files, or running autonomous development loops with completion verification.
@@ -157,4 +145,3 @@ reset_circuit_breaker "Fixed blocking issue"
 3. **Shared state on disk** - `IMPLEMENTATION_PLAN.md` persists between loops
 4. **Planning is optional** - Most projects work fine directly from specs
 5. **YOLO mode recommended** - Enables autonomous command execution without approval prompts
-

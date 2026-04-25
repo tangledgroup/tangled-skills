@@ -11,9 +11,9 @@ tags:
   - coding-assistants
   - customization
 category: development
-required_environment_variables: []
-
 external_references:
+  - https://dev.to/wyattdave/how-to-create-your-own-ai-coding-agent-2h1o
+  - http://r.jina.ai/https://dev.to/wyattdave/how-to-create-your-own-ai-coding-agent-2h1o
 ---
 ## Overview
 A toolkit for creating custom AI coding agents using prompt engineering, instruction files, and skill modules. Use when building bespoke coding assistants for niche domains where general LLM training data is insufficient or misleading, particularly for specialized frameworks like Power Platform Code Apps with vanilla JavaScript.
@@ -111,4 +111,3 @@ See [Context Optimization](reference/04-context-optimization.md) for detailed st
 3. **Document Learnings** - The secret sauce is learning from experience and documenting it
 4. **Minimize Context** - Optimize prompt stack size for token-limited environments
 5. **Move to Code** - When possible, implement in deterministic code rather than LLM decisions
-

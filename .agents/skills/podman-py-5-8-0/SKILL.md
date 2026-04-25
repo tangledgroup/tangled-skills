@@ -13,12 +13,6 @@ tags:
   - orchestration
   - automation
 category: devops
-required_environment_variables:
-  - name: CONTAINER_HOST
-    prompt: "Podman service URL (e.g., unix:///run/user/1000/podman/podman.sock)"
-    help: "Set to connect to Podman socket. Default: uses rootless socket path"
-    required_for: "remote connections or non-default socket paths"
-
 external_references:
   - https://github.com/containers/podmanpy
   - https://podmanpy.readthedocs.io/

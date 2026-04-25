@@ -15,14 +15,6 @@ tags:
   - request-reply
   - pipeline
 category: messaging
-required_environment_variables: []
-compatibility:
-  python: ">=3.6"
-  platforms:
-    - Linux
-    - macOS
-    - Windows (limited)
-
 external_references:
   - https://aiozmq.readthedocs.io/en/v0.7.0/
   - https://github.com/aio-libs/aiozmq

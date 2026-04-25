@@ -13,12 +13,6 @@ tags:
   - vector-search
   - geospatial
 category: database
-required_environment_variables:
-  - name: REDIS_OM_URL
-    prompt: "Redis connection URL (e.g., redis://localhost:6379)"
-    help: "Connection string for Redis Stack instance with RediSearch and RedisJSON modules enabled"
-    required_for: "full functionality"
-
 external_references:
   - https://redis-om.readthedocs.io/
   - https://github.com/redis/redis-om-python

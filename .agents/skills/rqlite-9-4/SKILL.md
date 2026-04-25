@@ -14,24 +14,6 @@ tags:
   - iot
   - relational-database
 category: database
-required_environment_variables:
-  - name: RQLITE_NODE_ID
-    prompt: "Enter unique node ID for this rqlite instance (e.g., 1, 2, 3)"
-    help: "Each node in a cluster must have a unique integer ID"
-    required_for: "cluster deployment"
-  - name: RQLITE_JOIN_ADDR
-    prompt: "Enter address of existing cluster node to join (e.g., host:4002)"
-    help: "Address of a node already in the cluster (Raft port, default 4002)"
-    required_for: "joining existing cluster"
-  - name: AWS_ACCESS_KEY_ID
-    prompt: "Enter AWS access key ID for automated S3 backups"
-    help: "AWS credential for automated backup to S3 (optional)"
-    required_for: "automated S3 backups"
-  - name: AWS_SECRET_ACCESS_KEY
-    prompt: "Enter AWS secret access key for automated S3 backups"
-    help: "AWS credential for automated backup to S3 (optional)"
-    required_for: "automated S3 backups"
-
 external_references:
   - https://rqlite.io/docs/
   - https://github.com/rqlite/rqlite

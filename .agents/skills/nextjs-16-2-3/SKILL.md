@@ -14,8 +14,6 @@ tags:
   - typescript
   - app-router
 category: development
-required_environment_variables: []
-
 external_references:
   - https://nextjs.org/docs
   - https://github.com/vercel/next.js

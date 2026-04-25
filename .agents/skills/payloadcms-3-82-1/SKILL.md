@@ -14,16 +14,6 @@ tags:
   - database
   - admin-panel
 category: development
-required_environment_variables:
-  - name: PAYLOAD_SECRET
-    prompt: "Enter your Payload secret key"
-    help: "Generate a random string (e.g., openssl rand -base64 32)"
-    required_for: "full functionality"
-  - name: DATABASE_URL
-    prompt: "Enter your database connection string"
-    help: "MongoDB: mongodb://localhost:27017/payload, PostgreSQL: postgresql://user:pass@host/db"
-    required_for: "full functionality"
-
 external_references:
   - https://payloadcms.com/docs
   - https://github.com/payloadcms/payload

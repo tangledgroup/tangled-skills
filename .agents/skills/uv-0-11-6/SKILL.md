@@ -14,8 +14,6 @@ tags:
   - rust
   - performance
 category: tooling
-required_environment_variables: []
-
 external_references:
   - https://docs.astral.sh/uv/
   - https://github.com/astral-sh/uv
