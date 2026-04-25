@@ -383,7 +383,6 @@ for p in pathlib.Path(".").rglob("*.md"):
 - [ ] "Overview" section present
 - [ ] "When to Use" with specific scenarios
 - [ ] At least one code example (if applicable to the skill type)
-- [ ] "References" with official documentation URLs
 - [ ] No hallucinated content — all from downloaded sources
 
 ## Behavioral Guidelines

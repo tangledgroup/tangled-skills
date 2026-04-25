@@ -9,7 +9,7 @@ tangled-skills/
 ├── .agents/skills/
 │   ├── <skill-name>/
 │   │   ├── SKILL.md          # Main skill file (required, must include YAML header)
-│   │   └── references/       # Optional reference files (flat structure, numbered)
+│   │   └── reference/       # Optional reference files (flat structure, numbered)
 │   │       ├── 01-topic-name.md
 │   │       └── 02-another-topic.md
 ├── README.md                 # Skills table and overview
@@ -104,14 +104,14 @@ For large topics (> 500 lines in SKILL.md), break content into modular reference
 ```
 <skill-name>/
 ├── SKILL.md                  # Overview + navigation hub (under 500 lines)
-└── references/               # Flat structure only, numbered with 2-digit prefixes
+└── reference/               # Flat structure only, numbered with 2-digit prefixes
     ├── 01-core-concepts.md
     ├── 02-advanced-workflow.md
     └── 03-api-reference.md
 ```
 
 **Important rules:**
-- Use `references/` directory (not `refs/`)
+- Use `reference/` directory (not `refs/`)
 - Number files with 2-digit prefixes (`01-`, `02-`, `03-`) for consistent ordering
 - Keep SKILL.md under 500 lines; reference files can be longer
 - Flat structure only - no nested references directories
@@ -125,8 +125,8 @@ For large topics (> 500 lines in SKILL.md), break content into modular reference
    - Valid YAML header (REQUIRED - see section 2)
    - Overview, when to use, core concepts, examples, and references
 4. **Determine structure** based on content size:
-   - < 500 lines: Keep everything in SKILL.md (no references/)
-   - > 500 lines: Move detailed topics to `references/` with numbered files
+   - < 500 lines: Keep everything in SKILL.md (no reference/)
+   - > 500 lines: Move detailed topics to `reference/` with numbered files
 5. **Validate YAML header** using the bash validation script (see Section 5) before finalizing
 6. **Update README.md** by adding a new row to the skills table
 
@@ -374,7 +374,7 @@ Agents scan `.agents/skills/<skill-name>/SKILL.md` for valid YAML headers. Each 
 | `AGENTS.md` (this file) | How to write, structure, and validate skills |
 | `README.md` | Auto-generated skills table + install instructions (see **## Skills** section below) |
 | `.agents/skills/<name>/SKILL.md` | Individual skill definitions |
-| `.agents/skills/<name>/references/*.md` | Optional modular reference files for large skills |
+| `.agents/skills/<name>/reference/*.md` | Optional modular reference files for large skills |
 
 ### Updating the Skills Table
 
@@ -465,10 +465,10 @@ print(message)  # Hello, Alice!
 4. **Description length** - Must be 1-1024 characters, third person, includes WHAT and WHEN
 5. **Author** - Always `Tangled <noreply@tangledgroup.com>`
 6. **License** - Always `MIT`
-5. **Reference directory name** - Use `references/` not `refs/`
+5. **Reference directory name** - Use `reference/` not `refs/`
 6. **Numbered reference files** - Use 2-digit prefixes (`01-`, `02-`, `03-`)
-7. **Flat structure** - No nested references directories
-8. **Simple vs Complex** - < 500 lines = single file, > 500 lines = add references/
+7. **Flat structure** - No nested reference directories
+8. **Simple vs Complex** - < 500 lines = single file, > 500 lines = add reference/
 9. **Cross-platform compatible** - Skills work on pi, opencode, claude, codex, hermes
 10. **external_references field** - Include only user-provided starting URLs, not all crawled pages
 
