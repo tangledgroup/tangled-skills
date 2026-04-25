@@ -13,6 +13,10 @@ tags:
 category: development-tools
 external_references:
   - https://gitea.com/gitea/tea
+  - https://code.gitea.io/sdk/gitea
+  - https://dl.gitea.com/tea/
+  - https://hub.docker.com/r/gitea/tea
+  - https://pkg.go.dev/code.gitea.io/tea
   - https://gitea.com/gitea/tea/src/branch/main/docs
 ---
 
@@ -183,11 +187,3 @@ Configuration is stored at `/app/.config/tea` inside the container. Mount a volu
 docker run --rm -v $HOME/.config/tea:/app/.config/tea gitea/tea tea pr ls
 ```
 
-## References
-
-- Official repository: https://gitea.com/gitea/tea
-- Documentation: https://gitea.com/gitea/tea/src/branch/main/docs
-- Gitea SDK: https://code.gitea.io/sdk/gitea
-- GoDoc: https://pkg.go.dev/code.gitea.io/tea
-- Docker Hub: https://hub.docker.com/r/gitea/tea
-- Download binaries: https://dl.gitea.com/tea/

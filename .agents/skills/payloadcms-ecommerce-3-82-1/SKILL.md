@@ -41,6 +41,14 @@ required_environment_variables:
 
 # Payload CMS Ecommerce Template v3.82.1
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Complete guide for Payload CMS ecommerce template v3.82.1 providing production-ready online store with products, variants, carts, orders, Stripe payments, multi-currency support, user accounts, guest checkout, and transaction tracking. Use when building e-commerce platforms, online stores, marketplaces, or any digital commerce project requiring product catalogs, shopping carts, order management, payment processing, customer accounts, and inventory management following official Payload best practices.
+
 A production-ready, enterprise-grade ecommerce template for building online stores, marketplaces, and digital commerce platforms with Payload CMS v3.82.1, Next.js 16.2.2, TypeScript, MongoDB, Stripe payments, and advanced features including product variants, shopping carts, order management, customer accounts, guest checkout, multi-currency support, and transaction tracking.
 
 **Note:** This template is in **BETA**. Use for learning and development; review thoroughly before production deployment.
@@ -495,3 +503,7 @@ This skill includes detailed reference documentation organized by topic:
 - **Website Template**: See `payloadcms-website-3-82-1` skill for shared features
 
 **Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/payloadcms-ecommerce-3-82-1/`). All paths in this skill are relative to this directory.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

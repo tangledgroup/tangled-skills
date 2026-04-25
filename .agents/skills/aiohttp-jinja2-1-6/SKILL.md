@@ -17,6 +17,17 @@ required_environment_variables: []
 
 # aiohttp-jinja2-1-6
 
+## Overview
+
+Jinja2 template renderer for aiohttp.web applications providing decorator-based rendering, context processors, URL helpers, and async template support. Use when building Python web applications with aiohttp that require HTML templating, dynamic content generation, or server-side rendering with Jinja2 syntax.
+
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
+
+Jinja2 template renderer for aiohttp.web applications providing decorator-based rendering, context processors, URL helpers, and async template support. Use when building Python web applications with aiohttp that require HTML templating, dynamic content generation, or server-side rendering with Jinja2 syntax.
+
 Jinja2 template renderer for aiohttp.web applications that integrates Jinja2 templating engine with async HTTP handlers. Provides decorator-based rendering, context processors for per-request variables, URL generation helpers, and both synchronous and asynchronous template rendering support.
 
 **Version:** 1.6 (latest as of 2023-11-18)  
@@ -178,3 +189,9 @@ app[aiohttp_jinja2.static_root_key] = '/static'
 ```
 
 See [Advanced Patterns](references/05-advanced-patterns.md) for migration strategies and custom configurations.
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.
+

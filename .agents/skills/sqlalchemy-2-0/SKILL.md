@@ -23,6 +23,14 @@ required_environment_variables:
 
 # SQLAlchemy 2.0 Skill
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Complete SQLAlchemy 2.0 toolkit for database operations, ORM mapping, and SQL expression construction. Use when building Python applications that require database connectivity, object-relational mapping, or programmatic SQL generation with support for PostgreSQL, MySQL, SQLite, Oracle, and MSSQL.
+
 Complete toolkit for working with databases in Python using SQLAlchemy 2.0, including the Core SQL Expression Language and Object Relational Mapper (ORM). Supports synchronous and asynchronous operations across PostgreSQL, MySQL, SQLite, Oracle, and Microsoft SQL Server.
 
 ## When to Use
@@ -366,3 +374,7 @@ See [Glossary](references/23-troubleshooting-faq.md#sqlalchemy-glossary) for com
 6. Index foreign keys and frequently queried columns
 
 See [Best Practices](references/24-best-practices.md) for comprehensive guidance.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

@@ -17,11 +17,17 @@ tags:
 category: ai-ml
 external_references:
   - https://huggingface.co/Qwen/Qwen3-Embedding-0.6B
+  - https://arxiv.org/abs/2506.05176
+  - https://qwenlm.github.io/blog/qwen3-embedding/
   - https://huggingface.co/Qwen/Qwen3-Embedding-4B
   - https://huggingface.co/Qwen/Qwen3-Embedding-8B
 ---
 
 # Qwen3 Embedding Models
+
+## Overview
+
+Complete toolkit for Qwen3 Embedding models (0.6B, 4B, 8B) and Qwen3 Reranker models providing state-of-the-art text embedding, semantic search, reranking, and multilingual retrieval with support for Sentence Transformers, raw Transformers, vLLM, and TEI inference engines. Use when generating text embeddings, building semantic search or RAG pipelines, performing cross-lingual retrieval, code retrieval, text classification/clustering, or reranking search results with Qwen3-Embedding or Qwen3-Reranker models.
 
 Complete toolkit for the **Qwen3 Embedding series** — state-of-the-art text embedding and reranking models built on the Qwen3 foundation. Supports three sizes (0.6B, 4B, 8B) with multilingual capability across 100+ languages, 32K context length, user-defined output dimensions, and instruction-aware prompting.
 
@@ -192,10 +198,4 @@ For detailed usage, see the reference files:
 - **[Evaluation & Benchmarks](references/05-evaluation-benchmarks.md)** — MTEB scores, reranking benchmarks, language support, citation
 - **[Complete Examples](references/06-complete-examples.md)** — Full RAG pipeline, multilingual search, code retrieval, clustering, data export
 
-## References
 
-- **Qwen3-Embedding-0.6B:** https://huggingface.co/Qwen/Qwen3-Embedding-0.6B
-- **Qwen3-Embedding-4B:** https://huggingface.co/Qwen/Qwen3-Embedding-4B
-- **Qwen3-Embedding-8B:** https://huggingface.co/Qwen/Qwen3-Embedding-8B
-- **Technical Report (arXiv):** https://arxiv.org/abs/2506.05176
-- **Qwen Blog:** https://qwenlm.github.io/blog/qwen3-embedding/

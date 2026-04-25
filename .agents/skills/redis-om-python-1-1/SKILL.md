@@ -22,6 +22,14 @@ required_environment_variables:
 
 # Redis OM Python v1.1.0
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A skill for using Redis OM Python v1.1.0, an object mapping library that provides declarative models, automatic secondary-index generation, and fluent query APIs for Redis with RediSearch and RedisJSON modules. Use when building Python applications requiring ORM-like abstractions for Redis, full-text search capabilities, geospatial queries, vector similarity search (KNN), or complex nested document storage.
+
 Redis OM Python provides high-level abstractions for modeling and querying Redis data using Pydantic-based models. It supports both hash-based storage (HashModel) and JSON document storage (JsonModel), with automatic RediSearch index generation, full-text search, geospatial queries, vector similarity search, and schema migrations.
 
 ## When to Use
@@ -208,3 +216,7 @@ await Migrator(conn=redis_client).run()
 **Connection errors:** Verify REDIS_OM_URL or connection parameters are correct.
 
 See [Troubleshooting Guide](references/05-troubleshooting.md) for detailed solutions.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

@@ -16,6 +16,12 @@ tags:
 category: infrastructure
 external_references:
   - https://github.com/haproxy/haproxy/tree/v3.3.0/doc
+  - https://github.com/haproxy/haproxy/blob/v3.3.0/doc/configuration.txt
+  - https://github.com/haproxy/haproxy/blob/v3.3.0/doc/intro.txt
+  - https://github.com/haproxy/haproxy/blob/v3.3.0/doc/lua.txt
+  - https://github.com/haproxy/haproxy/blob/v3.3.0/doc/management.txt
+  - https://github.com/haproxy/haproxy/blob/v3.3.0/doc/peers.txt
+  - https://github.com/haproxy/haproxy/blob/v3.3.0/doc/proxy-protocol.txt
 ---
 
 # HAProxy 3.3.0
@@ -485,12 +491,3 @@ backend app_servers
 
 **Defaults keywords**: Inheritable settings for any section type (precedence: section > named defaults > anonymous defaults)
 
-## References
-
-- Official documentation: https://github.com/haproxy/haproxy/tree/v3.3.0/doc
-- Configuration Manual: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/configuration.txt
-- Architecture Guide: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/intro.txt
-- Management Guide: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/management.txt
-- Lua Integration: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/lua.txt
-- PROXY Protocol: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/proxy-protocol.txt
-- Peers Protocol: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/peers.txt

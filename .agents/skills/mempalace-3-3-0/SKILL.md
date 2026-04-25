@@ -14,6 +14,11 @@ tags:
   - knowledge-graph
 external_references:
   - https://github.com/MemPalace/mempalace/tree/v3.3.0
+  - https://github.com/MemPalace/mempalace
+  - https://github.com/MemPalace/mempalace/issues
+  - https://github.com/MemPalace/mempalace/tree/v3.3.0/benchmarks
+  - https://github.com/MemPalace/mempalace/tree/v3.3.0/docs
+  - https://raw.githubusercontent.com/lhl/agentic-memory/10ade6b92a1d54f896f56cd2be386ef54e288a0c/ANALYSIS-mempalace.md
 ---
 
 # MemPalace 3.3.0
@@ -517,15 +522,6 @@ mempalace mine ~/chats/ --mode convos  # no closets yet
 - Search within wing: 73.1% (+12%)
 - Search wing + hall: 84.8% (+24%)
 - Search wing + room: 94.8% (+34%)
-
-## References
-
-- **GitHub repository:** https://github.com/MemPalace/mempalace
-- **Version v3.3.0:** https://github.com/MemPalace/mempalace/tree/v3.3.0
-- **Documentation:** https://github.com/MemPalace/mempalace/tree/v3.3.0/docs
-- **Benchmarks:** https://github.com/MemPalace/mempalace/tree/v3.3.0/benchmarks
-- **Issue tracker:** https://github.com/MemPalace/mempalace/issues
-- **Independent analysis:** [lhl/agentic-memory ANALYSIS-mempalace.md](https://raw.githubusercontent.com/lhl/agentic-memory/10ade6b92a1d54f896f56cd2be386ef54e288a0c/ANALYSIS-mempalace.md) — code review, claims verification, architecture deep dive (see [references/01-independent-analysis.md](references/01-independent-analysis.md))
 
 ## Comparison with Alternatives
 

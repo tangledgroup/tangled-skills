@@ -17,6 +17,10 @@ tags:
 category: databases
 external_references:
   - https://github.com/ashvardanian/NetworkXternal
+  - https://docs.sqlalchemy.org/
+  - https://github.com/ashvardanian/NetworkXternal/blob/main/networkxternal/base_api.py
+  - https://networkx.github.io/documentation/stable/reference/classes/generated/networkx.Graph.html
+  - https://networkx.github.io/documentation/stable/reference/classes/multidigraph.html
   - https://networkx.github.io/
 ---
 
@@ -641,14 +645,6 @@ edges_from_node_1 = graph.reduce_edges(u=1)
 | Native graph queries (small) | Neo4J (use with caution) |
 | Production, large scale | PostgreSQL |
 
-## References
-
-- **GitHub Repository**: https://github.com/ashvardanian/NetworkXternal
-- **BaseAPI Source**: https://github.com/ashvardanian/NetworkXternal/blob/main/networkxternal/base_api.py
-- **NetworkX MultiDiGraph Docs**: https://networkx.github.io/documentation/stable/reference/classes/multidigraph.html
-- **NetworkX Graph API**: https://networkx.github.io/documentation/stable/reference/classes/generated/networkx.Graph.html
-- **SQLAlchemy Documentation**: https://docs.sqlalchemy.org/
-
 ## See Also
 
 For detailed information on specific topics, see:
@@ -658,3 +654,7 @@ For detailed information on specific topics, see:
 - [Performance Benchmarks](references/03-performance-benchmarks.md) - Detailed performance analysis and tuning
 - [Migration from NetworkX](references/04-migration-from-networkx.md) - Step-by-step migration guide
 - [Advanced Patterns](references/05-advanced-patterns.md) - Bulk operations, streaming, edge cases
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

@@ -15,6 +15,17 @@ category: security
 
 # argon2-25 (argon2-cffi)
 
+## Overview
+
+Python toolkit for password hashing and verification using the Argon2 algorithm via argon2-cffi. Use when implementing secure password storage, user authentication systems, or migrating legacy password hashes to modern standards.
+
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
+
+Python toolkit for password hashing and verification using the Argon2 algorithm via argon2-cffi. Use when implementing secure password storage, user authentication systems, or migrating legacy password hashes to modern standards.
+
 Comprehensive Python toolkit for secure password hashing and verification using the Argon2 algorithm, winner of the Password Hashing Competition. Provides both high-level APIs for common use cases and low-level access for advanced customization.
 
 ## When to Use
@@ -152,3 +163,9 @@ Adjust parameters to achieve 40-500ms verification time depending on use case.
 - `HashingError`: Hash creation failed (usually parameter issues)
 
 See [API Reference](references/03-api-reference.md) for complete exception documentation.
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.
+

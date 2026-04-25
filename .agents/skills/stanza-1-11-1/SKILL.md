@@ -14,6 +14,10 @@ tags:
 category: machine-learning
 external_references:
   - https://github.com/stanfordnlp/stanza/tree/v1.11.1
+  - https://arxiv.org/abs/2003.07082
+  - https://arxiv.org/abs/2007.14640
+  - https://stanfordnlp.github.io/CoreNLP/
+  - https://universaldependencies.org/
   - https://stanfordnlp.github.io/stanza/
   - https://huggingface.co/stanfordnlp/models
 ---
@@ -269,16 +273,6 @@ print(doc.entities)  # Biomedical entity recognition
 ```
 
 See [Biomedical Models](references/08-biomedical-models.md) for available packages.
-
-## References
-
-- **Official documentation**: https://stanfordnlp.github.io/stanza/
-- **GitHub repository**: https://github.com/stanfordnlp/stanza/tree/v1.11.1
-- **Hugging Face models**: https://huggingface.co/stanfordnlp/models
-- **Universal Dependencies**: https://universaldependencies.org/
-- **Stanford CoreNLP**: https://stanfordnlp.github.io/CoreNLP/
-- **ACL 2020 paper**: https://arxiv.org/abs/2003.07082
-- **Biomedical models paper**: https://arxiv.org/abs/2007.14640
 
 ## Reference Files
 

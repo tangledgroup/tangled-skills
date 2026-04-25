@@ -14,6 +14,12 @@ tags:
 category: data-science
 external_references:
   - https://numpy.org/
+  - https://data-apis.org/array-api/
+  - https://github.com/numpy/numpy
+  - https://numpy.org/doc/stable/numpy_2_0_migration_guide.html
+  - https://numpy.org/doc/stable/reference/random/index.html
+  - https://numpy.org/neps/nep-0050-new-type-promotion.html
+  - https://numpy.org/neps/nep-0052-public-naming.html
   - https://numpy.org/doc/stable/
   - https://github.com/numpy/numpy/tree/v2.4.4
 ---
@@ -441,27 +447,6 @@ arr = np.zeros(10_000_000, dtype=np.float32)  # 40 MB vs 80 MB
 for chunk in np.memmap('large_file.dat', dtype='float32', mode='r', shape=(1000000,)):
     process(chunk[:1000])
 ```
-
-## References
-
-- **Official Documentation**: https://numpy.org/doc/stable/
-- **GitHub Repository**: https://github.com/numpy/numpy
-- **NumPy 2.0 Migration Guide**: https://numpy.org/doc/stable/numpy_2_0_migration_guide.html
-- **NEP 50 (Type Promotion)**: https://numpy.org/neps/nep-0050-new-type-promotion.html
-- **NEP 52 (Namespace Cleanup)**: https://numpy.org/neps/nep-0052-public-naming.html
-- **Array API Standard**: https://data-apis.org/array-api/
-- **Random Number Generation Guide**: https://numpy.org/doc/stable/reference/random/index.html
-
-### Reference Files
-
-- [Array Creation](references/01-array-creation.md) - Comprehensive array creation methods
-- [Indexing and Slicing](references/02-indexing-slicing.md) - Accessing array elements
-- [Array Manipulation](references/03-array-manipulation.md) - Reshaping, stacking, splitting
-- [Mathematical Functions](references/04-mathematical-functions.md) - Ufuncs and mathematical operations
-- [Linear Algebra](references/05-linear-algebra.md) - Matrix operations and decompositions
-- [Random Number Generation](references/06-random-generation.md) - Modern Generator API
-- [NumPy 2.0 Migration](references/07-numpy2-migration.md) - Upgrade guide from NumPy 1.x
-- [Performance Tips](references/08-performance-tips.md) - Optimization techniques
 
 ## Best Practices
 

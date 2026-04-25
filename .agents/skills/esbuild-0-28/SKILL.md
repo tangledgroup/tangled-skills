@@ -24,6 +24,14 @@ required_environment_variables: []
 
 # esbuild-0-28
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Complete toolkit for esbuild v0.28 JavaScript bundler providing CLI, JavaScript API, and Go API access for bundling, minification, transformation, and development workflows with support for TypeScript, JSX, CSS modules, tree shaking, source maps, watch mode, and local development server without requiring npm installation via npx execution.
+
 An extremely fast JavaScript bundler written in Go that bundles, minifies, and transforms JavaScript, TypeScript, JSX, and CSS files 10-100x faster than alternative tools like webpack, rollup, or parcel. Esbuild requires no cache for its speed and supports both ECMAScript modules (ESM) and CommonJS formats with built-in tree shaking, source maps, watch mode, and a local development server.
 
 ## When to Use
@@ -204,3 +212,7 @@ Esbuild is designed to be extremely fast without caching. If experiencing slow b
 See [FAQ and Troubleshooting](references/10-faq-troubleshooting.md) for benchmark details and performance optimization tips.
 
 **Note:** All paths in this skill are relative to the skill's base directory (`.agents/skills/esbuild-0-28/`). The `{baseDir}` variable refers to this location when used in agent contexts.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

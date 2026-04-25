@@ -13,12 +13,20 @@ tags:
 category: development-tools
 external_references:
   - https://cli.github.com/
+  - https://github.com/cli/cli
+  - https://github.com/cli/cli#installation
+  - https://github.com/cli/cli/releases
+  - https://github.com/topics/gh-extension
   - https://cli.github.com/manual/
   - https://github.com/cli/cli/releases/tag/v2.91.0
 ---
 
 # GitHub CLI v2.91.0
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
 
 `gh` is GitHub on the command line. It brings pull requests, issues, releases, workflows, and other GitHub concepts to the terminal next to where you are already working with `git` and your code. Written in Go, it supports macOS, Windows, and Linux, and works with GitHub.com, GitHub Enterprise Cloud, and GitHub Enterprise Server 2.20+.
@@ -308,10 +316,4 @@ Key environment variables for configuration:
 - [GitHub Projects](references/03-projects.md) — Working with GitHub Projects via CLI
 - [Attestation & Security](references/04-attestation.md) — Build provenance verification and security features
 
-## References
 
-- Official documentation: <https://cli.github.com/manual/>
-- GitHub repository: <https://github.com/cli/cli>
-- Release notes: <https://github.com/cli/cli/releases>
-- Installation guides: <https://github.com/cli/cli#installation>
-- Extensions marketplace: <https://github.com/topics/gh-extension>

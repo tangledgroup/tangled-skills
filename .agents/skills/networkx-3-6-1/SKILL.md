@@ -13,6 +13,14 @@ tags:
 category: data-science
 external_references:
   - https://networkx.org/documentation/stable/reference/index.html
+  - http://conference.scipy.org.s3-website-us-east-1.amazonaws.com/proceedings/scipy2008/paper_2/full_text.pdf
+  - https://discord.com/invite/vur45CbwMz
+  - https://github.com/networkx/networkx
+  - https://github.com/networkx/networkx/discussions
+  - https://groups.google.com/forum/#!forum/networkx-discuss
+  - https://networkx.org/documentation/stable/
+  - https://networkx.org/documentation/stable/reference/
+  - https://networkx.org/documentation/stable/tutorial.html
   - https://github.com/networkx/networkx/tree/networkx-3.6.1
   - https://networkx.org/en/
 ---
@@ -526,14 +534,3 @@ Where V = number of nodes, E = number of edges, k = iterations, f = flow value.
 ### Exceptions
 `NetworkXException`, `NetworkXError`, `NetworkXAlgorithmError`, `NetworkXNoPath`, `NetworkXNoCycle`, `NetworkXUnfeasible`, `NetworkXNotImplemented`, `NodeNotFound`, `AmbiguousSolution`, `ExceededMaxIterations`, `PowerIterationFailedConvergence`, `HasACycle`, `NetworkXPointlessConcept`
 
-## References
-
-- **Official documentation**: https://networkx.org/documentation/stable/
-- **GitHub repository**: https://github.com/networkx/networkx
-- **Tutorial**: https://networkx.org/documentation/stable/tutorial.html
-- **Reference guide**: https://networkx.org/documentation/stable/reference/
-- **Citation**: Hagberg, A.A., Schult, D.A. & Swart, P.J., "Exploring network structure, dynamics, and function using NetworkX", SciPy2008
-- **SciPy Conference paper (PDF)**: http://conference.scipy.org.s3-website-us-east-1.amazonaws.com/proceedings/scipy2008/paper_2/full_text.pdf
-- **Mailing list**: https://groups.google.com/forum/#!forum/networkx-discuss
-- **GitHub Discussions**: https://github.com/networkx/networkx/discussions
-- **Discord (Scientific Python)**: https://discord.com/invite/vur45CbwMz

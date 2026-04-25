@@ -51,7 +51,7 @@ my-skill/
 ```
 my-skill/
 ├── SKILL.md              # Overview + navigation hub
-└── references/           # Flat structure, numbered files
+└── reference/           # Flat structure, numbered files
     ├── 01-core-concepts.md
     └── 02-advanced-topics.md
 ```
@@ -60,7 +60,7 @@ my-skill/
 
 While analyzing content, estimate total output lines:
 - `< 500` → simple (single SKILL.md)
-- `≥ 500` → complex (SKILL.md + references/)
+- `≥ 500` → complex (SKILL.md + reference/)
 
 Split into references when:
 - Total expected output exceeds ~500 lines
@@ -87,7 +87,7 @@ Create a valid YAML header with validated name, description, version, and metada
 
 ### Step 5: Write Output Files
 
-Write SKILL.md (simple) or SKILL.md + references/ (complex).
+Write SKILL.md (simple) or SKILL.md + reference/ (complex).
 
 ### Step 6: Validate
 
@@ -293,12 +293,10 @@ Common patterns and code examples. Include copy-pasteable code blocks with langu
 ## Advanced Topics
 
 Deeper topics. For complex skills, link to reference files:
-- [Reference: Core Concepts](references/01-core-concepts.md)
-
-## References
-
-- Official documentation: <URL>
-- GitHub repository: <URL>
+**Finance**: Revenue, ARR, billing → See [reference/01-finance.md](reference/01-finance.md)
+**Sales**: Opportunities, pipeline, accounts → See [reference/02-sales.md](reference/02-sales.md)
+**Product**: API usage, features, adoption → See [reference/03-product.md](reference/03-product.md)
+**Marketing**: Campaigns, attribution, email → See [reference/04-marketing.md](reference/04-marketing.md)
 ```
 
 ### Reference File Template
@@ -375,8 +373,8 @@ for p in pathlib.Path(".").rglob("*.md"):
 ### Structure
 - [ ] Directory name matches skill name
 - [ ] SKILL.md exists
-- [ ] If complex: `references/` with numbered files (`01-`, `02-`, etc.)
-- [ ] No nested `references/` directories
+- [ ] If complex: `reference/` with numbered files (`01-`, `02-`, etc.)
+- [ ] No nested `reference/` directories
 - [ ] SKILL.md under 500 lines (if references exist)
 
 ### Content
@@ -408,7 +406,7 @@ Define success criteria before generating:
 ```
 1. Generate SKILL.md → verify: YAML parses, name matches directory
 2. Validate content → verify: all required sections present
-3. Check structure → verify: references/ numbered correctly
+3. Check structure → verify: reference/ numbered correctly
 ```
 
 ### No External Dependencies
@@ -418,7 +416,7 @@ Define success criteria before generating:
 
 ### Prefer Simple References Over Tables
 - **Do not use markdown tables unless nothing else fits better.** This is the default, not an exception.
-- Reference file links must use simple text references: `[Reference: Core Concepts](references/01-core-concepts.md)`
+- Reference file links must use simple text references: `[Core Concepts](reference/01-core-concepts.md)`
 - Express examples, concepts, and guidance as prose, lists, or code blocks — tables are the last resort
 - YAML field rules are acceptable as a table since each row is a key-value pair with no simpler alternative
 - Extension mappings are acceptable as a table when listing many file types concisely

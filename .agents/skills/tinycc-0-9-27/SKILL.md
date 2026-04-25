@@ -19,6 +19,10 @@ external_references:
 
 # TinyCC 0.9.27
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
 
 TinyCC (TCC) is a small (~100KB), hyper-fast C compiler that generates optimized x86 code directly without byte code overhead. Unlike GCC, TCC is self-relying — it includes its own preprocessor, assembler, and linker, so no external tools are needed. It compiles about 7-9 times faster than GCC at -O0.
@@ -153,3 +157,7 @@ See `references/01-command-reference.md` for full option details.
 See `references/02-c-language-support.md` for language features and extensions.
 See `references/03-libtcc-api.md` for the libtcc dynamic code generation API.
 See `references/04-assembler-and-linker.md` for assembler directives and linker options.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

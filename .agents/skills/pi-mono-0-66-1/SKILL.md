@@ -12,6 +12,33 @@ tags:
   - coding agents
   - architecture
 category: development
+external_references:
+  - https://www.npmjs.com/package/@mariozechner/pi-coding-agent
+  - https://pi.dev/
+  - https://github.com/badlogic/pi-skills
+  - https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent/examples/extensions/
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/tui.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/tree.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/themes.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/skills.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/settings.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/session.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/sdk.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/rpc.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/providers.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/prompt-templates.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/packages.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/models.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/keybindings.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/json.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/extensions.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/development.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/custom-provider.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/compaction.md
+  - https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/README.md
+  - https://github.com/badlogic/pi-mono
+  - https://github.com/anthropics/skills
+  - https://discord.com/invite/3cU7Bz4UPx
 required_environment_variables: []
 ---
 
@@ -601,68 +628,3 @@ When context exceeds the model's limit, pi has multiple strategies:
 
 The system tracks token usage per message type (input, output, cache reads/writes) and cost, displaying totals in the footer.
 
-## References
-
-### Official Documentation
-
-- **Pi Website**: https://pi.dev/
-- **GitHub Repository**: https://github.com/badlogic/pi-mono
-- **Main README**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/README.md
-- **Discord Community**: https://discord.com/invite/3cU7Bz4UPx
-- **npm Package**: https://www.npmjs.com/package/@mariozechner/pi-coding-agent
-
-### Documentation Files (in pi-mono repo)
-
-- **Providers**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/providers.md
-- **Models**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/models.md
-- **Extensions**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/extensions.md
-- **Skills**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/skills.md
-- **Session Format**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/session.md
-- **Compaction**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/compaction.md
-- **Tree Navigation**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/tree.md
-- **Settings**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/settings.md
-- **Keybindings**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/keybindings.md
-- **Themes**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/themes.md
-- **Prompt Templates**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/prompt-templates.md
-- **Packages**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/packages.md
-- **Custom Providers**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/custom-provider.md
-- **SDK API**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/sdk.md
-- **RPC Protocol**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/rpc.md
-- **JSON Mode**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/json.md
-- **Development**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/development.md
-- **TUI Components**: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/tui.md
-
-### Package Documentation
-
-- **pi-ai**: Unified LLM API toolkit
-- **pi-agent**: Agent framework with tool execution
-- **pi-tui**: Terminal UI components
-- **pi-coding-agent**: Main CLI application
-
-### Extension Examples
-
-See https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent/examples/extensions/ for working implementations:
-- Custom tools, commands, and shortcuts
-- Permission gates and path protection
-- Git checkpointing and auto-commit
-- Custom compaction strategies
-- Conversation summaries
-- Interactive Q&A tools
-- Stateful tools (todo lists, connection pools)
-- External integrations (file watchers, webhooks)
-- Games while waiting (snake, doom)
-
-### Skill Repositories
-
-- [Anthropic Skills](https://github.com/anthropics/skills) - Document processing (docx, pdf, pptx, xlsx), web development
-- [Pi Skills](https://github.com/badlogic/pi-skills) - Web search, browser automation, Google APIs, transcription
-
-### Reference Files
-
-See the `references/` directory for deep dives into specific topics:
-- [`references/01-provider-architecture.md`](references/01-provider-architecture.md) - Detailed provider implementation patterns
-- [`references/02-agent-runtime.md`](references/02-agent-runtime.md) - Message loop and tool execution internals
-- [`references/03-tui-rendering.md`](references/03-tui-rendering.md) - Differential rendering and component lifecycle
-- [`references/04-extension-system.md`](references/04-extension-system.md) - Extension API and hook patterns
-- [`references/05-session-management.md`](references/05-session-management.md) - Branching, compaction, and persistence
-- [`references/06-tool-implementation.md`](references/06-tool-implementation.md) - Creating custom tools with validation

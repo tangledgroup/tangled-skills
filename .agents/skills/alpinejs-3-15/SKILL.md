@@ -18,6 +18,10 @@ required_environment_variables: []
 
 # Alpine.js 3.15
 
+## Overview
+
+A skill for building reactive user interfaces with Alpine.js 3.15, a minimal JavaScript framework that uses HTML-first declarative syntax with directives like x-data, x-model, and x-show. Use when creating interactive web components, forms, dropdowns, modals, and dynamic UI elements without build tools or complex setup.
+
 Alpine.js is a minimal, performant JavaScript framework for building reactive user interfaces using HTML-first declarative syntax. Unlike traditional frameworks that require build steps or complex tooling, Alpine lives directly in your HTML markup using directives like `x-data`, `x-model`, and `x-show`. It's designed to be "just enough JavaScript" for making HTML elements interactive without the overhead of full frameworks.
 
 ## When to Use
@@ -176,3 +180,8 @@ See [Reactivity and Lifecycle](references/05-reactivity-lifecycle.md) for deep d
 - Ensure function is in scope or use arrow functions in `x-data`
 
 For more solutions, see [Common Components](references/09-common-components.md) for component-specific issues and [Extending Alpine](references/08-extending-alpine.md) for custom directive debugging.
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

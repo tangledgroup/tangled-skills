@@ -17,6 +17,9 @@ tags:
 category: ai-models
 external_references:
   - https://huggingface.co/Qwen/Qwen3-VL-Embedding-2B
+  - https://arxiv.org/abs/2601.04720
+  - https://github.com/QwenLM/Qwen3-VL-Embedding
+  - https://qwen.ai/blog?id=qwen3-vl-embedding
   - https://huggingface.co/Qwen/Qwen3-VL-Embedding-8B
 ---
 
@@ -172,21 +175,6 @@ See [Use Cases & Patterns](references/05-use-cases-patterns.md) for complete exa
 - **Reproducibility**: Evaluation scripts for MMEB v2 benchmark
 
 See reference files for deep dives.
-
-## References
-
-- **Model Cards**: [2B](https://huggingface.co/Qwen/Qwen3-VL-Embedding-2B) | [8B](https://huggingface.co/Qwen/Qwen3-VL-Embedding-8B)
-- **GitHub**: https://github.com/QwenLM/Qwen3-VL-Embedding
-- **Technical Report**: https://arxiv.org/abs/2601.04720
-- **Blog Post**: https://qwen.ai/blog?id=qwen3-vl-embedding
-
-### Reference Files
-
-- [Model Architecture & Specifications](references/01-model-architecture.md) — Dual-tower design, MRL, LoRA config, pixel/frame constraints
-- [Transformers API Reference](references/02-transformers-api.md) — Installation, Qwen3VLEmbedder class, input formats, examples
-- [vLLM Inference API](references/03-vllm-inference.md) — vLLM setup, batch inference, serving patterns
-- [Benchmarks & Performance](references/04-benchmarks-performance.md) — MMEB-V2, MMTEB results, model comparison
-- [Use Cases & Patterns](references/05-use-cases-patterns.md) — RAG pipelines, image search, video indexing, clustering
 
 ## Citation
 

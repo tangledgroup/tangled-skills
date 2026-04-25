@@ -19,6 +19,14 @@ required_environment_variables: []
 
 # htm 3.1 (Hyperscript Tagged Markup)
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A skill for using htm 3.1, a tagged template syntax library that provides JSX-like markup in plain JavaScript without requiring a transpiler. Use when building browser-compatible React/Preact applications with native ES modules, implementing server-side rendering, or creating lightweight UI components without build tooling.
+
 A skill for using **htm** (Hyperscript Tagged Markup), a library that provides JSX-like syntax in plain JavaScript using tagged template literals. No transpiler required - works directly in modern browsers with native ES modules.
 
 ## When to Use
@@ -256,3 +264,7 @@ const html = htm.bind(function h(type, props, children) {
 ```
 
 See [Static Caching Tests](references/01-core-concepts.md#caching-behavior) for detailed caching semantics.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

@@ -15,10 +15,19 @@ tags:
 category: machine-learning
 external_references:
   - https://github.com/ggml-org/llama.cpp/tree/b8789
+  - https://github.com/ggml-org/llama.cpp/blob/b8789/docs/gguf.md
+  - https://github.com/ggml-org/llama.cpp/issues/9289
+  - https://github.com/ggml-org/llama.cpp/issues/9291
+  - https://github.com/orgs/ggml-org/packages/container/package/llama.cpp
+  - https://huggingface.co/models?search=ggml-org
   - https://github.com/ggml-org/llama.cpp/tree/b8789/docs
 ---
 
 # llama.cpp b8789
+
+## Overview
+
+C/C++ LLM inference library providing GGUF model support, quantization, GPU acceleration (CUDA/Metal/HIP/Vulkan/SYCL), OpenAI-compatible server, multimodal processing, and speculative decoding for running large language models locally with high performance across diverse hardware platforms.
 
 **llama.cpp** is a high-performance C/C++ library for running large language models (LLMs) with minimal dependencies and state-of-the-art performance across diverse hardware platforms. Commit `b8789` represents a mature release with comprehensive model support, multimodal capabilities, and production-ready server infrastructure.
 
@@ -199,12 +208,4 @@ cmake -B build -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="86;89"
 - Reduce context size: `--ctx-size 4096`
 - Enable KV cache quantization: `--cache-type-k q4_0 --cache-type-v q4_0`
 
-## References
 
-- **Official Repository**: https://github.com/ggml-org/llama.cpp/tree/b8789
-- **Documentation**: https://github.com/ggml-org/llama.cpp/tree/b8789/docs
-- **GGUF Format Spec**: https://github.com/ggml-org/llama.cpp/blob/b8789/docs/gguf.md
-- **Changelog (libllama API)**: https://github.com/ggml-org/llama.cpp/issues/9289
-- **Changelog (Server API)**: https://github.com/ggml-org/llama.cpp/issues/9291
-- **Hugging Face GGUF Models**: https://huggingface.co/models?search=ggml-org
-- **Docker Images**: https://github.com/orgs/ggml-org/packages/container/package/llama.cpp

@@ -16,6 +16,17 @@ required_environment_variables: []
 
 # bcrypt-5-0
 
+## Overview
+
+A skill for password hashing and key derivation using bcrypt 5.0 in Python. Use when implementing secure password storage, verifying passwords, or deriving cryptographic keys with bcrypt_pbkdf.
+
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
+
+A skill for password hashing and key derivation using bcrypt 5.0 in Python. Use when implementing secure password storage, verifying passwords, or deriving cryptographic keys with bcrypt_pbkdf.
+
 A Python library for modern password hashing using the bcrypt algorithm. Provides secure password storage, verification, and key derivation functions implemented in Rust for performance and safety.
 
 ## When to Use
@@ -459,3 +470,9 @@ if bcrypt.checkpw(password, stored_hash):
 ## See Also
 
 - [Advanced Usage and Examples](references/01-advanced-usage.md) - Complete examples, advanced patterns, and troubleshooting
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.
+

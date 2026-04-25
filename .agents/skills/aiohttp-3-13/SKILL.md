@@ -17,6 +17,17 @@ required_environment_variables: []
 
 # aiohttp-3-13 Skill
 
+## Overview
+
+Async HTTP client/server for Python asyncio. Use when building async web applications, REST APIs, or making concurrent HTTP requests in Python.
+
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
+
+Async HTTP client/server for Python asyncio. Use when building async web applications, REST APIs, or making concurrent HTTP requests in Python.
+
 Asynchronous HTTP Client/Server for Python asyncio (version 3.13.x). Supports building async web servers, REST APIs, and making concurrent HTTP requests with connection pooling, WebSockets, middleware, and streaming.
 
 ## When to Use
@@ -295,3 +306,9 @@ See [Advanced Server Topics](references/05-advanced-server.md) for graceful shut
 5. **Keep-alive**: Enabled by default, reuse TCP connections
 6. **Base URL**: Use `base_url` parameter in ClientSession for relative URLs
 7. **Auto-decompression**: Enabled by default for gzip/deflate/brotli
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.
+

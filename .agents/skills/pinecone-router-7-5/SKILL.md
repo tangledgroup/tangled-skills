@@ -19,6 +19,14 @@ required_environment_variables: []
 
 # Pinecone Router 7.5
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A comprehensive toolkit for building client-side routing in Alpine.js applications using Pinecone Router v7.5, providing route matching, template rendering, handlers, navigation history, and TypeScript support for single-page applications.
+
 A small, easy-to-use, and feature-packed router for Alpine.js that provides declarative routing with inline/external templates, route handlers, navigation history, and full TypeScript support.
 
 ## When to Use
@@ -218,3 +226,7 @@ See [Templates](references/02-templates.md#multiple-external-templates) for incl
 ### Dynamic Template URLs
 
 See [Templates](references/02-templates.md#template-url-interpolation) for using route params in template paths.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

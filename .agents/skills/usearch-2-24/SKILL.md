@@ -20,6 +20,14 @@ required_environment_variables: []
 
 # USearch 2.24
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A skill for using USearch 2.24, a high-performance single-file similarity search and clustering engine for vectors supporting HNSW algorithm with user-defined metrics, quantization, and multi-language bindings including Python, C++, Rust, JavaScript, Java, Go, and more. Use when building vector search applications, implementing approximate nearest neighbors (ANN) search, performing semantic search, molecular similarity matching, geospatial indexing, or requiring faster alternatives to FAISS with custom distance functions.
+
 USearch is a smaller and faster single-file similarity search and clustering engine for vectors, implementing the HNSW (Hierarchical Navigable Small World) algorithm with up to 10x performance improvement over FAISS. It supports user-defined metrics, hardware-accelerated quantization (f16, bf16, i8, b1), multi-language bindings, and can serve indexes from disk without loading into RAM for significant cost reduction.
 
 ## When to Use
@@ -331,3 +339,7 @@ USearch is integrated into major databases and frameworks:
 - **TiDB/TiFlash**: C++ integration for vector indexes
 
 For application examples including molecular search (RDKit), geospatial indexing, and multimodal search (UForm + UCall), see [Advanced Workflows](references/02-advanced-workflows.md).
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

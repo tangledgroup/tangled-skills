@@ -13,6 +13,11 @@ tags:
 category: machine-learning
 external_references:
   - https://docs.chonkie.ai/common/welcome
+  - https://discord.gg/Q6zkP8w6ur
+  - https://docs.chonkie.ai
+  - https://github.com/chonkie-inc/chonkie
+  - https://github.com/chonkie-inc/chonkie/blob/main/BENCHMARKS.md
+  - https://github.com/chonkie-inc/chonkie/blob/v1.6.2/docs/oss/changelog.mdx
   - https://github.com/chonkie-inc/chonkie/tree/v1.6.2
   - https://github.com/chonkie-inc/chonkie/tree/v1.6.2/docs
 ---
@@ -228,14 +233,6 @@ for (const chunk of chunks) {
 - **Embeddings**: [references/04-embeddings.md](references/04-embeddings.md) - 9+ embedding providers with AutoEmbeddings
 - **Vector Databases**: [references/05-handshakes.md](references/05-handshakes.md) - 8+ vector DB integrations (Chroma, Qdrant, Pinecone, etc.)
 - **API Server**: [references/06-api-server.md](references/06-api-server.md) - Self-hosted REST API with Docker support
-
-## References
-
-- **Official Documentation**: https://docs.chonkie.ai
-- **GitHub Repository**: https://github.com/chonkie-inc/chonkie
-- **Changelog**: https://github.com/chonkie-inc/chonkie/blob/v1.6.2/docs/oss/changelog.mdx
-- **Discord Community**: https://discord.gg/Q6zkP8w6ur
-- **Benchmarks**: https://github.com/chonkie-inc/chonkie/blob/main/BENCHMARKS.md
 
 ## Troubleshooting
 

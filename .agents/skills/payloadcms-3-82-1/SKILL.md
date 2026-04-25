@@ -29,6 +29,10 @@ required_environment_variables:
 
 Complete toolkit for Payload CMS v3.82.1 headless CMS development including collections, fields, access control, authentication, custom components, and Local API operations. Use when building content management systems, creating admin interfaces, implementing role-based access control, developing custom React components, or integrating with Next.js applications using TypeScript-first patterns with proper security practices.
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
 
 Payload CMS is a TypeScript-first headless CMS providing:
@@ -220,3 +224,7 @@ See [Common Patterns](references/07-common-patterns.md) for detailed troubleshoo
 - **Examples**: https://github.com/payloadcms/payload/tree/v3.82.1/examples
 - **Templates**: https://github.com/payloadcms/payload/tree/v3.82.1/templates
 - **Plugins**: https://payloadcms.com/docs/plugins/overview
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

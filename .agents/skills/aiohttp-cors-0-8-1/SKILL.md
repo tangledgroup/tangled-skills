@@ -11,6 +11,10 @@ tags:
   - http-headers
   - cross-origin
 category: web-development
+external_references:
+  - https://pypi.org/project/aiohttp-cors/
+  - https://github.com/aio-libs/aiohttp-cors
+  - https://aiohttp-cors.readthedocs.io/
 required_environment_variables: []
 compatibility:
   python: ">=3.9"
@@ -18,6 +22,17 @@ compatibility:
 ---
 
 # aiohttp-cors 0.8.1
+
+## Overview
+
+A skill for implementing Cross-Origin Resource Sharing (CORS) support in aiohttp web applications using aiohttp-cors 0.8.1, enabling secure cross-origin HTTP requests with configurable origins, credentials, headers, and preflight caching.
+
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
+
+A skill for implementing Cross-Origin Resource Sharing (CORS) support in aiohttp web applications using aiohttp-cors 0.8.1, enabling secure cross-origin HTTP requests with configurable origins, credentials, headers, and preflight caching.
 
 A skill for implementing Cross-Origin Resource Sharing (CORS) support in aiohttp web applications using aiohttp-cors 0.8.1, enabling secure cross-origin HTTP requests with configurable origins, credentials, headers, and preflight caching.
 
@@ -168,12 +183,12 @@ For security best practices and advanced patterns, see [Detailed Usage](referenc
 
 For migration guides and known issues, see [Detailed Usage](references/01-detailed-usage.md).
 
-## References
-
-- **GitHub**: https://github.com/aio-libs/aiohttp-cors
-- **Documentation**: https://aiohttp-cors.readthedocs.io/
-- **PyPI**: https://pypi.org/project/aiohttp-cors/
-
 ## See Also
 
 - [Detailed Usage and Examples](references/01-detailed-usage.md) - Complete configuration patterns, examples, troubleshooting, and security best practices
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.
+

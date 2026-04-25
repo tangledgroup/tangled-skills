@@ -13,6 +13,11 @@ tags:
 category: systems
 external_references:
   - https://rsync.samba.org/
+  - https://download.samba.org/pub/rsync/rsync.1
+  - https://download.samba.org/pub/rsync/rsyncd.conf.5
+  - https://rsync.samba.org/FAQ.html
+  - https://rsync.samba.org/bug-tracking.html
+  - https://rsync.samba.org/examples.html
   - https://github.com/rsyncproject/rsync
 ---
 
@@ -313,13 +318,3 @@ For detailed coverage of advanced topics, see the reference files:
 - **License**: GNU GPL
 - **Latest CVE fixes**: 3.4.0 fixed 6 security vulnerabilities (CVE-2024-12084 through CVE-2024-12747)
 
-## References
-
-- Official website: https://rsync.samba.org/
-- GitHub repository: https://github.com/rsyncproject/rsync
-- Man page (HTML): https://download.samba.org/pub/rsync/rsync.1
-- rsyncd.conf man page: https://download.samba.org/pub/rsync/rsyncd.conf.5
-- FAQ: https://rsync.samba.org/FAQ.html
-- Examples: https://rsync.samba.org/examples.html
-- Bug tracking: https://rsync.samba.org/bug-tracking.html
-- Mailing list: rsync@lists.samba.org

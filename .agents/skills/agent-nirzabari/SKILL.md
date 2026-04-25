@@ -21,6 +21,17 @@ required_environment_variables: []
 
 # Nir Zabari Agent Skill
 
+## Overview
+
+A comprehensive guide to understanding and building coding agent harnesses, covering the 7-layer architecture, context engineering, tool orchestration, safety systems, and real-world implementations from Codex, OpenCode, Cursor, and Claude Code. Use when designing agentic systems, analyzing agent architectures, implementing harness patterns, or studying production-grade coding agent implementations.
+
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
+
+A comprehensive guide to understanding and building coding agent harnesses, covering the 7-layer architecture, context engineering, tool orchestration, safety systems, and real-world implementations from Codex, OpenCode, Cursor, and Claude Code. Use when designing agentic systems, analyzing agent architectures, implementing harness patterns, or studying production-grade coding agent implementations.
+
 A comprehensive toolkit for understanding and building production-grade coding agent harnesses, based on deep analysis of real-world implementations including Codex CLI, OpenCode, Cursor, and Claude Code. This skill covers the complete architecture from agent loops to safety systems, with practical patterns from systems that have written millions of lines of code autonomously.
 
 ## When to Use
@@ -163,3 +174,9 @@ See individual deep dives in [Codex Architecture](references/08-codex-deep-dive.
 7. **Cost vs quality tradeoff** - $20k for 100K lines (Anthropic C compiler case) is cost-effective but needs human verification
 
 This skill is based on Nir Zabari's March 2026 analysis of coding agent architectures, supplemented with documentation from Codex, OpenCode, Cursor, and related research. The field evolves rapidly - always check latest documentation for specific implementations.
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.
+

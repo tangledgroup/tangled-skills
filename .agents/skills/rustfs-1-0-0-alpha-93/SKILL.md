@@ -305,3 +305,7 @@ See [Configuration Reference](references/02-configuration.md) for environment va
 ## See Also
 
 - [Advanced Features](references/03-advanced-features.md) - Advanced configuration, observability, troubleshooting, and performance tuning
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

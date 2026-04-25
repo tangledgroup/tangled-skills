@@ -15,6 +15,11 @@ tags:
 category: ai-ml
 external_references:
   - https://huggingface.co/Qwen/Qwen3-Reranker-0.6B
+  - https://arxiv.org/abs/2506.05176
+  - https://github.com/QwenLM/Qwen3-Embedding
+  - https://huggingface.co/Qwen/Qwen3-Reranker-0.6B),
+  - https://huggingface.co/Qwen/Qwen3-Reranker-4B),
+  - https://qwenlm.github.io/blog/qwen3-embedding/
   - https://huggingface.co/Qwen/Qwen3-Reranker-4B
   - https://huggingface.co/Qwen/Qwen3-Reranker-8B
 ---
@@ -97,13 +102,6 @@ rankings = model.rank(query, documents)
 | Qwen3-Reranker-4B | 4B | 36 | **69.76** | 69.97 | Best accuracy/speed balance |
 | Qwen3-Reranker-8B | 8B | 36 | 69.02 | **70.19** | Maximum accuracy, multilingual |
 
-## References
-
-- Official Hugging Face: [Qwen3-Reranker-0.6B](https://huggingface.co/Qwen/Qwen3-Reranker-0.6B), [Qwen3-Reranker-4B](https://huggingface.co/Qwen/Qwen3-Reranker-4B), [Qwen3-Reranker-8B](https://huggingface.co/Qwen/Qwen3-Reranker-8B)
-- Blog post: https://qwenlm.github.io/blog/qwen3-embedding/
-- GitHub repository: https://github.com/QwenLM/Qwen3-Embedding
-- Technical report (arXiv): https://arxiv.org/abs/2506.05176
-
 ## Reference Files
 
 For detailed implementation code, see the reference files in this directory:
@@ -111,3 +109,7 @@ For detailed implementation code, see the reference files in this directory:
 - [`references/01-sentence-transformers.md`](references/01-sentence-transformers.md) — Complete Sentence Transformers usage with CrossEncoder, custom instructions, sigmoid activation, and production patterns
 - [`references/02-transformers-api.md`](references/02-transformers-api.md) — Raw Hugging Face Transformers API: manual token processing, prefix/suffix handling, logits computation, flash attention optimization
 - [`references/03-vllm-deployment.md`](references/03-vllm-deployment.md) — High-throughput vLLM serving: batched inference, tensor parallelism, sampling params with allowed tokens, production deployment patterns
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

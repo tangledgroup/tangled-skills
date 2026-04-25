@@ -19,6 +19,14 @@ required_environment_variables: []
 
 # ty 0.0.29
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A skill for using ty 0.0.29, an extremely fast Python type checker and language server written in Rust that is 10x-100x faster than mypy and Pyright with comprehensive diagnostics, configurable rule levels, and advanced typing features including intersection types, redeclarations, and gradual type support. Use when type checking Python code, setting up editor integrations for real-time type checking, configuring type checking rules, suppressing specific violations, or needing fast incremental analysis in IDEs.
+
 An extremely fast Python type checker and language server, written in Rust. ty is 10x-100x faster than mypy and Pyright with comprehensive diagnostics, configurable rule levels, support for redeclarations and partially typed code, and advanced typing features like intersection types and sophisticated reachability analysis.
 
 ## When to Use
@@ -381,3 +389,7 @@ sum_three_numbers(  # ty: ignore[missing-argument]
 ## Online Playground
 
 Try ty without installation at [play.ty.dev](https://play.ty.dev) - great for sharing bug reports and testing type system features.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

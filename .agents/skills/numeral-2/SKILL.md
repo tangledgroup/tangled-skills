@@ -16,6 +16,14 @@ category: utility
 
 # Numeral.js 2
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A JavaScript library for formatting and manipulating numbers. Use when formatting currency, percentages, bytes, time durations, ordinals, or exponential notation in browser or Node.js applications.
+
 Numeral.js is a JavaScript library for formatting and manipulating numbers. It provides consistent number formatting across different locales with support for currency, percentages, bytes, time durations, ordinals, abbreviations, and exponential notation.
 
 ## When to Use
@@ -218,3 +226,7 @@ numeral.version;                    // "2.0.6"
 ## See Also
 
 - [Configuration and Format Types](references/01-format-types-and-localization.md) - Global configuration, format strings, types, and localization
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

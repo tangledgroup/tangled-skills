@@ -17,6 +17,9 @@ tags:
 category: web-servers
 external_references:
   - https://nginx.org/en/docs/
+  - https://docs.nginx.com/nginx/admin-guide/
+  - https://nginx.org/en/docs/beginners_guide.html
+  - https://nginx.org/en/docs/control.html
   - https://github.com/nginx/nginx/tree/stable-1.30
 ---
 
@@ -448,17 +451,13 @@ kill -QUIT $(cat /var/run/nginx.pid.oldbin)
 | `index` | `index.html` | Default index files |
 | `access_log` | `logs/access.log combined` | Access log path and format |
 
-## References
-
-- Official documentation: https://nginx.org/en/docs/
-- GitHub repository: https://github.com/nginx/nginx/tree/stable-1.30
-- Admin's Guide: https://docs.nginx.com/nginx/admin-guide/
-- Beginner's Guide: https://nginx.org/en/docs/beginners_guide.html
-- Control documentation: https://nginx.org/en/docs/control.html
-
 ## Reference Files
 
 - [`references/01-configuration-syntax.md`](references/01-configuration-syntax.md) — Full configuration syntax, all main context and events directives, connection processing methods, measurement units
 - [`references/02-http-modules.md`](references/02-http-modules.md) — HTTP module reference: core module, proxy, SSL, upstream, gzip, rewrite, FastCGI/uWSGI/gRPC, caching, access control, headers, logging, variables
 - [`references/03-stream-proxy.md`](references/03-stream-proxy.md) — Stream/TCP/UDP proxying: stream core module, mail proxy (POP3/IMAP/SMTP), MQTT filter, load balancing in stream context
 - [`references/04-performance-tuning.md`](references/04-performance-tuning.md) — Performance optimization: worker tuning, connection handling, caching strategies, compression, sendfile, TCP settings, thread pools, HTTP/2 and HTTP/3 tuning
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

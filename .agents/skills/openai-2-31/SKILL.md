@@ -28,6 +28,14 @@ required_environment_variables:
 
 # OpenAI Python SDK v2.31
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Python SDK for OpenAI API v2.31 providing type-safe access to Responses API, Chat Completions, embeddings, audio transcription/synthesis, image generation, assistants, fine-tuning, and batch operations with sync/async clients. Use when building Python applications that integrate with OpenAI models for text generation, vision, audio processing, or automated assistants.
+
 Comprehensive toolkit for the OpenAI Python library (v2.31+) providing type-safe access to all OpenAI API endpoints including the new Responses API, Chat Completions, embeddings, audio processing, image generation, Assistants API, fine-tuning, and batch operations. Supports both synchronous and asynchronous clients with full type definitions powered by Pydantic and httpx.
 
 ## When to Use
@@ -322,3 +330,7 @@ Access request IDs from responses:
 response = client.responses.create(model="gpt-5.2", input="test")
 print(response._request_id)  # For reporting issues to OpenAI
 ```
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

@@ -14,6 +14,10 @@ tags:
 category: ai-agent-tooling
 external_references:
   - https://github.com/rohitg00/agentmemory/tree/v0.8.10
+  - https://github.com/rohitg00/agentmemory/blob/v0.8.10/benchmark/COMPARISON.md
+  - https://github.com/rohitg00/agentmemory/blob/v0.8.10/benchmark/LONGMEMEVAL.md
+  - https://github.com/rohitg00/iii-engine
+  - https://www.npmjs.com/package/@agentmemory/agentmemory
 ---
 
 # agentmemory v0.8.10
@@ -366,19 +370,3 @@ III_STREAMS_PORT=3112 agentmemory start
 
 See [Troubleshooting Guide](references/06-troubleshooting.md) for comprehensive debugging steps.
 
-## References
-
-- **GitHub Repository**: https://github.com/rohitg00/agentmemory/tree/v0.8.10
-- **iii-engine (dependency)**: https://github.com/rohitg00/iii-engine
-- **Benchmark Results**: https://github.com/rohitg00/agentmemory/blob/v0.8.10/benchmark/LONGMEMEVAL.md
-- **Competitor Comparison**: https://github.com/rohitg00/agentmemory/blob/v0.8.10/benchmark/COMPARISON.md
-- **NPM Package**: https://www.npmjs.com/package/@agentmemory/agentmemory
-
-### Reference Documentation
-
-- [Architecture Details](references/01-architecture.md) — iii-engine integration, state management, data flow
-- [Configuration Guide](references/02-configuration.md) — Environment variables, embedding providers, LLM backends
-- [MCP Tools Reference](references/03-mcp-tools.md) — All 43 MCP tools with schemas and examples
-- [REST API Reference](references/04-rest-api.md) — All 109 REST endpoints
-- [Advanced Features](references/05-advanced-features.md) — Team collaboration, governance, snapshots, mesh network
-- [Troubleshooting Guide](references/06-troubleshooting.md) — Common issues and debugging procedures

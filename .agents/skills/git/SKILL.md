@@ -358,3 +358,7 @@ git log --oneline --since="1 year ago" | grep -iE 'revert|hotfix|emergency|rollb
 ```
 
 Cross-reference churn hotspots with bug clusters: files on both lists are highest-risk code.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

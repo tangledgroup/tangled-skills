@@ -22,6 +22,14 @@ required_environment_variables:
 
 # Nuitka 4.0.8 - Python Compiler
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Python compiler that translates Python code to C and native executables. Use when compiling Python applications for distribution, creating extension modules, optimizing performance, or building standalone binaries across Windows, Linux, macOS, and FreeBSD.
+
 Nuitka is **the** Python compiler. It translates Python modules into C-level programs that use `libpython` and static C files to execute in the same way as CPython does. Nuitka compiles every construct that Python 2 (2.6, 2.7) and Python 3 (3.4 - 3.14) have, when itself run with that Python version.
 
 ## When to Use
@@ -242,3 +250,7 @@ This skill covers Nuitka's open-source features. Commercial-only features includ
 - Advanced anti-virus signature mitigation
 
 For commercial features, see https://nuitka.net/doc/commercial.html
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

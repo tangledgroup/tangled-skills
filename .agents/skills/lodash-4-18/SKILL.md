@@ -18,6 +18,14 @@ required_environment_variables: []
 
 # Lodash 4.18 Toolkit
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Complete toolkit for Lodash 4.18 utility library providing 300+ helper functions for arrays, collections, objects, strings, numbers, dates, and functions. Use when building JavaScript applications requiring robust data manipulation, functional programming patterns, type checking, or cross-platform compatibility without native ES6+ features.
+
 Complete toolkit for [Lodash](https://lodash.com/) v4.18, a modern JavaScript utility library providing over 300 modular helper functions for arrays, collections, objects, strings, numbers, dates, and functions. Lodash emphasizes composability, performance, and cross-platform compatibility.
 
 ## When to Use
@@ -297,3 +305,7 @@ _.differenceWith([2.1, 1.2], [2.3, 1.5], (a, b) => Math.abs(a - b) < 0.5); // [1
 - **Solution:** Use explicit function predicate for complex conditions
 
 See [Individual reference files](#reference-files) for method-specific documentation and examples.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

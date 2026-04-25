@@ -15,6 +15,8 @@ tags:
 category: programming-languages
 external_references:
   - https://github.com/cython/cython/tree/3.2.4
+  - https://github.com/cython/cython/wiki
+  - https://groups.google.com/group/cython
   - https://cython.readthedocs.io/en/latest/
 ---
 
@@ -695,27 +697,6 @@ global_var = Counter()
 
 See [Troubleshooting Guide](references/10-troubleshooting.md) for more issues.
 
-## References
+## Advanced Topics
 
-- **Official Documentation:** https://cython.readthedocs.io/en/latest/
-- **GitHub Repository:** https://github.com/cython/cython/tree/3.2.4
-- **Cython Wiki:** https://github.com/cython/cython/wiki
-- **Mailing List:** https://groups.google.com/group/cython
-
-### Reference Files
-
-- [Extension Types](references/02-extension-types.md) - cdef classes, inheritance, special methods
-- [Memoryviews](references/03-memoryviews.md) - Typed memoryviews, NumPy integration, buffer protocol
-- [Parallelism](references/04-parallelism.md) - OpenMP, prange, GIL management, thread safety
-- [Compilation](references/05-compilation.md) - Build systems, compiler flags, pyproject.toml
-- [Optimization](references/06-optimization.md) - Directives, profiling, performance tuning
-- [C Libraries](references/07-c-libraries.md) - Wrapping C APIs, pxd files, cimport
-- [C++ Libraries](references/08-cpp-libraries.md) - cppclass, templates, exceptions, STL
-- [NumPy Integration](references/09-numpy.md) - Array operations, ufuncs, advanced indexing
-- [Troubleshooting](references/10-troubleshooting.md) - Common errors, debugging strategies
-
-### Related Skills
-
-- **numpy-2-4-4** - NumPy array operations and scientific computing
-- **scipy-1-17-1** - Scientific Python library built on NumPy
-- **nuitka-4-0-8** - Alternative Python-to-C compiler with different optimization strategies
+For more details on advanced usage, refer to the official documentation listed in the References section.

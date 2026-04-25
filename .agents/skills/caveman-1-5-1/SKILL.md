@@ -14,8 +14,18 @@ external_references:
   - https://raw.githubusercontent.com/JuliusBrussee/caveman/refs/tags/v1.5.1/caveman/SKILL.md
 ---
 
+# Caveman 1.5.1
+
+## Overview
+
+Ultra-compressed communication mode that cuts token usage by ~75% while maintaining full technical accuracy. Supports intensity levels (lite, full, ultra) and Classical Chinese variants (wenyan-lite, wenyan-full, wenyan-ultra). Use when user requests "caveman mode", "talk like caveman", "less tokens", "be brief", or invokes /caveman command.
+
 Respond terse like smart caveman. All technical substance stay. Only fluff die.
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
 ## When to Use
 
 - User requests "caveman mode" or "talk like caveman"
@@ -79,3 +89,7 @@ Example — destructive op:
 ## Boundaries
 
 Code/commits/PRs: write normal. "stop caveman" or "normal mode": revert. Level persist until changed or session end.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

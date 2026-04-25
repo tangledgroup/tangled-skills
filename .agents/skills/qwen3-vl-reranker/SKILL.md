@@ -16,6 +16,11 @@ tags:
 category: ai/llm
 external_references:
   - https://huggingface.co/Qwen/Qwen3-VL-Reranker-2B
+  - https://arxiv.org/abs/2601.04720
+  - https://github.com/QwenLM/Qwen3-VL-Embedding
+  - https://huggingface.co/spaces/TIGER-Lab/MMEB-Leaderboard
+  - https://huggingface.co/spaces/mteb/leaderboard
+  - https://qwenlm.github.io/blog/qwen3-embedding/
   - https://huggingface.co/Qwen/Qwen3-VL-Reranker-8B
 ---
 
@@ -217,12 +222,3 @@ for doc_dict in documents:
 
 See [reference files](references/) for detailed benchmarks, performance comparisons, and hardware optimization guides.
 
-## References
-
-- HuggingFace (2B): https://huggingface.co/Qwen/Qwen3-VL-Reranker-2B
-- HuggingFace (8B): https://huggingface.co/Qwen/Qwen3-VL-Reranker-8B
-- GitHub: https://github.com/QwenLM/Qwen3-VL-Embedding
-- Technical Report: https://arxiv.org/abs/2601.04720
-- Blog Post: https://qwenlm.github.io/blog/qwen3-embedding/
-- MMEB Leaderboard: https://huggingface.co/spaces/TIGER-Lab/MMEB-Leaderboard
-- MMTEB Leaderboard: https://huggingface.co/spaces/mteb/leaderboard

@@ -19,6 +19,14 @@ required_environment_variables: []
 
 # pacote-21-5
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Use pacote 21.5 via npx to inspect, download, and extract npm packages without installing them first. Supports registry packages, git repositories, local files, directories, and tarballs for package inspection, dependency analysis, and offline extraction workflows.
+
 Use pacote 21.5 via `npx` to fetch, inspect, and extract npm packages without requiring prior installation. Works with any package specifier npm supports: registry packages, GitHub repositories, tarball URLs, local files, and directories.
 
 ## When to Use
@@ -483,3 +491,7 @@ npx pacote tarball large-package@latest package.tgz
 - Default cache location matches npm's default (`~/.npm/_cacache`)
 - Integrity verification is automatic using SRI hashes from registry
 - File extraction prevents root-owned files when running as root on Unix
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

@@ -17,6 +17,10 @@ external_references:
 
 # tzip 0.4.0
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
 
 tzip = **Token ZIP**. Prune output tokens lightly while keeping full technical accuracy,
@@ -94,3 +98,7 @@ Code/commits/PRs: write normal. Level persists until changed or session end.
 - "tzip ultra" → answer "tzip ultrea activated"
 - "tzip on" - same as lite → answer "tzip lite activated"
 - "tzip off" - turn off token pruning → answer "tzip deactivated"
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

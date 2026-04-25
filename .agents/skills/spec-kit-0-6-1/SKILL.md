@@ -30,6 +30,14 @@ required_environment_variables:
 
 # Spec Kit 0.6.1
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A skill for implementing Spec-Driven Development (SDD) using GitHub's Spec Kit v0.6.1 toolkit, enabling specification-first workflows with AI agents to generate executable specifications, implementation plans, and task breakdowns that drive code generation. Use when building software projects requiring structured specification workflows, integrating AI coding assistants (Claude, Copilot, Gemini, Pi, etc.) with spec-driven methodologies, or migrating existing projects to specification-first development practices.
+
 A comprehensive toolkit for implementing **Spec-Driven Development (SDD)** - a methodology where specifications become executable artifacts that directly generate working implementations rather than just guiding them. Spec Kit provides templates, slash commands, and AI agent integrations to transform vague ideas into structured specifications, technical plans, and actionable tasks.
 
 ## When to Use
@@ -284,3 +292,7 @@ See [Installation Guide](references/01-installation.md) for detailed troubleshoo
 - [Documentation Site](https://github.github.io/spec-kit/)
 - [Releases and Changelog](https://github.com/github/spec-kit/releases)
 - [Community Extensions Catalog](https://github.com/github/spec-kit/tree/main/extensions)
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

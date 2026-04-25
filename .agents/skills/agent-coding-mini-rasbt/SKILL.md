@@ -20,6 +20,17 @@ external_references:
 
 # Mini-Coding-Agent
 
+## Overview
+
+A minimal standalone coding agent framework by Sebastian Raschka backed by Ollama that provides workspace context collection, structured tool execution with approval gates, session persistence, memory distillation, and bounded subagent delegation. Use when building or operating lightweight local coding agents for file manipulation, shell command execution, code editing, test-driven development, and automated workflows without external API dependencies.
+
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
+
+A minimal standalone coding agent framework by Sebastian Raschka backed by Ollama that provides workspace context collection, structured tool execution with approval gates, session persistence, memory distillation, and bounded subagent delegation. Use when building or operating lightweight local coding agents for file manipulation, shell command execution, code editing, test-driven development, and automated workflows without external API dependencies.
+
 A minimal standalone coding agent harness by Sebastian Raschka that runs entirely locally using Ollama as the model backend. The framework demonstrates how a **coding harness** — the software scaffold around an LLM — can dramatically improve coding capabilities beyond what plain chat interfaces achieve.
 
 ## Conceptual Foundation
@@ -258,3 +269,9 @@ If the agent gets stuck calling the same tool with the same arguments:
 - Break task into smaller steps
 
 See [Advanced Patterns](references/04-advanced-patterns.md) for detailed configuration and troubleshooting.
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.
+

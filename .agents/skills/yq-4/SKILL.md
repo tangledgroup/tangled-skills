@@ -15,10 +15,17 @@ tags:
 category: developer-tools
 external_references:
   - https://mikefarah.gitbook.io/yq/
+  - https://github.com/mikefarah/yq/discussions
+  - https://mikefarah.gitbook.io/yq/llms-full.txt
+  - https://mikefarah.gitbook.io/yq/sitemap.md
   - https://github.com/mikefarah/yq
 ---
 
 # yq v4.x
+
+## Overview
+
+Complete toolkit for yq v4.x, the lightweight portable command-line YAML, JSON, XML, INI, TOML, HCL, CSV/TSV, Properties, Base64, and Lua processor using jq-like syntax. Use when reading, writing, merging, or transforming YAML/JSON/XML files from the terminal, scripting, CI/CD pipelines, or Docker containers without needing Python or Node.js dependencies.
 
 A lightweight and portable command-line **YAML, JSON, INI, XML, TOML, HCL, CSV/TSV, Properties, Base64, and Lua** processor. `yq` uses [jq](https://github.com/stedolan/jq) like syntax but works with YAML files as well as JSON, XML, and more. It is written in Go — a single dependency-free binary for any platform.
 
@@ -434,17 +441,13 @@ yq v4 is a complete rewrite with significant changes. See [references/04-upgradi
 - Breaking changes
 - New features available in v4
 
-## References
-
-- **Official documentation**: https://mikefarah.gitbook.io/yq/
-- **GitHub repository**: https://github.com/mikefarah/yq
-- **Full content export (LLM-friendly)**: https://mikefarah.gitbook.io/yq/llms-full.txt
-- **Sitemap / full index**: https://mikefarah.gitbook.io/yq/sitemap.md
-- **GitHub Discussions (Q&A)**: https://github.com/mikefarah/yq/discussions
-
 ## Known Limitations
 
 - `yq` attempts to preserve comment positions and whitespace, but does not handle all scenarios (see [go-yaml/yaml#3](https://github.com/go-yaml/yaml/tree/v3) for details)
 - PowerShell has unique quoting requirements — use single quotes or escape double quotes carefully
 - `"yes"`, `"no"` are treated as booleans per YAML 1.2 standard (which yq uses)
 - `yq` does not yet support everything `jq` does, but covers the most common operations
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

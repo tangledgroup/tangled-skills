@@ -16,6 +16,14 @@ category: development
 
 # Pico CSS v2.1
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A skill for using Pico CSS v2.1, a minimalist CSS framework that styles semantic HTML elements elegantly by default with responsive typography, automatic light/dark modes, and over 130 customizable CSS variables. Use when building clean, lightweight web interfaces with pure HTML markup, creating class-light designs without JavaScript dependencies, or implementing accessible design systems with minimal CSS overhead.
+
 Pico CSS is a minimalist and lightweight starter kit that prioritizes semantic syntax, making every HTML element responsive and elegant by default. Write HTML, add Pico CSS, and Voilà!
 
 **Key features:**
@@ -234,3 +242,7 @@ Add `<meta name="color-scheme" content="light dark">` to your `<head>` and ensur
 Pico uses low-specificity selectors. Your custom styles should override without issues. If needed, use CSS variables instead of overriding selectors.
 
 See [Troubleshooting Reference](references/06-troubleshooting.md) for more solutions.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

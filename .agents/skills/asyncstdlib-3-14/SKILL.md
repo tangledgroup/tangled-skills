@@ -18,6 +18,17 @@ required_environment_variables: []
 
 # asyncstdlib v3.14
 
+## Overview
+
+Python async standard library providing async versions of builtins, itertools, functools, contextlib, and asynctools for use with asyncio, trio, and any async event loop. Use when building async applications requiring iterator operations, caching, context management, or safe async iteration patterns.
+
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
+
+Python async standard library providing async versions of builtins, itertools, functools, contextlib, and asynctools for use with asyncio, trio, and any async event loop. Use when building async applications requiring iterator operations, caching, context management, or safe async iteration patterns.
+
 The `asyncstdlib` library re-implements functions and classes of the Python standard library to make them compatible with `async` callables, iterables, and context managers. It is fully agnostic to `async` event loops and seamlessly works with `asyncio`, third-party libraries such as `trio`, as well as any custom `async` event loop.
 
 **Key features:**
@@ -367,3 +378,9 @@ async for pair in a.zip_longest(iter1, iter2, fillvalue=None):
 - Version 3.13.2 changes `accumulate(initial=None)` behavior
 - Version 3.12.5 adds lock support to `cached_property`
 - Version 3.12.2 makes `contextmanager` return a `ContextDecorator`
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.
+

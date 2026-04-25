@@ -17,6 +17,10 @@ category: visualization
 external_references:
   - https://mermaid.js.org/
   - https://github.com/mermaid-js/mermaid/tree/mermaid%4011.14.0/docs
+  - https://github.com/mermaid-js/mermaid
+  - https://mermaid.live
+  - https://www.jsdelivr.com/package/npm/mermaid
+  - https://bundlephobia.com/package/mermaid
 ---
 
 # Mermaid 11.14.0
@@ -149,17 +153,6 @@ Change with: `mermaid.initialize({ securityLevel: 'loose' })`.
 
 Font Awesome icons via `fa:fa-icon-name` syntax. Register custom icon packs from [iconify.design](https://iconify.design/) using `mermaid.registerIconPacks()`. Architecture diagrams support 200,000+ icons via the registered pack prefix (e.g., `logos:aws-lambda`).
 
-## References
-
-- [Reference: Flowcharts](references/01-flowcharts.md)
-- [Reference: Sequence Diagrams](references/02-sequence-diagrams.md)
-- [Reference: Class & State Diagrams](references/03-class-and-state-diagrams.md)
-- [Reference: Data Charts](references/04-data-charts.md)
-- [Reference: Process & Timeline Diagrams](references/05-process-and-timeline.md)
-- [Reference: Architecture, C4 & Specialized Diagrams](references/06-architecture-c4-specialized.md)
-- [Reference: Configuration & Theming](references/07-configuration-and-theming.md)
-- [Reference: API & Integration](references/08-api-and-integration.md)
-
 ## Installation
 
 ### CDN
@@ -192,11 +185,3 @@ Visit [https://mermaid.live](https://mermaid.live) for interactive editing.
 - [Tiny Mermaid](https://github.com/mermaid-js/mermaid/tree/develop/packages/tiny) — smaller bundle (~half size, no mindmap/architecture/KaTeX/lazy loading)
 - [Mermaid Chart](https://mermaid.ai/) — web-based editor with AI diagramming and collaboration
 - [Community Integrations](https://mermaid.js.org/ecosystem/integrations-community.html) — plugins for VS Code, JetBrains, ChatGPT, PowerPoint, Word
-
-## References
-
-- Official documentation: https://mermaid.js.org/
-- GitHub repository: https://github.com/mermaid-js/mermaid
-- Mermaid Live Editor: https://mermaid.live
-- CDN: https://www.jsdelivr.com/package/npm/mermaid
-- Bundle size: https://bundlephobia.com/package/mermaid

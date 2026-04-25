@@ -14,6 +14,9 @@ tags:
 category: language-tools
 external_references:
   - https://cffi.readthedocs.io/en/stable/
+  - https://py-free-threading.github.io/
+  - https://pypi.org/project/cffi/
+  - https://sourceware.org/libffi/
   - https://github.com/python-cffi/cffi/tree/v2.0.0
 ---
 
@@ -298,16 +301,12 @@ print(dir(lib))  # Shows available functions
 - Batch operations when possible to reduce function call overhead
 - Use `ffi.release()` for large allocations in long-running programs
 
-## References
-
-- **Official Documentation**: https://cffi.readthedocs.io/en/stable/
-- **GitHub Repository**: https://github.com/python-cffi/cffi/tree/v2.0.0
-- **PyPI Package**: https://pypi.org/project/cffi/
-- **libffi (dependency)**: https://sourceware.org/libffi/
-- **Python Free-Threading Guide**: https://py-free-threading.github.io/
-
 ## Related Skills
 
 - `cython-3-2-4` - Alternative Python-C integration with static typing
 - `numpy-2-4-4` - For numerical C integration via NumPy C API
 - `cryptography-46` - Uses CFFI internally for crypto operations
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

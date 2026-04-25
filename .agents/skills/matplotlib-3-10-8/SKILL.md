@@ -14,6 +14,10 @@ tags:
 category: data-science
 external_references:
   - https://github.com/matplotlib/matplotlib/tree/v3.10.8/doc
+  - https://github.com/matplotlib/matplotlib/tree/v3.10.8
+  - https://matplotlib.org/3.10.8/api/index.html
+  - https://matplotlib.org/3.10.8/gallery/index.html
+  - https://matplotlib.org/3.10.8/users/index.html
 ---
 
 # Matplotlib 3.10.8
@@ -407,9 +411,3 @@ For detailed API reference and advanced topics, see the reference files:
 - **Styles & Configuration** — rcParams, style sheets, matplotlibrc file
 - **Backends** — All available backends, switching, configuration
 
-## References
-
-- GitHub repository: https://github.com/matplotlib/matplotlib/tree/v3.10.8
-- API reference (v3.10.8): https://matplotlib.org/3.10.8/api/index.html
-- User guide: https://matplotlib.org/3.10.8/users/index.html
-- Tutorial gallery: https://matplotlib.org/3.10.8/gallery/index.html

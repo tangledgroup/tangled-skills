@@ -14,6 +14,12 @@ tags:
 category: ai-infrastructure
 external_references:
   - https://github.com/mem0ai/mem0/tree/v1.0.11/docs
+  - https://app.mem0.ai
+  - https://arxiv.org/pdf/2504.19413.pdf
+  - https://docs.mem0.ai
+  - https://github.com/mem0ai/mem0
+  - https://github.com/mem0ai/mem0/blob/v1.0.11/MIGRATION_GUIDE_v1.0.md
+  - https://mem0.dev/DiG
 ---
 
 # Mem0 v1.0.11
@@ -204,16 +210,6 @@ v1.0 introduced breaking changes:
 - Enhanced reranker integration
 
 See [MIGRATION_GUIDE_v1.0.md](https://github.com/mem0ai/mem0/blob/v1.0.11/MIGRATION_GUIDE_v1.0.md) for upgrade instructions.
-
-## References
-
-- **Official Documentation**: https://docs.mem0.ai
-- **GitHub Repository**: https://github.com/mem0ai/mem0
-- **Migration Guide v1.0**: https://github.com/mem0ai/mem0/blob/v1.0.11/MIGRATION_GUIDE_v1.0.md
-- **Research Paper**: "Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory" (arXiv:2504.19413)
-- **Paper PDF**: https://arxiv.org/pdf/2504.19413.pdf
-- **Platform Dashboard**: https://app.mem0.ai
-- **Discord Community**: https://mem0.dev/DiG
 
 ## Troubleshooting
 

@@ -16,6 +16,17 @@ required_environment_variables: []
 
 # WyattDave Coding Agent
 
+## Overview
+
+A toolkit for creating custom AI coding agents using prompt engineering, instruction files, and skill modules. Use when building bespoke coding assistants for niche domains where general LLM training data is insufficient or misleading, particularly for specialized frameworks like Power Platform Code Apps with vanilla JavaScript.
+
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
+
+A toolkit for creating custom AI coding agents using prompt engineering, instruction files, and skill modules. Use when building bespoke coding assistants for niche domains where general LLM training data is insufficient or misleading, particularly for specialized frameworks like Power Platform Code Apps with vanilla JavaScript.
+
 A comprehensive approach to building custom AI coding agents through layered prompt engineering, instruction files, and modular skill systems. This methodology enables creation of specialized coding assistants for niche domains where general LLM training is insufficient or counterproductive.
 
 ## When to Use
@@ -107,3 +118,9 @@ See [Context Optimization](references/04-context-optimization.md) for detailed s
 3. **Document Learnings** - The secret sauce is learning from experience and documenting it
 4. **Minimize Context** - Optimize prompt stack size for token-limited environments
 5. **Move to Code** - When possible, implement in deterministic code rather than LLM decisions
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.
+

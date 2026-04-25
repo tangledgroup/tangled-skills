@@ -23,6 +23,14 @@ required_environment_variables: []
 
 # SQLite 3.53
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Complete toolkit for SQLite 3.53 covering all official documentation topics including SQL queries, C API integration, JSON/JSONB processing, FTS5 full-text search, virtual tables, R-Tree spatial indexing, transactions and isolation levels, STRICT tables, WITHOUT ROWID optimization, UPSERT/RETURNING patterns, CLI commands, and all built-in extensions (Sessions, CSV, Spellfix, Percentile, DBSTAT, generate_series, CARRAY, Zipfile). Use when building applications requiring embedded SQL databases, performing data analysis, implementing persistent storage, or working with any SQLite feature from basic CRUD to advanced spatial queries, change tracking, and concurrent transaction management.
+
 Comprehensive toolkit for SQLite 3.53, a self-contained, serverless, zero-configuration, transactional SQL database engine. This skill covers SQL language features, C API integration, JSON/JSONB processing, full-text search (FTS3/FTS5), virtual tables, and advanced database operations.
 
 ## When to Use
@@ -324,3 +332,7 @@ See [Administration and Maintenance](references/08-administration.md) for detail
 - Some features require compile-time enablement (check with `PRAGMA compile_options;`)
 
 For complete documentation, see the [SQLite Documentation](https://sqlite.org/docs.html).
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

@@ -21,6 +21,10 @@ required_environment_variables: []
 
 # ZeroMQ Wiki 3.2
 
+## Overview
+
+A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and best practices. Use when building distributed applications, implementing messaging patterns like REQ/REP, PUB/SUB, PUSH/PULL, designing multi-threaded architectures, working with ZMTP protocol, CURVE security, or understanding ØMQ internals for performance tuning and troubleshooting.
+
 A comprehensive toolkit for the ZeroMQ (ØMQ) messaging library, covering socket patterns, transport protocols, security mechanisms, architecture internals, and best practices for building distributed applications.
 
 ## When to Use
@@ -208,3 +212,7 @@ Consider using with:
 - `cryptography-46` for implementing custom encryption layers
 - `sqlalchemy-2-0` for persistent message storage
 - `aiohttp-3-13` for HTTP bridges to ØMQ backends
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

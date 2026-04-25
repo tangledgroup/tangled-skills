@@ -15,6 +15,12 @@ tags:
 category: developer-tools
 external_references:
   - https://github.com/pydantic/logfire/tree/v4.32.1/docs
+  - https://github.com/pydantic/logfire-js
+  - https://github.com/pydantic/logfire-mcp
+  - https://github.com/pydantic/logfire-rust
+  - https://github.com/pydantic/logfire/tree/v4.32.1
+  - https://opentelemetry.io/
+  - https://pydantic.dev/logfire/docs/
 ---
 
 # Pydantic Logfire 4.32.1
@@ -533,11 +539,6 @@ Configure sensitive data scrubbing behavior.
 ### `logfire.SamplingOptions(head=rate, tail=func, level_or_duration())`
 Configure sampling strategies for controlling data volume.
 
-## References
+## Advanced Topics
 
-- Official documentation: https://pydantic.dev/logfire/docs/
-- GitHub repository: https://github.com/pydantic/logfire/tree/v4.32.1
-- JavaScript SDK: https://github.com/pydantic/logfire-js
-- Rust SDK: https://github.com/pydantic/logfire-rust
-- MCP Server: https://github.com/pydantic/logfire-mcp
-- OpenTelemetry: https://opentelemetry.io/
+For more details on advanced usage, refer to the official documentation listed in the References section.

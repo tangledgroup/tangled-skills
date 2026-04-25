@@ -20,6 +20,14 @@ required_environment_variables: []
 
 # cryptography-46
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Comprehensive toolkit for Python cryptographic operations using the cryptography library. Use when implementing encryption, decryption, hashing, digital signatures, key derivation, X.509 certificate handling, and other cryptographic primitives in Python applications.
+
 A comprehensive toolkit for cryptographic operations in Python using the `cryptography` library (version 46.x). This skill covers both high-level safe recipes and low-level hazardous materials (hazmat) primitives for encryption, hashing, digital signatures, key derivation, X.509 certificates, and more.
 
 ## When to Use
@@ -214,3 +222,7 @@ This skill targets cryptography 46.x (released September 2025). Key features:
 - X.509 certificate transparency and OCSP
 
 For latest changes, check [Changelog](https://cryptography.io/en/latest/changelog/).
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

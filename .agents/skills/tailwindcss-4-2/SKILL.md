@@ -16,6 +16,14 @@ category: development
 
 # Tailwind CSS v4.2
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A skill for using Tailwind CSS v4.2, a utility-first CSS framework with CSS-based configuration, OKLCH color space, cascade layers, and Lightning CSS optimization. Use when building responsive web interfaces, customizing design systems, or migrating from Tailwind v3.
+
 Tailwind CSS v4.2 is a utility-first CSS framework for rapidly building custom user interfaces without leaving HTML. Version 4 introduces a completely redesigned architecture with CSS-based configuration, native cascade layers, OKLCH color space support, and integrated Lightning CSS optimization.
 
 ## When to Use
@@ -191,3 +199,7 @@ See [Theming & Customization](references/02-theming-customization.md) for advanc
 - Check for conflicting PostCSS plugins
 
 See [v3 Migration Guide](references/04-v3-migration.md) for upgrade-related issues.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

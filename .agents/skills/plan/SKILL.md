@@ -1,6 +1,7 @@
 ---
 name: plan
-description: Read-only exploration mode for safe code analysis. Restricts tools to read-only operations, extracts numbered steps from Plan: sections, tracks progress with [DONE:n] markers, and persists state across sessions. Use when analyzing unfamiliar codebases before making changes, creating implementation plans, or needing structured task execution with progress tracking.
+description: |
+  Read-only exploration mode for safe code analysis. Restricts tools to read-only operations, extracts numbered steps from Plan: sections, tracks progress with [DONE: n] markers, and persists state across sessions. Use when analyzing unfamiliar codebases before making changes, creating implementation plans, or needing structured task execution with progress tracking.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"
@@ -18,9 +19,20 @@ external_references:
 
 Read-only exploration mode for safe code analysis.
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
 
 Plan mode restricts the agent to read-only tools and commands during code exploration. The agent analyzes the project, creates a numbered plan, and executes it step by step with explicit progress tracking. Two modes: **plan** (read-only) and **execution** (full access).
+
+## When to Use
+
+- Analyzing unfamiliar codebases before making changes
+- Creating implementation plans for complex tasks
+- Structured task execution with progress tracking
+- Safe read-only exploration of project structure
 
 ## Commands
 
@@ -33,7 +45,7 @@ Plan mode restricts the agent to read-only tools and commands during code explor
 2. Ask the agent to analyze code and create a plan
 3. The agent outputs a numbered plan under a `Plan:` header
 4. Choose to execute the plan
-5. During execution, the agent marks steps complete with `[DONE:n]` tags
+5. During execution, the agent marks steps complete with `[DONE: n]` tags
 
 ## How It Works
 
@@ -43,7 +55,7 @@ Only read-only tools are available. Bash commands are filtered through an allowl
 
 ### Execution Mode
 
-Full tool access is restored. The agent executes plan steps in order, marks each with `[DONE:n]` completion markers, and tracks progress.
+Full tool access is restored. The agent executes plan steps in order, marks each with `[DONE: n]` completion markers, and tracks progress.
 
 ## Plan Format
 
@@ -51,29 +63,29 @@ Output a numbered plan under a `Plan:` header. This format is machine-parseable 
 
 ```
 Plan:
-1. [ ] First step description
-2. [ ] Second step description
-3. [ ] Third step description
+- [ ] 1. First step description
+- [ ] 2. Second step description
+- [ ] 3. Third step description
 ```
 
 Rules:
 
 - Header must be `Plan:` (optionally bold: `**Plan:**`)
 - Number steps sequentially starting from 1
-- Each step on its own line: `N. [ ] <description>`
+- Each step on its own line: `- [ ] N. <description>`
 - Steps should be concrete and independently verifiable
-- After completing each task, change `N. [ ] <description>` to `N. [x] <description>`
+- After completing each task, change `- [ ] N. <description>` to `- [x] N. <description>`
 
 ## Completion Markers
 
-After finishing each numbered plan step, include `[DONE:n]` in the response where `n` is the step number.
+After finishing each numbered plan step, include `[DONE: n]` in the response where `n` is the step number.
 
 Example after completing step 2:
 
 ```
 Added JWT verification helper. Function validates token signature and extracts claims.
 
-[DONE:2]
+[DONE: 2]
 ```
 
 Multiple completions in one turn:
@@ -81,8 +93,8 @@ Multiple completions in one turn:
 ```
 Implemented the refresh endpoint and wrote its tests.
 
-[DONE:3]
-[DONE:4]
+[DONE: 3]
+[DONE: 4]
 ```
 
 ## Command Allowlist
@@ -108,10 +120,10 @@ Implemented the refresh endpoint and wrote its tests.
 
 Plan state (mode, todos, execution progress) survives session resume. On resume:
 
-- If execution was in progress, re-scan messages for `[DONE:n]` markers to rebuild completion state
+- If execution was in progress, re-scan messages for `[DONE: n]` markers to rebuild completion state
 - Continue from the first incomplete step
 - If all steps were completed in a previous session, the plan is considered done
 
-## References
+## Advanced Topics
 
-- pi-mono plan-mode extension: [GitHub source](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent/examples/extensions/plan-mode)
+For more details on advanced usage, refer to the official documentation listed in the References section.

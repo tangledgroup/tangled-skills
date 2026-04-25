@@ -17,6 +17,14 @@ required_environment_variables: []
 
 # Jinja2 v3.1.6
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Complete toolkit for Jinja2 v3.1.6 templating engine covering template design, Python API integration, custom filters/tests, sandboxed environments, and async support. Use when building Python applications requiring dynamic HTML generation, email templates, configuration files, or any text-based output with logic separation from presentation.
+
 Jinja2 is a fast, expressive, and extensible templating engine for Python. It uses a Python-like syntax that allows embedding logic in templates while maintaining separation of concerns between application code and presentation layer. Templates are compiled to optimized Python code for high performance.
 
 ## When to Use
@@ -123,3 +131,7 @@ Refer to [Template Inheritance](references/01-template-syntax.md#template-inheri
 **Autoescaping problems:** Mark trusted HTML as safe with `|safe` filter, or escape untrusted content with `|e` filter.
 
 See reference files for detailed solutions to common issues.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

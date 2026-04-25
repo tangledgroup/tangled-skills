@@ -20,6 +20,10 @@ required_environment_variables: []
 
 # ZeroMQ ZGuide 3.2
 
+## Overview
+
+Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and distributed computing architectures. Use when building asynchronous message-driven applications, implementing request-reply patterns, pub-sub systems, load balancing, or designing scalable distributed systems with ZeroMQ/3.2+.
+
 Comprehensive toolkit for ZeroMQ version 3.2 based on the official ZGuide documentation. Covers basic through advanced messaging patterns, socket types, reliability mechanisms, and distributed computing architectures with examples in 28+ languages including C, C++, Java, Python, Go, Node.js, Erlang, and more.
 
 ## When to Use
@@ -229,3 +233,7 @@ For ZeroMQ 4.x features (gossip, vector transport), see official documentation.
 - **Mailing List**: zeromq-dev@lists.zeromq.org
 
 **Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/zeromq-zguide-3-2/`). All paths are relative to this directory.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

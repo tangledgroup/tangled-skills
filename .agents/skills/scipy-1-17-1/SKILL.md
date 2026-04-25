@@ -15,6 +15,13 @@ tags:
 category: Scientific Computing
 external_references:
   - https://scipy.org/
+  - https://discuss.scientific-python.org/c/contributor/scipy
+  - https://docs.scipy.org/doc/scipy/
+  - https://docs.scipy.org/doc/scipy/reference/
+  - https://docs.scipy.org/doc/scipy/tutorial/
+  - https://github.com/scipy/scipy
+  - https://github.com/scipy/scipy/issues
+  - https://stackoverflow.com/questions/tagged/scipy
   - https://github.com/scipy/scipy/tree/v1.17.1/doc
 ---
 
@@ -245,17 +252,6 @@ result = linalg.solve(arr_c, b)
 ## Version Information
 
 This skill covers SciPy 1.17.1 specifically. For the latest development version, see the [SciPy development documentation](https://scipy.github.io/devdocs/).
-
-## References
-
-- **Official website**: https://scipy.org/
-- **Documentation**: https://docs.scipy.org/doc/scipy/
-- **Source repository**: https://github.com/scipy/scipy
-- **Issue tracker**: https://github.com/scipy/scipy/issues
-- **Q&A support**: https://stackoverflow.com/questions/tagged/scipy
-- **Developer forum**: https://discuss.scientific-python.org/c/contributor/scipy
-- **User guide**: https://docs.scipy.org/doc/scipy/tutorial/
-- **API reference**: https://docs.scipy.org/doc/scipy/reference/
 
 ## See Also
 

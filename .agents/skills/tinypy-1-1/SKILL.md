@@ -13,6 +13,9 @@ tags:
 category: languages
 external_references:
   - http://www.tinypy.org/
+  - http://www.philhassey.com/blog/category/tinypy/
+  - http://www.tinypy.org/community.html
+  - https://github.com/philhassey/tinypy/blob/wiki/Index.md
   - https://github.com/philhassey/tinypy/tree/1.1
 ---
 
@@ -488,13 +491,10 @@ int main() {
 }
 ```
 
-## References
-
-- Official documentation (wiki): https://github.com/philhassey/tinypy/blob/wiki/Index.md
-- Source code (tag 1.1): https://github.com/philhassey/tinypy/tree/1.1
-- Mailing list: http://www.tinypy.org/community.html
-- Phil Hassey's blog: http://www.philhassey.com/blog/category/tinypy/
-
-## References Directory
+## Reference Files
 
 - [C API Reference](references/01-c-api-reference.md) — Complete C API function reference with signatures, parameters, and examples
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

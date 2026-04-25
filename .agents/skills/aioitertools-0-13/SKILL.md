@@ -15,6 +15,17 @@ category: development
 
 # aioitertools-0-13
 
+## Overview
+
+Async-compatible versions of itertools, builtins, and more for Python asyncio. Use when building async Python applications that need to process iterables with familiar itertools-style functions, work with both standard and async iterables interchangeably, or consume async data streams with functional patterns.
+
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
+
+Async-compatible versions of itertools, builtins, and more for Python asyncio. Use when building async Python applications that need to process iterables with familiar itertools-style functions, work with both standard and async iterables interchangeably, or consume async data streams with functional patterns.
+
 Async-compatible versions of Python's `itertools`, `builtins`, and additional utility functions for AsyncIO and mixed-type iterables. The library shadows standard library functions to provide asynchronous equivalents that work seamlessly with both standard iterators and async iterators, enabling a unified interface for processing iterable objects.
 
 ## When to Use
@@ -240,3 +251,9 @@ async for x in map(async_coroutine, items):     # coroutine auto-awaited
 - Use `islice` to limit consumption of large iterables
 - `gather` with `limit` parameter controls memory usage for concurrent operations
 - `as_completed` and `as_generated` provide streaming results without buffering
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.
+

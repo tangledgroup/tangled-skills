@@ -16,6 +16,10 @@ required_environment_variables: []
 
 # aiorwlock-1.5.1
 
+## Overview
+
+Async read-write lock implementation for Python asyncio providing concurrent reader access and exclusive writer access. Use when building async applications requiring fine-grained synchronization where multiple readers can access shared data simultaneously but writers need exclusive access.
+
 Async read-write lock for Python asyncio that maintains a pair of associated locks: one for read-only operations and one for writing. Multiple reader tasks can hold the read lock simultaneously, while the write lock is exclusive. Ideal for scenarios where data is frequently read but infrequently modified.
 
 ## When to Use
@@ -227,3 +231,8 @@ async def writer_priority_example():
 ## See Also
 
 - [Advanced Usage and Examples](references/01-advanced-usage.md) - Complete examples, advanced patterns, and troubleshooting
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

@@ -24,6 +24,14 @@ required_environment_variables:
 
 # redis-py 7.4 - Python Client for Redis
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Comprehensive Python client for Redis database and key-value store. Use when building Python applications requiring Redis connectivity, including standalone, cluster, sentinel, and async modes with support for all Redis commands, pipelines, pub/sub, Lua scripting, Redis modules (Bloom, JSON, Search, TimeSeries), RESP3 protocol, client-side caching, OpenTelemetry observability, connection pooling, retry logic, and distributed locking.
+
 Comprehensive Python client library for Redis database and key-value store, supporting all Redis commands, cluster mode, sentinel high availability, async operations, pipelines, pub/sub messaging, Lua scripting, Redis modules (Bloom filters, JSON, Search, TimeSeries), RESP3 protocol with push notifications and client-side caching, native OpenTelemetry metrics collection, connection pooling, retry strategies, and distributed locking.
 
 **redis-py 7.4 supports:** Python 3.10+, Redis 7.2-8.2
@@ -367,3 +375,7 @@ r = Redis(host='localhost', port=6379, retry=retry)
 - **Redis Commands Reference**: https://redis.io/commands
 - **Changelog**: https://github.com/redis/redis-py/releases
 - **Issue Tracker**: https://github.com/redis/redis-py/issues
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

@@ -19,6 +19,10 @@ category: development
 
 # SolidJS 1.19
 
+## Overview
+
+A comprehensive toolkit for building reactive user interfaces with SolidJS 1.19, a declarative JavaScript framework using fine-grained reactivity. Use when creating web applications, components, or UI libraries requiring efficient state management and minimal virtual DOM overhead.
+
 SolidJS is a declarative, efficient JavaScript framework for building user interfaces using fine-grained reactivity and a small footprint. Unlike virtual DOM-based frameworks, Solid uses fine-grained reactive updates that compile to direct DOM manipulation, resulting in exceptional performance with minimal overhead.
 
 ## When to Use
@@ -305,3 +309,7 @@ Key differences:
 - Signals must be called in tracking scopes to establish dependencies
 
 See [Advanced Patterns](references/05-advanced-patterns.md) for detailed migration guidance.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

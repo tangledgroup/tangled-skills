@@ -19,6 +19,14 @@ required_environment_variables: []
 
 # SolidStart 1.3
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Fullstack framework for SolidJS providing SSR, SSG, API routes, and file-based routing. Use when building performant web applications with unified rendering modes, server functions, and deployment adapters for Vercel, Netlify, Cloudflare, and more.
+
 SolidStart is a fullstack framework for SolidJS that brings fine-grained reactivity to the entire stack. Built with unified rendering and isomorphic code execution, it enables highly performant and scalable web applications with SSR, SSG, streaming, and API routes.
 
 ## When to Use
@@ -247,3 +255,7 @@ Check:
 - Dynamic params use correct syntax: `[param].tsx` or `[[optional]].tsx`
 
 See [Troubleshooting Guide](references/07-troubleshooting.md) for more issues.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

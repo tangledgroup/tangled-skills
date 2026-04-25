@@ -16,6 +16,13 @@ tags:
 category: observability
 external_references:
   - https://opentelemetry.io/
+  - https://github.com/open-telemetry/opentelemetry-collector
+  - https://github.com/open-telemetry/opentelemetry-proto
+  - https://github.com/open-telemetry/opentelemetry-specification
+  - https://github.com/open-telemetry/semantic-conventions
+  - https://opentelemetry.io/docs/
+  - https://www.w3.org/TR/baggage/
+  - https://www.w3.org/TR/trace-context/
   - https://opentelemetry.io/docs/specs/otel/overview/
 ---
 
@@ -405,12 +412,3 @@ See [Reference: Context, Propagators & Baggage](references/06-context-propagatio
 See [Reference: Common Concepts & Resources](references/07-common-concepts.md) for AnyValue, attributes, resources.
 See [Reference: Versioning & Stability](references/08-versioning-stability.md) for signal lifecycle and versioning rules.
 
-## References
-
-- Official documentation: https://opentelemetry.io/docs/
-- Specification repository: https://github.com/open-telemetry/opentelemetry-specification
-- Semantic Conventions: https://github.com/open-telemetry/semantic-conventions
-- Collector: https://github.com/open-telemetry/opentelemetry-collector
-- OTLP Protocol: https://github.com/open-telemetry/opentelemetry-proto
-- W3C TraceContext: https://www.w3.org/TR/trace-context/
-- W3C Baggage: https://www.w3.org/TR/baggage/

@@ -15,6 +15,14 @@ category: documentation
 
 # Keep a Changelog v1.1.0
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A skill for creating and maintaining changelogs following the Keep a Changelog specification v1.1.0, providing standardized format guidelines, best practices, and examples for documenting project changes in a human-readable way.
+
 A skill for creating and maintaining changelogs following the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) specification, a widely-adopted convention for documenting notable changes in software projects.
 
 ## When to Use
@@ -298,3 +306,7 @@ A: Focus on notable changes that affect users. Internal refactoring without user
 **Q: What about translations?**
 
 A: Keep a Changelog is available in 28+ languages. Consider providing changelogs in your project's supported languages.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

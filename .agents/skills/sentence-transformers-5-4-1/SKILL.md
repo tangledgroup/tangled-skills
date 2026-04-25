@@ -17,6 +17,10 @@ tags:
 category: machine-learning/nlp
 external_references:
   - https://github.com/huggingface/sentence-transformers/tree/v5.4.1
+  - https://arxiv.org/abs/1908.10084
+  - https://arxiv.org/abs/2004.09813
+  - https://huggingface.co/spaces/mteb/leaderboard
+  - https://www.sbert.net/
   - https://www.sbert.net/index.html
   - https://huggingface.co/sentence-transformers
 ---
@@ -330,18 +334,13 @@ embeddings = model.encode(sentences, batch_size=16, show_progress_bar=True)
 - **PyTorch Compatibility**: 1.11.0+
 - **Transformers Compatibility**: 4.34.0+
 
-## References
-
-- **Official Documentation**: https://www.sbert.net/
-- **GitHub Repository**: https://github.com/huggingface/sentence-transformers/tree/v5.4.1
-- **Hugging Face Models**: https://huggingface.co/sentence-transformers
-- **MTEB Leaderboard**: https://huggingface.co/spaces/mteb/leaderboard
-- **Paper (Sentence-BERT)**: https://arxiv.org/abs/1908.10084
-- **Paper (Multilingual)**: https://arxiv.org/abs/2004.09813
-
 ## See Also
 
 - [`transformers-5-5-4`](../../transformers-5-5-4/SKILL.md) - Hugging Face Transformers library
 - [`torch-2-6`]() - PyTorch deep learning framework
 - [`faiss-1-9`]() - Facebook AI Similarity Search for vector databases
 - [`chroma-1-0`]() - Chroma vector database for embeddings
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

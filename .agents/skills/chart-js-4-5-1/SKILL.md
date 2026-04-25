@@ -14,6 +14,9 @@ tags:
 category: frontend
 external_references:
   - https://www.chartjs.org/docs/latest/
+  - https://discord.gg/HxEguTK6av
+  - https://github.com/chartjs/awesome
+  - https://stackoverflow.com/questions/tagged/chart.js
   - https://github.com/chartjs/Chart.js
 ---
 
@@ -177,10 +180,3 @@ import Chart from 'chart.js/auto';
 - [Reference: Plugins & Development](references/07-plugins-development.md) — custom plugins, API, extending
 - [Reference: Migration](references/08-migration.md) — v3 and v4 migration guides
 
-## References
-
-- Official documentation: https://www.chartjs.org/docs/latest/
-- GitHub repository: https://github.com/chartjs/Chart.js
-- Ecosystem (plugins, integrations): https://github.com/chartjs/awesome
-- Discord: https://discord.gg/HxEguTK6av
-- Stack Overflow: https://stackoverflow.com/questions/tagged/chart.js

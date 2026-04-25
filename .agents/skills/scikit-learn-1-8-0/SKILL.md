@@ -15,6 +15,11 @@ tags:
 category: ai-ml
 external_references:
   - https://scikit-learn.org/stable/index.html
+  - https://github.com/scikit-learn/scikit-learn
+  - https://scikit-learn.org/stable/
+  - https://scikit-learn.org/stable/auto_examples/release_highlights/plot_release_highlights_1_8_0.html
+  - https://scikit-learn.org/stable/modules/classes.html
+  - https://scikit-learn.org/stable/whats_new/v1.8.html
 ---
 
 # scikit-learn 1.8.0
@@ -197,10 +202,3 @@ For detailed coverage of specific topics, see the reference files:
 - **[6. Text Analytics & Feature Extraction](references/06-text-analytics.md)** — Vectorization, TF-IDF, n-grams, document-term matrices
 - **[7. Key Examples & Workflows](references/07-key-examples.md)** — Complete end-to-end workflows, common patterns
 
-## References
-
-- Official documentation: https://scikit-learn.org/stable/
-- GitHub repository: https://github.com/scikit-learn/scikit-learn
-- API reference: https://scikit-learn.org/stable/modules/classes.html
-- Release highlights v1.8: https://scikit-learn.org/stable/auto_examples/release_highlights/plot_release_highlights_1_8_0.html
-- What's new in 1.8: https://scikit-learn.org/stable/whats_new/v1.8.html

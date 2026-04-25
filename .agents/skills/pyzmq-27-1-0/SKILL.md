@@ -21,6 +21,10 @@ required_environment_variables: []
 
 # PyZMQ 27.x Toolkit
 
+## Overview
+
+Complete toolkit for Python bindings to ZeroMQ (pyzmq 27.x) covering socket types, messaging patterns, async/await integration, security mechanisms, and distributed computing architectures. Use when building Python applications requiring high-performance messaging, pub/sub systems, request-reply patterns, load balancing, or inter-process communication with ZeroMQ's decentralized architecture.
+
 Complete toolkit for using pyzmq (Python bindings for ZeroMQ/ØMQ) version 27.x, providing type-safe access to ZeroMQ's high-performance messaging library with support for all socket types, security mechanisms, asyncio integration, and advanced patterns for distributed computing.
 
 PyZMQ works with Python 3.9+ and PyPy via CFFI. Binary distributions (wheels on PyPI) ship with libzmq 4.3.5 built with default configuration and CURVE support provided by libsodium.
@@ -279,3 +283,7 @@ finally:
 5. **Security opt-in**: Security mechanisms must be explicitly configured
 6. **Connection establishment**: Connect can happen before bind (asynchronous)
 7. **HWM backpressure**: High Water Mark limits queue sizes to prevent memory exhaustion
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

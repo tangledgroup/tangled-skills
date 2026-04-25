@@ -13,6 +13,12 @@ tags:
   - react
   - typescript
 category: development
+external_references:
+  - https://payloadcms.com/docs/richtext/lexical/overview
+  - https://payloadcms.com/docs/getting-started/requirements
+  - https://payloadcms.com/docs
+  - https://github.com/payloadcms/payload/tree/v3.82.1/templates/blank
+  - https://discord.com/invite/payload
 required_environment_variables:
   - name: DATABASE_URL
     prompt: "What is your MongoDB connection string?"
@@ -25,6 +31,10 @@ required_environment_variables:
 ---
 
 # Payload CMS Blank Template 3.82.1
+
+## Overview
+
+Minimal Payload CMS 3.82.1 starter template providing a clean foundation for building custom headless CMS applications with Next.js App Router, MongoDB, and Lexical editor. Use when starting new Payload projects from scratch, needing a minimal configuration without pre-built collections or content types, or requiring full control over data modeling and admin panel customization.
 
 The Payload Blank Template provides a minimal, production-ready foundation for building custom headless CMS applications using Payload 3.82.1 with Next.js App Router, MongoDB database adapter, and Lexical rich text editor. This template includes only essential configurations, allowing complete control over data modeling, authentication, and admin panel customization without pre-built content types or opinions about project structure.
 
@@ -230,10 +240,6 @@ Check browser console for errors. Clear `.next` cache with `pnpm devsafe` if nee
 
 See [Deployment and Config](references/06-deployment-and-config.md) for production troubleshooting and environment-specific issues.
 
-## References
+## Advanced Topics
 
-- **Official Documentation**: https://payloadcms.com/docs
-- **GitHub Repository**: https://github.com/payloadcms/payload/tree/v3.82.1/templates/blank
-- **Discord Community**: https://discord.com/invite/payload
-- **Payload 3.x Migration Guide**: https://payloadcms.com/docs/getting-started/requirements
-- **Lexical Editor Docs**: https://payloadcms.com/docs/richtext/lexical/overview
+For more details on advanced usage, refer to the official documentation listed in the References section.

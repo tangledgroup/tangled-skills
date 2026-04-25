@@ -19,6 +19,17 @@ required_environment_variables: []
 
 # aiohttp-session-2-12
 
+## Overview
+
+A skill for implementing server-side sessions in aiohttp web applications using aiohttp-session 2.12.1, providing multiple storage backends including encrypted cookies, Redis, and Memcached for persistent user state management. Use when building aiohttp.web applications that require session-based authentication, shopping carts, user preferences, or any per-request user-specific data persistence.
+
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
+
+A skill for implementing server-side sessions in aiohttp web applications using aiohttp-session 2.12.1, providing multiple storage backends including encrypted cookies, Redis, and Memcached for persistent user state management. Use when building aiohttp.web applications that require session-based authentication, shopping carts, user preferences, or any per-request user-specific data persistence.
+
 A comprehensive toolkit for implementing server-side sessions in aiohttp web applications using the aiohttp-session 2.12.1 library. Provides multiple storage backends including encrypted cookies, Redis, Memcached, and NaCl encryption for secure user state management across HTTP requests.
 
 ## When to Use
@@ -249,3 +260,9 @@ async def cart_handler(request):
 - Use `json.dumps(obj)` to test serializability before storing in session
 
 See [Storage Backends](references/02-storage-backends.md) for backend-specific troubleshooting and [Security Best Practices](references/04-security-best-practices.md) for security-related issues.
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.
+

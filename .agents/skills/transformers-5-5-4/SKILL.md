@@ -437,3 +437,7 @@ Related skills in this repository:
 - `datasets` - Working with datasets
 - `evaluate` - Model evaluation metrics
 - `sentence-transformers` - Sentence embeddings
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

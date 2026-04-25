@@ -19,6 +19,17 @@ required_environment_variables: []
 
 # Axios 1.15
 
+## Overview
+
+A comprehensive toolkit for making HTTP requests using Axios 1.x, a promise-based HTTP client for browser and Node.js environments. Use when building applications that require REST API communication, file uploads/downloads, request/response interception, custom headers, authentication, form data handling, progress tracking, or advanced features like rate limiting and HTTP/2 support.
+
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
+
+A comprehensive toolkit for making HTTP requests using Axios 1.x, a promise-based HTTP client for browser and Node.js environments. Use when building applications that require REST API communication, file uploads/downloads, request/response interception, custom headers, authentication, form data handling, progress tracking, or advanced features like rate limiting and HTTP/2 support.
+
 Axios is a promise-based HTTP client for the browser and Node.js that provides an elegant API for making XMLHttpRequests in browsers and http requests in Node.js environments. It supports request/response interception, automatic JSON transformation, file uploads with progress tracking, cancellation, and cross-platform compatibility.
 
 ## When to Use
@@ -180,3 +191,9 @@ Chrome, Firefox, Safari, Opera, Edge (latest versions)
 ## Node.js Support
 
 Node.js 14.x and above recommended for full feature support
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.
+

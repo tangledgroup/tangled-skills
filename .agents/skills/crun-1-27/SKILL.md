@@ -19,6 +19,14 @@ required_environment_variables: []
 
 # crun 1.27
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Lightweight OCI container runtime written in C for running Linux containers with low memory footprint and high performance. Use when deploying containers via podman, building container orchestration tools, checkpointing/restoring containers with CRIU, running WebAssembly workloads, or needing faster container startup than runc provides.
+
 A fast and lightweight OCI (Open Container Initiative) container runtime fully written in C. crun provides lower memory footprint and faster execution compared to runc, making it ideal for resource-constrained environments and high-performance container workloads.
 
 ## When to Use
@@ -240,3 +248,7 @@ crun outperforms runc in both speed and memory usage:
 - **cgroup v1/v2**: Automatic conversion between versions
 
 **Note:** cgroup v1 support is deprecated and will be removed in future releases.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

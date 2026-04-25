@@ -13,6 +13,10 @@ tags:
 category: data-formats
 external_references:
   - https://www.rfc-editor.org/rfc/rfc9535
+  - https://www.rfc-editor.org/rfc/rfc6901
+  - https://www.rfc-editor.org/rfc/rfc7493
+  - https://www.rfc-editor.org/rfc/rfc8259
+  - https://www.rfc-editor.org/rfc/rfc9485
 ---
 
 # JSONPath RFC 9535
@@ -357,11 +361,6 @@ JSONPath is designed as a companion to, not a replacement for, JSON Pointer:
 
 JSONPath supports operations that JSON Pointer cannot: wildcard selection (`*`), filtering (`?`), array slicing (`:`), and recursive descent (`..`).
 
-## References
+## Advanced Topics
 
-- Official specification: https://www.rfc-editor.org/rfc/rfc9535
-- RFC 8259 (JSON): https://www.rfc-editor.org/rfc/rfc8259
-- RFC 6901 (JSON Pointer): https://www.rfc-editor.org/rfc/rfc6901
-- RFC 7493 (I-JSON): https://www.rfc-editor.org/rfc/rfc7493
-- RFC 9485 (I-Regexp): https://www.rfc-editor.org/rfc/rfc9485
-- IANA Media Type: `application/jsonpath`
+For more details on advanced usage, refer to the official documentation listed in the References section.

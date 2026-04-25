@@ -18,6 +18,10 @@ category: development
 
 # htmx-4
 
+## Overview
+
+A skill for building interactive web applications with htmx 4.0, a JavaScript library that provides HTML attributes for AJAX requests, CSS transitions, WebSockets, and Server-Sent Events without writing JavaScript. Use when creating dynamic user interfaces with hypermedia-driven architecture, migrating from htmx 2.x, or implementing modern web patterns using declarative HTML syntax.
+
 A comprehensive toolkit for building interactive web applications with htmx 4.0, a JavaScript library that allows accessing AJAX, CSS Transitions, WebSockets, and Server-Sent Events directly in HTML using attributes. htmx completes HTML as a hypertext by removing arbitrary constraints on which elements can make HTTP requests, which events can trigger them, which HTTP methods are available, and how responses can be swapped into the DOM.
 
 **Key characteristics:**
@@ -226,3 +230,7 @@ See [Migration Guide](references/08-migration.md) for complete migration checkli
 - Set `htmx.config.history = false` to disable history entirely
 
 See [Migration Guide](references/08-migration.md) for additional troubleshooting and the [Patterns](https://four.htmx.org/patterns) page for common use cases.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

@@ -20,6 +20,10 @@ required_environment_variables: []
 
 # aiohttp-security-0.5.0
 
+## Overview
+
+A skill for implementing authentication and authorization in aiohttp.web applications using aiohttp-security 0.5.0, providing identity policies (cookies, sessions, JWT) and custom authorization policies with permission-based access control.
+
 A comprehensive toolkit for implementing authentication and authorization in `aiohttp.web` applications using the `aiohttp-security` library (version 0.5.0). Provides identity policies for user sessions (cookies, aiohttp-session, JWT) and a flexible authorization policy system for permission-based access control.
 
 ## When to Use
@@ -226,3 +230,8 @@ See [Troubleshooting Guide](references/05-troubleshooting.md) for more issues.
 - **aiohttp**: >= 3.9
 - **Python**: 3.9, 3.10, 3.11, 3.12, 3.13
 - **Type annotations**: Full type hints included (version 0.5.0+)
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

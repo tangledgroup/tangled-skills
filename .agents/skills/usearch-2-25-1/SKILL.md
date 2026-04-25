@@ -13,6 +13,12 @@ tags:
 category: machine-learning
 external_references:
   - https://github.com/unum-cloud/usearch
+  - https://docs.rs/usearch/latest/usearch/
+  - https://github.com/ashvardanian/numkong
+  - https://unum-cloud.github.io/USearch/
+  - https://unum-cloud.github.io/USearch/cpp
+  - https://unum-cloud.github.io/USearch/python
+  - https://www.unum.cloud/blog/2023-11-07-scaling-vector-search-with-intel
   - https://github.com/unum-cloud/USearch/tree/main/docs
 ---
 
@@ -140,12 +146,3 @@ index.view('index.usearch')   # Memory-map, no RAM load
 - [Case Study: FP8 Search & KV-Caching](references/08-case-fp8-kv-caching.md) — Use when building KV-cache-aware search for LLM inference, deploying on memory-constrained hardware, or targeting E5M2/E4M3 quantization (NumKong v7, 30+ backends, Giesen magic-number upcast)
 - [Case Study: Scaling Vector Search with Intel](references/09-case-intel-scaling.md) — Use when benchmarking on Sapphire Rapids/Granite Rapids, migrating from FAISS for 10–100× speedup at 100M+ scale, or comparing CPU vs GPU vector search costs
 
-## References
-
-- GitHub repository: https://github.com/unum-cloud/usearch
-- Documentation: https://unum-cloud.github.io/USearch/
-- Python API: https://unum-cloud.github.io/USearch/python
-- C++ API: https://unum-cloud.github.io/USearch/cpp
-- Rust API: https://docs.rs/usearch/latest/usearch/
-- NumKong (SIMD kernels): https://github.com/ashvardanian/numkong
-- FAISS comparison benchmarks: https://www.unum.cloud/blog/2023-11-07-scaling-vector-search-with-intel

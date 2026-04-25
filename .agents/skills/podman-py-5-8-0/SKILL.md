@@ -22,6 +22,14 @@ required_environment_variables:
 
 # PodmanPy 5.8.0 - Python Client for Podman
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Python client library for Podman container engine providing programmatic access to containers, images, pods, networks, and volumes via RESTful API. Use when building Python applications that require container orchestration, automation scripts, CI/CD integration, or container management without Docker dependency.
+
 PodmanPy is a Python library that provides bindings to the Podman RESTful API, enabling programmatic management of containers, images, pods, networks, and volumes. It offers a Docker-compatible interface while leveraging Podman's daemonless architecture and security features.
 
 **Key capabilities:**
@@ -403,3 +411,7 @@ with PodmanClient() as client:
 ```
 
 For detailed error handling and troubleshooting, see [Error Handling](references/07-error-handling.md).
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

@@ -19,6 +19,17 @@ required_environment_variables: []
 
 # Bun 1.3.12
 
+## Overview
+
+Complete toolkit for Bun 1.3.12 JavaScript runtime, package manager, bundler, and test runner. Use when building high-performance Node.js-compatible applications, migrating from npm/yarn/pnpm workflows, bundling JavaScript/TypeScript projects, running Jest-compatible tests, or developing full-stack applications with native HTTP servers, SQLite, Redis, and WebAssembly support.
+
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
+
+Complete toolkit for Bun 1.3.12 JavaScript runtime, package manager, bundler, and test runner. Use when building high-performance Node.js-compatible applications, migrating from npm/yarn/pnpm workflows, bundling JavaScript/TypeScript projects, running Jest-compatible tests, or developing full-stack applications with native HTTP servers, SQLite, Redis, and WebAssembly support.
+
 Bun is a fast, all-in-one JavaScript/TypeScript toolkit replacing Node.js, npm/yarn/pnpm, Webpack/esbuild, and Jest. It provides a runtime, package manager, bundler, and test runner in a single binary with native support for TypeScript, JSX, CSS, Wasm, and more.
 
 ## When to Use
@@ -221,3 +232,9 @@ Consider also using:
 - `jest` - For Jest-specific features not yet in Bun test runner
 - `docker` - For containerized deployments
 - `github-actions` - For CI/CD integration
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.
+

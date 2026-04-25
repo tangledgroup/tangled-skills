@@ -12,10 +12,24 @@ tags:
   - bioinformatics
   - performance
 category: tooling
+external_references:
+  - https://pypi.org/project/stringzilla/
+  - https://github.com/ashvardanian/StringZilla
+  - https://docs.rs/stringzilla
+  - https://crates.io/crates/stringzilla
+  - https://ashvardanian.com/posts/stringzilla/
 required_environment_variables: []
 ---
 
 # StringZilla 4.6
+
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+High-performance SIMD-accelerated string library for search, hashing, sorting, and fuzzy matching in C/C++/Python/Rust. Use when optimizing string operations for big data processing, bioinformatics, or high-throughput applications requiring up to 10x faster CPU throughput.
 
 StringZilla is a high-performance string processing library using SIMD (AVX2, AVX-512, NEON, SVE) and SWAR techniques to accelerate binary and UTF-8 string operations on modern CPUs and GPUs. It delivers up to **10x higher CPU throughput** in C, C++, Rust, Python, and other languages, and can be **100x faster than existing GPU kernels**.
 
@@ -682,10 +696,6 @@ See [`CONTRIBUTING.md`](https://github.com/ashvardanian/StringZilla/blob/main/CO
 - CUDA backend requires Nvidia GPU with compute capability ≥ Kepler
 - Case-folding output can be up to 3× input size for certain Unicode characters
 
-## References
+## Advanced Topics
 
-- [StringZilla GitHub Repository](https://github.com/ashvardanian/StringZilla)
-- [StringZilla Blog Post](https://ashvardanian.com/posts/stringzilla/)
-- [Rust Documentation](https://docs.rs/stringzilla)
-- [PyPI Package](https://pypi.org/project/stringzilla/)
-- [Crates.io Package](https://crates.io/crates/stringzilla)
+For more details on advanced usage, refer to the official documentation listed in the References section.

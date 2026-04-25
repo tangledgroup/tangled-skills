@@ -17,6 +17,14 @@ required_environment_variables: []
 
 # Podman Compose 1.5.0
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Orchestrates multi-container applications using Compose specification files with Podman backend. Use when deploying containerized stacks, managing services defined in compose.yaml files, or migrating from docker-compose to a daemonless rootless workflow.
+
 A Python-based implementation of the [Compose Specification](https://compose-spec.io/) with a Podman backend. Provides daemonless, rootless container orchestration by directly executing podman commands without requiring a running daemon service.
 
 ## When to Use
@@ -249,3 +257,7 @@ export PATH=$HOME/.local/bin:$PATH
 ```
 
 See [Troubleshooting Guide](references/04-troubleshooting.md) for comprehensive issue resolution.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

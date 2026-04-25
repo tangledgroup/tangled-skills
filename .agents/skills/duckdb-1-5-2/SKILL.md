@@ -13,6 +13,9 @@ tags:
 category: database
 external_references:
   - https://duckdb.org/docs/current/
+  - https://duckdb.org/docs/current/clients/python/overview
+  - https://duckdb.org/docs/current/sql/introduction
+  - https://github.com/duckdb/duckdb
   - https://github.com/duckdb/duckdb/tree/v1.5.2
 ---
 
@@ -226,33 +229,6 @@ SELECT * FROM 'az://container/data.parquet';
 -- Google Cloud Storage
 SELECT * FROM 'gs://bucket/data.parquet';
 ```
-
-## References
-
-### Official Documentation
-
-- [DuckDB Documentation](https://duckdb.org/docs/current/)
-- [GitHub Repository](https://github.com/duckdb/duckdb)
-- [SQL Reference](https://duckdb.org/docs/current/sql/introduction)
-- [Python API](https://duckdb.org/docs/current/clients/python/overview)
-
-### Related Skills in This Repository
-
-- `sqlite-3-53` - For embedded SQL database comparisons
-- `sqlalchemy-2-0` - For Python ORM integration patterns
-
-### Skill Structure
-
-This skill is organized into reference files:
-
-| Reference File | Topic |
-|---------------|-------|
-| [references/01-core-concepts.md](references/01-core-concepts.md) | Architecture, types, execution model |
-| [references/02-client-apis.md](references/02-client-apis.md) | Python, R, Java, Node.js, CLI, C/C++ APIs |
-| [references/03-sql-reference.md](references/03-sql-reference.md) | SQL syntax, functions, query patterns |
-| [references/04-extensions.md](references/04-extensions.md) | Core extensions, installation, usage |
-| [references/05-performance.md](references/05-performance.md) | Optimization, configuration, best practices |
-| [references/06-data-import.md](references/06-data-import.md) | CSV, Parquet, JSON, DataFrame ingestion |
 
 ## Quick Start Checklist
 

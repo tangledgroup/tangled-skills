@@ -14,6 +14,11 @@ tags:
 category: compilation
 external_references:
   - https://github.com/numba/numba/tree/0.65.0
+  - https://github.com/numba/numba
+  - https://gitter.im/numba/numba
+  - https://numba.discourse.group
+  - https://numba.pydata.org
+  - https://numba.readthedocs.io/en/stable/
   - https://numba.readthedocs.io/en/stable/index.html
 ---
 
@@ -272,25 +277,3 @@ See [C Callback Functions](references/03-c-functions.md) for advanced patterns.
 
 See [Performance Tips](references/02-performance-tips.md) for detailed guidance.
 
-## References
-
-### Official Documentation
-
-- **Numba Homepage**: https://numba.pydata.org
-- **Documentation**: https://numba.readthedocs.io/en/stable/
-- **GitHub Repository**: https://github.com/numba/numba
-- **Discourse Forum**: https://numba.discourse.group
-- **Gitter Chat**: https://gitter.im/numba/numba
-
-### Reference Files
-
-- [JIT Compilation Details](references/01-jit-compilation.md) - `@jit`, `@njit`, compilation modes, type inference
-- [Performance Tips](references/02-performance-tips.md) - Optimization strategies, fastmath, parallelization, SVML
-- [C Callback Functions](references/03-c-functions.md) - `@cfunc` decorator, C interoperability, ctypes integration
-- [CUDA GPU Programming](references/04-cuda-programming.md) - GPU kernels, memory management, device functions
-- [Advanced Features](references/05-advanced-features.md) - Stencils, jitclasses, vectorize, typed containers
-
-### Related Skills
-
-- `numpy-2-4-4` - NumPy array operations and mathematical functions
-- `scipy-1-17-1` - Scientific computing with SciPy integration

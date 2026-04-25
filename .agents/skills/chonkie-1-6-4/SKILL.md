@@ -14,6 +14,11 @@ tags:
 category: libraries
 external_references:
   - https://github.com/chonkie-inc/chonkie/tree/v1.6.4/docs
+  - https://docs.chonkie.ai
+  - https://github.com/chonkie-inc/chonkie
+  - https://github.com/chonkie-inc/chonkie/releases
+  - https://huggingface.co/datasets/chonkie-ai/recipes
+  - https://pypi.org/project/chonkie/
   - https://github.com/chonkie-inc/chonkie/tree/v1.6.4
   - https://docs.chonkie.ai/common/open-source
 ---
@@ -147,10 +152,3 @@ for chunk in chunks:
 - **v1.6.3**: Added LanceDB handshake, TeraflopAI chunker, HTML table support via TableChef/TableChunker, metadata `filename` field
 - **v1.6.4**: Fixed pandas import error (`ModuleNotFoundError: No module named 'pandas'`) when installed without `[table]` extra — pandas now lazy-loaded
 
-## References
-
-- Official documentation: https://docs.chonkie.ai
-- GitHub repository: https://github.com/chonkie-inc/chonkie
-- PyPI: https://pypi.org/project/chonkie/
-- Changelog: https://github.com/chonkie-inc/chonkie/releases
-- Recipes (HuggingFace Hub): https://huggingface.co/datasets/chonkie-ai/recipes

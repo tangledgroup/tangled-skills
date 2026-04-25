@@ -13,6 +13,10 @@ tags:
 category: frontend
 external_references:
   - https://d3js.org/what-is-d3
+  - https://d3js.org/
+  - https://d3js.org/api
+  - https://d3js.org/getting-started
+  - https://github.com/d3
   - https://observablehq.com/@d3/gallery
 ---
 
@@ -298,11 +302,3 @@ For detailed API reference on each module, load the relevant reference file:
 - [Reference: Array Utilities](references/15-array-utilities.md)
 - [Reference: Additional Modules](references/16-additional-modules.md)
 
-## References
-
-- Official documentation: https://d3js.org/
-- API index: https://d3js.org/api
-- Observable gallery: https://observablehq.com/@d3/gallery
-- GitHub repository: https://github.com/d3
-- Getting started guide: https://d3js.org/getting-started
-- What is D3?: https://d3js.org/what-is-d3

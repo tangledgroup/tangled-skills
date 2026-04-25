@@ -16,11 +16,18 @@ tags:
 category: web-scraping
 external_references:
   - https://github.com/h4ckf0r0day/obscura/tree/v0.1.0
+  - https://chromedevtools.github.io/devtools-protocol/
+  - https://github.com/h4ckf0r0day/obscura
+  - https://github.com/h4ckf0r0day/obscura/releases/tag/v0.1.0
   - https://github.com/h4ckf0r0day/obscura/releases
 ---
 
 # Obscura 0.1.0
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
 
 Obscura is a headless browser engine written in Rust, built for web scraping and AI agent automation. It runs real JavaScript via V8 (through `deno_core`), implements the Chrome DevTools Protocol, and serves as a drop-in replacement for headless Chrome with Puppeteer and Playwright.
@@ -180,8 +187,4 @@ await page.evaluate(() => {
 - [Reference: CDP API Reference](references/02-cdp-api.md) — Chrome DevTools Protocol domain coverage
 - [Reference: CLI Reference](references/03-cli-reference.md) — Complete command and flag reference
 
-## References
 
-- GitHub repository: https://github.com/h4ckf0r0day/obscura
-- v0.1.0 release: https://github.com/h4ckf0r0day/obscura/releases/tag/v0.1.0
-- Chrome DevTools Protocol: https://chromedevtools.github.io/devtools-protocol/

@@ -15,11 +15,21 @@ tags:
 category: natural-language-processing
 external_references:
   - https://www.nltk.org/
+  - https://www.nltk.org/api/
+  - https://www.nltk.org/book/
+  - https://www.nltk.org/contribute.html
+  - https://www.nltk.org/data.html
+  - https://www.nltk.org/install.html
+  - https://www.nltk.org/news.html
   - https://github.com/nltk/nltk/tree/v3.9.2
 ---
 
 # NLTK 3.9.2 - Natural Language Toolkit
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
 
 NLTK (Natural Language Toolkit) is a comprehensive suite of Python libraries and programs for symbolic and statistical natural language processing (NLP). Version 3.9.2 (October 2025) supports Python 3.9-3.13 and provides:
@@ -402,17 +412,6 @@ for word in brown.words():
 3. **Batch processing**: Process texts in batches to manage memory
 4. **Avoid redundant downloads**: Check if resources exist before downloading
 
-## References
-
-- **Official Documentation**: https://www.nltk.org/
-- **GitHub Repository**: https://github.com/nltk/nltk/tree/v3.9.2
-- **NLTK Book (O'Reilly)**: https://www.nltk.org/book/
-- **Release Notes**: https://www.nltk.org/news.html
-- **API Reference**: https://www.nltk.org/api/
-- **Installation Guide**: https://www.nltk.org/install.html
-- **Data Installation**: https://www.nltk.org/data.html
-- **Contributing**: https://www.nltk.org/contribute.html
-
 ## License
 
 NLTK is distributed under the Apache License, Version 2.0. See LICENSE.txt in the source distribution for details.
@@ -425,3 +424,4 @@ If you use NLTK in academic work, please cite:
 Bird, Steven, Edward Loper and Ewan Klein (2009).
 Natural Language Processing with Python. O'Reilly Media Inc.
 ```
+

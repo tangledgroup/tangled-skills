@@ -18,6 +18,18 @@ tags:
 category: devops
 external_references:
   - https://docs.docker.com/
+  - https://docs.docker.com/build/concepts/dockerfile/
+  - https://docs.docker.com/compose/
+  - https://docs.docker.com/compose/compose-file/
+  - https://docs.docker.com/engine/api/
+  - https://docs.docker.com/engine/reference/builder/
+  - https://github.com/compose-spec/compose-spec
+  - https://github.com/docker/awesome-compose
+  - https://github.com/docker/buildx
+  - https://github.com/docker/compose
+  - https://github.com/docker/docs
+  - https://github.com/moby/buildkit/tree/master/frontend/dockerfile
+  - https://github.com/moby/moby
 ---
 
 # Docker Documentation Reference (2026-04-16)
@@ -577,51 +589,3 @@ Use the `extends` keyword to share service definitions across files.
 - Swarm uses a subset of the Compose file format (with `deploy` section additions)
 - Use `docker stack deploy` to deploy Compose files to Swarm
 
-## References
-
-### Official Documentation
-- Main documentation: https://docs.docker.com/
-- GitHub repository: https://github.com/docker/docs
-- Docker Engine API reference: https://docs.docker.com/engine/api/
-- Dockerfile specification: https://docs.docker.com/engine/reference/builder/
-- Compose Specification: https://github.com/compose-spec/compose-spec
-
-### CLI References
-- `docker buildx build`: https://docs.docker.com/build/concepts/dockerfile/ + BuildKit docs
-- `docker compose`: https://docs.docker.com/compose/
-- Dockerfile instructions: https://docs.docker.com/engine/reference/builder/
-- Compose file reference: https://docs.docker.com/compose/compose-file/
-
-### Related Projects
-- Buildx: https://github.com/docker/buildx
-- Compose: https://github.com/docker/compose
-- Moby (Docker Engine): https://github.com/moby/moby
-- Dockerfile spec: https://github.com/moby/buildkit/tree/master/frontend/dockerfile
-- Awesome Compose examples: https://github.com/docker/awesome-compose
-
-### Key Content Sections in This Repository
-
-**Get Started:**
-- `/get-started/get-docker/` — Installation for all platforms
-- `/get-started/docker-concepts/the-basics/` — What is a container, image, registry, Compose
-- `/get-started/docker-concepts/building-images/` — Writing Dockerfiles, multi-stage builds, image layers
-- `/get-started/workshop/` — 45-minute hands-on workshop
-
-**Guides:**
-- `/guides/databases/` — Running containerized databases (MySQL, PostgreSQL, etc.)
-- `/guides/orchestration/` — Kubernetes and Swarm deployment overview
-- `/guides/kube-deploy/` — Deploy to Kubernetes tutorial
-- `/guides/swarm-deploy/` — Deploy to Swarm tutorial
-
-**Reference:**
-- `/reference/dockerfile.md` — Full Dockerfile instruction reference
-- `/reference/compose-file/` — Compose file specification (services, networks, volumes, etc.)
-- `/reference/glossary.md` — Docker terminology glossary
-
-**Manuals:**
-- `/manuals/build/` — Docker Build, BuildKit, buildx, multi-stage builds, caching, exporters
-- `/manuals/compose/` — Docker Compose features, how-tos, reference
-- `/manuals/engine/` — Docker Engine internals: containers, daemon, networking, swarm
-- `/manuals/desktop/` — Docker Desktop installation and configuration
-- `/manuals/docker-hub/` — Docker Hub usage, repositories, organizations
-- `/manuals/build-cloud/` — Docker Build Cloud remote builds

@@ -13,6 +13,8 @@ tags:
 category: programming
 external_references:
   - https://coin-or.github.io/pulp/
+  - https://github.com/coin-or/pulp/tree/3.3.0/examples
+  - https://www.coin-or.org/
   - https://github.com/coin-or/pulp/tree/3.3.0
 ---
 
@@ -282,9 +284,3 @@ prob.solve()
 - [Reference: Case Studies](references/03-case-studies.md) — Blending, transportation, set partitioning, production planning problems
 - [Reference: Complete API Reference](references/04-api-reference.md) — Full class and function reference
 
-## References
-
-- Official documentation: https://coin-or.github.io/pulp/
-- GitHub repository: https://github.com/coin-or/pulp/tree/3.3.0
-- COIN-OR project: https://www.coin-or.org/
-- Example problems: https://github.com/coin-or/pulp/tree/3.3.0/examples

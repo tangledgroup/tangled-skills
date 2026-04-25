@@ -35,6 +35,10 @@ required_environment_variables:
 
 # rqlite 9.4 Distributed Database Skill
 
+## Overview
+
+Comprehensive toolkit for rqlite 9.4, a lightweight distributed relational database built on SQLite with Raft consensus. Use when deploying fault-tolerant databases, building edge/IoT applications with SQL, creating globally distributed read-intensive systems, or needing simple high-availability without complex administration.
+
 A comprehensive skill for using rqlite, a lightweight, user-friendly distributed relational database built on SQLite. This skill covers installation, configuration, clustering, API usage, backup/restore, and operational best practices.
 
 ## When to Use
@@ -385,3 +389,7 @@ See [Clustering](references/03-clustering.md) for detailed recovery procedures.
 3. **Leverage the shell** for ad-hoc queries and debugging
 4. **Test backup/restore** procedures regularly
 5. **Validate SQL compatibility** with SQLite documentation
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

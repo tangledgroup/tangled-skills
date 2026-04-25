@@ -14,6 +14,8 @@ tags:
 category: languages
 external_references:
   - https://bellard.org/quickjs/
+  - https://tc39.github.io/ecma262/2023
+  - https://test262.fyi
   - https://bellard.org/quickjs/quickjs.html
   - https://github.com/bellard/quickjs
   - https://bellard.org/quickjs/Changelog
@@ -228,11 +230,3 @@ JS_FreeRuntime(rt);
 - `Float16Array`, `Promise.try`, `Error.isError()`
 - `JS_FreePropertyEnum()` and `JS_AtomToCStringLen()` API
 
-## References
-
-- Official documentation: https://bellard.org/quickjs/quickjs.html
-- Main page: https://bellard.org/quickjs/
-- Changelog: https://bellard.org/quickjs/Changelog
-- GitHub repository: https://github.com/bellard/quickjs
-- test262 compliance status: https://test262.fyi
-- ES2023 specification: https://tc39.github.io/ecma262/2023

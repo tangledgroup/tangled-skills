@@ -19,6 +19,14 @@ required_environment_variables: []
 
 # uv 0.11.6
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A skill for using uv 0.11.6, an extremely fast Python package and project manager written in Rust that replaces pip, pip-tools, pipx, poetry, pyenv, twine, virtualenv, and more with 10-100x faster performance. Use when managing Python projects, installing packages, running scripts with dependencies, managing Python versions, working with tools published as Python packages, or needing high-performance dependency resolution and universal lockfiles.
+
 An extremely fast Python package and project manager, written in Rust. uv provides a unified interface to replace `pip`, `pip-tools`, `pipx`, `poetry`, `pyenv`, `twine`, `virtualenv`, and more with 10-100x faster performance than pip.
 
 ## When to Use
@@ -348,3 +356,7 @@ uv pip compile requirements.in --override overrides.txt
 ```
 
 See [Configuration](references/06-configuration.md) for advanced settings and environment variable control.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

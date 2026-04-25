@@ -13,6 +13,9 @@ tags:
 category: nlp
 external_references:
   - https://github.com/pemistahl/lingua-py
+  - https://github.com/pemistahl/lingua-rs
+  - https://pypi.org/project/lingua-language-detector
+  - https://www.apache.org/licenses/LICENSE-2.0
 ---
 
 # Lingua-Py 2.2.0
@@ -239,13 +242,6 @@ print(detector.detect_language_of("breaking news"))  # Language.ENGLISH
 
 See [Mixed-Language Detection](references/04-mixed-language-detection.md) for code-switching scenarios.
 
-## References
-
-- **Official repository**: https://github.com/pemistahl/lingua-py
-- **PyPI package**: https://pypi.org/project/lingua-language-detector
-- **Rust implementation**: https://github.com/pemistahl/lingua-rs
-- **Apache 2.0 License**: https://www.apache.org/licenses/LICENSE-2.0
-
 ## Version Information
 
 - **Current version**: 2.2.0
@@ -254,3 +250,7 @@ See [Mixed-Language Detection](references/04-mixed-language-detection.md) for co
 - **Previous pure Python implementation**: Available in `pure-python-impl` branch (version 1.*)
 
 For migration from version 1.x to 2.x, see [Troubleshooting](references/07-troubleshooting.md).
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

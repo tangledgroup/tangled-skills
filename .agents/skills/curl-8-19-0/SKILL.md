@@ -17,6 +17,9 @@ tags:
 category: networking
 external_references:
   - https://github.com/curl/curl/tree/curl-8_19_0/docs
+  - https://curl.se/
+  - https://curl.se/libcurl/
+  - https://github.com/curl/curl
 ---
 
 # curl 8.19.0
@@ -423,9 +426,3 @@ For detailed documentation on advanced topics, see the reference files:
 - **SSL/TLS Configuration**: Certificate management, cipher suites, ECH, HSTS
 - **HTTP/3 Support**: QUIC protocol support details
 
-## References
-
-- Official documentation: https://github.com/curl/curl/tree/curl-8_19_0/docs
-- curl website: https://curl.se/
-- libcurl documentation: https://curl.se/libcurl/
-- GitHub repository: https://github.com/curl/curl

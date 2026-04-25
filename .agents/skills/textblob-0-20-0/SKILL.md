@@ -15,6 +15,11 @@ tags:
 category: natural-language-processing
 external_references:
   - https://github.com/sloria/TextBlob/tree/0.20.0
+  - http://www.nltk.org/
+  - https://github.com/clips/pattern
+  - https://github.com/sloria/TextBlob
+  - https://pypi.org/project/textblob/
+  - https://textblob.readthedocs.io/en/latest/changelog.html
   - https://textblob.readthedocs.io/
 ---
 
@@ -198,15 +203,6 @@ pip install numpy
 - Use `Blobber` to share models across multiple TextBlobs
 - Consider NLTKTagger over PatternTagger for accuracy (requires NumPy)
 - For production use, consider caching results or using specialized libraries
-
-## References
-
-- **Official documentation**: https://textblob.readthedocs.io/
-- **GitHub repository**: https://github.com/sloria/TextBlob
-- **Changelog**: https://textblob.readthedocs.io/en/latest/changelog.html
-- **PyPI package**: https://pypi.org/project/textblob/
-- **NLTK documentation**: http://www.nltk.org/
-- **Pattern library**: https://github.com/clips/pattern
 
 ## Version Information
 

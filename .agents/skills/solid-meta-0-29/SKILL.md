@@ -17,6 +17,14 @@ required_environment_variables: []
 
 # Solid Meta 0.29
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A skill for managing document head tags in SolidJS applications with @solidjs/meta v0.29, providing asynchronous SSR-ready Document Head management including Title, Meta, Link, Style, Base, and Stylesheet components with MetaProvider context.
+
 Solid Meta is an asynchronous SSR-ready Document Head management library for SolidJS applications. It allows you to define `document.head` tags at any level of your component hierarchy, making it easy to manage contextual metadata like titles, meta tags, stylesheets, and links throughout your application.
 
 Based on [React Head](https://github.com/tizmagik/react-head), this library has no dependencies and seamlessly integrates with SolidJS's asynchronous rendering model.
@@ -190,3 +198,7 @@ See [Component API Reference](references/01-component-api.md) for detailed behav
 - Don't manually add `<title>` tags in server entry files
 
 See [Troubleshooting Guide](references/04-troubleshooting.md) for more solutions.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

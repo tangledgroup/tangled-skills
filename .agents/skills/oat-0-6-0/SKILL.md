@@ -19,6 +19,14 @@ required_environment_variables: []
 
 # Oat UI 0.6.0
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Ultra-lightweight semantic UI component library with zero dependencies (~8KB). Use when building web applications with vanilla HTML/CSS/JS, needing accessible components without framework overhead or build tools.
+
 Ultra-lightweight HTML + CSS semantic UI component library with zero dependencies. ~6KB CSS and ~2.2KB JS (minified + gzipped). No framework, build tools, or dev complexity required.
 
 ## When to Use
@@ -256,3 +264,7 @@ Comprehensive documentation organized by topic:
 **Current version: 0.6.0** (pre-v1, breaking changes possible until v1.0)
 
 For detailed information on any topic, see the reference files listed above. Each component and feature has comprehensive documentation with examples in the `references/` directory.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

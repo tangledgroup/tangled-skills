@@ -17,6 +17,14 @@ required_environment_variables: []
 
 # DaisyUI 5.5
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A skill for using DaisyUI 5.5, a component library for Tailwind CSS 4 that provides semantic class names for common UI components with built-in theming support. Use when building responsive web interfaces with pre-styled components, implementing theme switching, or creating consistent design systems without writing custom CSS.
+
 DaisyUI 5.5 is a component library for Tailwind CSS 4 that provides semantic class names for common UI components. It enables rapid UI development with built-in theming, dark mode support, and accessible components without writing custom CSS.
 
 ## When to Use
@@ -216,3 +224,7 @@ Refer to [Display Components](references/06-display-components.md) for usage exa
 - Check for unique IDs if multiple modals exist
 
 See [Advanced Patterns](references/07-advanced-patterns.md) for more solutions.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

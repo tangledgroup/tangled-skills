@@ -28,6 +28,15 @@ required_environment_variables:
     required_for: application security
 external_references:
   - https://github.com/payloadcms/payload/tree/main/templates/website
+  - https://discord.com/invite/payload
+  - https://nextjs.org/docs
+  - https://payloadcms.com/docs/plugins/form-builder
+  - https://payloadcms.com/docs/plugins/nested-docs
+  - https://payloadcms.com/docs/plugins/redirects
+  - https://payloadcms.com/docs/plugins/search
+  - https://payloadcms.com/docs/plugins/seo
+  - https://payloadcms.com/docs/production/deployment
+  - https://payloadcms.com/docs/rich-text/overview
   - https://payloadcms.com/docs
 ---
 
@@ -345,17 +354,6 @@ For detailed implementation guides, see the following reference files:
 - Ensure search index collection has proper access control
 - Test search API endpoint directly
 
-## References
+## Advanced Topics
 
-- **Official Template Repository**: https://github.com/payloadcms/payload/tree/main/templates/website
-- **Payload CMS Documentation**: https://payloadcms.com/docs
-- **Next.js Documentation**: https://nextjs.org/docs
-- **Lexical Editor Docs**: https://payloadcms.com/docs/rich-text/overview
-- **Plugin Documentation**:
-  - SEO Plugin: https://payloadcms.com/docs/plugins/seo
-  - Search Plugin: https://payloadcms.com/docs/plugins/search
-  - Redirects Plugin: https://payloadcms.com/docs/plugins/redirects
-  - Form Builder: https://payloadcms.com/docs/plugins/form-builder
-  - Nested Docs: https://payloadcms.com/docs/plugins/nested-docs
-- **Deployment Guide**: https://payloadcms.com/docs/production/deployment
-- **Discord Community**: https://discord.com/invite/payload
+For more details on advanced usage, refer to the official documentation listed in the References section.

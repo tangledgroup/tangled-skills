@@ -20,6 +20,14 @@ required_environment_variables: []
 
 # Ruff 0.4.10
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A skill for using Ruff 0.4.10, an extremely fast Python linter and formatter written in Rust that replaces Flake8, isort, pydocstyle, pyupgrade, autoflake, Black, and more with unified configuration and 10x-100x faster performance. Use when linting Python code for style and correctness issues, formatting code consistently, configuring rule selection across 800+ lint rules, suppressing violations with noqa comments, or needing fast incremental analysis in CI/CD pipelines and editors.
+
 An extremely fast Python linter and formatter written in Rust. Ruff replaces Flake8 (plus dozens of plugins), isort, pydocstyle, pyupgrade, autoflake, Black, and more with unified configuration and 10x-100x faster performance. It supports 800+ lint rules across 50+ built-in plugins and provides a Black-compatible formatter.
 
 ## When to Use
@@ -303,3 +311,7 @@ Ruff is 10x-100x faster than alternative tools:
 - **Rules reference:** https://docs.astral.sh/ruff/rules/
 - **GitHub:** https://github.com/astral-sh/ruff
 - **Playground:** https://play.ruff.rs/
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

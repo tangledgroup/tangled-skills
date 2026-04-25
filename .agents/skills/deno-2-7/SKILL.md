@@ -19,6 +19,10 @@ required_environment_variables: []
 
 # Deno 2.7 Runtime Toolkit
 
+## Overview
+
+A comprehensive toolkit for the Deno 2.x JavaScript/TypeScript runtime, covering installation, permissions, built-in APIs, development tools (task runner, test runner, lint, fmt), TypeScript support, npm integration, workspaces, and deployment patterns. Use when building applications with Deno, managing Deno projects, working with Deno's standard library (@std on JSR), configuring permissions, or deploying to Deno Deploy.
+
 A comprehensive toolkit for using Deno, the modern JavaScript and TypeScript runtime with secure defaults. Deno is built on V8, Rust, and Tokio, providing a secure, fast, and developer-friendly environment for building web servers, CLI tools, and full-stack applications.
 
 ## When to Use
@@ -425,3 +429,7 @@ deno cache --reload script.ts
 - [Deno Deploy](https://deno.com/deploy)
 - [GitHub Repository](https://github.com/denoland/deno)
 - [Deno Playground](https://play.deno.dev)
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

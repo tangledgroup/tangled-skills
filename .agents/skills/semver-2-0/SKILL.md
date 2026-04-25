@@ -15,6 +15,14 @@ category: development
 
 # Semantic Versioning 2.0.0 (SemVer)
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A skill for implementing and validating Semantic Versioning 2.0.0 (SemVer) to manage software version numbers, determine compatibility, compare version precedence, and validate version strings against the official specification.
+
 A comprehensive toolkit for implementing, validating, and working with Semantic Versioning 2.0.0 as defined in the official specification. This skill covers version format rules, precedence comparison, pre-release versions, build metadata, and validation patterns.
 
 ## When to Use
@@ -76,3 +84,7 @@ See [Precedence Comparison](references/02-precedence-rules.md) for complete comp
 **Pre-release has lower precedence**: `1.0.0-alpha < 1.0.0`. Pre-release versions are always less than the associated normal version.
 
 See [FAQ and Best Practices](references/04-faq-and-best-practices.md) for more common scenarios and solutions.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

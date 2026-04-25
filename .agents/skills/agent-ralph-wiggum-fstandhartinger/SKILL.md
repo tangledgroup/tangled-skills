@@ -29,6 +29,10 @@ required_environment_variables:
 
 # agent-ralph-wiggum-fstandhartinger
 
+## Overview
+
+Autonomous AI coding with spec-driven development combining iterative bash loops and SpecKit-style specifications for fully autonomous AI-assisted software development. Use when building projects that require hands-free AI implementation, working from specification files, or running autonomous development loops with completion verification.
+
 Autonomous AI coding with spec-driven development. Ralph Wiggum combines Geoffrey Huntley's original iterative bash loop methodology with SpecKit-style specifications for fully autonomous AI-assisted software development.
 
 ## When to Use
@@ -163,3 +167,8 @@ reset_circuit_breaker "Fixed blocking issue"
 3. **Shared state on disk** - `IMPLEMENTATION_PLAN.md` persists between loops
 4. **Planning is optional** - Most projects work fine directly from specs
 5. **YOLO mode recommended** - Enables autonomous command execution without approval prompts
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

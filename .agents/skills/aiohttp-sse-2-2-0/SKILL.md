@@ -18,6 +18,17 @@ required_environment_variables: []
 
 # aiohttp-sse v2.2.0
 
+## Overview
+
+Python library for Server-Sent Events (SSE) support in aiohttp applications. Use when building real-time streaming endpoints that push data from server to clients using the EventSource API, implementing chat applications, live notifications, or continuous data feeds without WebSocket complexity.
+
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
+
+Python library for Server-Sent Events (SSE) support in aiohttp applications. Use when building real-time streaming endpoints that push data from server to clients using the EventSource API, implementing chat applications, live notifications, or continuous data feeds without WebSocket complexity.
+
 A Python library providing Server-Sent Events (SSE) support for aiohttp applications. Enables servers to push real-time data to clients over HTTP using the EventSource API without the complexity of WebSockets.
 
 ## When to Use
@@ -215,3 +226,9 @@ async def handler(request):
             print("Client disconnected")
     return resp
 ```
+
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.
+

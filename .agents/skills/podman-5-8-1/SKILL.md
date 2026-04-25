@@ -30,6 +30,14 @@ compatibility:
 
 # Podman 5.8.1
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Comprehensive toolkit for Podman 5.8.1 container engine providing daemonless container management with Docker-compatible CLI, rootless containers, pods, images, volumes, networks, Kubernetes integration, and systemd/Quadlet declarative management. Use when building, running, or managing containers without a daemon, implementing rootless container workflows, orchestrating pods, integrating with Kubernetes, automating with systemd services, or migrating from Docker.
+
 Podman (Pod Manager) is a fully featured, daemonless container engine that provides Docker-compatible CLI for managing pods, containers, and images. Most commands can run as a regular user without requiring root privileges, making it ideal for rootless container workflows, CI/CD pipelines, and shared environments.
 
 **Key features:**
@@ -295,3 +303,7 @@ Podman supports these environment variables for configuration:
 - [ ] Container registry authentication configured if needed
 - [ ] Storage driver working correctly (`podman info | grep storage`)
 - [ ] Network interfaces available (`podman network ls`)
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

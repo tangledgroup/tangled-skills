@@ -18,6 +18,14 @@ category: development
 
 # htmx-2 Skill
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A skill for building interactive web applications with htmx 2.x, a JavaScript library that allows accessing modern browser features directly from HTML attributes without writing JavaScript. Use when creating dynamic web interfaces, implementing AJAX requests from HTML, working with server-driven UIs, integrating WebSockets/SSE, or migrating from JavaScript-heavy frameworks to hypermedia-driven architectures.
+
 A comprehensive toolkit for building interactive web applications using **htmx 2.x**, a JavaScript library that allows you to access modern browser features directly from HTML, without writing JavaScript. Htmx enables hypermedia-driven development where HTML remains the primary interface for defining application behavior.
 
 ## When to Use
@@ -371,3 +379,7 @@ htmx naturally supports Hypermedia As The Engine Of Application State:
 ```
 
 For more architectural patterns, see [Core Concepts](references/01-core-concepts.md).
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

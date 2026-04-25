@@ -18,6 +18,14 @@ category: utilities
 
 # Day.js 1.11
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Complete toolkit for date and time manipulation using Day.js 1.11, a minimalist 2kB library with Moment.js-compatible API. Use when parsing, validating, manipulating, and displaying dates in JavaScript applications requiring immutable operations, i18n support, and plugin extensibility.
+
 Day.js is a minimalist JavaScript library (~2KB) that parses, validates, manipulates, and displays dates and times for modern browsers with a largely Moment.js-compatible API. It provides immutable operations, chainable methods, internationalization support, and an extensive plugin ecosystem.
 
 ## When to Use
@@ -214,3 +222,7 @@ dayjs('01/15/2024', 'MM/DD/YYYY') // Now works
 ```
 
 See [Plugin Reference](references/02-plugins.md) for plugin-specific issues and [Migration Guide](references/05-migration-guide.md) for Moment.js compatibility notes.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

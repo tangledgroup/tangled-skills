@@ -17,6 +17,14 @@ required_environment_variables: []
 
 # Scrypt
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Python toolkit for scrypt-based key derivation and password hashing. Use when implementing secure password storage, deriving encryption keys from passwords, or verifying passwords with memory-hard key derivation functions resistant to hardware-assisted attacks.
+
 Python toolkit for scrypt-based key derivation functions (KDF) using both the standard library `hashlib.scrypt` and the `cryptography` library's `Scrypt` class. Scrypt is a memory-hard KDF designed by Colin Percival to be resistant against hardware-assisted attackers (GPU/ASIC) by having tunable memory cost, as specified in [RFC 7914](https://datatracker.ietf.org/doc/html/rfc7914).
 
 ## When to Use
@@ -284,3 +292,7 @@ print(f"Key: {bytes(buffer).hex()}")
 ## See Also
 
 - [Advanced Usage](references/01-advanced-usage.md) - Parameter selection, error handling, and advanced patterns
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

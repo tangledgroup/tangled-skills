@@ -15,6 +15,14 @@ category: tooling
 
 # UPX (Ultimate Packer for eXecutables) v5.1.1
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A skill for using UPX (Ultimate Packer for eXecutables) v5.1.1 to compress and decompress executable files across multiple platforms including Windows, Linux, macOS, and embedded systems. Use when reducing distribution size, optimizing storage, or packing executables for deployment.
+
 A comprehensive skill for using UPX, the free, secure, portable, and high-performance executable packer. UPX typically reduces file size of programs and DLLs by 50%-70%, reducing disk space, network load times, download times, and distribution costs.
 
 ## When to Use
@@ -307,3 +315,7 @@ UPX is distributed under the GNU General Public License v2+ with special excepti
 - **Documentation**: https://upx.github.io/docs/upx.html
 - **Issue Tracker**: https://github.com/upx/upx/issues
 - **License**: https://upx.github.io/upx-license.html
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

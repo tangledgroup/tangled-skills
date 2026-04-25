@@ -18,6 +18,14 @@ required_environment_variables: []
 
 # Solid Router v0.16
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A skill for using Solid Router v0.16, the universal router for SolidJS that provides fine-grained reactivity for route navigation with support for history-based, hash-based, static (SSR), and memory-based routing modes. Use when building single-page applications in SolidJS that require client-side routing, nested routes, data loading APIs, form actions, or universal rendering across server and client environments.
+
 Solid Router is the universal router for SolidJS that brings fine-grained reactivity to route navigation, enabling single-page applications to become multi-paged without full page reloads. It supports history-based, hash-based, static (SSR), and memory-based routing modes with declarative syntax, parallel data fetching, and universal rendering capabilities.
 
 **Key Features:**
@@ -181,3 +189,7 @@ const Home = lazy(() => import("./pages/Home"));
 **Data loading waterfalls:** Use preload functions on routes to fetch data in parallel with navigation. See Data APIs reference for patterns.
 
 **TypeScript errors:** Ensure SolidJS v1.8.6+ is installed as peer dependency. Import types from `@solidjs/router` when needed.
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

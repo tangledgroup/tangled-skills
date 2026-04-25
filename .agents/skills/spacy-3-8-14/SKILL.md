@@ -14,6 +14,14 @@ tags:
 category: machine-learning
 external_references:
   - https://github.com/explosion/spaCy/tree/release-v3.8.14
+  - https://course.spacy.io
+  - https://github.com/explosion/projects
+  - https://github.com/explosion/spaCy
+  - https://github.com/explosion/spacy-vscode
+  - https://spacy.io/api
+  - https://spacy.io/models
+  - https://spacy.io/usage
+  - https://spacy.io/usage#changelog
   - https://spacy.io/
 ---
 
@@ -363,17 +371,6 @@ pip install --no-cache-dir spacy
 4. **GPU acceleration**: Enable for transformer models and large batches
 5. **Caching**: Reuse the `nlp` object, don't reload in loops
 
-## References
-
-- **Official Documentation**: https://spacy.io/usage
-- **API Reference**: https://spacy.io/api
-- **GitHub Repository**: https://github.com/explosion/spaCy
-- **Pretrained Models**: https://spacy.io/models
-- **Online Course**: https://course.spacy.io
-- **Project Templates**: https://github.com/explosion/projects
-- **Changelog**: https://spacy.io/usage#changelog
-- **vscode Extension**: https://github.com/explosion/spacy-vscode
-
 ## Migration from v2.x
 
 Key changes in spaCy 3.x:
@@ -388,3 +385,7 @@ See the [migration guide](https://spacy.io/usage/v3) for detailed instructions.
 ## License
 
 spaCy is released under the MIT License. See https://github.com/explosion/spaCy/blob/master/LICENSE
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

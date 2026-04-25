@@ -13,6 +13,10 @@ tags:
 category: networking
 external_references:
   - https://www.paramiko.org/
+  - https://docs.paramiko.org/
+  - https://github.com/paramiko/paramiko
+  - https://www.paramiko.org/faq.html
+  - https://www.paramiko.org/installing.html
   - https://github.com/paramiko/paramiko/tree/4.0.0
 ---
 
@@ -547,10 +551,3 @@ For detailed API documentation, see the reference files:
 - [Server Mode Guide](references/02-server-mode-guide.md) — Complete server implementation patterns
 - [SFTP Operations Reference](references/03-sftp-reference.md) — Detailed SFTP operations and attributes
 
-## References
-
-- Official documentation: https://www.paramiko.org/
-- API documentation: https://docs.paramiko.org/
-- GitHub repository: https://github.com/paramiko/paramiko
-- Installation guide: https://www.paramiko.org/installing.html
-- FAQs: https://www.paramiko.org/faq.html

@@ -16,6 +16,10 @@ tags:
 category: observability
 external_references:
   - https://github.com/open-telemetry/opentelemetry-collector
+  - https://github.com/open-telemetry/opamp
+  - https://github.com/open-telemetry/opentelemetry-collector-contrib
+  - https://github.com/open-telemetry/opentelemetry-collector/tree/main/cmd/builder
+  - https://opentelemetry.io/docs/collector/
   - https://opentelemetry.io/docs/collector/quick-start/
 ---
 
@@ -337,11 +341,3 @@ service:
 - **Configuration merging**: Combine multiple config files or use environment variable substitution
 - **Custom authenticator extensions**: Build custom auth for receivers/exporters
 
-## References
-
-- Official documentation: https://opentelemetry.io/docs/collector/
-- GitHub repository: https://github.com/open-telemetry/opentelemetry-collector
-- Contrib components: https://github.com/open-telemetry/opentelemetry-collector-contrib
-- Quick start guide: https://opentelemetry.io/docs/collector/quick-start/
-- OCB documentation: https://github.com/open-telemetry/opentelemetry-collector/tree/main/cmd/builder
-- OpAMP specification: https://github.com/open-telemetry/opamp

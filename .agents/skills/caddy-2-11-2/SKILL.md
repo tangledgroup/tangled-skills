@@ -17,6 +17,10 @@ tags:
 category: infrastructure
 external_references:
   - https://github.com/caddyserver/caddy/tree/v2.11.2
+  - https://caddy.community
+  - https://caddyserver.com/docs/
+  - https://caddyserver.com/docs/api-tutorial
+  - https://caddyserver.com/docs/caddyfile-tutorial
   - https://github.com/caddyserver/website
 ---
 
@@ -693,11 +697,8 @@ Caddy's native config is a JSON document:
 - [`references/04-json-config.md`](references/04-json-config.md) - JSON configuration structure, API operations, traversal with @id
 - [`references/05-pki-certificates.md`](references/05-pki-certificates.md) - PKI app, CA management, certificate lifecycle, ACME settings
 
-## References
 
-- Official documentation: https://caddyserver.com/docs/
-- GitHub repository (v2.11.2): https://github.com/caddyserver/caddy/tree/v2.11.2
-- Website source: https://github.com/caddyserver/website
-- API tutorial: https://caddyserver.com/docs/api-tutorial
-- Caddyfile tutorial: https://caddyserver.com/docs/caddyfile-tutorial
-- Community forum: https://caddy.community
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

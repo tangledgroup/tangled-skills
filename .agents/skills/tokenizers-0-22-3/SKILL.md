@@ -16,6 +16,10 @@ tags:
 category: nlp
 external_references:
   - https://github.com/huggingface/tokenizers/tree/v0.22.2
+  - https://github.com/huggingface/tokenizers
+  - https://github.com/huggingface/tokenizers/releases/tag/v0.22.2
+  - https://huggingface.co/docs/transformers/tokenizer_summary
+  - https://pypi.org/project/tokenizers/
   - https://huggingface.co/docs/tokenizers
 ---
 
@@ -276,14 +280,6 @@ tokenizer.normalizer = NFKC()  # Unicode normalization
 encoding = tokenizer.encode("Café")  # Original has é
 print(encoding.offsets[0])  # Points to "Café" in original, not normalized version
 ```
-
-## References
-
-- **Official Documentation**: https://huggingface.co/docs/tokenizers
-- **GitHub Repository**: https://github.com/huggingface/tokenizers
-- **PyPI Package**: https://pypi.org/project/tokenizers/
-- **Hugging Face Transformers Integration**: https://huggingface.co/docs/transformers/tokenizer_summary
-- **v0.22.2 Release Notes**: https://github.com/huggingface/tokenizers/releases/tag/v0.22.2
 
 ## Version Compatibility
 

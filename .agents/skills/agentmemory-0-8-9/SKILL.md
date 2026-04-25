@@ -13,6 +13,8 @@ tags:
 category: ai-agent-tools
 external_references:
   - https://github.com/rohitg00/agentmemory/tree/v0.8.9
+  - https://arxiv.org/abs/2410.10813
+  - https://github.com/rohitg00/agentmemory/blob/v0.8.9/CHANGELOG.md
   - https://iii.dev/docs
 ---
 
@@ -333,17 +335,8 @@ See [Troubleshooting Guide](references/05-troubleshooting.md) for:
 
 See [Benchmark Comparison](references/06-benchmarks.md) for detailed comparison vs mem0, Letta, Khoj, claude-mem, Hippo.
 
-## References
 
-- **Official repository**: https://github.com/rohitg00/agentmemory/tree/v0.8.9
-- **iii-engine docs**: https://iii.dev/docs
-- **LongMemEval benchmark**: https://arxiv.org/abs/2410.10813
-- **Changelog**: https://github.com/rohitg00/agentmemory/blob/v0.8.9/CHANGELOG.md
 
-### Related Reference Files
+## Advanced Topics
 
-- [Agent Integrations](references/02-agent-integrations.md) - Complete setup for Claude Code, Hermes, OpenClaw, Cursor, Gemini CLI, OpenCode
-- [Extended MCP Tools](references/03-mcp-tools.md) - Full 43-tool reference with examples
-- [REST API Reference](references/04-api-reference.md) - All 109 endpoints documented
-- [Troubleshooting Guide](references/05-troubleshooting.md) - Common issues and fixes
-- [Benchmark Comparison](references/06-benchmarks.md) - vs mem0, Letta, Khoj, claude-mem, Hippo
+For more details on advanced usage, refer to the official documentation listed in the References section.

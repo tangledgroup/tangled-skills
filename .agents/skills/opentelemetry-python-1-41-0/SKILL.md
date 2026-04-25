@@ -16,10 +16,22 @@ tags:
 category: observability
 external_references:
   - https://github.com/open-telemetry/opentelemetry-python/tree/v1.41.0
+  - https://github.com/open-telemetry/opentelemetry-python-contrib
+  - https://github.com/open-telemetry/opentelemetry-specification
+  - https://opentelemetry-python.readthedocs.io/
+  - https://opentelemetry.io/ecosystem/registry/?component=instrumentation&language=python
   - https://opentelemetry.io/docs/languages/python/
 ---
 
 # OpenTelemetry Python 1.41.0
+
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Complete OpenTelemetry Python toolkit v1.41.0 for distributed tracing, metrics collection, and log management with support for OTLP exporters, automatic instrumentation, custom sampling, context propagation, and semantic conventions. Use when instrumenting Python applications for observability, configuring trace/metric/log pipelines, setting up OTLP exporters, implementing custom samplers, or integrating with distributed tracing backends like Jaeger, Zipkin, Prometheus, or the OpenTelemetry Collector.
 
 Complete toolkit for OpenTelemetry Python v1.41.0, the official observability framework for distributed tracing, metrics, and logs in Python applications. Provides API and SDK packages with support for OTLP protocol exporters, automatic instrumentation via `opentelemetry-instrument`, custom sampling strategies, context propagation across multiple formats, and semantic conventions for common frameworks.
 
@@ -311,19 +323,6 @@ async def get_item(item_id: int):
         return {"item": item_id}
 ```
 
-## References
+## Advanced Topics
 
-### Reference Files
-
-- [`references/01-core-concepts.md`](references/01-core-concepts.md) — Architecture, three signals, span lifecycle, context propagation, resources, sampling, semantic conventions
-- [`references/02-tracing-deep-dive.md`](references/02-tracing-deep-dive.md) — Span creation patterns, attributes, events, links, status, processors, exporters, custom samplers
-- [`references/03-metrics-deep-dive.md`](references/03-metrics-deep-dive.md) — All instrument types (sync/async), views, exemplars, readers, aggregation configuration
-- [`references/04-exporters-and-propagators.md`](references/04-exporters-and-propagators.md) — OTLP HTTP/gRPC exporters, all propagator formats, environment variables, shutdown patterns
-
-### External References
-
-- Official documentation: https://opentelemetry-python.readthedocs.io/
-- GitHub repository: https://github.com/open-telemetry/opentelemetry-python/tree/v1.41.0
-- Contrib instrumentation packages: https://github.com/open-telemetry/opentelemetry-python-contrib
-- Python instrumentation registry: https://opentelemetry.io/ecosystem/registry/?component=instrumentation&language=python
-- OpenTelemetry Specification: https://github.com/open-telemetry/opentelemetry-specification
+For more details on advanced usage, refer to the official documentation listed in the References section.

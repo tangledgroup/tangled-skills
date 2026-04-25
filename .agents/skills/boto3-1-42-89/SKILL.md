@@ -13,6 +13,10 @@ tags:
 category: cloud-services
 external_references:
   - https://github.com/boto/boto3/tree/1.42.89
+  - https://docs.aws.amazon.com/
+  - https://docs.aws.amazon.com/botocore/latest/reference/config.html
+  - https://docs.aws.amazon.com/sdkref/latest/guide/feature-overview.html
+  - https://github.com/boto/boto3/blob/develop/CHANGELOG.rst
   - https://boto3.amazonaws.com/v1/documentation/api/latest/
 ---
 
@@ -392,11 +396,3 @@ boto3.set_stream_logger('', logging.DEBUG)
 # export BOTOCORE_DEBUG=1
 ```
 
-## References
-
-- **Official Documentation**: https://boto3.amazonaws.com/v1/documentation/api/latest/
-- **GitHub Repository**: https://github.com/boto/boto3/tree/1.42.89
-- **AWS Service API References**: https://docs.aws.amazon.com/
-- **Botocore Configuration**: https://docs.aws.amazon.com/botocore/latest/reference/config.html
-- **AWS SDK Best Practices**: https://docs.aws.amazon.com/sdkref/latest/guide/feature-overview.html
-- **Changelog**: https://github.com/boto/boto3/blob/develop/CHANGELOG.rst

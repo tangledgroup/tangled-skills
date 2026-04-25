@@ -17,6 +17,14 @@ external_references:
 
 # Coding Guidelines v0.1.0
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+Behavioral guidelines to reduce common LLM coding mistakes including overcomplication, hidden assumptions, orthogonal edits, and weak success criteria. Use when writing, reviewing, or refactoring code to enforce simplicity, surgical changes, explicit reasoning, and verifiable outcomes. Derived from Andrej Karpathy's observations on LLM coding pitfalls, curated by Forrest Chang.
+
 Behavioral guidelines to reduce common LLM coding mistakes, derived from observations on LLM coding pitfalls.
 
 > **Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
@@ -115,3 +123,7 @@ These guidelines are working if you see:
 - **Fewer rewrites due to overcomplication** - Code is simple the first time
 - **Clarifying questions come before implementation** - Not after mistakes
 - **Clean, minimal PRs** - No drive-by refactoring or "improvements"
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

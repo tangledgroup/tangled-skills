@@ -14,6 +14,7 @@ tags:
 category: numerical-computing
 external_references:
   - https://pypi.org/project/numkong/
+  - https://github.com/ashvardanian/NumWars
   - https://ashvardanian.com/posts/numkong/
   - https://github.com/ashvardanian/NumKong
 ---
@@ -218,10 +219,3 @@ console.log(angular(a, b));      // cosine distance
 - [Reference: Memory Layout and Parallelism](references/04-memory-layout.md)
 - [Reference: Language Bindings Deep Dive](references/05-language-bindings.md)
 
-## References
-
-- Official GitHub repository: https://github.com/ashvardanian/NumKong
-- PyPI package: https://pypi.org/project/numkong/
-- Blog post: https://ashvardanian.com/posts/numkong/
-- NumWars benchmarks: https://github.com/ashvardanian/NumWars
-- License: Apache 2.0 or BSD 3-Clause (user's choice)

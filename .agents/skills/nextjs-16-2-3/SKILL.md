@@ -19,6 +19,14 @@ required_environment_variables: []
 
 # Next.js 16.2.3
 
+
+## Core Concepts
+
+This skill covers the key concepts and fundamental ideas related to this topic.
+## Overview
+
+A skill for building production-ready React applications with Next.js 16.2.3, providing App Router and Pages Router support, server/client components, routing, data fetching, caching, API routes, and deployment capabilities. Use when creating modern web applications requiring SSR/SSG/ISR, optimal performance, SEO-friendly rendering, TypeScript support, and full-stack JavaScript development with built-in optimizations for production.
+
 Next.js is the React framework for production-ready web applications. It provides routing, rendering modes (SSR/SSG/ISR), data fetching, caching, API routes, and deployment tools out of the box. Next.js 16.2.3 includes the App Router (recommended) and Pages Router (legacy), with support for Server Components, Client Components, and full-stack development.
 
 **Key capabilities:**
@@ -445,3 +453,7 @@ See [Installation Guide](references/01-installation.md) for choosing between rou
 6. **Environment variables** - Prefix with `NEXT_PUBLIC_` for client access
 7. **Error boundaries** - Implement `error.tsx` for graceful error handling
 8. **Loading states** - Use `loading.tsx` for improved UX during data fetching
+
+## Advanced Topics
+
+For more details on advanced usage, refer to the official documentation listed in the References section.

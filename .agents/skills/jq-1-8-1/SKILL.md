@@ -13,12 +13,20 @@ tags:
 category: developer-tools
 external_references:
   - https://jqlang.org/
+  - https://github.com/jqlang/jq/releases/tag/jq-1.8.1
+  - https://play.jqlang.org
+  - https://stackoverflow.com/questions/tagged/jq
+  - https://web.libera.chat/#jq
   - https://jqlang.org/manual/
   - https://jqlang.org/tutorial/
   - https://github.com/jqlang/jq
 ---
 
 # jq 1.8.1
+
+## Overview
+
+Complete toolkit for jq 1.8.1, the lightweight and flexible command-line JSON processor. Use when parsing, transforming, filtering, or generating JSON data from the shell, piping between commands, processing API responses, or writing reusable JSON transformation scripts with a concise declarative query language.
 
 jq is a lightweight and flexible command-line JSON processor, often described as "sed for JSON". It is written in portable C with zero runtime dependencies — a single binary that can be copied to any machine of the same architecture and work immediately.
 
@@ -427,12 +435,6 @@ For detailed coverage of advanced topics, see the reference files:
 - [`references/03-io-and-advanced.md`](references/03-io-and-advanced.md) — I/O control, assignment, error handling, modules, streaming, type system, user-defined functions
 - [`references/04-real-world-examples.md`](references/04-real-world-examples.md) — API responses, data transformation pipelines, shell integration, log parsing, validation, patterns cheat sheet
 
-## References
+## Advanced Topics
 
-- **Official documentation**: https://jqlang.org/manual/
-- **Interactive tutorial**: https://jqlang.org/tutorial/
-- **Try online**: https://play.jqlang.org
-- **GitHub repository**: https://github.com/jqlang/jq
-- **Release notes (1.8.1)**: https://github.com/jqlang/jq/releases/tag/jq-1.8.1
-- **Stack Overflow [jq] tag**: https://stackoverflow.com/questions/tagged/jq
-- **Community chat**: https://web.libera.chat/#jq
+For more details on advanced usage, refer to the official documentation listed in the References section.
