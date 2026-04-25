@@ -18,11 +18,7 @@ external_references:
   - https://github.com/duckdb/duckdb
   - https://github.com/duckdb/duckdb/tree/v1.5.2
 ---
-
-# DuckDB 1.5.2
-
 ## Overview
-
 DuckDB is a high-performance analytical database system designed to be fast, reliable, portable, and easy to use. It provides a rich SQL dialect with support far beyond basic SQL, including:
 
 - Arbitrary and nested correlated subqueries
@@ -35,7 +31,6 @@ DuckDB is a high-performance analytical database system designed to be fast, rel
 DuckDB operates as an **embedded database** - no server required. It's ideal for analytical workloads, data science pipelines, ETL processes, and applications requiring fast SQL analytics on local or cloud storage.
 
 ## When to Use
-
 Use DuckDB when:
 
 - **Analytical queries**: Running complex aggregations, window functions, or OLAP-style queries
@@ -53,7 +48,6 @@ Use DuckDB when:
 - Distributed query processing across multiple machines
 
 ## Core Concepts
-
 ### Architecture
 
 - **Columnar Storage**: Data stored in column-oriented format for fast analytical queries
@@ -88,7 +82,6 @@ duckdb.connect('my_database.db')
 ```
 
 ## Installation / Setup
-
 ### Python Client
 
 ```bash
@@ -124,10 +117,9 @@ choco install duckdb
 - **Go**: `go get github.com/marcboeker/go-duckdb`
 - **C/C++**: Link against DuckDB library
 
-See [Client APIs](references/02-client-apis.md) for detailed language-specific guides.
+See [Client APIs](reference/02-client-apis.md) for detailed language-specific guides.
 
 ## Usage Examples
-
 ### Basic Queries
 
 ```python
@@ -186,52 +178,9 @@ GROUP BY customer_id
 """
 ```
 
-See [SQL Reference](references/03-sql-reference.md) for comprehensive SQL documentation.
-
-## Advanced Topics
-
-### Extensions System
-
-DuckDB supports extensions for additional functionality:
-
-```sql
--- Install and load extensions
-INSTALL httpfs;
-LOAD httpfs;
-
--- Query files from S3
-SELECT * FROM 's3://bucket/file.parquet';
-```
-
-Available core extensions: [Core Extensions](references/04-extensions.md)
-
-### Performance Optimization
-
-- Use `ANALYZE` to collect statistics
-- Create indexes for frequently filtered columns
-- Use `COPY` for bulk data loading
-- Leverage Parquet format for large datasets
-- Configure memory limits and threads
-
-See [Performance Guide](references/05-performance.md) for detailed optimization strategies.
-
-### Cloud Storage Integration
-
-DuckDB can query files directly from cloud storage:
-
-```sql
--- S3 (with httpfs extension)
-SELECT * FROM 's3://bucket/data/*.parquet';
-
--- Azure Blob Storage
-SELECT * FROM 'az://container/data.parquet';
-
--- Google Cloud Storage
-SELECT * FROM 'gs://bucket/data.parquet';
-```
+See [SQL Reference](reference/03-sql-reference.md) for comprehensive SQL documentation.
 
 ## Quick Start Checklist
-
 - [ ] Install DuckDB Python client: `pip install duckdb==1.5.2`
 - [ ] Run first query: `python -c "import duckdb; duckdb.sql('SELECT 42').show()"`
 - [ ] Query a CSV file: `duckdb.sql("SELECT * FROM 'file.csv'").show()`
@@ -240,7 +189,6 @@ SELECT * FROM 'gs://bucket/data.parquet';
 - [ ] Read cloud storage: `SELECT * FROM 's3://bucket/file.parquet'`
 
 ## Troubleshooting
-
 Common issues and solutions:
 
 | Issue | Solution |
@@ -251,4 +199,15 @@ Common issues and solutions:
 | S3 access denied | Configure AWS credentials and install httpfs extension |
 | Slow queries | Use `EXPLAIN` to analyze query plan, consider Parquet format |
 
-See [Performance Guide](references/05-performance.md) for detailed troubleshooting.
+See [Performance Guide](reference/05-performance.md) for detailed troubleshooting.
+
+## Advanced Topics
+## Advanced Topics
+
+- [Core Concepts](reference/01-core-concepts.md)
+- [Client Apis](reference/02-client-apis.md)
+- [Sql Reference](reference/03-sql-reference.md)
+- [Extensions](reference/04-extensions.md)
+- [Performance](reference/05-performance.md)
+- [Data Import](reference/06-data-import.md)
+

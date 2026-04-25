@@ -19,21 +19,12 @@ external_references:
   - https://htmx.org/docs
   - https://github.com/bigskysoftware/htmx
 ---
-
-# htmx-2 Skill
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A skill for building interactive web applications with htmx 2.x, a JavaScript library that allows accessing modern browser features directly from HTML attributes without writing JavaScript. Use when creating dynamic web interfaces, implementing AJAX requests from HTML, working with server-driven UIs, integrating WebSockets/SSE, or migrating from JavaScript-heavy frameworks to hypermedia-driven architectures.
 
 A comprehensive toolkit for building interactive web applications using **htmx 2.x**, a JavaScript library that allows you to access modern browser features directly from HTML, without writing JavaScript. Htmx enables hypermedia-driven development where HTML remains the primary interface for defining application behavior.
 
 ## When to Use
-
 - Building dynamic web interfaces without JavaScript frameworks
 - Adding interactivity to server-rendered applications
 - Implementing AJAX requests, WebSocket connections, or SSE directly from HTML
@@ -43,8 +34,10 @@ A comprehensive toolkit for building interactive web applications using **htmx 2
 - Building real-time features with WebSockets and Server-Sent Events
 - Implementing complex UI patterns (modals, tabs, live search, infinite scroll) with minimal code
 
-## Quick Start
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Installation
 
 Add htmx to your project via CDN (recommended for quick start):
@@ -94,10 +87,9 @@ The core concept: any HTML element can make HTTP requests and update the DOM:
 <div id="form-result"></div>
 ```
 
-See [Core Concepts](references/01-core-concepts.md) for detailed explanation of htmx fundamentals.
+See [Core Concepts](reference/01-core-concepts.md) for detailed explanation of htmx fundamentals.
 
 ## Common Operations
-
 ### AJAX Requests
 
 Use HTTP method attributes to trigger requests:
@@ -115,7 +107,7 @@ Use HTTP method attributes to trigger requests:
 <button hx-delete="/users/123" hx-confirm="Delete this user?">Delete</button>
 ```
 
-See [Request Attributes Reference](references/02-request-attributes.md) for all HTTP method attributes.
+See [Request Attributes Reference](reference/02-request-attributes.md) for all HTTP method attributes.
 
 ### Triggers and Events
 
@@ -142,7 +134,7 @@ Control when requests fire using `hx-trigger`:
 <div hx-get="/load-more" hx-trigger="revealed">Load More</div>
 ```
 
-See [Trigger System Guide](references/03-triggers-and-events.md) for comprehensive trigger documentation.
+See [Trigger System Guide](reference/03-triggers-and-events.md) for comprehensive trigger documentation.
 
 ### Swapping Content
 
@@ -171,7 +163,7 @@ Control how responses are inserted into the DOM:
 </div>
 ```
 
-See [Swapping and DOM Updates](references/04-swapping.md) for all swap modes and options.
+See [Swapping and DOM Updates](reference/04-swapping.md) for all swap modes and options.
 
 ### Out-of-Band Swaps
 
@@ -189,7 +181,7 @@ Update multiple elements from a single response:
 <div>New content for main area</div>
 ```
 
-See [Out-of-Band Swaps Guide](references/05-oob-swaps.md) for OOB swap patterns.
+See [Out-of-Band Swaps Guide](reference/05-oob-swaps.md) for OOB swap patterns.
 
 ### WebSockets and SSE
 
@@ -213,7 +205,7 @@ Real-time communication without JavaScript:
 </div>
 ```
 
-See [Real-Time Communication](references/06-websockets-sse.md) for WebSocket/SSE patterns.
+See [Real-Time Communication](reference/06-websockets-sse.md) for WebSocket/SSE patterns.
 
 ### Extensions
 
@@ -239,38 +231,26 @@ Extend htmx functionality:
 </div>
 ```
 
-See [Extensions Guide](references/07-extensions.md) for built-in and custom extensions.
+See [Extensions Guide](reference/07-extensions.md) for built-in and custom extensions.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-This skill uses a modular reference system for progressive disclosure:
-
-### Core Documentation
-
-- [`references/01-core-concepts.md`](references/01-core-concepts.md) - htmx fundamentals, architecture, and core principles
-- [`references/02-request-attributes.md`](references/02-request-attributes.md) - All HTTP method attributes (hx-get, hx-post, etc.)
-- [`references/03-triggers-and-events.md`](references/03-triggers-and-events.md) - Trigger system, event handling, and timing
-- [`references/04-swapping.md`](references/04-swapping.md) - DOM swap modes, morphing, and view transitions
-- [`references/05-oob-swaps.md`](references/05-oob-swaps.md) - Out-of-band swaps for updating multiple elements
-
-### Advanced Topics
-
-- [`references/06-websockets-sse.md`](references/06-websockets-sse.md) - WebSockets and Server-Sent Events
-- [`references/07-extensions.md`](references/07-extensions.md) - Built-in extensions and custom extension development
-- [`references/08-events-api.md`](references/08-events-api.md) - Complete event system and JavaScript API reference
-- [`references/09-server-responses.md`](references/09-server-responses.md) - Response headers, status codes, and server patterns
-- [`references/10-common-patterns.md`](references/10-common-patterns.md) - Common UI patterns (modals, tabs, forms, etc.)
-
-### Migration and Best Practices
-
-- [`references/11-migration-v1-to-v2.md`](references/11-migration-v1-to-v2.md) - Migrating from htmx 1.x to 2.x
-- [`references/12-security-best-practices.md`](references/12-security-best-practices.md) - Security considerations and best practices
-- [`references/13-performance-optimization.md`](references/13-performance-optimization.md) - Performance tuning and optimization techniques
-
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/htmx-2/`). All paths are relative to this directory.
+- [Core Concepts](reference/01-core-concepts.md)
+- [Request Attributes](reference/02-request-attributes.md)
+- [Triggers And Events](reference/03-triggers-and-events.md)
+- [Swapping](reference/04-swapping.md)
+- [Oob Swaps](reference/05-oob-swaps.md)
+- [Websockets Sse](reference/06-websockets-sse.md)
+- [Extensions](reference/07-extensions.md)
+- [Events Api](reference/08-events-api.md)
+- [Server Responses](reference/09-server-responses.md)
+- [Common Patterns](reference/10-common-patterns.md)
+- [Migration V1 To V2](reference/11-migration-v1-to-v2.md)
+- [Security Best Practices](reference/12-security-best-practices.md)
+- [Performance Optimization](reference/13-performance-optimization.md)
 
 ## Troubleshooting
-
 ### Common Issues
 
 **htmx not working after dynamic content insertion:**
@@ -311,7 +291,7 @@ htmx.logger = function(elt, event, data) {
 };
 ```
 
-See [Events and API Reference](references/08-events-api.md) for complete debugging guide.
+See [Events and API Reference](reference/08-events-api.md) for complete debugging guide.
 
 ### Getting Help
 
@@ -321,7 +301,6 @@ See [Events and API Reference](references/08-events-api.md) for complete debuggi
 - [htmx Discord](https://htmx.org/discord/) - Community support
 
 ## Key Concepts
-
 ### No JavaScript Required (But Optional)
 
 htmx works entirely from HTML attributes, but can be extended with JavaScript:
@@ -382,8 +361,5 @@ htmx naturally supports Hypermedia As The Engine Of Application State:
 </div>
 ```
 
-For more architectural patterns, see [Core Concepts](references/01-core-concepts.md).
+For more architectural patterns, see [Core Concepts](reference/01-core-concepts.md).
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

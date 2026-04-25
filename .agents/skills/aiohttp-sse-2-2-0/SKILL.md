@@ -19,24 +19,10 @@ external_references:
   - https://github.com/hallazzang/aiohttp-sse
   - https://aiohttp-sse.readthedocs.io/
 ---
-
-# aiohttp-sse v2.2.0
-
 ## Overview
-
 Python library for Server-Sent Events (SSE) support in aiohttp applications. Use when building real-time streaming endpoints that push data from server to clients using the EventSource API, implementing chat applications, live notifications, or continuous data feeds without WebSocket complexity.
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.## Overview
-
-Python library for Server-Sent Events (SSE) support in aiohttp applications. Use when building real-time streaming endpoints that push data from server to clients using the EventSource API, implementing chat applications, live notifications, or continuous data feeds without WebSocket complexity.
-
-A Python library providing Server-Sent Events (SSE) support for aiohttp applications. Enables servers to push real-time data to clients over HTTP using the EventSource API without the complexity of WebSockets.
 
 ## When to Use
-
 - Building real-time notification systems that push updates from server to client
 - Creating live data feeds (stock prices, sensor data, logs)
 - Implementing chat applications with simple broadcast patterns
@@ -44,8 +30,14 @@ A Python library providing Server-Sent Events (SSE) support for aiohttp applicat
 - Providing auto-updating dashboards or monitoring interfaces
 - Needing simpler alternative to WebSockets for one-way communication
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
 
+Python library for Server-Sent Events (SSE) support in aiohttp applications. Use when building real-time streaming endpoints that push data from server to clients using the EventSource API, implementing chat applications, live notifications, or continuous data feeds without WebSocket complexity.
+
+A Python library providing Server-Sent Events (SSE) support for aiohttp applications. Enables servers to push real-time data to clients over HTTP using the EventSource API without the complexity of WebSockets.
+
+## Installation / Setup
 Install the library:
 
 ```bash
@@ -56,8 +48,7 @@ pip install aiohttp-sse
 - Python 3.8+
 - aiohttp >= 3.0
 
-## Quick Start
-
+## Usage Examples
 ### Basic SSE Endpoint
 
 Create a simple endpoint that streams server time every second:
@@ -97,10 +88,9 @@ Connect using the browser's native EventSource API:
 <div id="response"></div>
 ```
 
-See [Core Concepts](references/01-core-concepts.md) for detailed SSE protocol explanation.
+See [Core Concepts](reference/01-core-concepts.md) for detailed SSE protocol explanation.
 
 ## Common Operations
-
 ### Sending Events with Custom Types
 
 Send typed events that clients can handle differently:
@@ -147,7 +137,7 @@ async def stream_with_ids(request: web.Request) -> web.StreamResponse:
     return resp
 ```
 
-See [Advanced Workflow](references/02-advanced-workflow.md) for reconnection patterns using `last_event_id`.
+See [Advanced Workflow](reference/02-advanced-workflow.md) for reconnection patterns using `last_event_id`.
 
 ### Retry Configuration
 
@@ -182,15 +172,15 @@ async def conditional_stream(request: web.Request) -> web.StreamResponse:
     return resp
 ```
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-core-concepts.md`](references/01-core-concepts.md) - SSE protocol fundamentals, EventSource API, and basic patterns
-- [`references/02-advanced-workflow.md`](references/02-advanced-workflow.md) - Chat applications, graceful shutdown, custom response classes
-- [`references/03-api-reference.md`](references/03-api-reference.md) - Complete API documentation for EventSourceResponse and sse_response
-- [`references/04-troubleshooting.md`](references/04-troubleshooting.md) - Common issues, debugging tips, and best practices
+- [Core Concepts](reference/01-core-concepts.md)
+- [Advanced Workflow](reference/02-advanced-workflow.md)
+- [Api Reference](reference/03-api-reference.md)
+- [Troubleshooting](reference/04-troubleshooting.md)
 
 ## Troubleshooting
-
 ### Connection Issues
 
 If clients aren't receiving events:
@@ -213,7 +203,7 @@ async def on_startup(app):
     app[streams_key] = weakref.WeakSet()
 ```
 
-See [Advanced Workflow](references/02-advanced-workflow.md) for complete chat example with proper cleanup.
+See [Advanced Workflow](reference/02-advanced-workflow.md) for complete chat example with proper cleanup.
 
 ### Client Disconnection Handling
 
@@ -230,9 +220,4 @@ async def handler(request):
             print("Client disconnected")
     return resp
 ```
-
-
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.
 

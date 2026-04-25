@@ -27,17 +27,12 @@ external_references:
   - https://aiozmq.readthedocs.io/en/v0.7.0/
   - https://github.com/aio-libs/aiozmq
 ---
-
-# aiozmq 0.7.0
-
 ## Overview
-
 Async ZeroMQ integration for Python asyncio providing transport-level APIs, stream abstraction, and RPC frameworks for building distributed applications with request-reply, push-pull, and pub-sub patterns. Use when building async Python applications requiring message-oriented middleware, remote procedure calls over ZeroMQ, or event-driven distributed systems with high-performance messaging.
 
 ZeroMQ integration with Python asyncio (PEP 3156). Provides async transport-level APIs, stream abstractions, and a comprehensive RPC framework for building distributed applications using ZeroMQ messaging patterns.
 
 ## When to Use
-
 - Building async Python applications requiring ZeroMQ message passing
 - Implementing remote procedure calls (RPC) over ZeroMQ transports
 - Creating request-reply, push-pull, or publish-subscribe architectures
@@ -45,8 +40,7 @@ ZeroMQ integration with Python asyncio (PEP 3156). Provides async transport-leve
 - Building distributed systems with high-performance messaging
 - Needing stream-based async/await interface for ZeroMQ sockets
 
-## Setup
-
+## Installation / Setup
 ### Installation
 
 ```bash
@@ -71,11 +65,10 @@ pip install "aiozmq[rpc]"
 - **macOS**: Full support  
 - **Windows**: Limited support (no IPC endpoints, uses select-based event loop)
 
-## Quick Start
-
+## Usage Examples
 ### Simple Request-Reply with Streams
 
-See [Streams API](references/01-streams-api.md) for detailed documentation.
+See [Streams API](reference/01-streams-api.md) for detailed documentation.
 
 ```python
 import asyncio
@@ -115,7 +108,7 @@ asyncio.run(main())
 
 ### Simple RPC Server and Client
 
-See [RPC Framework](references/02-rpc-framework.md) for comprehensive guide.
+See [RPC Framework](reference/02-rpc-framework.md) for comprehensive guide.
 
 ```python
 import asyncio
@@ -163,7 +156,7 @@ asyncio.run(main())
 
 ### Pipeline (Push-Pull) Pattern
 
-See [Pipeline Pattern](references/03-rpc-patterns.md) for details.
+See [Pipeline Pattern](reference/03-rpc-patterns.md) for details.
 
 ```python
 import asyncio
@@ -201,7 +194,6 @@ asyncio.run(main())
 ```
 
 ## Core Concepts
-
 ### Architecture Overview
 
 aiozmq provides three abstraction layers:
@@ -209,18 +201,18 @@ aiozmq provides three abstraction layers:
 1. **Core Layer** (`create_zmq_connection`, `ZmqTransport`, `ZmqProtocol`)
    - Low-level asyncio transport/protocol interface
    - Direct control over ZeroMQ socket lifecycle
-   - See [Core API](references/04-core-api.md)
+   - See [Core API](reference/04-core-api.md)
 
 2. **Stream Layer** (`create_zmq_stream`, `ZmqStream`)
    - Higher-level async stream abstraction
    - `read()`/`write()` methods with backpressure
-   - See [Streams API](references/01-streams-api.md)
+   - See [Streams API](reference/01-streams-api.md)
 
 3. **RPC Layer** (`serve_rpc`, `connect_rpc`, handlers)
    - Remote procedure call framework
    - Automatic serialization with msgpack
    - Method discovery and validation
-   - See [RPC Framework](references/02-rpc-framework.md)
+   - See [RPC Framework](reference/02-rpc-framework.md)
 
 ### Event Loop Integration
 
@@ -252,18 +244,18 @@ loop = asyncio.get_event_loop()
 # Now can use loop.create_zmq_connection() directly
 ```
 
-See [Core API](references/04-core-api.md) for details.
+See [Core API](reference/04-core-api.md) for details.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-streams-api.md`](references/01-streams-api.md) - Stream abstraction with read/write/drain, buffer limits, and flow control
-- [`references/02-rpc-framework.md`](references/02-rpc-framework.md) - RPC framework fundamentals: handlers, methods, serialization, error handling
-- [`references/03-rpc-patterns.md`](references/03-rpc-patterns.md) - RPC patterns: request-reply, pipeline (push-pull), pub-sub with examples
-- [`references/04-core-api.md`](references/04-core-api.md) - Core transport/protocol API, ZmqEventLoop, low-level socket control
-- [`references/05-advanced-topics.md`](references/05-advanced-topics.md) - Custom serialization, exception translation, monitoring, nested namespaces
+- [Streams Api](reference/01-streams-api.md)
+- [Rpc Framework](reference/02-rpc-framework.md)
+- [Rpc Patterns](reference/03-rpc-patterns.md)
+- [Core Api](reference/04-core-api.md)
+- [Advanced Topics](reference/05-advanced-topics.md)
 
 ## Common Patterns
-
 ### ZeroMQ Socket Types
 
 aiozmq supports all ZeroMQ socket types:
@@ -295,7 +287,6 @@ bind='pgm://239.100.1.1:5555'    # PGM multicast
 ```
 
 ## Troubleshooting
-
 ### Common Issues
 
 **"Connection refused" errors**: Ensure server binds before client connects. ZeroMQ requires the binding endpoint to be ready.
@@ -347,13 +338,8 @@ await service.wait_closed()
 ```
 
 ## See Also
-
 - [ZeroMQ Documentation](https://zeromq.org/documentation/)
 - [pyzmq Documentation](https://pyzmq.readthedocs.io/)
 - [aiozmq GitHub](https://github.com/aio-libs/aiozmq)
 - [aiozmq Documentation](https://aiozmq.readthedocs.io/en/v0.7.0/)
 
-
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

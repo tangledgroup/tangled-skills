@@ -17,21 +17,12 @@ external_references:
   - https://numeraljs.com/
   - https://github.com/adamwdraper/Numeral-js
 ---
-
-# Numeral.js 2
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A JavaScript library for formatting and manipulating numbers. Use when formatting currency, percentages, bytes, time durations, ordinals, or exponential notation in browser or Node.js applications.
 
 Numeral.js is a JavaScript library for formatting and manipulating numbers. It provides consistent number formatting across different locales with support for currency, percentages, bytes, time durations, ordinals, abbreviations, and exponential notation.
 
 ## When to Use
-
 - Formatting numbers for display (currency, percentages, file sizes)
 - Localizing number formats for different regions (thousands separators, decimal points)
 - Parsing formatted number strings back to numeric values
@@ -40,8 +31,10 @@ Numeral.js is a JavaScript library for formatting and manipulating numbers. It p
 - Formatting time durations from seconds
 - Displaying ordinal numbers (1st, 2nd, 3rd)
 
-## Installation
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Browser
 
 Include directly via script tag:
@@ -80,8 +73,7 @@ require(['numeral'], function(numeral) {
 });
 ```
 
-## Quick Start
-
+## Usage Examples
 Create a numeral instance and format it:
 
 ```javascript
@@ -101,7 +93,6 @@ numeral('(1,000)').value();     // -1000 (accounting negative)
 ```
 
 ## Core API
-
 ### Creating Instances
 
 **From numbers:**
@@ -228,9 +219,11 @@ numeral.version;                    // "2.0.6"
 ```
 
 ## See Also
-
-- [Configuration and Format Types](references/01-format-types-and-localization.md) - Global configuration, format strings, types, and localization
+- [Configuration and Format Types](reference/01-format-types-and-localization.md) - Global configuration, format strings, types, and localization
 
 ## Advanced Topics
+## Advanced Topics
 
-For more details on advanced usage, refer to the official documentation listed in the References section.
+- [Advanced Usage](reference/01-advanced-usage.md)
+- [Format Types And Localization](reference/01-format-types-and-localization.md)
+

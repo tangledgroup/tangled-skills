@@ -20,24 +20,10 @@ compatibility:
   python: ">=3.9"
   aiohttp: ">=3.9"
 ---
-
-# aiohttp-cors 0.8.1
-
 ## Overview
-
-A skill for implementing Cross-Origin Resource Sharing (CORS) support in aiohttp web applications using aiohttp-cors 0.8.1, enabling secure cross-origin HTTP requests with configurable origins, credentials, headers, and preflight caching.
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.## Overview
-
-A skill for implementing Cross-Origin Resource Sharing (CORS) support in aiohttp web applications using aiohttp-cors 0.8.1, enabling secure cross-origin HTTP requests with configurable origins, credentials, headers, and preflight caching.
-
 A skill for implementing Cross-Origin Resource Sharing (CORS) support in aiohttp web applications using aiohttp-cors 0.8.1, enabling secure cross-origin HTTP requests with configurable origins, credentials, headers, and preflight caching.
 
 ## When to Use
-
 - Building aiohttp web APIs that need to serve clients from different domains
 - Enabling frontend applications (React, Vue, Angular) hosted on different domains to call backend APIs
 - Configuring which origins can access specific routes or resources
@@ -46,8 +32,14 @@ A skill for implementing Cross-Origin Resource Sharing (CORS) support in aiohttp
 - Allowing or restricting credential sharing (cookies, HTTP authentication)
 - Implementing fine-grained CORS policies per route or resource
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
 
+A skill for implementing Cross-Origin Resource Sharing (CORS) support in aiohttp web applications using aiohttp-cors 0.8.1, enabling secure cross-origin HTTP requests with configurable origins, credentials, headers, and preflight caching.
+
+A skill for implementing Cross-Origin Resource Sharing (CORS) support in aiohttp web applications using aiohttp-cors 0.8.1, enabling secure cross-origin HTTP requests with configurable origins, credentials, headers, and preflight caching.
+
+## Installation / Setup
 ### Installation
 
 Install aiohttp-cors from PyPI:
@@ -91,7 +83,6 @@ route = cors.add(
 ```
 
 ## Quick Examples
-
 ### Allow Specific Origins
 
 ```python
@@ -131,7 +122,6 @@ cors.add(
 ```
 
 ## Configuration Options
-
 ### ResourceOptions Parameters
 
 | Parameter | Type | Default | Description |
@@ -142,10 +132,9 @@ cors.add(
 | `max_age` | int or None | None | Preflight cache duration (seconds) |
 | `allow_methods` | sequence, "*", or None | None | Allowed HTTP methods |
 
-For detailed configuration examples and advanced patterns, see [Detailed Usage](references/01-detailed-usage.md).
+For detailed configuration examples and advanced patterns, see [Detailed Usage](reference/01-detailed-usage.md).
 
 ## Troubleshooting
-
 ### Common Issues
 
 **"No 'Access-Control-Allow-Origin' header"**
@@ -161,10 +150,9 @@ For detailed configuration examples and advanced patterns, see [Detailed Usage](
 - Verify `allow_methods` includes the actual request method
 - Ensure `allow_headers` includes all headers sent in the actual request
 
-For comprehensive troubleshooting and debugging tips, see [Detailed Usage](references/01-detailed-usage.md).
+For comprehensive troubleshooting and debugging tips, see [Detailed Usage](reference/01-detailed-usage.md).
 
 ## Security Considerations
-
 ### Best Practices
 
 1. **Never use `"*"` with credentials**: This is a security vulnerability
@@ -173,22 +161,20 @@ For comprehensive troubleshooting and debugging tips, see [Detailed Usage](refer
 4. **Limit exposed headers**: Only expose what clients actually need
 5. **Set appropriate max_age**: Balance between performance and flexibility
 
-For security best practices and advanced patterns, see [Detailed Usage](references/01-detailed-usage.md).
+For security best practices and advanced patterns, see [Detailed Usage](reference/01-detailed-usage.md).
 
 ## Version Compatibility
-
 - **aiohttp-cors 0.8.x**: Requires aiohttp >= 3.9, Python 3.9+
 - Uses `ResourceOptions` namedtuple for configuration
 - Supports defaults parameter in `setup()`
 
-For migration guides and known issues, see [Detailed Usage](references/01-detailed-usage.md).
+For migration guides and known issues, see [Detailed Usage](reference/01-detailed-usage.md).
 
 ## See Also
-
-- [Detailed Usage and Examples](references/01-detailed-usage.md) - Complete configuration patterns, examples, troubleshooting, and security best practices
-
+- [Detailed Usage and Examples](reference/01-detailed-usage.md) - Complete configuration patterns, examples, troubleshooting, and security best practices
 
 ## Advanced Topics
+## Advanced Topics
 
-For more details on advanced usage, refer to the official documentation listed in the References section.
+- [Detailed Usage](reference/01-detailed-usage.md)
 

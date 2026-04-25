@@ -19,17 +19,12 @@ external_references:
   - https://sourceware.org/libffi/
   - https://github.com/python-cffi/cffi/tree/v2.0.0
 ---
-
-# CFFI 2.0.0 - Python C Foreign Function Interface
-
 ## Overview
-
 CFFI (C Foreign Function Interface) is a library for calling C code from Python, based on C-like declarations that you can often copy-paste directly from header files or documentation. It provides two main modes: **ABI mode** (calling compiled shared libraries without recompilation) and **API mode** (compiling C wrapper code for better performance and portability).
 
 CFFI 2.0.0 supports Python 3.8+ and includes full support for free-threaded Python 3.14+, with automatic GIL release when calling into C libraries.
 
 ## When to Use
-
 Use CFFI when:
 - You need to call functions from existing C libraries (system libraries, custom .so/.dll files)
 - You want to wrap C code for use in Python without writing traditional C extension modules
@@ -39,7 +34,6 @@ Use CFFI when:
 - You want to compile custom C code alongside your FFI declarations for performance-critical sections
 
 ## Core Concepts
-
 ### Two Main Modes
 
 **ABI Mode (Binary Level)**
@@ -92,8 +86,7 @@ lib.printf(b"Hello %d!\n", 42)
 - Runtime code imports the compiled module
 - Supports setuptools integration for package distribution
 
-## Installation
-
+## Installation / Setup
 ### Basic Installation
 
 ```bash
@@ -139,7 +132,6 @@ xcode-select --install
 ```
 
 ## Quick Start Examples
-
 ### Example 1: Simple C Library Call (ABI Mode)
 
 ```python
@@ -219,21 +211,19 @@ lib.qsort(arr, 5, ffi.sizeof("int"), compare_int)
 print([arr[i] for i in range(5)])  # [1, 2, 5, 8, 9]
 ```
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-For detailed coverage of advanced topics:
-
-- **[01-CFFI-Modes](references/01-cffi-modes.md)** - Complete guide to ABI vs API modes, in-line vs out-of-line, mode selection criteria
-- **[02-Type-Declarations](references/02-type-declarations.md)** - C type system in CFFI, structs, unions, enums, typedefs, pointers, arrays
-- **[03-Memory-Management](references/03-memory-management.md)** - ffi.new(), ffi.alloc(), ffi.buffer(), memory lifecycle, avoiding leaks
-- **[04-Callbacks](references/04-callbacks.md)** - Python callbacks to C, @ffi.def_extern(), thread safety, error handling in callbacks
-- **[05-Distribution](references/05-distribution.md)** - Building distributable packages, setuptools integration, cffi_modules, wheel creation
-- **[06-Embedding](references/06-embedding.md)** - Embedding Python in C applications, creating Python-implemented shared libraries
-- **[07-Thread-Safety](references/07-thread-safety.md)** - GIL handling, free-threaded Python 3.14+ support, locking patterns, thread sanitizer testing
-- **[08-Advanced-Topics](references/08-advanced-topics.md)** - Variadic functions, Windows calling conventions, debugging, performance optimization
+- [Cffi Modes](reference/01-cffi-modes.md)
+- [Type Declarations](reference/02-type-declarations.md)
+- [Memory Management](reference/03-memory-management.md)
+- [Callbacks](reference/04-callbacks.md)
+- [Distribution](reference/05-distribution.md)
+- [Embedding](reference/06-embedding.md)
+- [Thread Safety](reference/07-thread-safety.md)
+- [Advanced Topics](reference/08-advanced-topics.md)
 
 ## Troubleshooting
-
 ### Common Issues
 
 **"No module named '_cffi_backend'"**
@@ -275,7 +265,6 @@ print(dir(lib))  # Shows available functions
 ```
 
 ## Version-Specific Features (2.0.0)
-
 - **Free-threaded Python 3.14+ support**: Full compatibility with Python's free-threaded build
 - **Automatic GIL release**: CFFI releases GIL before calling C functions on GIL-enabled builds
 - **Improved thread safety**: Better handling of multithreaded access to C libraries
@@ -283,7 +272,6 @@ print(dir(lib))  # Shows available functions
 - **Performance improvements**: Optimized callback handling and memory management
 
 ## Best Practices
-
 1. **Prefer API mode** for production code (better performance, portability)
 2. **Use out-of-line** for distributable packages (separation of build/runtime)
 3. **Declare complete struct layouts** when possible (avoid `...` in production)
@@ -294,7 +282,6 @@ print(dir(lib))  # Shows available functions
 8. **Test on target platforms**: ABI mode can behave differently across systems
 
 ## Performance Considerations
-
 - API mode is significantly faster than ABI mode (direct calls vs libffi)
 - Out-of-line mode has faster import times than in-line
 - Callbacks have overhead; minimize Python↔C crossing in hot paths
@@ -302,11 +289,7 @@ print(dir(lib))  # Shows available functions
 - Use `ffi.release()` for large allocations in long-running programs
 
 ## Related Skills
-
 - `cython-3-2-4` - Alternative Python-C integration with static typing
 - `numpy-2-4-4` - For numerical C integration via NumPy C API
 - `cryptography-46` - Uses CFFI internally for crypto operations
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

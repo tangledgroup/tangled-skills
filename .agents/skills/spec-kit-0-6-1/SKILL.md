@@ -30,21 +30,12 @@ required_environment_variables:
 external_references:
   - https://github.com/github/spec-kit
 ---
-
-# Spec Kit 0.6.1
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A skill for implementing Spec-Driven Development (SDD) using GitHub's Spec Kit v0.6.1 toolkit, enabling specification-first workflows with AI agents to generate executable specifications, implementation plans, and task breakdowns that drive code generation. Use when building software projects requiring structured specification workflows, integrating AI coding assistants (Claude, Copilot, Gemini, Pi, etc.) with spec-driven methodologies, or migrating existing projects to specification-first development practices.
 
 A comprehensive toolkit for implementing **Spec-Driven Development (SDD)** - a methodology where specifications become executable artifacts that directly generate working implementations rather than just guiding them. Spec Kit provides templates, slash commands, and AI agent integrations to transform vague ideas into structured specifications, technical plans, and actionable tasks.
 
 ## When to Use
-
 - Building new software projects with specification-first approach
 - Migrating existing projects to SDD methodology
 - Integrating AI coding assistants (Claude Code, GitHub Copilot, Gemini CLI, Pi Coding Agent, etc.) with structured workflows
@@ -53,8 +44,10 @@ A comprehensive toolkit for implementing **Spec-Driven Development (SDD)** - a m
 - Teams wanting to reduce the gap between specification and implementation
 - Projects needing consistent documentation generated alongside code
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Prerequisites
 
 - **uv** (Python package manager): https://docs.astral.sh/uv/
@@ -118,10 +111,9 @@ specify init my-project --script sh
 specify init my-project --script ps
 ```
 
-See [Installation Details](references/01-installation.md) for enterprise/air-gapped setups and troubleshooting.
+See [Installation Details](reference/01-installation.md) for enterprise/air-gapped setups and troubleshooting.
 
-## Quick Start
-
+## Usage Examples
 ### The 6-Step SDD Process
 
 **Step 1: Define Constitution**
@@ -188,10 +180,9 @@ Execute the implementation:
 
 ### Complete Example: Taskify Kanban Board
 
-See [Workflow Examples](references/02-workflow-examples.md) for a detailed walkthrough building a team productivity platform with user management, project creation, and Kanban-style task boards.
+See [Workflow Examples](reference/02-workflow-examples.md) for a detailed walkthrough building a team productivity platform with user management, project creation, and Kanban-style task boards.
 
 ## Core Commands
-
 Spec Kit provides slash commands that transform the traditional development workflow:
 
 | Command | Purpose | Output |
@@ -205,10 +196,9 @@ Spec Kit provides slash commands that transform the traditional development work
 | `/speckit.analyze` | Audit implementation plan | Analysis report with issues |
 | `/speckit.implement` | Execute code generation | Source code implementation |
 
-See [Command Reference](references/03-command-reference.md) for detailed command documentation.
+See [Command Reference](reference/03-command-reference.md) for detailed command documentation.
 
 ## Project Structure
-
 After initialization, Spec Kit creates:
 
 ```
@@ -243,7 +233,6 @@ my-project/
 - **`.<agent>/`**: AI agent-specific command files (e.g., `.claude/`, `.gemini/`, `.pi/`)
 
 ## Extensions and Presets
-
 Spec Kit supports community extensions that add domain-specific workflows:
 
 **Built-in Extension:**
@@ -258,19 +247,19 @@ Spec Kit supports community extensions that add domain-specific workflows:
 - **Memorylint** - Context memory optimization
 - And 50+ more in the [Community Catalog](https://github.com/github/spec-kit/tree/main/extensions)
 
-See [Extension Guide](references/04-extensions.md) for installation and development.
+See [Extension Guide](reference/04-extensions.md) for installation and development.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-installation.md`](references/01-installation.md) - Detailed installation, upgrade procedures, and troubleshooting
-- [`references/02-workflow-examples.md`](references/02-workflow-examples.md) - Complete workflow examples including Taskify Kanban app
-- [`references/03-command-reference.md`](references/03-command-reference.md) - All slash commands with parameters and output formats
-- [`references/04-extensions.md`](references/04-extensions.md) - Extension system, community catalog, and development guide
-- [`references/05-ai-agents.md`](references/05-ai-agents.md) - Supported AI agents and integration details
-- [`references/06-sdd-methodology.md`](references/06-sdd-methodology.md) - Spec-Driven Development methodology and core principles
+- [Installation](reference/01-installation.md)
+- [Workflow Examples](reference/02-workflow-examples.md)
+- [Command Reference](reference/03-command-reference.md)
+- [Extensions](reference/04-extensions.md)
+- [Ai Agents](reference/05-ai-agents.md)
+- [Sdd Methodology](reference/06-sdd-methodology.md)
 
 ## Troubleshooting
-
 **Common issues:**
 
 1. **Constitution overwritten during upgrade**: Back up `.specify/memory/constitution.md` before running `specify init --here --force`, then restore afterward.
@@ -281,13 +270,12 @@ See [Extension Guide](references/04-extensions.md) for installation and developm
 
 4. **Air-gapped environments**: Use bundled wheel installation with `--offline` flag.
 
-See [Installation Guide](references/01-installation.md) for detailed troubleshooting.
+See [Installation Guide](reference/01-installation.md) for detailed troubleshooting.
 
 ## Next Steps
-
-- Read the [SDD Methodology](references/06-sdd-methodology.md) to understand specification-driven development principles
-- Explore [Workflow Examples](references/02-workflow-examples.md) for complete project walkthroughs
-- Check the [Command Reference](references/03-command-reference.md) for detailed command documentation
+- Read the [SDD Methodology](reference/06-sdd-methodology.md) to understand specification-driven development principles
+- Explore [Workflow Examples](reference/02-workflow-examples.md) for complete project walkthroughs
+- Check the [Command Reference](reference/03-command-reference.md) for detailed command documentation
 - Browse [Community Extensions](https://github.com/github/spec-kit/tree/main/extensions) to enhance your workflow
 
 **Resources:**
@@ -296,6 +284,3 @@ See [Installation Guide](references/01-installation.md) for detailed troubleshoo
 - [Releases and Changelog](https://github.com/github/spec-kit/releases)
 - [Community Extensions Catalog](https://github.com/github/spec-kit/tree/main/extensions)
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

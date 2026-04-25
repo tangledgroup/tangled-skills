@@ -20,21 +20,12 @@ required_environment_variables: []
 external_references:
   - https://github.com/unum-cloud/usearch
 ---
-
-# USearch 2.24
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A skill for using USearch 2.24, a high-performance single-file similarity search and clustering engine for vectors supporting HNSW algorithm with user-defined metrics, quantization, and multi-language bindings including Python, C++, Rust, JavaScript, Java, Go, and more. Use when building vector search applications, implementing approximate nearest neighbors (ANN) search, performing semantic search, molecular similarity matching, geospatial indexing, or requiring faster alternatives to FAISS with custom distance functions.
 
 USearch is a smaller and faster single-file similarity search and clustering engine for vectors, implementing the HNSW (Hierarchical Navigable Small World) algorithm with up to 10x performance improvement over FAISS. It supports user-defined metrics, hardware-accelerated quantization (f16, bf16, i8, b1), multi-language bindings, and can serve indexes from disk without loading into RAM for significant cost reduction.
 
 ## When to Use
-
 - Building vector search applications requiring high-performance ANN (Approximate Nearest Neighbors) search
 - Implementing semantic search with custom distance metrics beyond standard cosine or L2
 - Needing faster indexing than FAISS for large-scale vector collections (millions to billions)
@@ -47,8 +38,10 @@ USearch is a smaller and faster single-file similarity search and clustering eng
 - Replacing expensive preference storage with dynamic vector-based preference calculation
 - Database semantic joins and fuzzy matching at billion-scale
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Python Installation
 
 ```bash
@@ -99,10 +92,9 @@ USearch provides native bindings for:
 - **C#**: `dotnet add package Cloud.Unum.USearch`
 - **Swift**, **Objective-C**, **C**, **Wolfram**
 
-See [Core Concepts](references/01-core-concepts.md) for language-specific setup details.
+See [Core Concepts](reference/01-core-concepts.md) for language-specific setup details.
 
-## Quick Start
-
+## Usage Examples
 ### Basic Vector Search
 
 ```python
@@ -123,7 +115,7 @@ assert matches[0].key == 42
 assert matches[0].distance <= 0.001
 ```
 
-See [Core Concepts](references/01-core-concepts.md) for detailed Index configuration and parameter explanations.
+See [Core Concepts](reference/01-core-concepts.md) for detailed Index configuration and parameter explanations.
 
 ### Batch Operations
 
@@ -144,7 +136,7 @@ matches = index.search(vectors, 10, threads=4)
 print(f"Found {len(matches)} result sets")
 ```
 
-Refer to [Advanced Workflows](references/02-advanced-workflows.md) for batch processing best practices and performance tuning.
+Refer to [Advanced Workflows](reference/02-advanced-workflows.md) for batch processing best practices and performance tuning.
 
 ### Serialization and Disk Serving
 
@@ -163,10 +155,9 @@ metadata = Index.metadata('index.usearch')
 print(f"Index has {metadata.count} vectors with {metadata.ndim} dimensions")
 ```
 
-See [API Reference](references/03-api-reference.md) for complete serialization API and metadata structure.
+See [API Reference](reference/03-api-reference.md) for complete serialization API and metadata structure.
 
 ## Configuration Options
-
 ### Basic Configuration
 
 ```python
@@ -191,17 +182,15 @@ index = Index(
 | Languages | C++, Python | 10+ languages | Portable |
 | Python binding size | ~10 MB | <1 MB | Deployable |
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-core-concepts.md`](references/01-core-concepts.md) - Index configuration, metrics, quantization types, and hardware acceleration detection
-- [`references/02-advanced-workflows.md`](references/02-advanced-workflows.md) - Custom metrics with Numba/Cppyy, clustering, joins, filtering, and multi-index lookups
-- [`references/03-api-reference.md`](references/03-api-reference.md) - Complete API documentation including Index, Indexes, serialization, I/O utilities, and evaluation tools
-- [`references/04-troubleshooting.md`](references/04-troubleshooting.md) - Common issues, performance tuning, quantization artifacts, and debugging techniques
-
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/usearch-2-24/`). All paths are relative to this directory.
+- [Core Concepts](reference/01-core-concepts.md)
+- [Advanced Workflows](reference/02-advanced-workflows.md)
+- [Api Reference](reference/03-api-reference.md)
+- [Troubleshooting](reference/04-troubleshooting.md)
 
 ## Troubleshooting
-
 ### Quantization Precision Loss
 
 When using `dtype='i8'` or `dtype='f16'`, retrieval may not return exact original vectors:
@@ -239,7 +228,7 @@ print(f"Hardware acceleration: {index_f16.hardware_acceleration}")
 # Output: 'sapphire', 'ice', 'none', etc.
 ```
 
-See [Troubleshooting Guide](references/04-troubleshooting.md) for detailed diagnostics and solutions.
+See [Troubleshooting Guide](reference/04-troubleshooting.md) for detailed diagnostics and solutions.
 
 ### Memory Usage Optimization
 
@@ -256,7 +245,6 @@ index = Index.restore('large_index.usearch', view=True)
 This can result in 20x cost reduction on cloud platforms by serving from external storage.
 
 ## Common Patterns
-
 ### Semantic Search Pipeline
 
 ```python
@@ -326,12 +314,11 @@ pairs = users.join(items, max_proposals=max_proposals, exact=False)
 print(f"Matched {len(pairs)} user-item pairs")
 ```
 
-See [Advanced Workflows](references/02-advanced-workflows.md) for detailed join patterns and performance optimization.
+See [Advanced Workflows](reference/02-advanced-workflows.md) for detailed join patterns and performance optimization.
 
-See [Advanced Workflows](references/02-advanced-workflows.md) for clustering, joins, and filtering patterns.
+See [Advanced Workflows](reference/02-advanced-workflows.md) for clustering, joins, and filtering patterns.
 
 ## Integration Examples
-
 USearch is integrated into major databases and frameworks:
 
 - **ClickHouse**: Vector search indexes via MergeTree engine
@@ -341,8 +328,5 @@ USearch is integrated into major databases and frameworks:
 - **ScyllaDB**: Rust-based vector store
 - **TiDB/TiFlash**: C++ integration for vector indexes
 
-For application examples including molecular search (RDKit), geospatial indexing, and multimodal search (UForm + UCall), see [Advanced Workflows](references/02-advanced-workflows.md).
+For application examples including molecular search (RDKit), geospatial indexing, and multimodal search (UForm + UCall), see [Advanced Workflows](reference/02-advanced-workflows.md).
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

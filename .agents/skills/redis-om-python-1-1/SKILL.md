@@ -23,21 +23,12 @@ external_references:
   - https://redis-om.readthedocs.io/
   - https://github.com/redis/redis-om-python
 ---
-
-# Redis OM Python v1.1.0
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A skill for using Redis OM Python v1.1.0, an object mapping library that provides declarative models, automatic secondary-index generation, and fluent query APIs for Redis with RediSearch and RedisJSON modules. Use when building Python applications requiring ORM-like abstractions for Redis, full-text search capabilities, geospatial queries, vector similarity search (KNN), or complex nested document storage.
 
 Redis OM Python provides high-level abstractions for modeling and querying Redis data using Pydantic-based models. It supports both hash-based storage (HashModel) and JSON document storage (JsonModel), with automatic RediSearch index generation, full-text search, geospatial queries, vector similarity search, and schema migrations.
 
 ## When to Use
-
 - Building Python applications requiring Redis as a data store with ORM-like abstractions
 - Implementing full-text search capabilities using RediSearch
 - Storing complex nested documents with JSON model support
@@ -47,8 +38,10 @@ Redis OM Python provides high-level abstractions for modeling and querying Redis
 - Using Pydantic validation for data integrity
 - Requiring schema migration management for RediSearch indexes
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Installation
 
 ```bash
@@ -93,8 +86,7 @@ redis_client = get_redis_connection()
 redis_client = get_redis_connection(host="localhost", port=6379, db=0)
 ```
 
-## Quick Start
-
+## Usage Examples
 ### Basic HashModel Example
 
 HashModel stores data as Redis hashes - ideal for flat, simple data structures:
@@ -203,24 +195,21 @@ await Migrator().run()
 await Migrator(conn=redis_client).run()
 ```
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-model-types.md`](references/01-model-types.md) - HashModel vs JsonModel, field types, validation
-- [`references/02-querying.md`](references/02-querying.md) - Query syntax, filters, sorting, pagination
-- [`references/03-advanced-features.md`](references/03-advanced-features.md) - Vector search, geospatial queries, embedded models
-- [`references/04-schema-migrations.md`](references/04-schema-migrations.md) - SchemaMigrator, migration files, rollback
-- [`references/05-troubleshooting.md`](references/05-troubleshooting.md) - Common issues and solutions
+- [Model Types](reference/01-model-types.md)
+- [Querying](reference/02-querying.md)
+- [Advanced Features](reference/03-advanced-features.md)
+- [Schema Migrations](reference/04-schema-migrations.md)
+- [Troubleshooting](reference/05-troubleshooting.md)
 
 ## Troubleshooting
-
 **Module not found errors:** Ensure Redis Stack (not plain Redis) is running with RediSearch and RedisJSON modules.
 
 **Index creation fails:** Check that `Migrator().run()` is called before querying.
 
 **Connection errors:** Verify REDIS_OM_URL or connection parameters are correct.
 
-See [Troubleshooting Guide](references/05-troubleshooting.md) for detailed solutions.
+See [Troubleshooting Guide](reference/05-troubleshooting.md) for detailed solutions.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

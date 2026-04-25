@@ -39,17 +39,12 @@ external_references:
   - https://payloadcms.com/docs/rich-text/overview
   - https://payloadcms.com/docs
 ---
-
-# Payload CMS Website Template 3.82.1
-
 ## Overview
-
 The official Payload CMS Website Template is a production-ready starter for building personal or enterprise-grade websites, blogs, and portfolios. It includes a fully-configured backend with MongoDB, an enterprise-grade admin panel with Lexical rich-text editor, and a beautifully designed Next.js App Router frontend with TypeScript, TailwindCSS, and shadcn/ui components.
 
 This template provides out-of-the-box functionality for content publishing workflows, including draft previews, live preview, SEO optimization, search, redirects, form builder, scheduled publishing, and on-demand cache revalidation.
 
 ## When to Use
-
 Use this skill when:
 - Building a content-driven website, blog, or portfolio with Payload CMS
 - Implementing a publication workflow with draft/publish states
@@ -63,7 +58,6 @@ Use this skill when:
 - Deploying to Vercel, Payload Cloud, or self-hosted environments
 
 ## Core Concepts
-
 ### Collections and Content Types
 
 The template defines five core collections:
@@ -123,8 +117,7 @@ Pre-configured with the Payload SEO plugin:
 - **Redirects Plugin**: URL redirect management for migrations or restructures
 - Both plugins integrate with Next.js middleware for runtime handling
 
-## Quick Start
-
+## Installation / Setup
 ### Installation
 
 ```bash
@@ -168,7 +161,6 @@ Click "Seed Database" in the admin panel to populate demo pages, posts, and cate
 > **Warning**: Seeding drops existing data. Only use on fresh databases.
 
 ## Technology Stack
-
 | Layer | Technology |
 |-------|------------|
 | Backend | Payload CMS 3.82.1 |
@@ -182,7 +174,6 @@ Click "Seed Database" in the admin panel to populate demo pages, posts, and cate
 | Image Processing | Sharp 0.34.2 |
 
 ## Key Features
-
 ### Publication Workflow
 
 1. Create content as draft (not visible publicly)
@@ -214,7 +205,6 @@ Jobs queue processes scheduled publish/unpublish tasks:
 - Requires `CRON_SECRET` for authorization
 
 ## Deployment Options
-
 ### Vercel
 
 ```bash
@@ -261,22 +251,20 @@ docker-compose up
 ```
 
 ## Reference Documentation
-
 For detailed implementation guides, see the following reference files:
 
 | Topic | File |
 |-------|------|
-| **Setup & Configuration** | [references/01-overview-and-setup.md](references/01-overview-and-setup.md) |
-| **Collections & Fields** | [references/02-collections-and-fields.md](references/02-collections-and-fields.md) |
-| **Pages & Posts** | [references/03-pages-and-posts.md](references/03-pages-and-posts.md) |
-| **Next.js Integration** | [references/04-nextjs-integration.md](references/04-nextjs-integration.md) |
-| **SEO & i18n** | [references/05-seo-and-i18n.md](references/05-seo-and-i18n.md) |
-| **Form Builder** | [references/06-form-builder.md](references/06-form-builder.md) |
-| **Search & Media** | [references/07-search-and-media.md](references/07-search-and-media.md) |
-| **Customizations** | [references/08-customizations.md](references/08-customizations.md) |
+| **Setup & Configuration** | [reference/01-overview-and-setup.md](reference/01-overview-and-setup.md) |
+| **Collections & Fields** | [reference/02-collections-and-fields.md](reference/02-collections-and-fields.md) |
+| **Pages & Posts** | [reference/03-pages-and-posts.md](reference/03-pages-and-posts.md) |
+| **Next.js Integration** | [reference/04-nextjs-integration.md](reference/04-nextjs-integration.md) |
+| **SEO & i18n** | [reference/05-seo-and-i18n.md](reference/05-seo-and-i18n.md) |
+| **Form Builder** | [reference/06-form-builder.md](reference/06-form-builder.md) |
+| **Search & Media** | [reference/07-search-and-media.md](reference/07-search-and-media.md) |
+| **Customizations** | [reference/08-customizations.md](reference/08-customizations.md) |
 
 ## Common Workflows
-
 ### Create a New Page
 
 1. Admin panel → Pages → "New Page"
@@ -326,7 +314,6 @@ For detailed implementation guides, see the following reference files:
 5. Submissions stored in Form Submissions collection
 
 ## Troubleshooting
-
 ### Pages Not Revalidating
 
 - Check `afterChange` hooks are configured
@@ -355,5 +342,14 @@ For detailed implementation guides, see the following reference files:
 - Test search API endpoint directly
 
 ## Advanced Topics
+## Advanced Topics
 
-For more details on advanced usage, refer to the official documentation listed in the References section.
+- [Overview And Setup](reference/01-overview-and-setup.md)
+- [Collections And Fields](reference/02-collections-and-fields.md)
+- [Pages And Posts](reference/03-pages-and-posts.md)
+- [Nextjs Integration](reference/04-nextjs-integration.md)
+- [Seo And I18N](reference/05-seo-and-i18n.md)
+- [Form Builder](reference/06-form-builder.md)
+- [Search And Media](reference/07-search-and-media.md)
+- [Customizations](reference/08-customizations.md)
+

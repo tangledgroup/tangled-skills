@@ -21,11 +21,7 @@ external_references:
   - https://github.com/chonkie-inc/chonkie/tree/v1.6.2
   - https://github.com/chonkie-inc/chonkie/tree/v1.6.2/docs
 ---
-
-# Chonkie 1.6.2
-
 ## Overview
-
 **Chonkie** is a lightweight, fast, and robust text chunking library designed for RAG (Retrieval-Augmented Generation) pipelines. Built in Rust with Python and JavaScript bindings, it provides 10+ chunking strategies, end-to-end pipeline orchestration (CHOMP architecture), embeddings support, and direct integration with 8+ vector databases.
 
 **Key Features:**
@@ -37,7 +33,6 @@ external_references:
 - ⚡ **Async Support**: All chunkers support async out of the box
 
 ## When to Use
-
 Use this skill when:
 - Building RAG pipelines that require text chunking
 - Need to split documents into semantically meaningful chunks
@@ -47,7 +42,6 @@ Use this skill when:
 - Building end-to-end document processing workflows (fetch → process → chunk → refine → store)
 
 ## Core Concepts
-
 ### CHOMP Architecture
 
 Chonkie's pipeline follows the **CHOMP** (CHOnkie's Multi-step Pipeline) architecture:
@@ -77,7 +71,7 @@ Fetcher → Chef → Chunker → Refinery → Porter/Handshake
 | `SlumberChunker` | `slumber` | Agentic chunking with LLMs (Genie interface) |
 | `TableChunker` | `table` | Tabular data in markdown format |
 
-See [Chunkers Deep Dive](references/01-chunkers.md) for detailed usage.
+See [Chunkers Deep Dive](reference/01-chunkers.md) for detailed usage.
 
 ### Installation Options
 
@@ -98,10 +92,9 @@ pip install "chonkie[neural]"
 pip install "chonkie[all]"
 ```
 
-See [Installation Guide](references/02-installation.md) for complete options.
+See [Installation Guide](reference/02-installation.md) for complete options.
 
 ## Quick Start
-
 ### Basic Chunking
 
 ```python
@@ -140,10 +133,9 @@ docs = (Pipeline()
 print(f"Ingested {len(docs)} documents")
 ```
 
-See [Pipelines Guide](references/03-pipelines.md) for advanced workflows.
+See [Pipelines Guide](reference/03-pipelines.md) for advanced workflows.
 
 ## Usage Examples
-
 ### Single Text Chunking
 
 ```python
@@ -225,17 +217,7 @@ for (const chunk of chunks) {
 }
 ```
 
-## Advanced Topics
-
-- **Chunkers Deep Dive**: [references/01-chunkers.md](references/01-chunkers.md) - All 10+ chunkers with parameters and examples
-- **Installation Guide**: [references/02-installation.md](references/02-installation.md) - Complete installation options and dependencies
-- **Pipelines Guide**: [references/03-pipelines.md](references/03-pipelines.md) - CHOMP architecture, recipes, and best practices
-- **Embeddings**: [references/04-embeddings.md](references/04-embeddings.md) - 9+ embedding providers with AutoEmbeddings
-- **Vector Databases**: [references/05-handshakes.md](references/05-handshakes.md) - 8+ vector DB integrations (Chroma, Qdrant, Pinecone, etc.)
-- **API Server**: [references/06-api-server.md](references/06-api-server.md) - Self-hosted REST API with Docker support
-
 ## Troubleshooting
-
 ### Common Issues
 
 **ImportError: No module named 'chonkie'**
@@ -285,4 +267,15 @@ Pipeline()
     .run()
 ```
 
-See [Pipelines Guide](references/03-pipelines.md) for detailed error handling.
+See [Pipelines Guide](reference/03-pipelines.md) for detailed error handling.
+
+## Advanced Topics
+## Advanced Topics
+
+- [Chunkers](reference/01-chunkers.md)
+- [Installation](reference/02-installation.md)
+- [Pipelines](reference/03-pipelines.md)
+- [Embeddings](reference/04-embeddings.md)
+- [Handshakes](reference/05-handshakes.md)
+- [Api Server](reference/06-api-server.md)
+

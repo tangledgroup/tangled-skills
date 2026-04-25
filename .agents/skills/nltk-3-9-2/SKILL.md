@@ -23,15 +23,7 @@ external_references:
   - https://www.nltk.org/news.html
   - https://github.com/nltk/nltk/tree/v3.9.2
 ---
-
-# NLTK 3.9.2 - Natural Language Toolkit
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 NLTK (Natural Language Toolkit) is a comprehensive suite of Python libraries and programs for symbolic and statistical natural language processing (NLP). Version 3.9.2 (October 2025) supports Python 3.9-3.13 and provides:
 
 - **Tokenization**: Word, sentence, tweet, and custom tokenizers
@@ -44,7 +36,6 @@ NLTK (Natural Language Toolkit) is a comprehensive suite of Python libraries and
 - **Semantic Analysis**: Logic, inference, feature structures, lambda calculus
 
 ## When to Use
-
 Use NLTK when:
 - Building NLP pipelines for text preprocessing and analysis
 - Teaching or learning computational linguistics concepts
@@ -59,8 +50,10 @@ Use NLTK when:
 - Real-time performance is critical (NLTK prioritizes clarity over speed)
 - Neural network-based NLP is required (use PyTorch, TensorFlow)
 
-## Installation
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Basic Setup
 
 ```bash
@@ -103,7 +96,6 @@ nltk.data.path.append('/custom/path/to/nltk_data')
 ```
 
 ## Quick Start Examples
-
 ### Tokenization
 
 ```python
@@ -187,7 +179,6 @@ print(f"Dog-cat similarity: {similarity:.3f}")  # 0.727
 See reference files for detailed coverage of each topic area.
 
 ## Core Modules
-
 ### Tokenization (`nltk.tokenize`)
 
 - **`word_tokenize()`**: Punkt tokenizer for general text
@@ -228,23 +219,7 @@ See reference files for detailed coverage of each topic area.
 - **reuters**: Reuters news articles
 - **movie_reviews**: Sentiment analysis dataset
 
-## Advanced Topics
-
-Refer to the detailed reference files for in-depth coverage:
-
-| Topic | Reference File |
-|-------|---------------|
-| [Tokenization Patterns](references/01-tokenization.md) - All tokenizers, custom patterns, language-specific options | `references/01-tokenization.md` |
-| [Stemming and Lemmatization](references/02-stemming-lemmatization.md) - Algorithms, comparison, multilingual support | `references/02-stemming-lemmatization.md` |
-| [POS Tagging and Chunking](references/03-pos-tagging-chunking.md) - Tagger types, training custom taggers, named entity recognition | `references/03-pos-tagging-chunking.md` |
-| [Parsing and Grammars](references/04-parsing-grammars.md) - CFGs, context-free grammars, chart parsing, dependency parsing | `references/04-parsing-grammars.md` |
-| [WordNet Integration](references/05-wordnet-integration.md) - Synset navigation, similarity measures, multilingual WordNet | `references/05-wordnet-integration.md` |
-| [Corpus Access and Usage](references/06-corpus-access.md) - Built-in corpora, custom corpus readers, data formats | `references/06-corpus-access.md` |
-| [Classification and Clustering](references/07-classification-clustering.md) - Naive Bayes, decision trees, feature extraction | `references/07-classification-clustering.md` |
-| [Semantic Analysis](references/08-semantic-analysis.md) - Logic, inference, feature structures, lambda calculus | `references/08-semantic-analysis.md` |
-
 ## Version-Specific Features (3.9.2)
-
 ### New in 3.9.2 (October 2025)
 
 - **SHA256 checksums**: Updated download verification for security
@@ -260,7 +235,6 @@ Refer to the detailed reference files for in-depth coverage:
 - **No sort on WordNet synsets**: Performance improvement, caller handles sorting if needed
 
 ## Common Patterns
-
 ### Text Preprocessing Pipeline
 
 ```python
@@ -339,7 +313,6 @@ print(collocations)
 ```
 
 ## Troubleshooting
-
 ### "Resource not found" Errors
 
 **Problem**: `LookupError: Resource <resource> not found.`
@@ -406,22 +379,31 @@ for word in brown.words():
 ```
 
 ## Performance Tips
-
 1. **Cache frequent lookups**: Store synsets, taggers, and tokenizers as module-level globals
 2. **Use appropriate tokenizers**: `TreebankWordTokenizer` is faster than `word_tokenize()` for simple cases
 3. **Batch processing**: Process texts in batches to manage memory
 4. **Avoid redundant downloads**: Check if resources exist before downloading
 
 ## License
-
 NLTK is distributed under the Apache License, Version 2.0. See LICENSE.txt in the source distribution for details.
 
 ## Citation
-
 If you use NLTK in academic work, please cite:
 
 ```
 Bird, Steven, Edward Loper and Ewan Klein (2009).
 Natural Language Processing with Python. O'Reilly Media Inc.
 ```
+
+## Advanced Topics
+## Advanced Topics
+
+- [Tokenization](reference/01-tokenization.md)
+- [Stemming Lemmatization](reference/02-stemming-lemmatization.md)
+- [Pos Tagging Chunking](reference/03-pos-tagging-chunking.md)
+- [Parsing Grammars](reference/04-parsing-grammars.md)
+- [Wordnet Integration](reference/05-wordnet-integration.md)
+- [Corpus Access](reference/06-corpus-access.md)
+- [Classification Clustering](reference/07-classification-clustering.md)
+- [Semantic Analysis](reference/08-semantic-analysis.md)
 

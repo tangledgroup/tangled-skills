@@ -16,21 +16,12 @@ external_references:
   - https://www.bellard.org/tcc/tcc-doc.html
   - https://github.com/TinyCC/tinycc/tree/release_0_9_27
 ---
-
-# TinyCC 0.9.27
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 TinyCC (TCC) is a small (~100KB), hyper-fast C compiler that generates optimized x86 code directly without byte code overhead. Unlike GCC, TCC is self-relying — it includes its own preprocessor, assembler, and linker, so no external tools are needed. It compiles about 7-9 times faster than GCC at -O0.
 
 TCC targets i386 on Linux, Windows, macOS, and FreeBSD, with alpha ports for ARM (arm-tcc) and TMS320C67xx (c67-tcc). It aims for full ISO C99 compliance and supports many GNU C extensions.
 
 ## When to Use
-
 - **Fast compilation**: When build speed matters more than optimization quality (e.g., during development, scripting, or embedded/rescue environments)
 - **C scripting**: When you want to write C programs that execute like shell/Perl scripts via `#!/usr/local/bin/tcc -run`
 - **Dynamic code generation**: When embedding a C compiler into your application using `libtcc` for runtime code compilation
@@ -38,8 +29,10 @@ TCC targets i386 on Linux, Windows, macOS, and FreeBSD, with alpha ports for ARM
 - **Small footprint**: When you need a complete C toolchain in ~100KB (rescue disks, minimal environments)
 - **Inline assembly**: When writing x86 inline assembly with GNU assembler (gas)-like syntax
 
-## Installation
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### From Source (Linux/macOS/FreeBSD)
 
 ```bash
@@ -70,7 +63,6 @@ nix-shell -p tcc
 ```
 
 ## Quick Start Examples
-
 ### Compile and Run Directly
 
 ```bash
@@ -118,7 +110,6 @@ tcc -shared -o libmylib.so source.c       # shared library
 ```
 
 ## Command-Line Options Summary
-
 | Option | Description |
 |--------|-------------|
 | `-c` | Generate object file |
@@ -153,11 +144,16 @@ tcc -shared -o libmylib.so source.c       # shared library
 | `-mno-sse` | Disable SSE on x86_64 |
 | `-mfloat-abi=softfp\|hard` | ARM float ABI |
 
-See `references/01-command-reference.md` for full option details.
-See `references/02-c-language-support.md` for language features and extensions.
-See `references/03-libtcc-api.md` for the libtcc dynamic code generation API.
-See `references/04-assembler-and-linker.md` for assembler directives and linker options.
+See `reference/01-command-reference.md` for full option details.
+See `reference/02-c-language-support.md` for language features and extensions.
+See `reference/03-libtcc-api.md` for the libtcc dynamic code generation API.
+See `reference/04-assembler-and-linker.md` for assembler directives and linker options.
 
 ## Advanced Topics
+## Advanced Topics
 
-For more details on advanced usage, refer to the official documentation listed in the References section.
+- [Command Reference](reference/01-command-reference.md)
+- [C Language Support](reference/02-c-language-support.md)
+- [Libtcc Api](reference/03-libtcc-api.md)
+- [Assembler And Linker](reference/04-assembler-and-linker.md)
+

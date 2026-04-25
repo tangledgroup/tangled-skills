@@ -18,13 +18,7 @@ external_references:
   - https://github.com/philhassey/tinypy/blob/wiki/Index.md
   - https://github.com/philhassey/tinypy/tree/1.1
 ---
-
-# TinyPy 1.1
-
-A minimalist implementation of Python in approximately 64k of code. TinyPy includes a full parser, bytecode compiler, and Lua-esque virtual machine with garbage collection — all written in C, with the compiler bootstrapped in TinyPy itself.
-
 ## Overview
-
 TinyPy is designed to be embeddable in C applications while supporting a reasonable subset of Python:
 - Classes and single inheritance
 - Functions with variable or keyword arguments
@@ -36,14 +30,12 @@ TinyPy is designed to be embeddable in C applications while supporting a reasona
 **What's notably absent:** file I/O (beyond `save`/`load`), threading, most standard library modules — "batteries not included."
 
 ## When to Use
-
 - **Embedding TinyPy in C applications** — use the C API (`tp.h`) to create VM instances, execute code, and exchange data
 - **Writing TinyPy extensions/modules** — implement C functions exposed to TinyPy scripts via `tp_fnc()` or `tp_method()`
 - **Studying minimal Python implementations** — understand bytecode compilation, GC, and VM execution at a tiny scale
 - **Bootstrapping toolchains** — TinyPy compiles `.py` → `.tpc` (bytecode) using its own compiler, then the C VM executes it
 
 ## Core Concepts
-
 ### Architecture
 
 ```
@@ -92,7 +84,6 @@ Every value is a union of:
 - `TP_CSTR(v)` — convert any tp_obj to C string via `tp_str()`
 
 ## Building TinyPy
-
 ### Linux (GCC)
 
 ```bash
@@ -123,8 +114,7 @@ python setup.py blob           # produces build/tinypy.c and build/tinypy.h
 ```
 
 ## C API Reference
-
-See the [C API reference](references/01-c-api-reference.md) for complete function signatures.
+See the [C API reference](reference/01-c-api-reference.md) for complete function signatures.
 
 ### Initialization & Teardown
 
@@ -326,7 +316,6 @@ tp_import(tp, NULL, "mymodule", compiled_code_bytes);
 ```
 
 ## Building Custom Modules
-
 Modules are C files that provide an `init` function. The build system stitches them into the binary.
 
 ### Module Structure (`modules/mymodule/init.c`)
@@ -383,7 +372,6 @@ int main(int argc, char *argv[]) {
 ```
 
 ## TinyPy Language Features
-
 ### Supported Syntax
 
 - Arithmetic: `+`, `-`, `*`, `/`, `**` (power), `%` (modulo)
@@ -407,7 +395,6 @@ int main(int argc, char *argv[]) {
 - Numbers are all `double` — no integer types, no complex numbers
 
 ## Running TinyPy Scripts
-
 ```bash
 # Run a pre-compiled bytecode file
 ./build/tinypy script.tpc
@@ -420,7 +407,6 @@ int main(int argc, char *argv[]) {
 ```
 
 ## Bootstrap Process
-
 TinyPy's compiler is written in Python and then bootstrapped:
 
 1. **First pass**: CPython runs `py2bc.py` to compile `tokenize.py`, `parse.py`, `encode.py`, `py2bc.py` into `.tpc` bytecode files
@@ -430,8 +416,7 @@ TinyPy's compiler is written in Python and then bootstrapped:
 
 This ensures the final binary is fully self-contained — no Python interpreter needed at runtime.
 
-## Example: Embedding TinyPy in C
-
+## Usage Examples
 ```c
 #include "tinypy.h"  // or build/tinypy.h from 'blob' mode
 int main() {
@@ -447,8 +432,7 @@ int main() {
 }
 ```
 
-## Example: Math Module Pattern
-
+### Example: Math Module Pattern
 See `modules/math/init.c` for a complete module. Key pattern uses a macro:
 
 ```c
@@ -464,8 +448,7 @@ TP_MATH_FUNC1(sin)
 TP_MATH_FUNC1(cos)
 ```
 
-## Example: OOP with Meta Dictionaries
-
+### Example: OOP with Meta Dictionaries
 ```c
 #include "tp.h"
 static tp_obj point_init(TP) {
@@ -491,10 +474,8 @@ int main() {
 }
 ```
 
-## Reference Files
-
-- [C API Reference](references/01-c-api-reference.md) — Complete C API function reference with signatures, parameters, and examples
-
+## Advanced Topics
 ## Advanced Topics
 
-For more details on advanced usage, refer to the official documentation listed in the References section.
+- [C Api Reference](reference/01-c-api-reference.md)
+

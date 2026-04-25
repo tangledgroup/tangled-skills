@@ -25,11 +25,7 @@ external_references:
   - https://www.w3.org/TR/trace-context/
   - https://opentelemetry.io/docs/specs/otel/overview/
 ---
-
-# OpenTelemetry 1.55.0
-
 ## Overview
-
 OpenTelemetry is an open-source observability framework providing a unified set of APIs, SDKs, tooling, and integrations for generating, collecting, exporting, and managing telemetry data (traces, metrics, logs) from applications and infrastructure. It supports four signals: **Tracing**, **Metrics**, **Logs**, and **Baggage**.
 
 The project is organized into four component types:
@@ -39,7 +35,6 @@ The project is organized into four component types:
 - **Contrib** — Optional integrations for web frameworks, databases, message queues, exporters
 
 ## When to Use
-
 Use this skill when:
 - Instrumenting applications with OpenTelemetry SDKs (Python, Java, Go, JS, C#, C++, Rust, Node.js, PHP, etc.)
 - Configuring OTLP exporters to send telemetry to backends (Jaeger, Zipkin, Prometheus, Datadog, New Relic, etc.)
@@ -53,7 +48,6 @@ Use this skill when:
 - Working with semantic conventions for HTTP, database, messaging, and gRPC
 
 ## Core Concepts
-
 ### Signals
 
 OpenTelemetry organizes observability into four independent signals sharing a common context propagation subsystem:
@@ -132,7 +126,6 @@ The wire protocol for exporting telemetry:
 - Batched exports with configurable timeouts and queue sizes
 
 ## Installation / Setup
-
 ### General SDK Initialization Pattern
 
 ```python
@@ -171,10 +164,9 @@ trace.get_tracer_provider().add_span_processor(
 
 ### Zero-Code Auto-Instrumentation
 
-Many languages support automatic instrumentation via environment variables and agent libraries, requiring no code changes. See [Reference: Getting Started](references/02-getting-started.md).
+Many languages support automatic instrumentation via environment variables and agent libraries, requiring no code changes. See [Reference: Getting Started](reference/04-configuration.md).
 
 ## Usage Examples
-
 ### Basic Tracing
 
 ```python
@@ -393,22 +385,14 @@ class CloudResourceDetector(ResourceDetector):
 ```
 
 ## Advanced Topics
+## Advanced Topics
 
-- **SDK Plugin Interfaces** — SpanProcessor, Exporter, Sampler, MetricReader implementations
-- **Exemplars** — Linking metrics to specific trace spans for root-cause analysis
-- **Schema Files** — Semantic versioning of semantic conventions via schema transformations
-- **Entity Model** — New entity-based resource identification and propagation
-- **Declarative Configuration** — YAML/JSON SDK configuration files with env var substitution
-- **OpenTelemetry Collector** — Agent mode (sidecar) and standalone collector deployments
-- **Attribute Limits** — Configurable truncation for attribute count and value size
-- **Error Handling** — SDK internal logger, self-diagnostics, error callbacks
-
-See [Reference: Trace API & SDK](references/01-trace-api-sdk.md) for detailed span/spancontext/sampling documentation.
-See [Reference: Metrics API & SDK](references/02-metrics-api-sdk.md) for instrument types, data model, views, exemplars.
-See [Reference: Logs API & SDK](references/03-logs-api-sdk.md) for log records, severity levels, exporters.
-See [Reference: Configuration & Environment Variables](references/04-configuration.md) for all env vars and limits.
-See [Reference: OTLP Protocol](references/05-otlp-protocol.md) for wire protocol details.
-See [Reference: Context, Propagators & Baggage](references/06-context-propagation.md) for context propagation mechanisms.
-See [Reference: Common Concepts & Resources](references/07-common-concepts.md) for AnyValue, attributes, resources.
-See [Reference: Versioning & Stability](references/08-versioning-stability.md) for signal lifecycle and versioning rules.
+- [Trace Api Sdk](reference/01-trace-api-sdk.md)
+- [Metrics Api Sdk](reference/02-metrics-api-sdk.md)
+- [Logs Api Sdk](reference/03-logs-api-sdk.md)
+- [Configuration](reference/04-configuration.md)
+- [Otlp Protocol](reference/05-otlp-protocol.md)
+- [Context Propagation](reference/06-context-propagation.md)
+- [Common Concepts](reference/07-common-concepts.md)
+- [Versioning Stability](reference/08-versioning-stability.md)
 

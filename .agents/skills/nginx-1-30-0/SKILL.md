@@ -22,11 +22,7 @@ external_references:
   - https://nginx.org/en/docs/control.html
   - https://github.com/nginx/nginx/tree/stable-1.30
 ---
-
-# Nginx 1.30.0
-
 ## Overview
-
 Nginx (pronounced "engine-x") is a high-performance HTTP server, reverse proxy, and load balancer known for its event-driven architecture, low memory footprint, and ability to handle thousands of simultaneous connections. It consists of a master process that manages worker processes, which do the actual request processing using OS-dependent mechanisms like epoll (Linux), kqueue (FreeBSD/macOS), /dev/poll (Solaris), or eventport (Solaris 10+).
 
 Nginx operates in three primary modes:
@@ -35,7 +31,6 @@ Nginx operates in three primary modes:
 - **Stream proxy**: Generic TCP/UDP proxying for non-HTTP protocols (mail, databases, game servers)
 
 ## When to Use
-
 Use this skill when:
 - Configuring Nginx as a web server or reverse proxy
 - Setting up HTTPS/TLS termination with SSL certificates
@@ -48,7 +43,6 @@ Use this skill when:
 - Troubleshooting Nginx configuration or performance issues
 
 ## Core Concepts
-
 ### Architecture
 
 Nginx uses a master-worker architecture:
@@ -116,13 +110,12 @@ Nginx provides built-in variables for dynamic configuration:
 | `$upstream_addr` | Address of proxied upstream server |
 | `$upstream_response_time` | Time spent receiving response from upstream |
 
-See `references/01-configuration-syntax.md` for full directive reference.
-See `references/02-http-modules.md` for HTTP module details.
-See `references/03-stream-proxy.md` for stream/TCP/UDP proxying.
-See `references/04-performance-tuning.md` for optimization techniques.
+See `reference/01-configuration-syntax.md` for full directive reference.
+See `reference/02-http-modules.md` for HTTP module details.
+See `reference/03-stream-proxy.md` for stream/TCP/UDP proxying.
+See `reference/04-performance-tuning.md` for optimization techniques.
 
 ## Installation / Setup
-
 ### Installing from Packages (Linux)
 
 ```bash
@@ -162,7 +155,6 @@ make && sudo make install
 ```
 
 ## Usage Examples
-
 ### Basic Static File Server
 
 ```nginx
@@ -359,7 +351,6 @@ server {
 ```
 
 ## Control & Process Management
-
 ### Signal-Based Control
 
 ```bash
@@ -417,7 +408,6 @@ kill -QUIT $(cat /var/run/nginx.pid.oldbin)
 ```
 
 ## Key Directives Reference
-
 ### Main Context
 
 | Directive | Default | Description |
@@ -451,13 +441,11 @@ kill -QUIT $(cat /var/run/nginx.pid.oldbin)
 | `index` | `index.html` | Default index files |
 | `access_log` | `logs/access.log combined` | Access log path and format |
 
-## Reference Files
-
-- [`references/01-configuration-syntax.md`](references/01-configuration-syntax.md) — Full configuration syntax, all main context and events directives, connection processing methods, measurement units
-- [`references/02-http-modules.md`](references/02-http-modules.md) — HTTP module reference: core module, proxy, SSL, upstream, gzip, rewrite, FastCGI/uWSGI/gRPC, caching, access control, headers, logging, variables
-- [`references/03-stream-proxy.md`](references/03-stream-proxy.md) — Stream/TCP/UDP proxying: stream core module, mail proxy (POP3/IMAP/SMTP), MQTT filter, load balancing in stream context
-- [`references/04-performance-tuning.md`](references/04-performance-tuning.md) — Performance optimization: worker tuning, connection handling, caching strategies, compression, sendfile, TCP settings, thread pools, HTTP/2 and HTTP/3 tuning
-
+## Advanced Topics
 ## Advanced Topics
 
-For more details on advanced usage, refer to the official documentation listed in the References section.
+- [Configuration Syntax](reference/01-configuration-syntax.md)
+- [Http Modules](reference/02-http-modules.md)
+- [Stream Proxy](reference/03-stream-proxy.md)
+- [Performance Tuning](reference/04-performance-tuning.md)
+

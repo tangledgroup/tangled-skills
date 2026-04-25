@@ -20,15 +20,7 @@ external_references:
   - https://nextjs.org/docs
   - https://github.com/vercel/next.js
 ---
-
-# Next.js 16.2.3
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A skill for building production-ready React applications with Next.js 16.2.3, providing App Router and Pages Router support, server/client components, routing, data fetching, caching, API routes, and deployment capabilities. Use when creating modern web applications requiring SSR/SSG/ISR, optimal performance, SEO-friendly rendering, TypeScript support, and full-stack JavaScript development with built-in optimizations for production.
 
 Next.js is the React framework for production-ready web applications. It provides routing, rendering modes (SSR/SSG/ISR), data fetching, caching, API routes, and deployment tools out of the box. Next.js 16.2.3 includes the App Router (recommended) and Pages Router (legacy), with support for Server Components, Client Components, and full-stack development.
@@ -44,7 +36,6 @@ Next.js is the React framework for production-ready web applications. It provide
 - Zero-configuration deployment to Vercel or any host
 
 ## When to Use
-
 - Building production React applications with optimal performance
 - Creating SEO-friendly websites with server-side rendering
 - Developing full-stack applications with API routes
@@ -54,8 +45,10 @@ Next.js is the React framework for production-ready web applications. It provide
 - Deploying to Vercel or any Node.js host
 - Creating progressive web apps (PWAs)
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### System Requirements
 
 - **Node.js:** 20.9 or higher
@@ -104,10 +97,9 @@ Prompts include:
 - App Router: Yes/No
 - Import alias: `@/*` or custom
 
-See [Installation Guide](references/01-installation.md) for detailed setup instructions.
+See [Installation Guide](reference/01-installation.md) for detailed setup instructions.
 
-## Quick Start
-
+## Usage Examples
 ### Project Structure (App Router)
 
 ```
@@ -160,7 +152,7 @@ npm run dev
 # Visit http://localhost:3000
 ```
 
-See [Project Structure](references/02-project-structure.md) for detailed file conventions.
+See [Project Structure](reference/02-project-structure.md) for detailed file conventions.
 
 ### Server vs Client Components
 
@@ -202,7 +194,7 @@ export default function Counter() {
 }
 ```
 
-See [Server and Client Components](references/03-server-client-components.md) for comprehensive guide.
+See [Server and Client Components](reference/03-server-client-components.md) for comprehensive guide.
 
 ### Data Fetching
 
@@ -223,7 +215,7 @@ export default async function ProductPage({ params, searchParams }: PageProps) {
 }
 ```
 
-See [Data Fetching](references/04-data-fetching.md) for caching strategies and patterns.
+See [Data Fetching](reference/04-data-fetching.md) for caching strategies and patterns.
 
 ### Routing and Navigation
 
@@ -247,7 +239,7 @@ import Link from 'next/link'
 <Link href={`/products/${productId}`}>View Product</Link>
 ```
 
-See [Routing Guide](references/05-routing.md) for advanced patterns.
+See [Routing Guide](reference/05-routing.md) for advanced patterns.
 
 ### API Routes
 
@@ -268,7 +260,7 @@ export async function POST(request: Request) {
 }
 ```
 
-See [Route Handlers](references/06-api-routes.md) for full API reference.
+See [Route Handlers](reference/06-api-routes.md) for full API reference.
 
 ### Styling with CSS Modules or Tailwind
 
@@ -290,7 +282,6 @@ export default function Home() {
 ```
 
 ## Common Operations
-
 ### Creating a New Route
 
 1. Create a new folder or `page.tsx` file in `app/`
@@ -382,22 +373,20 @@ npm start
 vercel deploy --prod
 ```
 
-See [Deploying](references/07-deployment.md) for platform-specific guides.
+See [Deploying](reference/07-deployment.md) for platform-specific guides.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-installation.md`](references/01-installation.md) - Complete installation guide, system requirements, and create-next-app options
-- [`references/02-project-structure.md`](references/02-project-structure.md) - App Router file conventions, directory structure, and organization patterns
-- [`references/03-server-client-components.md`](references/03-server-client-components.md) - Server Components vs Client Components, when to use each, and interop patterns
-- [`references/04-data-fetching.md`](references/04-data-fetching.md) - Data fetching strategies, caching (fetch API), revalidation, and ISR
-- [`references/05-routing.md`](references/05-routing.md) - File-based routing, dynamic routes, layout nesting, loading states, error boundaries
-- [`references/06-api-routes.md`](references/06-api-routes.md) - Route handlers, HTTP methods, request/response handling, API best practices
-- [`references/07-deployment.md`](references/07-deployment.md) - Production builds, Vercel deployment, self-hosting, and optimization tips
-
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/nextjs-16-2-3/`). All paths are relative to this directory.
+- [Installation](reference/01-installation.md)
+- [Project Structure](reference/02-project-structure.md)
+- [Server Client Components](reference/03-server-client-components.md)
+- [Data Fetching](reference/04-data-fetching.md)
+- [Routing](reference/05-routing.md)
+- [Api Routes](reference/06-api-routes.md)
+- [Deployment](reference/07-deployment.md)
 
 ## Troubleshooting
-
 ### Common Issues
 
 **Module not found errors:**
@@ -419,7 +408,7 @@ See [Deploying](references/07-deployment.md) for platform-specific guides.
 - Ensure `images` domain is configured in `next.config.js` for remote images
 - Check image dimensions are provided or use `fill` prop
 
-See [Deployment Guide](references/07-deployment.md) for production troubleshooting.
+See [Deployment Guide](reference/07-deployment.md) for production troubleshooting.
 
 ### Pages Router vs App Router
 
@@ -437,10 +426,9 @@ See [Deployment Guide](references/07-deployment.md) for production troubleshooti
 - API routes in `pages/api/`
 - Mature ecosystem with extensive third-party support
 
-See [Installation Guide](references/01-installation.md) for choosing between routers.
+See [Installation Guide](reference/01-installation.md) for choosing between routers.
 
 ## Additional Resources
-
 - **Official Documentation:** https://nextjs.org/docs
 - **GitHub Repository:** https://github.com/vercel/next.js
 - **Discord Community:** https://discord.gg/nextjs
@@ -448,7 +436,6 @@ See [Installation Guide](references/01-installation.md) for choosing between rou
 - **Learn Course:** https://nextjs.org/learn
 
 ## Best Practices
-
 1. **Use Server Components by default** - Only use `'use client'` when necessary for interactivity
 2. **Leverage caching** - Use `revalidate` option for ISR on dynamic content
 3. **Optimize images** - Always use `next/image` for automatic optimization
@@ -458,6 +445,3 @@ See [Installation Guide](references/01-installation.md) for choosing between rou
 7. **Error boundaries** - Implement `error.tsx` for graceful error handling
 8. **Loading states** - Use `loading.tsx` for improved UX during data fetching
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

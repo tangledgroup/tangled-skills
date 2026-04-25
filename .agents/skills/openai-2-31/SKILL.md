@@ -29,21 +29,12 @@ external_references:
   - https://platform.openai.com/docs/
   - https://github.com/openai/openai-python
 ---
-
-# OpenAI Python SDK v2.31
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Python SDK for OpenAI API v2.31 providing type-safe access to Responses API, Chat Completions, embeddings, audio transcription/synthesis, image generation, assistants, fine-tuning, and batch operations with sync/async clients. Use when building Python applications that integrate with OpenAI models for text generation, vision, audio processing, or automated assistants.
 
 Comprehensive toolkit for the OpenAI Python library (v2.31+) providing type-safe access to all OpenAI API endpoints including the new Responses API, Chat Completions, embeddings, audio processing, image generation, Assistants API, fine-tuning, and batch operations. Supports both synchronous and asynchronous clients with full type definitions powered by Pydantic and httpx.
 
 ## When to Use
-
 - Building Python applications that generate text with GPT models (Responses API or Chat Completions)
 - Creating conversational AI assistants with stateful threads and tool use
 - Processing audio (speech-to-text transcription, text-to-speech synthesis)
@@ -54,8 +45,10 @@ Comprehensive toolkit for the OpenAI Python library (v2.31+) providing type-safe
 - Building real-time voice conversations with the Realtime API
 - Using vision capabilities to analyze images and videos
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Installation
 
 ```bash
@@ -115,10 +108,9 @@ from openai import AsyncOpenAI
 client = AsyncOpenAI()
 ```
 
-See [Client Configuration](references/02-client-config.md) for advanced options including timeouts, retries, proxies, and workload identity authentication.
+See [Client Configuration](reference/02-client-config.md) for advanced options including timeouts, retries, proxies, and workload identity authentication.
 
-## Quick Start
-
+## Usage Examples
 ### Responses API (Recommended)
 
 The Responses API is the primary, unified interface for all OpenAI models with support for:
@@ -166,7 +158,7 @@ response4 = client.responses.create(
 )
 ```
 
-See [Responses API Guide](references/01-responses-api.md) for comprehensive examples including tools, structured outputs, reasoning models, and advanced features.
+See [Responses API Guide](reference/01-responses-api.md) for comprehensive examples including tools, structured outputs, reasoning models, and advanced features.
 
 ### Chat Completions API
 
@@ -188,7 +180,7 @@ completion = client.chat.completions.create(
 print(completion.choices[0].message.content)
 ```
 
-See [Chat Completions Guide](references/01-responses-api.md) for streaming, function calling, and vision examples.
+See [Chat Completions Guide](reference/01-responses-api.md) for streaming, function calling, and vision examples.
 
 ### Embeddings
 
@@ -207,7 +199,7 @@ embedding = client.embeddings.create(
 print(embedding.data[0].embedding)  # List of floats
 ```
 
-See [Embeddings Guide](references/03-embeddings-audio.md) for batch processing and use cases.
+See [Embeddings Guide](reference/03-embeddings-audio.md) for batch processing and use cases.
 
 ### Audio Processing
 
@@ -226,7 +218,7 @@ transcription = client.audio.transcriptions.create(
 print(transcription.text)
 ```
 
-See [Audio Processing Guide](references/03-embeddings-audio.md) for speech synthesis and advanced options.
+See [Audio Processing Guide](reference/03-embeddings-audio.md) for speech synthesis and advanced options.
 
 ### Image Generation
 
@@ -247,7 +239,7 @@ response = client.images.generate(
 print(response.data[0].url)
 ```
 
-See [Image Generation Guide](references/04-images-moderation.md) for variations and edits.
+See [Image Generation Guide](reference/04-images-moderation.md) for variations and edits.
 
 ### Assistants API
 
@@ -286,22 +278,20 @@ run = client.beta.threads.runs.retrieve(
 )
 ```
 
-See [Assistants API Guide](references/05-assistants-api.md) for tool use, file search, and code interpreter.
+See [Assistants API Guide](reference/05-assistants-api.md) for tool use, file search, and code interpreter.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-responses-api.md`](references/01-responses-api.md) - Responses API and Chat Completions with streaming, function calling, and vision
-- [`references/02-client-config.md`](references/02-client-config.md) - Client configuration, authentication, retries, timeouts, and error handling
-- [`references/03-embeddings-audio.md`](references/03-embeddings-audio.md) - Embeddings for search/classification and audio transcription/synthesis
-- [`references/04-images-moderation.md`](references/04-images-moderation.md) - Image generation with DALL-E and content moderation
-- [`references/05-assistants-api.md`](references/05-assistants-api.md) - Stateful assistants with threads, runs, tools, and file search
-- [`references/06-fine-tuning-batch.md`](references/06-fine-tuning-batch.md) - Model fine-tuning and batch processing for cost efficiency
-- [`references/07-advanced-topics.md`](references/07-advanced-topics.md) - Realtime API, webhooks, pagination, Azure OpenAI, and custom requests
-
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/openai-2-31/`). All paths are relative to this directory.
+- [Responses Api](reference/01-responses-api.md)
+- [Client Config](reference/02-client-config.md)
+- [Embeddings Audio](reference/03-embeddings-audio.md)
+- [Images Moderation](reference/04-images-moderation.md)
+- [Assistants Api](reference/05-assistants-api.md)
+- [Fine Tuning Batch](reference/06-fine-tuning-batch.md)
+- [Advanced Topics](reference/07-advanced-topics.md)
 
 ## Troubleshooting
-
 ### Common Errors
 
 | Error | Cause | Solution |
@@ -312,7 +302,7 @@ See [Assistants API Guide](references/05-assistants-api.md) for tool use, file s
 | `BadRequestError` | Invalid request parameters | Validate request structure against API docs |
 | `APIConnectionError` | Network issues | Check network connectivity and timeout settings |
 
-See [Error Handling](references/02-client-config.md#error-handling) for detailed examples.
+See [Error Handling](reference/02-client-config.md#error-handling) for detailed examples.
 
 ### Rate Limits
 
@@ -335,6 +325,3 @@ response = client.responses.create(model="gpt-5.2", input="test")
 print(response._request_id)  # For reporting issues to OpenAI
 ```
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

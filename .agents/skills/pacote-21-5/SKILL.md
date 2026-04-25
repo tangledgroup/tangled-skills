@@ -20,21 +20,12 @@ external_references:
   - https://www.npmjs.com/package/pacote
   - https://github.com/npm/pacote
 ---
-
-# pacote-21-5
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Use pacote 21.5 via npx to inspect, download, and extract npm packages without installing them first. Supports registry packages, git repositories, local files, directories, and tarballs for package inspection, dependency analysis, and offline extraction workflows.
 
 Use pacote 21.5 via `npx` to fetch, inspect, and extract npm packages without requiring prior installation. Works with any package specifier npm supports: registry packages, GitHub repositories, tarball URLs, local files, and directories.
 
 ## When to Use
-
 - Inspect package manifests (`package.json`) without installing dependencies
 - Download package tarballs for offline use or analysis
 - Extract packages to examine source code or file structure
@@ -43,8 +34,10 @@ Use pacote 21.5 via `npx` to fetch, inspect, and extract npm packages without re
 - Work with git-hosted packages (GitHub, GitLab, Bitbucket)
 - Fetch full packuments to see all available versions of a package
 
-## Quick Start
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Usage Examples
 ### Get Package Manifest
 
 Fetch the manifest for any package:
@@ -53,7 +46,7 @@ Fetch the manifest for any package:
 npx pacote manifest <spec> --json
 ```
 
-See [Core Commands](references/01-core-commands.md) for detailed examples and output formats.
+See [Core Commands](reference/01-core-commands.md) for detailed examples and output formats.
 
 ### Resolve Package Specifier
 
@@ -63,7 +56,7 @@ Resolve a specifier to its tarball URL or git reference:
 npx pacote resolve <spec> --long --json
 ```
 
-See [Core Commands](references/01-core-commands.md) for resolution examples.
+See [Core Commands](reference/01-core-commands.md) for resolution examples.
 
 ### Download and Extract Packages
 
@@ -74,7 +67,7 @@ npx pacote tarball <spec> <output-file.tgz>
 npx pacote extract <spec> <destination-folder>
 ```
 
-See [Package Operations](references/02-package-operations.md) for detailed workflows.
+See [Package Operations](reference/02-package-operations.md) for detailed workflows.
 
 ### Work with Different Package Types
 
@@ -94,28 +87,25 @@ npx pacote manifest "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"
 npx pacote manifest "file:./package.json"
 ```
 
-See [Package Specifiers](references/03-package-specifiers.md) for complete format documentation.
+See [Package Specifiers](reference/03-package-specifiers.md) for complete format documentation.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-core-commands.md`](references/01-core-commands.md) - Detailed command reference with examples (manifest, resolve, packument, tarball, extract)
-- [`references/02-package-operations.md`](references/02-package-operations.md) - Common workflows: dependency analysis, package auditing, version comparison, offline downloads
-- [`references/03-package-specifiers.md`](references/03-package-specifiers.md) - All supported specifier formats: registry, git (GitHub/GitLab/Bitbucket), tarball URLs, local files/directories
-- [`references/04-configuration.md`](references/04-configuration.md) - Configuration options: cache control, registry settings, authentication, output formats, file permissions
-- [`references/05-troubleshooting.md`](references/05-troubleshooting.md) - Common issues and solutions: git authentication, cache problems, network errors, permission issues
-
-**Note:** `{baseDir}` refers to the skill's base directory (e.g., `.agents/skills/pacote-21-5/`). All paths are relative to this directory.
+- [Core Commands](reference/01-core-commands.md)
+- [Package Operations](reference/02-package-operations.md)
+- [Package Specifiers](reference/03-package-specifiers.md)
+- [Configuration](reference/04-configuration.md)
+- [Troubleshooting](reference/05-troubleshooting.md)
 
 ## Troubleshooting
-
-See [Troubleshooting Guide](references/05-troubleshooting.md) for solutions to common issues including:
+See [Troubleshooting Guide](reference/05-troubleshooting.md) for solutions to common issues including:
 - Git authentication errors for private repositories
 - Cache corruption and clearing
 - Network timeouts and registry failures
 - File permission issues on extraction
 
 ## Package Specifier Formats
-
 Pacote supports all npm package specifier formats via [npm-package-arg](https://npm.im/npm-package-arg):
 
 ### Registry Packages
@@ -176,7 +166,6 @@ npx pacote manifest "/absolute/path"
 ```
 
 ## Configuration Options
-
 Pacote accepts npm-compatible configuration flags. Common options:
 
 ### Cache Control
@@ -216,7 +205,6 @@ npx pacote --help
 ```
 
 ## Common Workflows
-
 ### Analyze Package Dependencies
 
 Inspect a package's dependency tree without installing:
@@ -316,88 +304,7 @@ npx pacote manifest "axios@0.21.0" --json | jq '.dependencies'
 npx pacote manifest "axios@1.5.0" --json | jq '.dependencies'
 ```
 
-## Advanced Usage
-
-### Stream Tarball Contents
-
-Pipe tarball to other tools without saving to disk:
-
-```bash
-# List files in package
-npx pacote tarball lodash@latest - | tar -tz
-
-# Extract specific file from package
-npx pacote tarball express@4.18.2 - | tar -xzO ./index.js > index.js
-
-# Check tarball size without downloading fully
-npx pacote tarball react@latest - | wc -c
-```
-
-### Custom Registry and Authentication
-
-Work with private registries:
-
-```bash
-# Use Verdaccio or other private registry
-npx pacote --registry=http://localhost:4873 manifest my-private-package
-
-# With authentication token
-npm config set //registry.npmjs.org/:_authToken=NPM_TOKEN
-npx pacote manifest private-package --json
-
-# Scoped registry
-npx pacote --@myscope:registry=https://npm.myscope.com manifest @myscope/package
-```
-
-### Integrity Verification
-
-Verify package integrity using SRI hashes:
-
-```bash
-# Get expected integrity hash
-npx pacote resolve lodash@4.17.21 --long --json | jq '.integrity'
-
-# Verify during fetch (automatically done by default)
-npx pacote extract "lodash@4.17.21" ./lodash --integrity=sha512-dXf...
-
-# Get packument with signatures
-npx pacote packument critical-package --json | jq '.versions."latest".dist.signatures'
-```
-
-### File Permissions and Ownership
-
-Control extracted file permissions:
-
-```bash
-# Custom umask for extracted files
-npx pacote extract lodash@latest ./lodash --umask=0o22
-
-# Minimum file mode (fmode) and directory mode (dmode)
-npx pacote extract express@latest ./express --fmode=0o644 --dmode=0o755
-```
-
-Default permissions formula:
-```
-extracted_mode = ((tarball_mode | minimum_mode) & ~umask)
-```
-
-### Git Fetcher Options
-
-Control git package fetching behavior:
-
-```bash
-# Disallow git packages (security)
-npx pacote --allow-git=none manifest "github:user/repo"
-
-# Allow only for root packages
-npx pacote --allow-git=root manifest "github:user/repo"
-
-# Allow all types (default)
-npx pacote --allow-git=all manifest "github:user/repo"
-```
-
 ## Troubleshooting
-
 ### Git Authentication Errors
 
 When fetching from private git repositories:
@@ -465,7 +372,6 @@ npx pacote tarball large-package@latest package.tgz
 ```
 
 ## API Reference Summary
-
 | Command | Description | Returns |
 |---------|-------------|---------|
 | `pacote resolve <spec>` | Resolve specifier to tarball URL or git ref | Resolved URL/ref |
@@ -488,7 +394,6 @@ npx pacote tarball large-package@latest package.tgz
 | `--allow-git=all\|none\|root` | Control git package fetching |
 
 ## Notes
-
 - All commands work via `npx` without prior installation: `npx pacote <command>`
 - Package specifiers follow [npm-package-arg](https://npm.im/npm-package-arg) format
 - Git packages run `prepare` scripts to simulate published packages
@@ -496,6 +401,3 @@ npx pacote tarball large-package@latest package.tgz
 - Integrity verification is automatic using SRI hashes from registry
 - File extraction prevents root-owned files when running as root on Unix
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

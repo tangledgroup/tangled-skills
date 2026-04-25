@@ -21,17 +21,12 @@ external_references:
   - https://github.com/aio-libs/aiohttp-security
   - https://aiohttp-security.readthedocs.io/
 ---
-
-# aiohttp-security-0.5.0
-
 ## Overview
-
 A skill for implementing authentication and authorization in aiohttp.web applications using aiohttp-security 0.5.0, providing identity policies (cookies, sessions, JWT) and custom authorization policies with permission-based access control.
 
 A comprehensive toolkit for implementing authentication and authorization in `aiohttp.web` applications using the `aiohttp-security` library (version 0.5.0). Provides identity policies for user sessions (cookies, aiohttp-session, JWT) and a flexible authorization policy system for permission-based access control.
 
 ## When to Use
-
 - Building async web APIs with aiohttp that require user authentication
 - Implementing session-based or token-based authentication
 - Creating role-based or permission-based access control systems
@@ -39,8 +34,7 @@ A comprehensive toolkit for implementing authentication and authorization in `ai
 - Integrating JWT tokens for stateless authentication
 - Building applications with database-backed user authorization
 
-## Setup
-
+## Installation / Setup
 ### Installation
 
 ```bash
@@ -60,11 +54,10 @@ pip install aiohttp-security PyJWT
 - **Optional**: `aiohttp-session` (for SessionIdentityPolicy)
 - **Optional**: `PyJWT` (for JWTIdentityPolicy)
 
-## Quick Start
-
+## Usage Examples
 ### Basic Authentication with Sessions
 
-See [Session-Based Auth](references/01-session-auth.md) for a complete working example.
+See [Session-Based Auth](reference/01-core-concepts.md) for a complete working example.
 
 ```python
 from aiohttp import web
@@ -120,13 +113,12 @@ if __name__ == '__main__':
 ```
 
 ## Core Concepts
-
 ### Identity vs Authorization
 
 - **Identity**: A string that identifies the user (stored in cookies/sessions/JWT). Should be a random UUID, not database IDs or usernames.
 - **Authorization**: The process of checking what permissions an identity has access to.
 
-See [Core Concepts](references/01-core-concepts.md) for detailed explanation.
+See [Core Concepts](reference/01-core-concepts.md) for detailed explanation.
 
 ### Identity Policies
 
@@ -138,7 +130,7 @@ Three built-in identity policies:
 | `CookiesIdentityPolicy` | HTTP cookies | Simple demos, stateless scenarios |
 | `JWTIdentityPolicy` | Bearer token | Stateless APIs, microservices |
 
-See [Identity Policies](references/02-identity-policies.md) for implementation details.
+See [Identity Policies](reference/02-identity-policies.md) for implementation details.
 
 ### Authorization Policy
 
@@ -156,10 +148,9 @@ class MyAuthPolicy(AbstractAuthorizationPolicy):
         pass
 ```
 
-See [Authorization Policies](references/03-authorization-policies.md) for examples.
+See [Authorization Policies](reference/03-authorization-policies.md) for examples.
 
 ## Common Operations
-
 ### Login/Remember User
 
 ```python
@@ -193,17 +184,18 @@ if await permits(request, 'read'):
     return web.Response(text="You can read")
 ```
 
-See [API Reference](references/04-api-reference.md) for all functions.
+See [API Reference](reference/04-api-reference.md) for all functions.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-core-concepts.md`](references/01-core-concepts.md) - Authentication vs authorization, identity management
-- [`references/02-identity-policies.md`](references/02-identity-policies.md) - Session, Cookie, and JWT identity policies
-- [`references/03-authorization-policies.md`](references/03-authorization-policies.md) - Custom authorization with database and dictionary backends
-- [`references/04-api-reference.md`](references/04-api-reference.md) - Complete API documentation with examples
+- [Core Concepts](reference/01-core-concepts.md)
+- [Identity Policies](reference/02-identity-policies.md)
+- [Authorization Policies](reference/03-authorization-policies.md)
+- [Api Reference](reference/04-api-reference.md)
+- [Troubleshooting](reference/05-troubleshooting.md)
 
 ## Troubleshooting
-
 ### Common Issues
 
 **"Security subsystem is not initialized"**
@@ -219,10 +211,9 @@ See [API Reference](references/04-api-reference.md) for all functions.
 - This is expected behavior - anonymous users have no identity
 - Use `is_anonymous(request)` to check before requiring auth
 
-See [Troubleshooting Guide](references/05-troubleshooting.md) for more issues.
+See [Troubleshooting Guide](reference/05-troubleshooting.md) for more issues.
 
 ## Best Practices
-
 1. **Use random identities**: Store UUIDs or hashes in sessions, not database IDs
 2. **Encrypt session cookies**: Use `EncryptedCookieStorage` in production
 3. **Validate permissions server-side**: Never trust client-side permission checks
@@ -230,12 +221,7 @@ See [Troubleshooting Guide](references/05-troubleshooting.md) for more issues.
 5. **Use context parameter**: Pass additional data to `permits()` for fine-grained control
 
 ## Version Compatibility
-
 - **aiohttp**: >= 3.9
 - **Python**: 3.9, 3.10, 3.11, 3.12, 3.13
 - **Type annotations**: Full type hints included (version 0.5.0+)
 
-
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

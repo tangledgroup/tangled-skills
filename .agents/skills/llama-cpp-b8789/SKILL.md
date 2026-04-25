@@ -22,17 +22,12 @@ external_references:
   - https://huggingface.co/models?search=ggml-org
   - https://github.com/ggml-org/llama.cpp/tree/b8789/docs
 ---
-
-# llama.cpp b8789
-
 ## Overview
-
 C/C++ LLM inference library providing GGUF model support, quantization, GPU acceleration (CUDA/Metal/HIP/Vulkan/SYCL), OpenAI-compatible server, multimodal processing, and speculative decoding for running large language models locally with high performance across diverse hardware platforms.
 
 **llama.cpp** is a high-performance C/C++ library for running large language models (LLMs) with minimal dependencies and state-of-the-art performance across diverse hardware platforms. Commit `b8789` represents a mature release with comprehensive model support, multimodal capabilities, and production-ready server infrastructure.
 
 ## When to Use
-
 Use this skill when:
 - Running LLMs locally without external API dependencies
 - Deploying models on edge devices or resource-constrained environments
@@ -45,7 +40,6 @@ Use this skill when:
 - Using speculative decoding for faster token generation
 
 ## Core Concepts
-
 ### GGUF Format
 
 GGUF (Generative AI GPU File Format) is the native model format for llama.cpp:
@@ -76,8 +70,7 @@ GGUF (Generative AI GPU File Format) is the native model format for llama.cpp:
 - **MUSA**: Moore Threads GPU
 - **OpenVINO**: Intel CPU/GPU/NPU
 
-## Quick Start
-
+## Installation / Setup
 ### Installation
 
 **Homebrew (macOS/Linux):**
@@ -125,8 +118,7 @@ llama-server -m model.gguf --n-gpu-layers 99
 ```
 
 ## API Endpoints
-
-See [Server API Reference](references/02-server-api.md) for complete endpoint documentation including:
+See [Server API Reference](reference/02-server-api.md) for complete endpoint documentation including:
 - `/v1/chat/completions` - OpenAI-compatible chat
 - `/v1/embeddings` - Embedding generation
 - `/completion` - Legacy completion endpoint
@@ -134,51 +126,14 @@ See [Server API Reference](references/02-server-api.md) for complete endpoint do
 - Multimodal input support
 
 ## Model Support
-
-See [Supported Models](references/03-models.md) for comprehensive lists of:
+See [Supported Models](reference/03-models.md) for comprehensive lists of:
 - Text-only models (LLaMA, Mistral, Qwen, Gemma, Phi, etc.)
 - Multimodal models (vision + audio)
 - Code generation models
 - Reasoning models with thinking tags
 
-## Advanced Topics
-
-### Quantization Guide
-See [Quantization](references/04-quantization.md) for:
-- Creating quantized models from GGUF
-- Quant type selection guidelines
-- Per-tensor vs per-block strategies
-
-### Multimodal Processing
-See [Multimodal Support](references/05-multimodal.md) for:
-- Vision models (Gemma 3, Qwen2-VL, InternVL)
-- Audio models (Ultravox, Qwen3-ASR)
-- OCR capabilities
-- Image/audio input formats
-
-### Function Calling
-See [Function Calling](references/06-function-calling.md) for:
-- OpenAI-style tool use
-- Native format handlers (Llama 3, Hermes, Qwen)
-- JSON schema constraints
-- Built-in server tools
-
-### Speculative Decoding
-See [Speculative Decoding](references/07-speculative-decoding.md) for:
-- Draft model acceleration
-- N-gram based methods
-- Performance optimization
-
-### GPU Offloading
-See [GPU Configuration](references/08-gpu-config.md) for:
-- Multi-GPU setups
-- Tensor splitting strategies
-- VRAM optimization
-- Backend-specific tuning
-
 ## Build Options
-
-See [Build Guide](references/01-build-guide.md) for:
+See [Build Guide](reference/01-build-guide.md) for:
 - CPU-only builds
 - CUDA, HIP, Metal, Vulkan backends
 - BLAS acceleration (OpenBLAS, oneMKL)
@@ -186,7 +141,6 @@ See [Build Guide](references/01-build-guide.md) for:
 - Platform-specific instructions
 
 ## Troubleshooting
-
 ### Common Issues
 
 **"Cannot find valid GPU for '-arch=native'"**:
@@ -208,4 +162,15 @@ cmake -B build -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="86;89"
 - Reduce context size: `--ctx-size 4096`
 - Enable KV cache quantization: `--cache-type-k q4_0 --cache-type-v q4_0`
 
+## Advanced Topics
+## Advanced Topics
+
+- [Build Guide](reference/01-build-guide.md)
+- [Server Api](reference/02-server-api.md)
+- [Models](reference/03-models.md)
+- [Quantization](reference/04-quantization.md)
+- [Multimodal](reference/05-multimodal.md)
+- [Function Calling](reference/06-function-calling.md)
+- [Speculative Decoding](reference/07-speculative-decoding.md)
+- [Gpu Config](reference/08-gpu-config.md)
 

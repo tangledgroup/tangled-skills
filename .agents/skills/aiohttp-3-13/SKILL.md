@@ -18,24 +18,10 @@ external_references:
   - https://docs.aiohttp.org/en/stable/
   - https://github.com/aio-libs/aiohttp
 ---
-
-# aiohttp-3-13 Skill
-
 ## Overview
-
 Async HTTP client/server for Python asyncio. Use when building async web applications, REST APIs, or making concurrent HTTP requests in Python.
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.## Overview
-
-Async HTTP client/server for Python asyncio. Use when building async web applications, REST APIs, or making concurrent HTTP requests in Python.
-
-Asynchronous HTTP Client/Server for Python asyncio (version 3.13.x). Supports building async web servers, REST APIs, and making concurrent HTTP requests with connection pooling, WebSockets, middleware, and streaming.
 
 ## When to Use
-
 - Building async web applications or REST APIs in Python
 - Making concurrent HTTP requests from Python applications
 - Implementing WebSocket clients or servers
@@ -43,8 +29,14 @@ Asynchronous HTTP Client/Server for Python asyncio (version 3.13.x). Supports bu
 - Needing connection pooling and keep-alive for performance
 - Building microservices with async Python
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
 
+Async HTTP client/server for Python asyncio. Use when building async web applications, REST APIs, or making concurrent HTTP requests in Python.
+
+Asynchronous HTTP Client/Server for Python asyncio (version 3.13.x). Supports building async web servers, REST APIs, and making concurrent HTTP requests with connection pooling, WebSockets, middleware, and streaming.
+
+## Installation / Setup
 ### Installation
 
 ```bash
@@ -64,11 +56,10 @@ pip install aiohttp[speedups]
 - Optional: `aiodns` for faster DNS resolution
 - Optional: `Brotli` for compression speedups
 
-## Quick Start
-
+## Usage Examples
 ### Client: Make HTTP Requests
 
-See [Client Reference](references/01-client-reference.md) for detailed API documentation.
+See [Client Reference](reference/01-client-reference.md) for detailed API documentation.
 
 ```python
 import aiohttp
@@ -92,7 +83,7 @@ asyncio.run(main())
 
 ### Server: Build Web Applications
 
-See [Server Reference](references/02-server-reference.md) for detailed API documentation.
+See [Server Reference](reference/02-server-reference.md) for detailed API documentation.
 
 ```python
 from aiohttp import web
@@ -127,7 +118,7 @@ web.run_app(app)
 
 ### WebSocket Communication
 
-See [WebSocket Guide](references/03-websockets.md) for detailed examples.
+See [WebSocket Guide](reference/03-websockets.md) for detailed examples.
 
 **Client WebSocket:**
 ```python
@@ -166,7 +157,6 @@ web.run_app(app)
 ```
 
 ## Common Operations
-
 ### POST Requests with JSON
 
 ```python
@@ -182,7 +172,7 @@ async def post_json():
 
 ### File Upload (Multipart)
 
-See [Multipart Reference](references/04-multipart.md) for details.
+See [Multipart Reference](reference/04-multipart.md) for details.
 
 ```python
 async def upload_file():
@@ -228,7 +218,7 @@ async def with_cookies():
 
 ### Server Middleware
 
-See [Advanced Server Topics](references/05-advanced-server.md) for details.
+See [Advanced Server Topics](reference/05-advanced-server.md) for details.
 
 ```python
 from aiohttp import web
@@ -246,38 +236,24 @@ async def timing_middleware(app, handler):
 app = web.Application(middlewares=[timing_middleware])
 ```
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-### Index & Overview
-
-- [`references/00-api-index.md`](references/00-api-index.md) - Complete API index with all components mapped to reference files
-
-### Client API
-
-- [`references/01-client-reference.md`](references/01-client-reference.md) - Client overview, sessions, requests, responses
-- [`references/07-client-api-connectors.md`](references/07-client-api-connectors.md) - TCPConnector, UnixConnector, connection pooling
-- [`references/08-client-api-exceptions.md`](references/08-client-api-exceptions.md) - All client exceptions and error handling patterns
-
-### Server API
-
-- [`references/02-server-reference.md`](references/02-server-reference.md) - Server overview, request/response objects
-- [`references/09-server-api-application.md`](references/09-server-api-application.md) - Application class, lifecycle, subapps, runners
-- [`references/10-server-api-routing.md`](references/10-server-api-routing.md) - RouteTableDef, path params, static files, views
-
-### Core APIs
-
-- [`references/11-api-streams.md`](references/11-api-streams.md) - StreamReader, StreamWriter, chunked transfer
-- [`references/12-api-data-structures.md`](references/12-api-data-structures.md) - FrozenList, ChainMapProxy, CIMultiDict, MultiDict, URL
-
-### Advanced Topics
-
-- [`references/03-websockets.md`](references/03-websockets.md) - WebSocket client and server examples
-- [`references/04-multipart.md`](references/04-multipart.md) - Multipart form data, file uploads/downloads
-- [`references/05-advanced-server.md`](references/05-advanced-server.md) - Middleware, signals, graceful shutdown
-- [`references/06-tracing.md`](references/06-tracing.md) - Client and server tracing for monitoring/debugging
+- [Api Index](reference/00-api-index.md)
+- [Client Reference](reference/01-client-reference.md)
+- [Server Reference](reference/02-server-reference.md)
+- [Websockets](reference/03-websockets.md)
+- [Multipart](reference/04-multipart.md)
+- [Advanced Server](reference/05-advanced-server.md)
+- [Tracing](reference/06-tracing.md)
+- [Client Api Connectors](reference/07-client-api-connectors.md)
+- [Client Api Exceptions](reference/08-client-api-exceptions.md)
+- [Server Api Application](reference/09-server-api-application.md)
+- [Server Api Routing](reference/10-server-api-routing.md)
+- [Api Streams](reference/11-api-streams.md)
+- [Api Data Structures](reference/12-api-data-structures.md)
 
 ## Troubleshooting
-
 ### Common Issues
 
 **Connection pool exhausted:**
@@ -299,7 +275,7 @@ app = web.Application(middlewares=[timing_middleware])
 - Always run async code with `asyncio.run()` or in existing event loop
 - Don't mix blocking and async code
 
-See [Advanced Server Topics](references/05-advanced-server.md) for graceful shutdown and logging configuration.
+See [Advanced Server Topics](reference/05-advanced-server.md) for graceful shutdown and logging configuration.
 
 ### Important Notes
 
@@ -310,9 +286,4 @@ See [Advanced Server Topics](references/05-advanced-server.md) for graceful shut
 5. **Keep-alive**: Enabled by default, reuse TCP connections
 6. **Base URL**: Use `base_url` parameter in ClientSession for relative URLs
 7. **Auto-decompression**: Enabled by default for gzip/deflate/brotli
-
-
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.
 

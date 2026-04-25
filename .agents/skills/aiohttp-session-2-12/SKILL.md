@@ -20,24 +20,10 @@ external_references:
   - https://github.com/aio-libs/aiohttp-session
   - https://aiohttp-session.readthedocs.io/
 ---
-
-# aiohttp-session-2-12
-
 ## Overview
-
 A skill for implementing server-side sessions in aiohttp web applications using aiohttp-session 2.12.1, providing multiple storage backends including encrypted cookies, Redis, and Memcached for persistent user state management. Use when building aiohttp.web applications that require session-based authentication, shopping carts, user preferences, or any per-request user-specific data persistence.
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.## Overview
-
-A skill for implementing server-side sessions in aiohttp web applications using aiohttp-session 2.12.1, providing multiple storage backends including encrypted cookies, Redis, and Memcached for persistent user state management. Use when building aiohttp.web applications that require session-based authentication, shopping carts, user preferences, or any per-request user-specific data persistence.
-
-A comprehensive toolkit for implementing server-side sessions in aiohttp web applications using the aiohttp-session 2.12.1 library. Provides multiple storage backends including encrypted cookies, Redis, Memcached, and NaCl encryption for secure user state management across HTTP requests.
 
 ## When to Use
-
 Load this skill when:
 - Building aiohttp.web applications requiring session-based authentication or user state persistence
 - Implementing shopping carts, user preferences, or per-request user-specific data
@@ -46,8 +32,14 @@ Load this skill when:
 - Setting up Redis or Memcached-backed sessions for distributed applications
 - Migrating from older aiohttp-session versions or other session libraries
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
 
+A skill for implementing server-side sessions in aiohttp web applications using aiohttp-session 2.12.1, providing multiple storage backends including encrypted cookies, Redis, and Memcached for persistent user state management. Use when building aiohttp.web applications that require session-based authentication, shopping carts, user preferences, or any per-request user-specific data persistence.
+
+A comprehensive toolkit for implementing server-side sessions in aiohttp web applications using the aiohttp-session 2.12.1 library. Provides multiple storage backends including encrypted cookies, Redis, Memcached, and NaCl encryption for secure user state management across HTTP requests.
+
+## Installation / Setup
 ### Installation
 
 Install the base package:
@@ -95,10 +87,9 @@ def make_app():
 web.run_app(make_app())
 ```
 
-See [Core API](references/01-core-api.md) for detailed session operations and [Storage Backends](references/02-storage-backends.md) for all available storage options.
+See [Core API](reference/01-core-api.md) for detailed session operations and [Storage Backends](reference/02-storage-backends.md) for all available storage options.
 
-## Quick Start
-
+## Usage Examples
 ### Using Encrypted Cookie Sessions
 
 The recommended approach for most applications:
@@ -134,9 +125,9 @@ def make_app():
 web.run_app(make_app())
 ```
 
-See [Core API](references/01-core-api.md) for session methods and best practices.
+See [Core API](reference/01-core-api.md) for session methods and best practices.
 
-See [Real-World Examples](references/05-real-world-examples.md) for production patterns including flash messages, login decorators, and advanced setups.
+See [Real-World Examples](reference/05-real-world-examples.md) for production patterns including flash messages, login decorators, and advanced setups.
 
 ### Using Redis Sessions
 
@@ -168,10 +159,9 @@ async def make_app():
 asyncio.run(make_app())
 ```
 
-See [Storage Backends](references/02-storage-backends.md) for Redis configuration options.
+See [Storage Backends](reference/02-storage-backends.md) for Redis configuration options.
 
 ## Common Operations
-
 ### Reading and Writing Session Data
 
 ```python
@@ -229,18 +219,17 @@ async def cart_handler(request):
     return web.Response(text='Item added to cart')
 ```
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-core-api.md`](references/01-core-api.md) - Session class methods, get_session/new_session functions, middleware setup
-- [`references/02-storage-backends.md`](references/02-storage-backends.md) - All 5 storage implementations with configuration options and examples
-- [`references/03-cookie-configuration.md`](references/03-cookie-configuration.md) - Cookie parameters (domain, path, secure, httponly, samesite, max_age)
-- [`references/04-security-best-practices.md`](references/04-security-best-practices.md) - Session fixation prevention, encryption setup, security hardening
-- [`references/05-real-world-examples.md`](references/05-real-world-examples.md) - Production-ready patterns: flash messages, login decorators, Redis/Memcached setups
-- [`references/02-storage-backends.md#postgresql-storage-example`](references/02-storage-backends.md#postgresql-storage-example) - Custom PostgreSQL storage implementation with aiopg
-- [`references/06-fernet-encryption.md`](references/06-fernet-encryption.md) - Complete Fernet encryption guide: key generation, MultiFernet rotation, password-based keys, security best practices
+- [Core Api](reference/01-core-api.md)
+- [Storage Backends](reference/02-storage-backends.md)
+- [Cookie Configuration](reference/03-cookie-configuration.md)
+- [Security Best Practices](reference/04-security-best-practices.md)
+- [Real World Examples](reference/05-real-world-examples.md)
+- [Fernet Encryption](reference/06-fernet-encryption.md)
 
 ## Troubleshooting
-
 ### Common Issues
 
 **Session not persisting between requests:**
@@ -263,10 +252,5 @@ async def cart_handler(request):
 - For custom objects, implement custom encoder/decoder functions
 - Use `json.dumps(obj)` to test serializability before storing in session
 
-See [Storage Backends](references/02-storage-backends.md) for backend-specific troubleshooting and [Security Best Practices](references/04-security-best-practices.md) for security-related issues.
-
-
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.
+See [Storage Backends](reference/02-storage-backends.md) for backend-specific troubleshooting and [Security Best Practices](reference/04-security-best-practices.md) for security-related issues.
 

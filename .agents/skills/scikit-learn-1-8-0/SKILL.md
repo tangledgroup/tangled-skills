@@ -21,15 +21,10 @@ external_references:
   - https://scikit-learn.org/stable/modules/classes.html
   - https://scikit-learn.org/stable/whats_new/v1.8.html
 ---
-
-# scikit-learn 1.8.0
-
 ## Overview
-
 Scikit-learn is an open-source machine learning library for Python that provides simple and efficient tools for data mining and data analysis. It supports supervised and unsupervised learning, along with various tools for model fitting, data preprocessing, model selection, model evaluation, and utilities. Built on NumPy, SciPy, and matplotlib, it features a range of classification, regression, clustering, and dimensionality reduction algorithms.
 
 ## When to Use
-
 Use this skill when building Python machine learning applications requiring:
 - Supervised learning (classification, regression) with linear models, SVMs, trees, ensembles, neural networks, naive Bayes
 - Unsupervised learning (clustering, dimensionality reduction) with k-means, hierarchical clustering, DBSCAN, PCA
@@ -41,7 +36,6 @@ Use this skill when building Python machine learning applications requiring:
 - Model persistence: saving/loading fitted models with joblib
 
 ## Core Concepts
-
 ### Estimator API
 
 All machine learning objects in scikit-learn share a unified interface:
@@ -136,7 +130,6 @@ print(f"Best score: {grid.best_score_:.4f}")
 ```
 
 ## Installation / Setup
-
 ```bash
 # Via pip (recommended)
 pip install scikit-learn
@@ -151,7 +144,6 @@ python -c "import sklearn; print(sklearn.__version__)"  # Should print 1.8.0
 **Requirements:** Python >= 3.10, NumPy >= 1.25, SciPy >= 1.11.
 
 ## Quick Reference by Task
-
 ### Classification
 - **Linear models:** `LogisticRegression`, `SGDClassifier`, `LinearSVC`
 - **Tree-based:** `DecisionTreeClassifier`, `RandomForestClassifier`, `GradientBoostingClassifier`, `HistGradientBoostingClassifier`
@@ -191,14 +183,13 @@ python -c "import sklearn; print(sklearn.__version__)"  # Should print 1.8.0
 - **Text:** `CountVectorizer`, `TfidfVectorizer`, `HashingVectorizer`
 
 ## Advanced Topics
+## Advanced Topics
 
-For detailed coverage of specific topics, see the reference files:
-
-- **[1. Supervised Learning Algorithms](references/01-supervised-learning.md)** — Linear models, SVMs, trees, ensembles, neural networks, naive Bayes
-- **[2. Unsupervised Learning & Dimensionality Reduction](references/02-unsupervised-learning.md)** — Clustering algorithms, PCA, manifold learning, decomposition
-- **[3. Data Preprocessing & Feature Engineering](references/03-preprocessing.md)** — Scaling, encoding, imputation, text features, column transformers
-- **[4. Model Evaluation & Selection](references/04-model-evaluation-selection.md)** — Cross-validation, metrics, hyperparameter tuning, learning curves
-- **[5. Pipelines & Composition](references/05-pipelines-composition.md)** — Pipeline, ColumnTransformer, feature union, custom transformers
-- **[6. Text Analytics & Feature Extraction](references/06-text-analytics.md)** — Vectorization, TF-IDF, n-grams, document-term matrices
-- **[7. Key Examples & Workflows](references/07-key-examples.md)** — Complete end-to-end workflows, common patterns
+- [Supervised Learning](reference/01-supervised-learning.md)
+- [Unsupervised Learning](reference/02-unsupervised-learning.md)
+- [Preprocessing](reference/03-preprocessing.md)
+- [Model Evaluation Selection](reference/04-model-evaluation-selection.md)
+- [Pipelines Composition](reference/05-pipelines-composition.md)
+- [Text Analytics](reference/06-text-analytics.md)
+- [Key Examples](reference/07-key-examples.md)
 

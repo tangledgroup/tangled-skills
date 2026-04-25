@@ -17,16 +17,19 @@ external_references:
   - https://github.com/rasbt/mini-coding-agent
   - https://magazine.sebastianraschka.com/p/components-of-a-coding-agent
 ---
-
-# Mini-Coding-Agent
-
 ## Overview
-
 A minimal standalone coding agent framework by Sebastian Raschka backed by Ollama that provides workspace context collection, structured tool execution with approval gates, session persistence, memory distillation, and bounded subagent delegation. Use when building or operating lightweight local coding agents for file manipulation, shell command execution, code editing, test-driven development, and automated workflows without external API dependencies.
 
+## When to Use
+- Building a lightweight coding agent that runs entirely locally without external API dependencies
+- Automating file manipulation, code editing, and shell command execution in Python projects
+- Creating development workflows with human-in-the-loop approval for risky operations
+- Implementing session persistence to resume interrupted coding tasks
+- Delegating scoped investigation tasks to bounded read-only subagents
+- Learning about coding agent architecture patterns and implementation details
+- Understanding how tools like Claude Code or Codex CLI wrap LLMs in a coding harness
 
 ## Core Concepts
-
 This skill covers the key concepts and fundamental ideas related to this topic.## Overview
 
 A minimal standalone coding agent framework by Sebastian Raschka backed by Ollama that provides workspace context collection, structured tool execution with approval gates, session persistence, memory distillation, and bounded subagent delegation. Use when building or operating lightweight local coding agents for file manipulation, shell command execution, code editing, test-driven development, and automated workflows without external API dependencies.
@@ -34,7 +37,6 @@ A minimal standalone coding agent framework by Sebastian Raschka backed by Ollam
 A minimal standalone coding agent harness by Sebastian Raschka that runs entirely locally using Ollama as the model backend. The framework demonstrates how a **coding harness** — the software scaffold around an LLM — can dramatically improve coding capabilities beyond what plain chat interfaces achieve.
 
 ## Conceptual Foundation
-
 ### LLM vs Reasoning Model vs Agent
 
 Understanding the architecture requires distinguishing three layers:
@@ -64,18 +66,7 @@ observe → inspect → choose → act → (loop back)
 
 The harness provides the plumbing that makes this loop efficient: stable prompt caching, context reduction, memory distillation, and bounded delegation.
 
-## When to Use
-
-- Building a lightweight coding agent that runs entirely locally without external API dependencies
-- Automating file manipulation, code editing, and shell command execution in Python projects
-- Creating development workflows with human-in-the-loop approval for risky operations
-- Implementing session persistence to resume interrupted coding tasks
-- Delegating scoped investigation tasks to bounded read-only subagents
-- Learning about coding agent architecture patterns and implementation details
-- Understanding how tools like Claude Code or Codex CLI wrap LLMs in a coding harness
-
-## Setup
-
+## Installation / Setup
 ### Prerequisites
 
 1. **Python 3.10+** installed on your system
@@ -112,7 +103,6 @@ curl http://127.0.0.1:11434/api/tags  # Should list available models
 ```
 
 ## Quick Start
-
 ### Basic Usage (Interactive REPL)
 
 Start the agent in the current directory:
@@ -150,7 +140,6 @@ python mini_coding_agent.py --resume 20260413-143022-a1b2c3
 ```
 
 ## Interactive Commands
-
 While the agent is running, slash commands are handled directly by the REPL (not sent to the model):
 
 | Command | Description |
@@ -162,7 +151,6 @@ While the agent is running, slash commands are handled directly by the REPL (not
 | `/exit` or `/quit` | Exit the agent |
 
 ## Complete CLI Reference
-
 ```bash
 python mini_coding_agent.py --help
 ```
@@ -181,8 +169,7 @@ python mini_coding_agent.py --help
 | `--temperature` | `0.2` | Sampling temperature (lower = more deterministic) |
 | `--top-p` | `0.9` | Top-p nucleus sampling value |
 
-## Example Workflow
-
+## Usage Examples
 See [EXAMPLE.md](https://github.com/rasbt/mini-coding-agent/blob/main/EXAMPLE.md) in the repository for a complete hands-on workflow that demonstrates:
 
 1. Creating a fresh repo
@@ -194,7 +181,6 @@ See [EXAMPLE.md](https://github.com/rasbt/mini-coding-agent/blob/main/EXAMPLE.md
 7. Inspecting the final repo state
 
 ## Six Architecture Components
-
 The framework is organized around six practical building blocks:
 
 1. **Live Repo Context** — Workspace snapshot collected upfront (git state, docs, layout)
@@ -205,7 +191,6 @@ The framework is organized around six practical building blocks:
 6. **Delegation & Bounded Subagents** — Scoped read-only helper agents for investigation
 
 ## File Structure
-
 ```
 mini-coding-agent/
 ├── mini_coding_agent.py          # Single-file implementation (~1000 lines)
@@ -219,15 +204,15 @@ mini-coding-agent/
 
 The entire agent is implemented in a **single Python file** with zero external dependencies beyond the standard library. This makes it easy to read, understand, and modify.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-core-concepts.md`](references/01-core-concepts.md) — Six architecture components: workspace context, prompt shape, structured tools, context reduction, session memory, and subagent delegation
-- [`references/02-tool-reference.md`](references/02-tool-reference.md) — Complete tool API reference with schema, examples, and validation rules for all 7 tools
-- [`references/03-session-management.md`](references/03-session-management.md) — Session persistence, memory distillation, transcript management, resumption workflows, and interactive commands
-- [`references/04-advanced-patterns.md`](references/04-advanced-patterns.md) — Approval modes, bounded delegation, model configuration, CLI options, troubleshooting, and extension patterns
+- [Core Concepts](reference/01-core-concepts.md)
+- [Tool Reference](reference/02-tool-reference.md)
+- [Session Management](reference/03-session-management.md)
+- [Advanced Patterns](reference/04-advanced-patterns.md)
 
 ## Troubleshooting
-
 ### Ollama Connection Errors
 
 If you see "Could not reach Ollama" errors:
@@ -268,10 +253,5 @@ If the agent gets stuck calling the same tool with the same arguments:
 - Reset session: `/reset`
 - Break task into smaller steps
 
-See [Advanced Patterns](references/04-advanced-patterns.md) for detailed configuration and troubleshooting.
-
-
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.
+See [Advanced Patterns](reference/04-advanced-patterns.md) for detailed configuration and troubleshooting.
 

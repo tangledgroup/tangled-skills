@@ -21,11 +21,7 @@ external_references:
   - https://github.com/mem0ai/mem0/blob/v1.0.11/MIGRATION_GUIDE_v1.0.md
   - https://mem0.dev/DiG
 ---
-
-# Mem0 v1.0.11
-
 ## Overview
-
 Mem0 is a universal, self-improving memory layer for LLM applications that enables persistent context across sessions. It automatically extracts, stores, and retrieves relevant memories from conversations, allowing AI agents to remember user preferences, past interactions, and domain knowledge without manual prompt engineering.
 
 **Key capabilities:**
@@ -37,7 +33,6 @@ Mem0 is a universal, self-improving memory layer for LLM applications that enabl
 - **Framework integrations** - LangChain, LlamaIndex, CrewAI, AutoGen, Vercel AI SDK, and 20+ partners
 
 ## When to Use
-
 Use Mem0 when:
 - Building AI assistants that need to remember user preferences across sessions
 - Creating customer support bots that should recall past tickets and interactions
@@ -52,7 +47,6 @@ Use Mem0 when:
 - Memory is purely transient and never needs retrieval
 
 ## Core Concepts
-
 ### Memory Types
 
 | Type | Scope | Use Case |
@@ -78,7 +72,6 @@ Use Mem0 when:
 - **Graph DB** - Optional relationship tracking (Neo4j, Memgraph)
 
 ## Installation / Setup
-
 ### Platform API (Managed)
 
 ```bash
@@ -102,7 +95,6 @@ pip install mem0ai
 - History store: SQLite (`~/.mem0/history.db`)
 
 ## Usage Examples
-
 ### Quick Start - Platform API
 
 ```python
@@ -190,19 +182,7 @@ tasks = [
 await asyncio.gather(*tasks)
 ```
 
-## Advanced Topics
-
-See reference files for detailed guides:
-
-- **[Configuration](references/01-configuration.md)** - Custom LLMs, vector stores, embedders, rerankers
-- **[Memory Operations](references/02-memory-operations.md)** - Complete CRUD operations with filters and metadata
-- **[Integrations](references/03-integrations.md)** - LangChain, CrewAI, AutoGen, Vercel AI SDK patterns
-- **[Async Patterns](references/04-async-patterns.md)** - FastAPI integration, concurrency, error handling
-- **[Platform Features](references/05-platform-features.md)** - Graph memory, webhooks, MCP, exports
-- **[Research & Analysis](references/06-research-analysis.md)** - Academic paper analysis, LoCoMo benchmarks, production insights
-
 ## Migration from v0.x
-
 v1.0 introduced breaking changes:
 - API modernization with new client interfaces
 - Async-by-default clients in Python
@@ -212,7 +192,6 @@ v1.0 introduced breaking changes:
 See [MIGRATION_GUIDE_v1.0.md](https://github.com/mem0ai/mem0/blob/v1.0.11/MIGRATION_GUIDE_v1.0.md) for upgrade instructions.
 
 ## Troubleshooting
-
 | Issue | Solution |
 |-------|----------|
 | Empty search results | Verify embedder model matches vector dimensions; check `user_id` filter scope |
@@ -220,3 +199,14 @@ See [MIGRATION_GUIDE_v1.0.md](https://github.com/mem0ai/mem0/blob/v1.0.11/MIGRAT
 | Memory not persisting | Ensure `infer=True` (default) for automatic extraction; raw inserts skip conflict resolution |
 | Slow operations | Enable reranker for precision; tune `top_k` parameter; consider caching |
 | Dimension mismatch | Match embedder output dimensions with vector store configuration |
+
+## Advanced Topics
+## Advanced Topics
+
+- [Configuration](reference/01-configuration.md)
+- [Memory Operations](reference/02-memory-operations.md)
+- [Integrations](reference/03-integrations.md)
+- [Async Patterns](reference/04-async-patterns.md)
+- [Platform Features](reference/05-platform-features.md)
+- [Research Analysis](reference/06-research-analysis.md)
+

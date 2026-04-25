@@ -21,21 +21,12 @@ external_references:
   - https://cryptography.io/en/latest/
   - https://github.com/pyca/cryptography
 ---
-
-# cryptography-46
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Comprehensive toolkit for Python cryptographic operations using the cryptography library. Use when implementing encryption, decryption, hashing, digital signatures, key derivation, X.509 certificate handling, and other cryptographic primitives in Python applications.
 
 A comprehensive toolkit for cryptographic operations in Python using the `cryptography` library (version 46.x). This skill covers both high-level safe recipes and low-level hazardous materials (hazmat) primitives for encryption, hashing, digital signatures, key derivation, X.509 certificates, and more.
 
 ## When to Use
-
 - Implementing symmetric encryption with Fernet or AES/GCM
 - Creating and verifying digital signatures (RSA, ECDSA, Ed25519)
 - Hashing data with SHA-2, BLAKE2, or other algorithms
@@ -46,8 +37,10 @@ A comprehensive toolkit for cryptographic operations in Python using the `crypto
 - Working with HPKE (Hybrid Public Key Encryption)
 - Serializing cryptographic keys (PEM, DER, PKCS#8)
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 Install the cryptography library:
 
 ```bash
@@ -63,7 +56,6 @@ uv add cryptography
 **Supported platforms:** Linux, macOS, Windows, FreeBSD. Python 3.9+.
 
 ## Architecture Overview
-
 The `cryptography` library is divided into two layers:
 
 1. **Recipes layer** - High-level, safe cryptographic recipes requiring minimal configuration
@@ -76,8 +68,7 @@ The `cryptography` library is divided into two layers:
 
 **Recommendation:** Use the recipes layer whenever possible. Fall back to hazmat only when necessary.
 
-## Quick Start
-
+## Usage Examples
 ### Symmetric Encryption with Fernet
 
 ```python
@@ -96,7 +87,7 @@ token = f.encrypt(b"Secret message")
 message = f.decrypt(token)
 ```
 
-See [Fernet Encryption](references/01-fernet-encryption.md) for detailed usage including key rotation.
+See [Fernet Encryption](reference/01-fernet-encryption.md) for detailed usage including key rotation.
 
 ### Hashing Data
 
@@ -113,7 +104,7 @@ digest_obj.update(b"part2")
 result = digest_obj.finalize()
 ```
 
-See [Hashing and MACs](references/02-hashing-macs.md) for algorithm options.
+See [Hashing and MACs](reference/02-hashing-macs.md) for algorithm options.
 
 ### Digital Signatures with Ed25519
 
@@ -131,7 +122,7 @@ signature = private_key.sign(b"message to sign")
 public_key.verify(signature, b"message to sign")
 ```
 
-See [Asymmetric Cryptography](references/03-asymmetric-crypto.md) for RSA, ECDSA, and more.
+See [Asymmetric Cryptography](reference/03-asymmetric-crypto.md) for RSA, ECDSA, and more.
 
 ### Key Derivation from Password
 
@@ -152,7 +143,7 @@ kdf = PBKDF2HMAC(
 key = kdf.derive(b"password")
 ```
 
-See [Key Derivation](references/04-key-derivation.md) for PBKDF2, scrypt, Argon2.
+See [Key Derivation](reference/04-key-derivation.md) for PBKDF2, scrypt, Argon2.
 
 ### X.509 Certificate Generation
 
@@ -186,20 +177,20 @@ cert = (
 )
 ```
 
-See [X.509 Certificates](references/05-x509-certificates.md) for complete guide.
+See [X.509 Certificates](reference/05-x509-certificates.md) for complete guide.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-fernet-encryption.md`](references/01-fernet-encryption.md) - High-level symmetric encryption with Fernet and MultiFernet
-- [`references/02-hashing-macs.md`](references/02-hashing-macs.md) - Hash functions (SHA-2, SHA-3, BLAKE2) and message authentication codes
-- [`references/03-asymmetric-crypto.md`](references/03-asymmetric-crypto.md) - RSA, ECDSA, Ed25519, Ed448, X25519, key exchange algorithms
-- [`references/04-key-derivation.md`](references/04-key-derivation.md) - PBKDF2, scrypt, Argon2, HKDF for deriving keys from passwords or secrets
-- [`references/05-x509-certificates.md`](references/05-x509-certificates.md) - X.509 certificate creation, parsing, verification, and OCSP
-- [`references/06-symmetric-primitives.md`](references/06-symmetric-primitives.md) - AES, ChaCha20, AEAD modes (GCM, CCM, Poly1305)
-- [`references/07-advanced-topics.md`](references/07-advanced-topics.md) - HPKE, key wrapping, two-factor auth, random generation
+- [Fernet Encryption](reference/01-fernet-encryption.md)
+- [Hashing Macs](reference/02-hashing-macs.md)
+- [Asymmetric Crypto](reference/03-asymmetric-crypto.md)
+- [Key Derivation](reference/04-key-derivation.md)
+- [X509 Certificates](reference/05-x509-certificates.md)
+- [Symmetric Primitives](reference/06-symmetric-primitives.md)
+- [Advanced Topics](reference/07-advanced-topics.md)
 
 ## Troubleshooting
-
 ### Common Issues
 
 **"UnsupportedAlgorithm" exception:** The algorithm is not available in your backend. Ensure OpenSSL/LibreSSL/BoringSSL is properly installed.
@@ -217,7 +208,6 @@ The library requires one of: OpenSSL, LibreSSL, BoringSSL, or AWS-LC. Most syste
 Most cryptography objects are **not** thread-safe. Create separate instances per thread or use locks when sharing state. Fernet and MultiFernet are explicitly thread-safe.
 
 ## Version Notes
-
 This skill targets cryptography 46.x (released September 2025). Key features:
 - Python 3.9+ support
 - ML-DSA post-quantum signatures (new in 47, not available in 46)
@@ -227,6 +217,3 @@ This skill targets cryptography 46.x (released September 2025). Key features:
 
 For latest changes, check [Changelog](https://cryptography.io/en/latest/changelog/).
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

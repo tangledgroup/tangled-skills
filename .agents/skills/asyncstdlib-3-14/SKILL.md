@@ -19,16 +19,18 @@ external_references:
   - https://github.com/aio-libs/asyncstdlib
   - https://asyncstdlib.readthedocs.io/
 ---
-
-# asyncstdlib v3.14
-
 ## Overview
-
 Python async standard library providing async versions of builtins, itertools, functools, contextlib, and asynctools for use with asyncio, trio, and any async event loop. Use when building async applications requiring iterator operations, caching, context management, or safe async iteration patterns.
 
+## When to Use
+- Building async applications requiring iterator operations (filtering, mapping, zipping)
+- Needing async-safe caching decorators (`@lru_cache`, `@cached_property`) for coroutine functions
+- Working with async context managers and needing `ExitStack`, `contextmanager`, or `closing`
+- Requiring safe async iteration patterns with proper cleanup (`scoped_iter`, `borrow`)
+- Converting sync standard library patterns to async equivalents
+- Needing async versions of `itertools` functions like `accumulate`, `chain`, `groupby`, `tee`
 
 ## Core Concepts
-
 This skill covers the key concepts and fundamental ideas related to this topic.## Overview
 
 Python async standard library providing async versions of builtins, itertools, functools, contextlib, and asynctools for use with asyncio, trio, and any async event loop. Use when building async applications requiring iterator operations, caching, context management, or safe async iteration patterns.
@@ -41,17 +43,7 @@ The `asyncstdlib` library re-implements functions and classes of the Python stan
 - Small but powerful toolset to seamlessly integrate existing sync code into async programs
 - No dependencies - pure Python implementation
 
-## When to Use
-
-- Building async applications requiring iterator operations (filtering, mapping, zipping)
-- Needing async-safe caching decorators (`@lru_cache`, `@cached_property`) for coroutine functions
-- Working with async context managers and needing `ExitStack`, `contextmanager`, or `closing`
-- Requiring safe async iteration patterns with proper cleanup (`scoped_iter`, `borrow`)
-- Converting sync standard library patterns to async equivalents
-- Needing async versions of `itertools` functions like `accumulate`, `chain`, `groupby`, `tee`
-
-## Setup
-
+## Installation / Setup
 Install via pip:
 
 ```bash
@@ -66,8 +58,7 @@ conda install -c conda-forge asyncstdlib
 
 **Python version:** Requires Python 3.8+ (supports up to 3.14)
 
-## Quick Start
-
+## Usage Examples
 ```python
 import asyncstdlib as a
 import asyncio
@@ -92,10 +83,9 @@ asyncio.run(main())
 ```
 
 ## Common Operations
-
 ### Async Builtins
 
-See [Builtins Reference](references/01-builtins.md) for complete documentation.
+See [Builtins Reference](reference/01-builtins.md) for complete documentation.
 
 **Async iteration helpers:**
 
@@ -130,7 +120,7 @@ result = await a.reduce(add, [1, 2, 3, 4], initial=100)  # 110
 
 ### Async Caching
 
-See [Functools Reference](references/02-functools.md) for complete documentation.
+See [Functools Reference](reference/02-functools.md) for complete documentation.
 
 **Async cached_property:**
 
@@ -168,7 +158,7 @@ await resource.data  # Recomputes
 
 ### Async Context Managers
 
-See [Contextlib Reference](references/03-contextlib.md) for complete documentation.
+See [Contextlib Reference](reference/03-contextlib.md) for complete documentation.
 
 **Async contextmanager decorator:**
 
@@ -223,7 +213,7 @@ async with ExitStack() as stack:
 
 ### Async Itertools
 
-See [Itertools Reference](references/04-itertools.md) for complete documentation.
+See [Itertools Reference](reference/04-itertools.md) for complete documentation.
 
 **Iterator splitting:**
 
@@ -261,7 +251,7 @@ async for pair in a.zip_longest([1, 2], ["a", "b", "c"], fillvalue=None):
 
 ### Safe Iterator Handling
 
-See [Asynctools Reference](references/05-asynctools.md) for complete documentation.
+See [Asynctools Reference](reference/05-asynctools.md) for complete documentation.
 
 **Scoped iteration with automatic cleanup:**
 
@@ -304,16 +294,16 @@ async def consumer(iterator):
         process(item)
 ```
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-builtins.md`](references/01-builtins.md) - Async versions of built-in functions (iter, filter, zip, map, enumerate, all, any, min, max, sum)
-- [`references/02-functools.md`](references/02-functools.md) - Async caching (lru_cache, cached_property) and reduce
-- [`references/03-contextlib.md`](references/03-contextlib.md) - Async context managers (contextmanager, closing, nullcontext, ExitStack)
-- [`references/04-itertools.md`](references/04-itertools.md) - Async itertools (accumulate, chain, compress, groupby, pairwise, tee, batched)
-- [`references/05-asynctools.md`](references/05-asynctools.md) - Iterator lifetime management (scoped_iter, borrow, sync, await_each)
+- [Builtins](reference/01-builtins.md)
+- [Functools](reference/02-functools.md)
+- [Contextlib](reference/03-contextlib.md)
+- [Itertools](reference/04-itertools.md)
+- [Asynctools](reference/05-asynctools.md)
 
 ## Troubleshooting
-
 **Cached property not working with async functions:**
 
 Ensure you're using `asyncstdlib.cached_property`, not `functools.cached_property`. The standard library version caches the coroutine object, not the result.
@@ -382,9 +372,4 @@ async for pair in a.zip_longest(iter1, iter2, fillvalue=None):
 - Version 3.13.2 changes `accumulate(initial=None)` behavior
 - Version 3.12.5 adds lock support to `cached_property`
 - Version 3.12.2 makes `contextmanager` return a `ContextDecorator`
-
-
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.
 

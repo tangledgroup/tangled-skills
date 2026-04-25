@@ -22,17 +22,12 @@ external_references:
   - https://www.jsdelivr.com/package/npm/mermaid
   - https://bundlephobia.com/package/mermaid
 ---
-
-# Mermaid 11.14.0
-
 ## Overview
-
 Mermaid is a JavaScript-based diagramming and charting tool that renders Markdown-inspired text definitions to create and modify complex diagrams dynamically. Its main purpose is to help documentation catch up with development — solving the "Doc-Rot" problem where diagrams become outdated because they are hard to maintain.
 
 Mermaid supports 30+ diagram types including flowcharts, sequence diagrams, class diagrams, state diagrams, Gantt charts, ER diagrams, pie charts, mindmaps, C4 diagrams, architecture diagrams, timeline, kanban, sankey, radar, venn, packet, wardley maps, and more. All rendered as SVG, PNG, or Markdown.
 
 ## When to Use
-
 - Generating diagram code for documentation, READMEs, wikis, or presentations
 - Explaining system architecture, workflows, or data models visually
 - Creating interactive diagrams in web applications via the JavaScript API
@@ -40,7 +35,6 @@ Mermaid supports 30+ diagram types including flowcharts, sequence diagrams, clas
 - Migrating from PlantUML or other diagram tools to Mermaid syntax
 
 ## Core Concepts
-
 ### Diagram Types Overview
 
 Mermaid organizes diagrams into these categories:
@@ -153,8 +147,7 @@ Change with: `mermaid.initialize({ securityLevel: 'loose' })`.
 
 Font Awesome icons via `fa:fa-icon-name` syntax. Register custom icon packs from [iconify.design](https://iconify.design/) using `mermaid.registerIconPacks()`. Architecture diagrams support 200,000+ icons via the registered pack prefix (e.g., `logos:aws-lambda`).
 
-## Installation
-
+## Installation / Setup
 ### CDN
 ```html
 <script type="module">
@@ -181,7 +174,14 @@ npx @mermaid-js/mermaid-cli input.mmd -o output.png
 Visit [https://mermaid.live](https://mermaid.live) for interactive editing.
 
 ## Advanced Topics
+## Advanced Topics
 
-- [Tiny Mermaid](https://github.com/mermaid-js/mermaid/tree/develop/packages/tiny) — smaller bundle (~half size, no mindmap/architecture/KaTeX/lazy loading)
-- [Mermaid Chart](https://mermaid.ai/) — web-based editor with AI diagramming and collaboration
-- [Community Integrations](https://mermaid.js.org/ecosystem/integrations-community.html) — plugins for VS Code, JetBrains, ChatGPT, PowerPoint, Word
+- [Flowcharts](reference/01-flowcharts.md)
+- [Sequence Diagrams](reference/02-sequence-diagrams.md)
+- [Class And State Diagrams](reference/03-class-and-state-diagrams.md)
+- [Data Charts](reference/04-data-charts.md)
+- [Process And Timeline](reference/05-process-and-timeline.md)
+- [Architecture C4 Specialized](reference/06-architecture-c4-specialized.md)
+- [Configuration And Theming](reference/07-configuration-and-theming.md)
+- [Api And Integration](reference/08-api-and-integration.md)
+

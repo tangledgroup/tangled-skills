@@ -20,21 +20,12 @@ external_references:
   - https://github.com/rxmarcel/pinecone-router
   - https://www.npmjs.com/package/pinecone-router
 ---
-
-# Pinecone Router 7.5
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A comprehensive toolkit for building client-side routing in Alpine.js applications using Pinecone Router v7.5, providing route matching, template rendering, handlers, navigation history, and TypeScript support for single-page applications.
 
 A small, easy-to-use, and feature-packed router for Alpine.js that provides declarative routing with inline/external templates, route handlers, navigation history, and full TypeScript support.
 
 ## When to Use
-
 - Building single-page applications (SPAs) with Alpine.js
 - Implementing client-side routing without framework overhead
 - Creating dynamic routes with parameters (named, optional, rest, wildcard)
@@ -43,8 +34,10 @@ A small, easy-to-use, and feature-packed router for Alpine.js that provides decl
 - Implementing custom navigation history management
 - Building TypeScript Alpine.js applications with type-safe routing
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### CDN Installation
 
 Include Pinecone Router **before** Alpine.js in your document's `<head>`:
@@ -78,8 +71,7 @@ Alpine.plugin(PineconeRouter)
 Alpine.start()
 ```
 
-## Quick Start
-
+## Usage Examples
 ### Basic Routing Example
 
 ```html
@@ -118,17 +110,15 @@ Alpine.start()
 ```
 
 ## Core Features
+See [Route Matching](reference/01-route-matching.md) for detailed pattern syntax and examples.
 
-See [Route Matching](references/01-route-matching.md) for detailed pattern syntax and examples.
+See [Templates](reference/02-templates.md) for inline templates, external templates, and embedded scripts.
 
-See [Templates](references/02-templates.md) for inline templates, external templates, and embedded scripts.
+See [Handlers](reference/03-handlers.md) for route handlers, async operations, and data passing.
 
-See [Handlers](references/03-handlers.md) for route handlers, async operations, and data passing.
-
-See [Navigation](references/04-navigation.md) for navigation history, back/forward operations, and programmatic navigation.
+See [Navigation](reference/04-navigation.md) for navigation history, back/forward operations, and programmatic navigation.
 
 ## Magic Helpers
-
 Pinecone Router provides three magic helpers accessible in Alpine.js components:
 
 - **`$router`**: Access the PineconeRouter object for navigation and configuration
@@ -143,16 +133,16 @@ Pinecone Router provides three magic helpers accessible in Alpine.js components:
 </div>
 ```
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-route-matching.md`](references/01-route-matching.md) - Route patterns, parameters, matching rules, and segment types
-- [`references/02-templates.md`](references/02-templates.md) - Inline templates, external templates, modifiers, embedded scripts with x-run directive
-- [`references/03-handlers.md`](references/03-handlers.md) - Route handlers, async operations, data passing, global handlers, cancellation
-- [`references/04-navigation.md`](references/04-navigation.md) - Navigation history, programmatic navigation, events, loading states
-- [`references/05-api-reference.md`](references/05-api-reference.md) - Complete TypeScript API reference, settings, objects, and interfaces
+- [Route Matching](reference/01-route-matching.md)
+- [Templates](reference/02-templates.md)
+- [Handlers](reference/03-handlers.md)
+- [Navigation](reference/04-navigation.md)
+- [Api Reference](reference/05-api-reference.md)
 
 ## Troubleshooting
-
 ### Templates Not Rendering
 
 1. Ensure `x-template` directive is present on the route template element
@@ -181,7 +171,7 @@ document.addEventListener('alpine:init', () => {
 })
 ```
 
-See [Settings](references/05-api-reference.md#settings-object) for configuration options.
+See [Settings](reference/05-api-reference.md#settings-object) for configuration options.
 
 ### TypeScript Integration
 
@@ -196,7 +186,6 @@ const myHandler: Handler<unknown, string> = (context: HandlerContext, controller
 ```
 
 ## Compatibility
-
 | Pinecone Router Version | Alpine.js Version |
 |------------------------|-------------------|
 | v7.x                   | v3                |
@@ -204,7 +193,6 @@ const myHandler: Handler<unknown, string> = (context: HandlerContext, controller
 | v1.x                   | v2                |
 
 ## Important Notes
-
 1. **Trailing slashes are normalized** - Both `/about` and `/about/` work identically
 2. **Matching is case-insensitive** - `/Home` matches `/home`
 3. **Handlers run before templates** - Use handlers for redirects before rendering
@@ -214,23 +202,19 @@ const myHandler: Handler<unknown, string> = (context: HandlerContext, controller
 7. **Default notfound route logs error** - Override with custom `x-route="notfound"` template
 
 ## Common Patterns
-
 ### Authentication Guard
 
-See [Handlers](references/03-handlers.md#authentication-guards) for implementation examples.
+See [Handlers](reference/03-handlers.md#authentication-guards) for implementation examples.
 
 ### Data Fetching Pattern
 
-See [Handlers](references/03-handlers.md#async-data-fetching) for async operations with AbortController.
+See [Handlers](reference/03-handlers.md#async-data-fetching) for async operations with AbortController.
 
 ### Layout with Shared Components
 
-See [Templates](references/02-templates.md#multiple-external-templates) for including header/footer templates.
+See [Templates](reference/02-templates.md#multiple-external-templates) for including header/footer templates.
 
 ### Dynamic Template URLs
 
-See [Templates](references/02-templates.md#template-url-interpolation) for using route params in template paths.
+See [Templates](reference/02-templates.md#template-url-interpolation) for using route params in template paths.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

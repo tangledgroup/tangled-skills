@@ -19,11 +19,7 @@ external_references:
   - https://github.com/boto/boto3/blob/develop/CHANGELOG.rst
   - https://boto3.amazonaws.com/v1/documentation/api/latest/
 ---
-
-# Boto3 1.42.89 - AWS SDK for Python
-
 ## Overview
-
 Boto3 is the Amazon Web Services (AWS) Software Development Kit (SDK) for Python, enabling developers to interact with 200+ AWS services through a Pythonic API. Version 1.42.89 provides both high-level resource interfaces (object-oriented) and low-level client interfaces (direct API access) with automatic handling of pagination, retries, credentials, and error management.
 
 **Key Features:**
@@ -36,7 +32,6 @@ Boto3 is the Amazon Web Services (AWS) Software Development Kit (SDK) for Python
 - **200+ Services**: Comprehensive AWS service coverage
 
 ## When to Use
-
 Use this skill when:
 - Building Python applications that interact with AWS services
 - Need to manage S3 buckets, EC2 instances, Lambda functions, DynamoDB tables, etc.
@@ -49,7 +44,6 @@ Use this skill when:
 - Implementing retry logic for transient AWS service errors
 
 ## Core Concepts
-
 ### Clients vs Resources
 
 Boto3 provides two interfaces for interacting with AWS services:
@@ -91,7 +85,6 @@ Boto3 searches for credentials in this order (stops at first match):
 | **adaptive** | Configurable | All standard features + dynamic rate limiting | High-throughput applications |
 
 ## Installation / Setup
-
 ### Install Boto3
 
 ```bash
@@ -144,7 +137,6 @@ export AWS_DEFAULT_REGION=us-east-1
 ```
 
 ## Usage Examples
-
 ### Basic Client Usage
 
 ```python
@@ -336,19 +328,7 @@ adaptive_config = Config(
 )
 ```
 
-## Advanced Topics
-
-See the following reference files for detailed coverage:
-
-- [Configuration and Credentials](references/01-configuration-credentials.md) - Complete guide to credential providers, config files, environment variables, IAM roles, SSO, and advanced configuration options
-- [Clients and Resources](references/02-clients-resources.md) - Deep dive into client vs resource interfaces, thread safety, metadata access, and when to use each approach
-- [Error Handling](references/03-error-handling.md) - Comprehensive error handling patterns, exception types, parsing error responses, and best practices for production code
-- [Pagination and Collections](references/04-pagination-collections.md) - Working with paginators, resource collections, filtering, JMESPath queries, and batch operations
-- [Sessions and Threading](references/05-sessions-threading.md) - Session management, multi-threaded applications, connection pooling, and concurrency patterns
-- [AWS Service Examples](references/06-service-examples.md) - Practical examples for S3, EC2, DynamoDB, SQS, Lambda, IAM, and other commonly used services
-
 ## Best Practices
-
 1. **Use clients for new features**: Resources may not include the latest AWS API features; clients always have full coverage
 2. **Implement proper error handling**: Always catch `botocore.exceptions.ClientError` and parse error codes
 3. **Use waiters for state changes**: Don't poll manually; use built-in waiters for resource state transitions
@@ -359,7 +339,6 @@ See the following reference files for detailed coverage:
 8. **Enable logging for debugging**: Set `BOTO_DEBUGGINGS=1` or configure Python logging to see retry attempts
 
 ## Troubleshooting
-
 ### Common Issues
 
 **"Could not connect to the endpoint URL"**
@@ -395,4 +374,14 @@ boto3.set_stream_logger('', logging.DEBUG)
 # export AWS_SDK_UA_APP_ID=myapp
 # export BOTOCORE_DEBUG=1
 ```
+
+## Advanced Topics
+## Advanced Topics
+
+- [Configuration Credentials](reference/01-configuration-credentials.md)
+- [Clients Resources](reference/02-clients-resources.md)
+- [Error Handling](reference/03-error-handling.md)
+- [Pagination Collections](reference/04-pagination-collections.md)
+- [Sessions Threading](reference/05-sessions-threading.md)
+- [Service Examples](reference/06-service-examples.md)
 

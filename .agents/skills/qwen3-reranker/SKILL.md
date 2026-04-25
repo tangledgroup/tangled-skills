@@ -23,11 +23,7 @@ external_references:
   - https://huggingface.co/Qwen/Qwen3-Reranker-4B
   - https://huggingface.co/Qwen/Qwen3-Reranker-8B
 ---
-
-# Qwen3 Reranker — Complete Toolkit (0.6B / 4B / 8B)
-
 ## Overview
-
 Qwen3 Reranker is a family of state-of-the-art **cross-encoder** text reranking models from the Qwen team, built on the Qwen3 foundation model. The series includes three sizes — **0.6B**, **4B**, and **8B** — all supporting 100+ languages and up to 32K context length. These models excel at scoring query-document relevance pairs, making them ideal for second-stage reranking in retrieval-augmented generation (RAG) pipelines, semantic search systems, and information retrieval workflows.
 
 All three models are licensed under **Apache 2.0** and can be loaded via Sentence Transformers (`CrossEncoder`), raw Hugging Face Transformers (`AutoModelForCausalLM`), or vLLM for high-throughput serving. The reranking architecture uses a cross-encoder approach: given a (query, document) pair, the model outputs a relevance score by comparing logits for "yes" and "no" tokens at the final position.
@@ -40,7 +36,6 @@ All three models are licensed under **Apache 2.0** and can be loaded via Sentenc
 - **Three sizes** for different latency/accuracy trade-offs
 
 ## When to Use
-
 Load this skill when:
 - You need to re-rank a set of candidate documents for a query (e.g., top-100 → top-5)
 - Building or improving a RAG pipeline with cross-encoder reranking
@@ -49,7 +44,6 @@ Load this skill when:
 - Deploying rerankers via Sentence Transformers, Hugging Face, or vLLM
 
 ## Core Concepts
-
 ### Architecture
 The reranker is built on a causal language model backbone (Qwen3). It uses a **cross-encoder** approach: the query and document are concatenated into a single sequence with special tokens. The model outputs logits for "yes" and "no" tokens at the final position, which are log-softmaxed to produce a relevance score.
 
@@ -75,7 +69,6 @@ The model expects a specific chat template:
 Wrapped in system/user roles with special prefix/suffix tokens.
 
 ## Quick Start — Sentence Transformers (Recommended)
-
 ```python
 from sentence_transformers import CrossEncoder
 
@@ -95,21 +88,16 @@ rankings = model.rank(query, documents)
 ```
 
 ## Model Comparison
-
 | Model | Parameters | Layers | MTEB-R | MLDR | Best For |
 |-------|-----------|--------|--------|------|----------|
 | Qwen3-Reranker-0.6B | 0.6B | 28 | 65.80 | 67.28 | Edge/low-latency, CPU-friendly |
 | Qwen3-Reranker-4B | 4B | 36 | **69.76** | 69.97 | Best accuracy/speed balance |
 | Qwen3-Reranker-8B | 8B | 36 | 69.02 | **70.19** | Maximum accuracy, multilingual |
 
-## Reference Files
-
-For detailed implementation code, see the reference files in this directory:
-
-- [`references/01-sentence-transformers.md`](references/01-sentence-transformers.md) — Complete Sentence Transformers usage with CrossEncoder, custom instructions, sigmoid activation, and production patterns
-- [`references/02-transformers-api.md`](references/02-transformers-api.md) — Raw Hugging Face Transformers API: manual token processing, prefix/suffix handling, logits computation, flash attention optimization
-- [`references/03-vllm-deployment.md`](references/03-vllm-deployment.md) — High-throughput vLLM serving: batched inference, tensor parallelism, sampling params with allowed tokens, production deployment patterns
-
+## Advanced Topics
 ## Advanced Topics
 
-For more details on advanced usage, refer to the official documentation listed in the References section.
+- [Sentence Transformers](reference/01-sentence-transformers.md)
+- [Transformers Api](reference/02-transformers-api.md)
+- [Vllm Deployment](reference/03-vllm-deployment.md)
+

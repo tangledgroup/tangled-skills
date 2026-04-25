@@ -24,11 +24,7 @@ external_references:
   - https://stackoverflow.com/questions/tagged/scipy
   - https://github.com/scipy/scipy/tree/v1.17.1/doc
 ---
-
-# SciPy 1.17.1
-
 ## Overview
-
 **SciPy** (pronounced "Sigh Pie") is an open-source software library for mathematics, science, and engineering built on NumPy. It provides high-level commands and classes for manipulating and visualizing data, offering a comprehensive collection of mathematical algorithms and convenience functions.
 
 SciPy 1.17.1 organizes functionality into subpackages covering different scientific computing domains:
@@ -53,7 +49,6 @@ SciPy 1.17.1 organizes functionality into subpackages covering different scienti
 | `stats` | Statistical distributions and functions |
 
 ## When to Use
-
 **Use SciPy when:**
 
 - Solving optimization problems (minimization, curve fitting, root-finding)
@@ -75,8 +70,7 @@ SciPy 1.17.1 organizes functionality into subpackages covering different scienti
 - Deep learning tasks (use PyTorch or TensorFlow)
 - Simple data manipulation (use pandas)
 
-## Installation
-
+## Installation / Setup
 ### Using pip
 
 ```bash
@@ -102,7 +96,6 @@ uv add scipy==1.17.1
 - BLAS/LAPACK libraries (for linear algebra performance)
 
 ## Quick Start Examples
-
 ### Basic Import Pattern
 
 ```python
@@ -127,7 +120,6 @@ mean, std = stats.norm.mean(), stats.norm.std()
 See the reference files below for detailed examples and API documentation.
 
 ## Core Concepts
-
 ### Relationship with NumPy
 
 SciPy builds on NumPy arrays (`numpy.ndarray`) as its fundamental data structure. Most SciPy functions accept and return NumPy arrays:
@@ -154,65 +146,26 @@ det_A = linalg.det(A)  # Uses NumPy array internally
 - Sparse matrices reduce memory for large, mostly-zero datasets
 - Parallel execution supported in many subpackages (see references)
 
-## Reference Files
-
-This skill is organized into modular reference files:
-
-### Core Functionality
-
-| Reference | Topics |
-|-----------|--------|
-| [`01-optimize.md`](references/01-optimize.md) | Optimization, root-finding, curve fitting, linear programming |
-| [`02-integrate.md`](references/02-integrate.md) | Numerical integration, ODE solvers, quadrature methods |
-| [`03-interpolate.md`](references/03-interpolate.md) | Interpolation, splines, smoothing, grid data |
-| [`04-linalg.md`](references/04-linalg.md) | Linear algebra, matrix decompositions, eigenvalues |
-| [`05-stats.md`](references/05-stats.md) | Statistical distributions, hypothesis tests, correlation |
-
-### Signal and Image Processing
-
-| Reference | Topics |
-|-----------|--------|
-| [`06-signal.md`](references/06-signal.md) | Filtering, spectral analysis, convolution, wavelets |
-| [`07-ndimage.md`](references/07-ndimage.md) | N-dimensional image filtering, morphology, measurements |
-| [`08-fft.md`](references/08-fft.md) | Fast Fourier Transform, frequency domain analysis |
-
-### Specialized Domains
-
-| Reference | Topics |
-|-----------|--------|
-| [`09-sparse.md`](references/09-sparse.md) | Sparse matrices, sparse linear algebra, graph routines |
-| [`10-spatial.md`](references/10-spatial.md) | Spatial trees, distance matrices, transformations |
-| [`11-cluster.md`](references/11-cluster.md) | Clustering algorithms, hierarchical clustering, vector quantization |
-| [`12-special.md`](references/12-special.md) | Special mathematical functions (Bessel, gamma, erf) |
-
-### I/O and Utilities
-
-| Reference | Topics |
-|-----------|--------|
-| [`13-io.md`](references/13-io.md) | MATLAB files, WAV audio, ARFF data formats |
-| [`14-constants.md`](references/14-constants.md) | Physical and mathematical constants |
-| [`15-additional.md`](references/15-additional.md) | ODR, datasets, differentiate, csgraph, parallel execution |
-
+## Advanced Topics
 ## Advanced Topics
 
-### Thread Safety and Parallel Execution
-
-Many SciPy functions support parallel execution. See [`15-additional.md`](references/15-additional.md) for thread safety guidelines and parallelization strategies.
-
-### Sparse Matrix Formats
-
-SciPy supports multiple sparse matrix formats (CSR, CSC, COO, LIL). Choose the right format for your use case as described in [`09-sparse.md`](references/09-sparse.md).
-
-### Optimization Strategies
-
-Different optimization algorithms suit different problems:
-- Use `Nelder-Mead` for non-smooth functions
-- Use `BFGS`/`L-BFGS-B` for smooth functions with gradients
-- Use `differential_evolution` for global optimization
-- See [`01-optimize.md`](references/01-optimize.md) for detailed guidance
+- [Optimize](reference/01-optimize.md)
+- [Integrate](reference/02-integrate.md)
+- [Interpolate](reference/03-interpolate.md)
+- [Linalg](reference/04-linalg.md)
+- [Stats](reference/05-stats.md)
+- [Signal](reference/06-signal.md)
+- [Ndimage](reference/07-ndimage.md)
+- [Fft](reference/08-fft.md)
+- [Sparse](reference/09-sparse.md)
+- [Spatial](reference/10-spatial.md)
+- [Cluster](reference/11-cluster.md)
+- [Special](reference/12-special.md)
+- [Io](reference/13-io.md)
+- [Constants](reference/14-constants.md)
+- [Additional](reference/15-additional.md)
 
 ## Troubleshooting
-
 ### Common Issues
 
 **ImportError: No module named 'scipy'**
@@ -250,13 +203,12 @@ result = linalg.solve(arr_c, b)
 5. **Profile your code** to identify bottlenecks
 
 ## Version Information
-
 This skill covers SciPy 1.17.1 specifically. For the latest development version, see the [SciPy development documentation](https://scipy.github.io/devdocs/).
 
 ## See Also
-
 - [`numpy`](https://numpy.org/) - Fundamental array operations
 - [`matplotlib`](https://matplotlib.org/) - Data visualization
 - [`pandas`](https://pandas.pydata.org/) - Data manipulation
 - [`scikit-learn`](https://scikit-learn.org/) - Machine learning
 - [`sympy`](https://www.sympy.org/) - Symbolic mathematics
+

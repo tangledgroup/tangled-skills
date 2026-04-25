@@ -31,15 +31,7 @@ external_references:
   - https://docs.podman.io/
   - https://github.com/containers/podman
 ---
-
-# Podman 5.8.1
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Comprehensive toolkit for Podman 5.8.1 container engine providing daemonless container management with Docker-compatible CLI, rootless containers, pods, images, volumes, networks, Kubernetes integration, and systemd/Quadlet declarative management. Use when building, running, or managing containers without a daemon, implementing rootless container workflows, orchestrating pods, integrating with Kubernetes, automating with systemd services, or migrating from Docker.
 
 Podman (Pod Manager) is a fully featured, daemonless container engine that provides Docker-compatible CLI for managing pods, containers, and images. Most commands can run as a regular user without requiring root privileges, making it ideal for rootless container workflows, CI/CD pipelines, and shared environments.
@@ -56,7 +48,6 @@ Podman (Pod Manager) is a fully featured, daemonless container engine that provi
 - Container signing and verification
 
 ## When to Use
-
 - Running containers without root privileges
 - Migrating from Docker to a daemonless alternative
 - Managing groups of containers as pods
@@ -67,8 +58,10 @@ Podman (Pod Manager) is a fully featured, daemonless container engine that provi
 - Implementing rootless container workflows
 - Managing container registries and image authentication
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Installation
 
 **Fedora/RHEL:**
@@ -98,10 +91,9 @@ podman info
 
 ### Quick Start
 
-See [Core Concepts](references/01-core-concepts.md) for fundamental workflows.
+See [Core Concepts](reference/01-core-concepts.md) for fundamental workflows.
 
-## Quick Start
-
+## Usage Examples
 ### Run a Simple Container
 
 ```bash
@@ -115,7 +107,7 @@ podman run -it fedora /bin/bash
 podman run -p 8080:80 nginx
 ```
 
-See [Core Concepts](references/01-core-concepts.md) for detailed container management.
+See [Core Concepts](reference/01-core-concepts.md) for detailed container management.
 
 ### Manage Images
 
@@ -133,7 +125,7 @@ podman build -t myapp:latest .
 podman push myapp:latest quay.io/username/myapp
 ```
 
-Refer to [Image Management](references/02-image-management.md) for comprehensive image workflows.
+Refer to [Image Management](reference/02-image-management.md) for comprehensive image workflows.
 
 ### Work with Pods
 
@@ -148,7 +140,7 @@ podman run --pod mypod nginx
 podman ps -a --format table "{{.PodName}}\t{{.Names}}"
 ```
 
-See [Pod Management](references/03-pod-management.md) for advanced pod operations.
+See [Pod Management](reference/03-pod-management.md) for advanced pod operations.
 
 ### Kubernetes Integration
 
@@ -160,7 +152,7 @@ podman generate kube mycontainer > pod.yaml
 podman play kube pod.yaml
 ```
 
-Refer to [Kubernetes Integration](references/04-kubernetes-integration.md) for detailed workflows.
+Refer to [Kubernetes Integration](reference/04-kubernetes-integration.md) for detailed workflows.
 
 ### Systemd and Quadlet
 
@@ -184,21 +176,19 @@ sudo systemctl daemon-reload
 sudo systemctl start myapp.container
 ```
 
-See [Systemd Integration](references/05-systemd-quadlet.md) for comprehensive service management.
+See [Systemd Integration](reference/05-systemd-quadlet.md) for comprehensive service management.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-core-concepts.md`](references/01-core-concepts.md) - Container lifecycle, common operations, networking basics, volume management
-- [`references/02-image-management.md`](references/02-image-management.md) - Image pull/push/build, registry authentication, multi-arch images, image signing
-- [`references/03-pod-management.md`](references/03-pod-management.md) - Pod creation, container orchestration within pods, pod networking
-- [`references/04-kubernetes-integration.md`](references/04-kubernetes-integration.md) - Generate/play Kubernetes manifests, compatibility notes
-- [`references/05-systemd-quadlet.md`](references/05-systemd-quadlet.md) - Systemd unit generation, Quadlet declarative management, service lifecycle
-- [`references/06-advanced-topics.md`](references/06-advanced-topics.md) - Rootless containers, security profiles, seccomp/AppArmor, SELinux, performance tuning
-
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/podman-5-8-1/`). All paths are relative to this directory.
+- [Core Concepts](reference/01-core-concepts.md)
+- [Image Management](reference/02-image-management.md)
+- [Pod Management](reference/03-pod-management.md)
+- [Kubernetes Integration](reference/04-kubernetes-integration.md)
+- [Systemd Quadlet](reference/05-systemd-quadlet.md)
+- [Advanced Topics](reference/06-advanced-topics.md)
 
 ## Common Patterns
-
 ### Docker Migration
 
 Most Docker commands work with Podman:
@@ -239,7 +229,6 @@ podman run -it --rm \
 ```
 
 ## Troubleshooting
-
 ### Container Won't Start
 
 ```bash
@@ -276,10 +265,9 @@ podman inspect --format '{{.NetworkSettings.IPAddress}}' <container>
 sudo systemctl restart podman-network
 ```
 
-See [Advanced Topics](references/06-advanced-topics.md) for detailed troubleshooting guides.
+See [Advanced Topics](reference/06-advanced-topics.md) for detailed troubleshooting guides.
 
 ## Environment Variables
-
 Podman supports these environment variables for configuration:
 
 | Variable | Description | Default |
@@ -291,7 +279,6 @@ Podman supports these environment variables for configuration:
 | `PODMAN_SYSTEMD_UNIT` | Systemd unit directory | `~/.config/systemd/user` |
 
 ## Best Practices
-
 1. **Use rootless containers** whenever possible for improved security
 2. **Pin image versions** with specific tags or digests, not `:latest`
 3. **Use Quadlet for production services** instead of systemd units generated by Podman
@@ -301,13 +288,9 @@ Podman supports these environment variables for configuration:
 7. **Leverage Kubernetes manifests** for portable deployments
 
 ## Validation Checklist
-
 - [ ] Podman installed and accessible via `podman --version`
 - [ ] User can run containers without sudo (rootless mode)
 - [ ] Container registry authentication configured if needed
 - [ ] Storage driver working correctly (`podman info | grep storage`)
 - [ ] Network interfaces available (`podman network ls`)
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

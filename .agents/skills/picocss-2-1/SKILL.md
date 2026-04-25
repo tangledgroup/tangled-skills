@@ -17,15 +17,7 @@ external_references:
   - https://picocss.com/
   - https://github.com/picocss/pico
 ---
-
-# Pico CSS v2.1
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A skill for using Pico CSS v2.1, a minimalist CSS framework that styles semantic HTML elements elegantly by default with responsive typography, automatic light/dark modes, and over 130 customizable CSS variables. Use when building clean, lightweight web interfaces with pure HTML markup, creating class-light designs without JavaScript dependencies, or implementing accessible design systems with minimal CSS overhead.
 
 Pico CSS is a minimalist and lightweight starter kit that prioritizes semantic syntax, making every HTML element responsive and elegant by default. Write HTML, add Pico CSS, and Voilà!
@@ -39,7 +31,6 @@ Pico CSS is a minimalist and lightweight starter kit that prioritizes semantic s
 - Optimized performance (lean HTML, reduced memory usage)
 
 ## When to Use
-
 - Building clean, lightweight web interfaces with minimal CSS overhead
 - Creating class-light designs using semantic HTML elements
 - Implementing accessible design systems without JavaScript dependencies
@@ -47,8 +38,10 @@ Pico CSS is a minimalist and lightweight starter kit that prioritizes semantic s
 - Prototyping quickly with responsive typography and spacing
 - Customizing UI with CSS variables or SASS
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Install Manually
 
 Download Pico and link `/css/pico.min.css` in the `<head>` of your website:
@@ -86,7 +79,7 @@ Then import Pico into your SCSS file:
 @use "pico";
 ```
 
-Learn more about [customization with SASS](references/02-customization.md).
+Learn more about [customization with SASS](reference/02-customization.md).
 
 ### Install with Composer
 
@@ -114,8 +107,7 @@ composer require picocss/pico
 </html>
 ```
 
-## Quick Start
-
+## Usage Examples
 ### Class-Light Semantic HTML
 
 Pico directly styles your HTML tags. Write semantic HTML and it looks great:
@@ -165,12 +157,11 @@ Or use `.fluid.classless` for a fluid container:
 ```
 
 ## Common Operations
-
 ### Responsive Typography
 
 Font sizes scale automatically with viewport width (xs to xxl breakpoints):
 
-See [Typography Reference](references/01-typography.md) for detailed font size tables and examples.
+See [Typography Reference](reference/01-typography.md) for detailed font size tables and examples.
 
 ### Forms with Semantic HTML
 
@@ -193,7 +184,7 @@ All form elements are fully responsive with pure semantic HTML:
 </form>
 ```
 
-See [Forms Reference](references/03-forms.md) for all form element types and patterns.
+See [Forms Reference](reference/03-forms.md) for all form element types and patterns.
 
 ### Grid Layout
 
@@ -207,7 +198,7 @@ Use `.grid` for responsive layouts:
 </div>
 ```
 
-See [Layout Reference](references/04-layout.md) for grid, container, and landmarks.
+See [Layout Reference](reference/04-layout.md) for grid, container, and landmarks.
 
 ### Light/Dark Mode
 
@@ -218,21 +209,19 @@ Pico automatically adapts to user's `prefers-color-scheme`. Force a theme with `
 <html data-theme="light"> <!-- Force light mode -->
 ```
 
-See [Color Schemes Reference](references/01-typography.md#color-schemes) for customization.
+See [Color Schemes Reference](reference/01-typography.md#color-schemes) for customization.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-typography.md`](references/01-typography.md) - Typography, headings, text elements, color schemes
-- [`references/02-customization.md`](references/02-customization.md) - CSS variables, SASS customization, themes
-- [`references/03-forms.md`](references/03-forms.md) - Form elements, inputs, buttons, validation patterns
-- [`references/04-layout.md`](references/04-layout.md) - Grid, container, landmarks, section styling
-- [`references/05-components.md`](references/05-components.md) - Cards, modals, nav, dropdowns, accordions
-- [`references/06-troubleshooting.md`](references/06-troubleshooting.md) - Common issues and solutions
-
-**Note:** `{baseDir}` refers to the skill's base directory (e.g., `.agents/skills/picocss-2-1/`). All paths in this skill are relative to this directory.
+- [Typography](reference/01-typography.md)
+- [Customization](reference/02-customization.md)
+- [Forms](reference/03-forms.md)
+- [Layout](reference/04-layout.md)
+- [Components](reference/05-components.md)
+- [Troubleshooting](reference/06-troubleshooting.md)
 
 ## Troubleshooting
-
 ### Elements not styling correctly
 
 Ensure you're using semantic HTML elements (`<form>`, `<button>`, `<h1>`-`<h6>`, etc.) and that Pico CSS is loaded before your custom styles.
@@ -245,8 +234,5 @@ Add `<meta name="color-scheme" content="light dark">` to your `<head>` and ensur
 
 Pico uses low-specificity selectors. Your custom styles should override without issues. If needed, use CSS variables instead of overriding selectors.
 
-See [Troubleshooting Reference](references/06-troubleshooting.md) for more solutions.
+See [Troubleshooting Reference](reference/06-troubleshooting.md) for more solutions.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

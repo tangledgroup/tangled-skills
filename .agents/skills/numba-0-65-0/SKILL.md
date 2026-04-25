@@ -21,11 +21,7 @@ external_references:
   - https://numba.readthedocs.io/en/stable/
   - https://numba.readthedocs.io/en/stable/index.html
 ---
-
-# Numba 0.65.0
-
 ## Overview
-
 Numba is an open-source, NumPy-aware optimizing compiler for Python that uses the LLVM compiler project to generate machine code from Python syntax. It can compile a large subset of numerically-focused Python, including many NumPy functions, and provides support for automatic parallelization of loops, GPU-accelerated code generation, and creation of ufuncs and C callbacks.
 
 **Key capabilities:**
@@ -39,7 +35,6 @@ Numba is an open-source, NumPy-aware optimizing compiler for Python that uses th
 - Ahead-of-time (AOT) compilation with `pycc`
 
 ## When to Use
-
 Use Numba when:
 - **Numerical code needs acceleration**: Functions using NumPy arrays, mathematical operations, and loops
 - **Loop-heavy computations**: Code with nested loops over numerical data that would benefit from native machine code execution
@@ -55,7 +50,6 @@ Use Numba when:
 - Applications where compilation time is critical (first call includes JIT overhead)
 
 ## Core Concepts
-
 ### Compilation Modes
 
 **Nopython mode** (default since 0.59.0): Compiles functions to run entirely without the Python interpreter, providing best performance. Use `@njit` or `@jit(nopython=True)`.
@@ -79,7 +73,6 @@ Numba uses static type inference to determine variable types at compile time. Fu
 - Typed containers (`numba.typed.List`, `numba.typed.Dict`)
 
 ## Installation / Setup
-
 ### Conda Installation (Recommended)
 
 ```bash
@@ -116,7 +109,6 @@ Binary wheels include bundled LLVM components; no separate LLVM installation nee
 | BSD | ⚠️ Unofficial support |
 
 ## Usage Examples
-
 ### Basic JIT Compilation
 
 ```python
@@ -199,81 +191,14 @@ blocks_per_grid = (x.size + threads_per_block - 1) // threads_per_block
 vector_add[blocks_per_grid, threads_per_block](x, y, result)
 ```
 
-See [CUDA GPU Programming](references/04-cuda-programming.md) for comprehensive GPU guidance.
+See [CUDA GPU Programming](reference/04-cuda-programming.md) for comprehensive GPU guidance.
 
 ## Advanced Topics
+## Advanced Topics
 
-### Stencil Computations
-
-For finite difference operations and image processing:
-
-```python
-from numba import stencil
-import numpy as np
-
-@stencil
-def laplacian_kernel(a):
-    """2D Laplacian stencil."""
-    return (a[0, 1] + a[0, -1] + a[1, 0] + a[-1, 0] - 4 * a[0, 0])
-
-array = np.random.rand(100, 100)
-result = laplacian_kernel(array)
-```
-
-### JIT Classes
-
-Compile Python classes for performance:
-
-```python
-from numba import njit
-from numba.experimental import jitclass
-import numpy as np
-
-spec = [
-    ('center', np.float64),
-    ('spread', np.float64),
-]
-
-@jitclass(spec)
-class Gaussian1D:
-    def __init__(self, center, spread):
-        self.center = center
-        self.spread = spread
-    
-    def pdf(self, x):
-        from math import exp, pi, sqrt
-        coef = 1.0 / (sqrt(2 * pi) * self.spread)
-        return coef * exp(-0.5 * ((x - self.center) / self.spread) ** 2)
-
-gaussian = Gaussian1D(0.0, 1.0)
-```
-
-### C Callbacks
-
-Create functions callable from C/C++:
-
-```python
-from numba import cfunc
-import numpy as np
-
-@cfunc("float64(float64, float64)")
-def add_callback(x, y):
-    """C callback for use with native libraries."""
-    return x + y
-
-# Pass to C library via ctypes
-handle = add_callback.ctypes
-```
-
-See [C Callback Functions](references/03-c-functions.md) for advanced patterns.
-
-### Performance Optimization
-
-- **Use nopython mode**: Always prefer `@njit` over `@jit` for production code
-- **Enable fastmath**: Use `fastmath=True` when IEEE 754 compliance isn't required
-- **Parallel execution**: Add `parallel=True` for multi-core CPU utilization
-- **Intel SVML**: Install `intel-cmplr-lib-rt` for optimized transcendental functions
-- **Profile first**: Use profiling to identify hot spots before optimization
-
-See [Performance Tips](references/02-performance-tips.md) for detailed guidance.
+- [Jit Compilation](reference/01-jit-compilation.md)
+- [Performance Tips](reference/02-performance-tips.md)
+- [C Functions](reference/03-c-functions.md)
+- [Cuda Programming](reference/04-cuda-programming.md)
+- [Advanced Features](reference/05-advanced-features.md)
 

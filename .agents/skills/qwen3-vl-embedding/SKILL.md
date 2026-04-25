@@ -22,15 +22,10 @@ external_references:
   - https://qwen.ai/blog?id=qwen3-vl-embedding
   - https://huggingface.co/Qwen/Qwen3-VL-Embedding-8B
 ---
-
-# Qwen3-VL-Embedding 0.1.0
-
 ## Overview
-
 The **Qwen3-VL-Embedding** series provides state-of-the-art multimodal embedding models built on the Qwen3-VL foundation model. It generates high-dimensional semantic vectors for **text, images, screenshots, videos**, and **mixed-modal inputs** in a unified representation space. Available in 2B and 8B parameter sizes, both support Matryoshka Representation Learning (MRL) for flexible output dimensions (64–2048 for 2B, 64–4096 for 8B), instruction-aware customization, quantization (INT8/INT4), and over 30 languages.
 
 ## When to Use
-
 Use this skill when:
 - Building **multimodal retrieval systems** that search across text, images, videos, and documents simultaneously
 - Implementing **visual search engines** where users query with text descriptions to find relevant images/videos
@@ -42,7 +37,6 @@ Use this skill when:
 - Deploying embedding models with **memory-efficient dimensions** using Matryoshka Representation Learning
 
 ## Core Concepts
-
 ### Dual-Tower Architecture
 
 The model uses a dual-tower design: each input (single or mixed modality) is independently encoded into a high-dimensional vector extracted from the `[EOS]` token's hidden state. This enables efficient large-scale retrieval via cosine similarity.
@@ -70,9 +64,8 @@ Customize embedding behavior via instructions:
 {"text": "Product description", "instruction": "Find products matching customer queries."}
 ```
 
-## Installation
-
-See [Transformers API Reference](references/02-transformers-api.md) for complete installation details.
+## Installation / Setup
+See [Transformers API Reference](reference/02-transformers-api.md) for complete installation details.
 
 ```bash
 # Clone and setup
@@ -93,8 +86,7 @@ huggingface-cli download Qwen/Qwen3-VL-Embedding-2B --local-dir ./models/Qwen3-V
 - qwen-vl-utils >= 0.0.14
 - accelerate, decord, opencv-python-headless (for video/image processing)
 
-## Quick Start
-
+## Usage Examples
 ### Text Embeddings (Transformers)
 
 ```python
@@ -134,7 +126,6 @@ embeddings = [o.outputs.embedding for o in outputs]
 ```
 
 ## Usage Patterns
-
 ### Multimodal Retrieval Pipeline
 
 Combine embedding recall with reranking for high-accuracy retrieval:
@@ -143,7 +134,7 @@ Combine embedding recall with reranking for high-accuracy retrieval:
 2. **Reranker model** (Qwen3-VL-Reranker): precise relevance scoring on top-k candidates
 3. **LLM** (Qwen3-VL): final generation using reranked documents
 
-See [Use Cases & Patterns](references/05-use-cases-patterns.md) for complete examples including RAG, image search, video indexing, clustering, and cross-lingual search.
+See [Use Cases & Patterns](reference/05-use-cases-patterns.md) for complete examples including RAG, image search, video indexing, clustering, and cross-lingual search.
 
 ### Model Selection Guide
 
@@ -155,7 +146,6 @@ See [Use Cases & Patterns](references/05-use-cases-patterns.md) for complete exa
 | Text-heavy tasks | Consider Qwen3-Embedding-8B (text-only variant) |
 
 ## Model Specifications
-
 | Feature | Qwen3-VL-Embedding-2B | Qwen3-VL-Embedding-8B |
 |---------|----------------------|----------------------|
 | Parameters | 2B | 8B |
@@ -166,18 +156,7 @@ See [Use Cases & Patterns](references/05-use-cases-patterns.md) for complete exa
 | Quantization | ✅ INT8/INT4 | ✅ INT8/INT4 |
 | Languages | 30+ | 30+ |
 
-## Advanced Topics
-
-- **Architecture details**: Dual-tower design, EOS token pooling, MRL training
-- **Performance benchmarks**: SOTA on MMEB-V2 (77.8 overall), MMTEB results
-- **LoRA fine-tuning**: rank=32, alpha=32, target modules specified
-- **Pixel/frame constraints**: Image min/max pixels, video FPS and frame limits
-- **Reproducibility**: Evaluation scripts for MMEB v2 benchmark
-
-See reference files for deep dives.
-
 ## Citation
-
 ```bibtex
 @article{qwen3vlembedding,
   title={Qwen3-VL-Embedding and Qwen3-VL-Reranker: A Unified Framework for State-of-the-Art Multimodal Retrieval and Ranking},
@@ -186,3 +165,13 @@ See reference files for deep dives.
   year={2026}
 }
 ```
+
+## Advanced Topics
+## Advanced Topics
+
+- [Model Architecture](reference/01-model-architecture.md)
+- [Transformers Api](reference/02-transformers-api.md)
+- [Vllm Inference](reference/03-vllm-inference.md)
+- [Benchmarks Performance](reference/04-benchmarks-performance.md)
+- [Use Cases Patterns](reference/05-use-cases-patterns.md)
+

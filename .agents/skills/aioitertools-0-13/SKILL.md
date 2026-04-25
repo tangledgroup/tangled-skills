@@ -16,24 +16,10 @@ external_references:
   - https://github.com/pythonicdave/aioitertools
   - https://aioitertools.readthedocs.io/
 ---
-
-# aioitertools-0-13
-
 ## Overview
-
 Async-compatible versions of itertools, builtins, and more for Python asyncio. Use when building async Python applications that need to process iterables with familiar itertools-style functions, work with both standard and async iterables interchangeably, or consume async data streams with functional patterns.
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.## Overview
-
-Async-compatible versions of itertools, builtins, and more for Python asyncio. Use when building async Python applications that need to process iterables with familiar itertools-style functions, work with both standard and async iterables interchangeably, or consume async data streams with functional patterns.
-
-Async-compatible versions of Python's `itertools`, `builtins`, and additional utility functions for AsyncIO and mixed-type iterables. The library shadows standard library functions to provide asynchronous equivalents that work seamlessly with both standard iterators and async iterators, enabling a unified interface for processing iterable objects.
 
 ## When to Use
-
 - Processing async data streams with familiar itertools patterns (chain, map, filter, zip)
 - Converting between sync and async iterables without manual wrapping
 - Building async generators that need functional composition
@@ -41,8 +27,14 @@ Async-compatible versions of Python's `itertools`, `builtins`, and additional ut
 - Consuming futures or awaitables concurrently with `as_completed` or `gather`
 - Needing itertools functionality in async Python applications
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
 
+Async-compatible versions of itertools, builtins, and more for Python asyncio. Use when building async Python applications that need to process iterables with familiar itertools-style functions, work with both standard and async iterables interchangeably, or consume async data streams with functional patterns.
+
+Async-compatible versions of Python's `itertools`, `builtins`, and additional utility functions for AsyncIO and mixed-type iterables. The library shadows standard library functions to provide asynchronous equivalents that work seamlessly with both standard iterators and async iterators, enabling a unified interface for processing iterable objects.
+
+## Installation / Setup
 aioitertools requires Python 3.9 or newer. Install from PyPI:
 
 ```bash
@@ -51,8 +43,7 @@ pip install aioitertools
 
 No environment variables or configuration required.
 
-## Quick Start
-
+## Usage Examples
 ### Basic Usage with Builtins
 
 The library shadows standard builtins to provide async-compatible versions:
@@ -87,7 +78,7 @@ if await any(mixed_iterable):
     ...
 ```
 
-See [Builtins Reference](references/01-builtins.md) for complete function documentation.
+See [Builtins Reference](reference/01-builtins.md) for complete function documentation.
 
 ### Working with itertools Functions
 
@@ -117,7 +108,7 @@ async for key, group in groupby("AaBBcC", is_upper):
         ...  # Process grouped items
 ```
 
-See [itertools Reference](references/02-itertools.md) for complete function documentation.
+See [itertools Reference](reference/02-itertools.md) for complete function documentation.
 
 ### Concurrent Execution with asyncio Module
 
@@ -145,7 +136,7 @@ async for value in as_generated([gen1, gen2]):
     ...  # Values from both generators intermixed
 ```
 
-See [asyncio Module Reference](references/03-asyncio.md) for details.
+See [asyncio Module Reference](reference/03-asyncio.md) for details.
 
 ### Additional Utilities
 
@@ -168,10 +159,9 @@ uppercase_str = ''.join([c async for c in uppercase])  # "ABC"
 remainder_str = ''.join([c async for c in remainder])  # "dEfGhI"
 ```
 
-See [more_itertools Reference](references/04-more-itertools.md) for details.
+See [more_itertools Reference](reference/04-more-itertools.md) for details.
 
 ## Key Concepts
-
 ### Mixed Iterable Support
 
 All functions accept both standard iterables and async iterables:
@@ -213,15 +203,15 @@ async for item in chained:
 
 Exception: `combinations`, `permutations`, `product` consume entire input first.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-builtins.md`](references/01-builtins.md) - Async versions of Python builtins (all, any, enumerate, map, filter, zip, list, tuple, set, sum, max, min, sorted, reversed)
-- [`references/02-itertools.md`](references/02-itertools.md) - Complete itertools module (accumulate, chain, combinations, count, cycle, dropwhile, groupby, islice, permutations, product, repeat, starmap, takewhile, tee, zip_longest, etc.)
-- [`references/03-asyncio.md`](references/03-asyncio.md) - Concurrent execution utilities (as_completed, as_generated, gather with limits, gather_iter)
-- [`references/04-more-itertools.md`](references/04-more-itertools.md) - Additional utilities (take, chunked, before_and_after)
+- [Builtins](reference/01-builtins.md)
+- [Itertools](reference/02-itertools.md)
+- [Asyncio](reference/03-asyncio.md)
+- [More Itertools](reference/04-more-itertools.md)
 
 ## Troubleshooting
-
 ### "TypeError: 'X' object is not async iterable"
 
 Ensure you're using `await` with async functions:
@@ -255,9 +245,4 @@ async for x in map(async_coroutine, items):     # coroutine auto-awaited
 - Use `islice` to limit consumption of large iterables
 - `gather` with `limit` parameter controls memory usage for concurrent operations
 - `as_completed` and `as_generated` provide streaming results without buffering
-
-
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.
 

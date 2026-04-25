@@ -19,15 +19,7 @@ external_references:
   - https://docs.solidjs.com/solid-router/
   - https://github.com/solidjs/solid/tree/main/packages/router
 ---
-
-# Solid Router v0.16
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A skill for using Solid Router v0.16, the universal router for SolidJS that provides fine-grained reactivity for route navigation with support for history-based, hash-based, static (SSR), and memory-based routing modes. Use when building single-page applications in SolidJS that require client-side routing, nested routes, data loading APIs, form actions, or universal rendering across server and client environments.
 
 Solid Router is the universal router for SolidJS that brings fine-grained reactivity to route navigation, enabling single-page applications to become multi-paged without full page reloads. It supports history-based, hash-based, static (SSR), and memory-based routing modes with declarative syntax, parallel data fetching, and universal rendering capabilities.
@@ -43,7 +35,6 @@ Solid Router is the universal router for SolidJS that brings fine-grained reacti
 - Nested routes with layout components
 
 ## When to Use
-
 Load this skill when:
 - Setting up routing in a SolidJS application
 - Implementing client-side navigation without page reloads
@@ -54,8 +45,10 @@ Load this skill when:
 - Building universal apps that render on both server and client
 - Need hash-based or memory-based routing (testing)
 
-## Quick Start
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Usage Examples
 ### Installation
 
 ```bash
@@ -116,17 +109,17 @@ render(
 );
 ```
 
-See [Core Concepts](references/01-core-concepts.md) for detailed routing patterns and [Data APIs](references/02-data-apis.md) for advanced data loading.
+See [Core Concepts](reference/01-core-concepts.md) for detailed routing patterns and [Data APIs](reference/02-data-apis.md) for advanced data loading.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-core-concepts.md`](references/01-core-concepts.md) - Route configuration, dynamic routes, nested routes, and navigation components
-- [`references/02-data-apis.md`](references/02-data-apis.md) - Preload functions, query API, createAsync, actions, and form handling
-- [`references/03-router-primitives.md`](references/03-router-primitives.md) - Hooks like useParams, useNavigate, useLocation, useSearchParams
-- [`references/04-advanced-patterns.md`](references/04-advanced-patterns.md) - Config-based routing, alternative routers, SSR, deployment
+- [Core Concepts](reference/01-core-concepts.md)
+- [Data Apis](reference/02-data-apis.md)
+- [Router Primitives](reference/03-router-primitives.md)
+- [Advanced Patterns](reference/04-advanced-patterns.md)
 
 ## Common Patterns
-
 ### Dynamic Routes with Parameters
 
 ```jsx
@@ -183,7 +176,6 @@ const Home = lazy(() => import("./pages/Home"));
 ```
 
 ## Troubleshooting
-
 **Routes not matching:** Ensure paths start with `/` for absolute routes or omit for relative nested routes. Check that only leaf Route nodes have components assigned.
 
 **404 on page refresh:** For deployed SPAs, configure your hosting to redirect all routes to index.html (see deployment guides in reference files).
@@ -194,6 +186,3 @@ const Home = lazy(() => import("./pages/Home"));
 
 **TypeScript errors:** Ensure SolidJS v1.8.6+ is installed as peer dependency. Import types from `@solidjs/router` when needed.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

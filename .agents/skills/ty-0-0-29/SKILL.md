@@ -20,21 +20,12 @@ external_references:
   - https://docs.astral.sh/ty/
   - https://github.com/astral-sh/ty
 ---
-
-# ty 0.0.29
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A skill for using ty 0.0.29, an extremely fast Python type checker and language server written in Rust that is 10x-100x faster than mypy and Pyright with comprehensive diagnostics, configurable rule levels, and advanced typing features including intersection types, redeclarations, and gradual type support. Use when type checking Python code, setting up editor integrations for real-time type checking, configuring type checking rules, suppressing specific violations, or needing fast incremental analysis in IDEs.
 
 An extremely fast Python type checker and language server, written in Rust. ty is 10x-100x faster than mypy and Pyright with comprehensive diagnostics, configurable rule levels, support for redeclarations and partially typed code, and advanced typing features like intersection types and sophisticated reachability analysis.
 
 ## When to Use
-
 - Type checking Python projects with fast incremental analysis
 - Setting up real-time type checking in editors (VS Code, Neovim, PyCharm, Zed, Emacs)
 - Replacing mypy or Pyright for faster feedback loops
@@ -43,8 +34,10 @@ An extremely fast Python type checker and language server, written in Rust. ty i
 - Projects with mixed typed/untyped code (gradual typing support)
 - Codebases requiring intersection types and advanced type narrowing
 
-## Quick Start
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Run Without Installation
 
 Use uvx to quickly get started:
@@ -80,10 +73,9 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/ty/install.ps1 | ie
 
 **Other methods:** pipx, pip, mise, Docker, GitHub Releases
 
-See [Installation](references/01-installation.md) for all installation options.
+See [Installation](reference/01-installation.md) for all installation options.
 
 ## Core Features
-
 ### Type Checking
 
 ```bash
@@ -103,7 +95,7 @@ ty check --warn possibly-unresolved-reference
 ty check --ignore redundant-cast
 ```
 
-See [Type Checking](references/02-type-checking.md) for detailed usage.
+See [Type Checking](reference/02-type-checking.md) for detailed usage.
 
 ### Rule Configuration
 
@@ -129,7 +121,7 @@ unused-ignore-comment = "warn"
 redundant-cast = "ignore"
 ```
 
-See [Rules](references/03-rules.md) for the complete rules reference.
+See [Rules](reference/03-rules.md) for the complete rules reference.
 
 ### Suppression Comments
 
@@ -155,7 +147,7 @@ def main():
     ...
 ```
 
-See [Suppression](references/04-suppression.md) for detailed suppression patterns.
+See [Suppression](reference/04-suppression.md) for detailed suppression patterns.
 
 ### Editor Integration
 
@@ -181,50 +173,9 @@ vim.lsp.enable('ty')
 }
 ```
 
-See [Editor Integration](references/05-editors.md) for complete setup instructions.
-
-## Advanced Features
-
-### Intersection Types
-
-ty has first-class support for intersection types (`A & B` means "both A and B"):
-
-```python
-def output_as_json(obj: Serializable) -> str:
-    if isinstance(obj, Versioned):
-        reveal_type(obj)  # reveals: Serializable & Versioned
-        return str({
-            "data": obj.serialize_json(),
-            "version": obj.version
-        })
-```
-
-### Redeclarations
-
-Reuse symbols with different types within the same scope:
-
-```python
-def split_paths(paths: str) -> list[Path]:
-    paths: list[str] = paths.split(":")
-    return [Path(p) for p in paths]
-```
-
-### Gradual Guarantee
-
-ty avoids false positives in untyped code:
-
-```python
-class RetryPolicy:
-    max_retries = None
-
-policy = RetryPolicy()
-policy.max_retries = 1  # No error (type is Unknown | None)
-```
-
-See [Type System](references/06-type-system.md) for advanced type system features.
+See [Editor Integration](reference/05-editors.md) for complete setup instructions.
 
 ## Configuration
-
 ### Environment Configuration
 
 Configure Python environment and platform:
@@ -260,20 +211,20 @@ include = ["tests/**", "**/test_*.py"]
 possibly-unresolved-reference = "ignore"
 ```
 
-See [Configuration](references/07-configuration.md) for complete settings reference.
+See [Configuration](reference/07-configuration.md) for complete settings reference.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-installation.md`](references/01-installation.md) - Installation methods and setup
-- [`references/02-type-checking.md`](references/02-type-checking.md) - Running the type checker, file selection, watch mode
-- [`references/03-rules.md`](references/03-rules.md) - Rule levels, configuration, and rule reference
-- [`references/04-suppression.md`](references/04-suppression.md) - Inline suppression comments and directives
-- [`references/05-editors.md`](references/05-editors.md) - Editor integrations (VS Code, Neovim, PyCharm, Zed, Emacs)
-- [`references/06-type-system.md`](references/06-type-system.md) - Intersection types, redeclarations, gradual guarantee, reachability analysis
-- [`references/07-configuration.md`](references/07-configuration.md) - Complete configuration reference (rules, environment, analysis, overrides)
+- [Installation](reference/01-installation.md)
+- [Type Checking](reference/02-type-checking.md)
+- [Rules](reference/03-rules.md)
+- [Suppression](reference/04-suppression.md)
+- [Editors](reference/05-editors.md)
+- [Type System](reference/06-type-system.md)
+- [Configuration](reference/07-configuration.md)
 
 ## Common Workflows
-
 ### Quick Type Check
 
 ```bash
@@ -329,7 +280,6 @@ allowed-unresolved-imports = ["tests.**"]
 ```
 
 ## Troubleshooting
-
 ### Import Errors
 
 If ty can't find your dependencies:
@@ -383,7 +333,6 @@ sum_three_numbers(  # ty: ignore[missing-argument]
 ```
 
 ## Performance Tips
-
 1. **Use watch mode** during development for incremental checking
 2. **Configure allowed-unresolved-imports** to skip third-party modules without stubs
 3. **Enable language server** in editor for real-time feedback without manual runs
@@ -391,9 +340,5 @@ sum_three_numbers(  # ty: ignore[missing-argument]
 5. **Use overrides** to relax rules in test files or legacy code
 
 ## Online Playground
-
 Try ty without installation at [play.ty.dev](https://play.ty.dev) - great for sharing bug reports and testing type system features.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

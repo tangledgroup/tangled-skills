@@ -25,15 +25,7 @@ external_references:
   - https://redis.readthedocs.io/en/latest
   - https://github.com/redis/redis-py
 ---
-
-# redis-py 7.4 - Python Client for Redis
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Comprehensive Python client for Redis database and key-value store. Use when building Python applications requiring Redis connectivity, including standalone, cluster, sentinel, and async modes with support for all Redis commands, pipelines, pub/sub, Lua scripting, Redis modules (Bloom, JSON, Search, TimeSeries), RESP3 protocol, client-side caching, OpenTelemetry observability, connection pooling, retry logic, and distributed locking.
 
 Comprehensive Python client library for Redis database and key-value store, supporting all Redis commands, cluster mode, sentinel high availability, async operations, pipelines, pub/sub messaging, Lua scripting, Redis modules (Bloom filters, JSON, Search, TimeSeries), RESP3 protocol with push notifications and client-side caching, native OpenTelemetry metrics collection, connection pooling, retry strategies, and distributed locking.
@@ -41,7 +33,6 @@ Comprehensive Python client library for Redis database and key-value store, supp
 **redis-py 7.4 supports:** Python 3.10+, Redis 7.2-8.2
 
 ## When to Use
-
 - Connecting to Redis standalone, cluster, or sentinel deployments
 - Executing Redis commands (strings, hashes, lists, sets, sorted sets, streams)
 - Implementing async Redis operations with asyncio
@@ -55,8 +46,10 @@ Comprehensive Python client library for Redis database and key-value store, supp
 - Configuring connection pooling and retry strategies
 - Working with Redis Cluster (sharding, slot management, read replicas)
 
-## Installation
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 Install via pip:
 
 ```bash
@@ -82,8 +75,7 @@ pip install "redis[jwt]"
 pip install "redis[circuit_breaker]"
 ```
 
-## Quick Start
-
+## Usage Examples
 ### Basic Connection
 
 ```python
@@ -136,10 +128,9 @@ await r.ping()
 ```
 
 ## Common Operations
-
 ### Strings
 
-See [String Operations](references/01-core-commands.md) for complete reference.
+See [String Operations](reference/01-core-commands.md) for complete reference.
 
 ```python
 r = redis.Redis()
@@ -180,7 +171,7 @@ r.hincrby('user:1', 'age', 1)       # 31
 
 ### Lists
 
-See [List Operations](references/01-core-commands.md) for complete reference.
+See [List Operations](reference/01-core-commands.md) for complete reference.
 
 ```python
 r = redis.Redis()
@@ -202,7 +193,7 @@ r.rpop('mylist')                    # b'four'
 
 ### Pipelines
 
-See [Pipelines and Transactions](references/02-pipelines-transactions.md) for detailed examples.
+See [Pipelines and Transactions](reference/02-pipelines-transactions.md) for detailed examples.
 
 ```python
 r = redis.Redis()
@@ -239,7 +230,7 @@ r.transaction(increment_counter, 'counter')
 
 ### Pub/Sub
 
-See [PubSub Messaging](references/03-pubsub-streams.md) for detailed examples.
+See [PubSub Messaging](reference/03-pubsub-streams.md) for detailed examples.
 
 ```python
 r = redis.Redis()
@@ -262,24 +253,22 @@ pubsub.psubscribe('news:*')
 pubsub.unsubscribe()
 ```
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-This skill uses progressive disclosure. The main file above covers common operations. For detailed information, see:
-
-- [`references/01-core-commands.md`](references/01-core-commands.md) - Complete Redis command reference (strings, hashes, lists, sets, sorted sets, streams, hyperloglogs, geo, bitmaps)
-- [`references/02-pipelines-transactions.md`](references/02-pipelines-transactions.md) - Pipelines, transactions, WATCH/CAS, cluster pipelines
-- [`references/03-pubsub-streams.md`](references/03-pubsub-streams.md) - Pub/Sub messaging, Redis Streams (XADD, XREAD, XGROUP, consumer groups)
-- [`references/04-connections-clustering.md`](references/04-connections-clustering.md) - Connection types, pools, SSL/TLS, Redis Cluster, Sentinel, async clients
-- [`references/05-lua-scripting.md`](references/05-lua-scripting.md) - Lua scripting with EVAL/EVALSHA, script registration, cluster mode limitations
-- [`references/06-redis-modules.md`](references/06-redis-modules.md) - Redis modules: Bloom filters (BF/CF), JSON, Search (FT.), TimeSeries (TS.)
-- [`references/07-resp3-features.md`](references/07-resp3-features.md) - RESP3 protocol, push notifications, client-side caching (CSC)
-- [`references/08-opentelemetry.md`](references/08-opentelemetry.md) - Native OpenTelemetry integration, metric groups, configuration
-- [`references/09-locking.md`](references/09-locking.md) - Distributed locks (redis.lock.FairLock), lock timeouts, extensions, releases
-- [`references/10-error-handling.md`](references/10-error-handling.md) - Exception hierarchy, retry strategies, backoff policies, connection errors
-- [`references/11-advanced-topics.md`](references/11-advanced-topics.md) - Multi-database clients, threading safety, module commands, advanced patterns
+- [Core Commands](reference/01-core-commands.md)
+- [Pipelines Transactions](reference/02-pipelines-transactions.md)
+- [Pubsub Streams](reference/03-pubsub-streams.md)
+- [Connections Clustering](reference/04-connections-clustering.md)
+- [Lua Scripting](reference/05-lua-scripting.md)
+- [Redis Modules](reference/06-redis-modules.md)
+- [Resp3 Features](reference/07-resp3-features.md)
+- [Opentelemetry](reference/08-opentelemetry.md)
+- [Locking](reference/09-locking.md)
+- [Error Handling](reference/10-error-handling.md)
+- [Advanced Topics](reference/11-advanced-topics.md)
 
 ## Troubleshooting
-
 ### Connection Issues
 
 ```python
@@ -327,7 +316,7 @@ except redis.AskError as e:
 
 ### Retry Configuration
 
-See [Error Handling and Retries](references/10-error-handling.md) for complete retry strategies.
+See [Error Handling and Retries](reference/10-error-handling.md) for complete retry strategies.
 
 ```python
 from redis import Redis, Retry
@@ -339,7 +328,6 @@ r = Redis(host='localhost', port=6379, retry=retry)
 ```
 
 ## Performance Tips
-
 1. **Use connection pooling**: Default pool size is 10 connections. Adjust for high concurrency:
    ```python
    pool = redis.ConnectionPool(max_connections=50)
@@ -357,7 +345,6 @@ r = Redis(host='localhost', port=6379, retry=retry)
 6. **Reuse clients**: Redis client instances are thread-safe (except PubSub/Pipeline objects).
 
 ## Version Compatibility
-
 | redis-py version | Python versions | Redis versions |
 |-----------------|----------------|----------------|
 | 7.4.x | 3.10 - 3.14 | 7.2 - 8.2 |
@@ -365,7 +352,6 @@ r = Redis(host='localhost', port=6379, retry=retry)
 | 5.0.x | 3.7 - 3.12 | 5.0 - 7.4 |
 
 ## Important Notes
-
 - **Thread safety**: Redis client instances are thread-safe. Connection pooling handles concurrent access. However, PubSub and Pipeline objects should not be shared between threads.
 - **Database selection**: Don't use SELECT command with shared clients. Create separate client instances for different databases.
 - **Cluster mode limitations**: Multi-key commands require keys on same slot (use hash tags `{tag}`). Lua scripting has limited support in cluster mode.
@@ -373,13 +359,9 @@ r = Redis(host='localhost', port=6379, retry=retry)
 - **Async vs sync**: Use `redis.asyncio` for async applications. Don't mix sync and async clients.
 
 ## Resources
-
 - **Official Documentation**: https://redis.readthedocs.io/en/latest/
 - **GitHub Repository**: https://github.com/redis/redis-py
 - **Redis Commands Reference**: https://redis.io/commands
 - **Changelog**: https://github.com/redis/redis-py/releases
 - **Issue Tracker**: https://github.com/redis/redis-py/issues
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

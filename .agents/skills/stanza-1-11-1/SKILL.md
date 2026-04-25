@@ -21,11 +21,7 @@ external_references:
   - https://stanfordnlp.github.io/stanza/
   - https://huggingface.co/stanfordnlp/models
 ---
-
-# Stanza 1.11.1 - Stanford NLP Python Library
-
 ## Overview
-
 Stanza is the official Python NLP library from the Stanford NLP Group, providing state-of-the-art neural network models for linguistic analysis across **80+ human languages**. Built on PyTorch, it offers a full neural pipeline including tokenization, multi-word token expansion, part-of-speech tagging, lemmatization, dependency parsing, named entity recognition, sentiment analysis, constituency parsing, and language identification.
 
 **Key features:**
@@ -37,7 +33,6 @@ Stanza is the official Python NLP library from the Stanford NLP Group, providing
 - GPU-accelerated inference for high-performance processing
 
 ## When to Use
-
 Use Stanza when:
 - Building multilingual NLP applications requiring consistent analysis across languages
 - Needing accurate neural network-based linguistic analysis (tokenization, POS, parsing)
@@ -48,7 +43,6 @@ Use Stanza when:
 - Training custom models on your own annotated data
 
 ## Core Concepts
-
 ### Neural Pipeline Architecture
 
 Stanza's neural pipeline consists of modular **processors**, each performing a specific NLP task:
@@ -84,8 +78,7 @@ Stanza uses the [Universal Dependencies](https://universaldependencies.org/) fra
 - **UFeats**: Universal morphological features
 - **Deprel**: Universal dependency relations
 
-## Installation & Setup
-
+## Installation / Setup
 ### Quick Start with pip
 
 ```bash
@@ -134,10 +127,9 @@ proxies = {'http': 'http://ip:port', 'https': 'http://ip:port'}
 stanza.download('en', proxies=proxies)
 ```
 
-See [Model Downloading](references/02-model-downloading.md) for complete model packages and language support.
+See [Model Downloading](reference/02-model-downloading.md) for complete model packages and language support.
 
 ## Basic Usage Examples
-
 ### Simple Pipeline
 
 ```python
@@ -195,94 +187,17 @@ doc = nlp(text)
 # Pipeline processes all sentences together for maximum speed
 ```
 
-See [Pipeline Configuration](references/01-pipeline-configuration.md) for advanced options and custom processors.
+See [Pipeline Configuration](reference/01-pipeline-configuration.md) for advanced options and custom processors.
 
 ## Advanced Topics
+## Advanced Topics
 
-### Custom Processors and Variants
+- [Pipeline Configuration](reference/01-pipeline-configuration.md)
+- [Model Downloading](reference/02-model-downloading.md)
+- [Data Objects](reference/03-data-objects.md)
+- [Processor Details](reference/04-processor-details.md)
+- [Custom Processors](reference/05-custom-processors.md)
+- [Model Training](reference/06-model-training.md)
+- [Corenlp Client](reference/07-corenlp-client.md)
+- [Biomedical Models](reference/08-biomedical-models.md)
 
-Create custom processors or integrate external tools like spaCy:
-
-```python
-from stanza.pipeline.processor import ProcessorVariant, register_processor_variant
-
-@register_processor_variant('tokenize', 'spacy')
-class SpacyTokenizer(ProcessorVariant):
-    def __init__(self, config):
-        import spacy
-        self.nlp = spacy.load('en_core_web_sm')
-    
-    def process(self, text):
-        doc = self.nlp(text)
-        return [token.text for token in doc]
-```
-
-See [Custom Processors](references/05-custom-processors.md) for implementation details.
-
-### Training Custom Models
-
-Train models on your own annotated data:
-
-```bash
-# Clone repository for training
-git clone https://github.com/stanfordnlp/stanza.git
-cd stanza
-
-# Set environment variables
-source scripts/config.sh
-
-# Train a tokenizer
-python -m stanza.utils.training.run_tokenize UD_English-EWT --batch_size 32
-
-# Train POS tagger
-python -m stanza.utils.training.run_pos UD_English-EWT
-
-# Train dependency parser
-python -m stanza.utils.training.run_depparse UD_English-EWT
-```
-
-See [Model Training](references/06-model-training.md) for complete training workflows.
-
-### CoreNLP Integration
-
-Access Stanford CoreNLP Java tools from Python:
-
-```python
-from stanza.server import CoreNLPClient
-
-# Start CoreNLP server
-with CoreNLPClient(annotators=['tokenize', 'ssplit', 'pos', 'ner'], timeout=30000) as client:
-    doc = client.annotate("Barack Obama was born in Hawaii.")
-    print(doc.sentences[0].words)
-```
-
-See [CoreNLP Client](references/07-corenlp-client.md) for setup and usage.
-
-### Biomedical Models
-
-Use specialized models for biomedical and clinical text:
-
-```python
-# Download biomedical package
-stanza.download('en', package='biomed')
-
-# Initialize with biomedical models
-nlp = stanza.Pipeline('en', package='biomed')
-doc = nlp("The patient presented with chest pain and shortness of breath.")
-print(doc.entities)  # Biomedical entity recognition
-```
-
-See [Biomedical Models](references/08-biomedical-models.md) for available packages.
-
-## Reference Files
-
-For detailed topics, see:
-
-1. [Pipeline Configuration](references/01-pipeline-configuration.md) - Processors, options, GPU/CPU control, custom config dicts
-2. [Model Downloading](references/02-model-downloading.md) - Language support, packages, Hugging Face models (80+ languages)
-3. [Data Objects & Annotations](references/03-data-objects.md) - Document, Sentence, Token, Word, Span, ParseTree APIs
-4. [Processor Details](references/04-processor-details.md) - In-depth guide to each processor with examples
-5. [Custom Processors](references/05-custom-processors.md) - Creating processors and variants, integrating external tools
-6. [Model Training](references/06-model-training.md) - Training workflows, data preparation, evaluation
-7. [CoreNLP Client](references/07-corenlp-client.md) - Java CoreNLP integration, Semgrex, Tsurgeon
-8. [Biomedical Models](references/08-biomedical-models.md) - Clinical and biomedical NER models

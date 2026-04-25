@@ -36,17 +36,12 @@ external_references:
   - https://rqlite.io/docs/
   - https://github.com/rqlite/rqlite
 ---
-
-# rqlite 9.4 Distributed Database Skill
-
 ## Overview
-
 Comprehensive toolkit for rqlite 9.4, a lightweight distributed relational database built on SQLite with Raft consensus. Use when deploying fault-tolerant databases, building edge/IoT applications with SQL, creating globally distributed read-intensive systems, or needing simple high-availability without complex administration.
 
 A comprehensive skill for using rqlite, a lightweight, user-friendly distributed relational database built on SQLite. This skill covers installation, configuration, clustering, API usage, backup/restore, and operational best practices.
 
 ## When to Use
-
 - Deploy a fault-tolerant, highly-available relational database
 - Need SQLite with distributed consensus (Raft) for high availability
 - Build edge/IoT applications requiring local SQL with optional replication
@@ -55,8 +50,7 @@ A comprehensive skill for using rqlite, a lightweight, user-friendly distributed
 - Require atomic multi-statement execution across a cluster
 - Want hot backups and automated cloud storage integration
 
-## Quick Start
-
+## Installation / Setup
 ### Install via Docker (Fastest)
 
 ```bash
@@ -67,7 +61,7 @@ docker run -p 4001:4001 rqlite/rqlite
 curl localhost:4001/db/query?q=SELECT+1
 ```
 
-See [Installation](references/01-installation.md) for other installation methods.
+See [Installation](reference/01-installation.md) for other installation methods.
 
 ### Create a Table and Insert Data
 
@@ -89,7 +83,7 @@ SELECT * FROM users
 .quit
 ```
 
-See [rqlite Shell](references/02-shell.md) for interactive usage.
+See [rqlite Shell](reference/02-shell.md) for interactive usage.
 
 ### Form a 3-Node Cluster
 
@@ -111,7 +105,7 @@ rqlite 127.0.0.1:4001
 .nodes
 ```
 
-See [Clustering](references/03-clustering.md) for detailed clustering guides.
+See [Clustering](reference/03-clustering.md) for detailed clustering guides.
 
 ### Using the HTTP API
 
@@ -134,7 +128,7 @@ curl -G 'localhost:4001/db/query?associative' \
   --data-urlencode 'q=SELECT * FROM products'
 ```
 
-See [HTTP API](references/04-api.md) for comprehensive API documentation.
+See [HTTP API](reference/04-api.md) for comprehensive API documentation.
 
 ### Backup and Restore
 
@@ -153,10 +147,9 @@ curl -s 'localhost:4001/db/backup?compress' -o backup.sqlite3.gz
 # See Backup and Restore guide for details
 ```
 
-See [Backup and Restore](references/05-backup-restore.md) for comprehensive backup strategies.
+See [Backup and Restore](reference/05-backup-restore.md) for comprehensive backup strategies.
 
 ## Core Concepts
-
 ### Architecture
 
 rqlite combines SQLite's simplicity with Raft consensus for:
@@ -189,7 +182,6 @@ rqlite combines SQLite's simplicity with Raft consensus for:
 **Note:** Always use odd-numbered clusters for voting nodes. Even numbers provide no additional fault tolerance but increase coordination overhead.
 
 ## Common Patterns
-
 ### Single-Node Deployment (Development)
 
 ```bash
@@ -242,7 +234,7 @@ volumes:
   rqlite3-data:
 ```
 
-See [Docker Compose Guide](references/06-docker-compose.md) for production-ready configurations.
+See [Docker Compose Guide](reference/06-docker-compose.md) for production-ready configurations.
 
 ### Transactional Writes
 
@@ -267,7 +259,7 @@ curl 'localhost:4001/db/query?consistency=none&q=SELECT * FROM users'
 curl 'localhost:4001/db/query?consistency=strong&q=SELECT * FROM users'
 ```
 
-See [Read Consistency](references/07-read-consistency.md) for detailed guidance.
+See [Read Consistency](reference/07-read-consistency.md) for detailed guidance.
 
 ### Automated Backups to S3
 
@@ -290,10 +282,9 @@ See [Read Consistency](references/07-read-consistency.md) for detailed guidance.
 
 Start rqlite with: `rqlited -auto-backup=auto-backup.json ...`
 
-See [Backup and Restore](references/05-backup-restore.md) for all backup options.
+See [Backup and Restore](reference/05-backup-restore.md) for all backup options.
 
 ## Troubleshooting
-
 ### Common Issues
 
 | Problem | Solution |
@@ -332,42 +323,33 @@ If you lose quorum and cannot elect a leader:
 2. Restore data from backup using `.restore` command
 3. Rebuild cluster by joining new nodes
 
-See [Clustering](references/03-clustering.md) for detailed recovery procedures.
+See [Clustering](reference/03-clustering.md) for detailed recovery procedures.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-### Core Operations
-- [`references/01-installation.md`](references/01-installation.md) - Installation methods (binary, Docker, Homebrew, source)
-- [`references/02-shell.md`](references/02-shell.md) - Interactive rqlite shell commands and usage
-- [`references/03-clustering.md`](references/03-clustering.md) - Cluster creation, management, and failure recovery
-- [`references/04-api.md`](references/04-api.md) - HTTP API endpoints, request/response formats, parameters
-- [`references/05-backup-restore.md`](references/05-backup-restore.md) - Backup strategies, restore procedures, automated backups
-- [`references/06-docker-compose.md`](references/06-docker-compose.md) - Docker Compose configurations for development and production
-
-### Advanced Topics
-- [`references/07-read-consistency.md`](references/07-read-consistency.md) - Read consistency levels and trade-offs
-- [`references/08-security.md`](references/08-security.md) - TLS, authentication, and access control
-- [`references/09-performance.md`](references/09-performance.md) - Performance tuning and optimization
-- [`references/10-monitoring.md`](references/10-monitoring.md) - Monitoring, metrics, and observability
-- [`references/11-cdc.md`](references/11-cdc.md) - Change Data Capture for streaming database changes
-- [`references/12-extensions.md`](references/12-extensions.md) - SQLite extensions for extended functionality
-
-### API Deep Dives
-- [`references/13-bulk-api.md`](references/13-bulk-api.md) - Bulk operations for high-throughput batch processing
-- [`references/14-queued-writes.md`](references/14-queued-writes.md) - Asynchronous write queuing for maximum throughput
-- [`references/15-non-deterministic.md`](references/15-non-deterministic.md) - Handling RANDOM() and datetime functions in distributed context
-- [`references/16-cluster-client.md`](references/16-cluster-client.md) - Client connection strategies for clusters
-
-### Configuration and Access
-- [`references/17-config.md`](references/17-config.md) - Complete command-line flag reference
-- [`references/18-direct-access.md`](references/18-direct-access.md) - Safely accessing underlying SQLite database
-- [`references/19-ui-applications.md`](references/19-ui-applications.md) - Third-party graphical tools and interfaces
-- [`references/20-faq.md`](references/20-faq.md) - Frequently asked questions and common scenarios
-
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/rqlite-9-4/`). All paths are relative to this directory.
+- [Installation](reference/01-installation.md)
+- [Shell](reference/02-shell.md)
+- [Clustering](reference/03-clustering.md)
+- [Api](reference/04-api.md)
+- [Backup Restore](reference/05-backup-restore.md)
+- [Docker Compose](reference/06-docker-compose.md)
+- [Read Consistency](reference/07-read-consistency.md)
+- [Security](reference/08-security.md)
+- [Performance](reference/09-performance.md)
+- [Monitoring](reference/10-monitoring.md)
+- [Cdc](reference/11-cdc.md)
+- [Extensions](reference/12-extensions.md)
+- [Bulk Api](reference/13-bulk-api.md)
+- [Queued Writes](reference/14-queued-writes.md)
+- [Non Deterministic](reference/15-non-deterministic.md)
+- [Cluster Client](reference/16-cluster-client.md)
+- [Config](reference/17-config.md)
+- [Direct Access](reference/18-direct-access.md)
+- [Ui Applications](reference/19-ui-applications.md)
+- [Faq](reference/20-faq.md)
 
 ## Best Practices
-
 ### Production Deployment
 
 1. **Use 3 or more nodes** for fault tolerance
@@ -394,6 +376,3 @@ See [Clustering](references/03-clustering.md) for detailed recovery procedures.
 4. **Test backup/restore** procedures regularly
 5. **Validate SQL compatibility** with SQLite documentation
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

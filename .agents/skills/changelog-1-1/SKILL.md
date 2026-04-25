@@ -16,33 +16,25 @@ external_references:
   - https://keepachangelog.com/en/1.1.0/
   - https://semver.org/spec/v2.0.0.html
 ---
-
-# Keep a Changelog v1.1.0
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A skill for creating and maintaining changelogs following the Keep a Changelog specification v1.1.0, providing standardized format guidelines, best practices, and examples for documenting project changes in a human-readable way.
 
 A skill for creating and maintaining changelogs following the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) specification, a widely-adopted convention for documenting notable changes in software projects.
 
 ## When to Use
-
 - Creating a new CHANGELOG.md file for a project
 - Documenting changes between releases
 - Following Semantic Versioning (SemVer) conventions
 - Writing release notes for users and contributors
 - Standardizing changelog format across teams
 
-## What Is a Changelog
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## What Is a Changelog
 A changelog is a file which contains a curated, chronologically ordered list of notable changes for each version of a project. It should be human-readable and focused on meaningful changes that affect users.
 
 ## Guiding Principles
-
 - Changelogs are **for humans**, not machines
 - There should be an entry for every single version
 - The same types of changes should be grouped
@@ -52,7 +44,6 @@ A changelog is a file which contains a curated, chronologically ordered list of 
 - Mention whether you follow [Semantic Versioning](https://semver.org/)
 
 ## Change Types
-
 Use these standardized section headers to categorize changes:
 
 | Section | When to Use |
@@ -65,7 +56,6 @@ Use these standardized section headers to categorize changes:
 | **Security** | In case of vulnerabilities |
 
 ## Basic Template
-
 ```markdown
 # Changelog
 
@@ -75,7 +65,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
 ### Added
 
 - Feature that will be in the next release.
@@ -89,7 +78,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bug fixes pending release.
 
 ## [1.0.0] - 2024-01-15
-
 ### Added
 
 - New authentication system.
@@ -108,7 +96,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ```
 
 ## Writing Changelog Entries
-
 ### Entry Format
 
 Each entry should:
@@ -141,10 +128,10 @@ Each entry should:
 ```
 
 ## Date Format
-
 Use **ISO 8601** format (`YYYY-MM-DD`) for release dates:
 
 ```markdown
+
 ## [2.1.0] - 2024-03-15
 ```
 
@@ -154,7 +141,6 @@ This format is recommended because:
 - It avoids regional ambiguity (unlike MM/DD/YYYY vs DD/MM/YYYY)
 
 ## Version Linking
-
 Create linkable version references at the bottom of the file:
 
 ```markdown
@@ -166,12 +152,11 @@ Create linkable version references at the bottom of the file:
 For Git-based projects, use comparison URLs to show changes between versions.
 
 ## Unreleased Section
-
 Keep an `Unreleased` section at the top to track upcoming changes:
 
 ```markdown
-## [Unreleased]
 
+## [Unreleased]
 ### Added
 
 - Feature being developed for next release.
@@ -186,12 +171,11 @@ Keep an `Unreleased` section at the top to track upcoming changes:
 - At release time, move `Unreleased` content into a new version section with date
 
 ## Yanked Releases
-
 For versions that were pulled due to serious bugs or security issues:
 
 ```markdown
-## [1.2.0] - 2024-02-20 [YANKED]
 
+## [1.2.0] - 2024-02-20 [YANKED]
 ### Removed
 
 - Feature that caused critical issues.
@@ -200,7 +184,6 @@ For versions that were pulled due to serious bugs or security issues:
 The `[YANKED]` tag is important for users to notice and can be parsed programmatically.
 
 ## Common Mistakes to Avoid
-
 ### Commit Log Diffs
 
 **Don't** use commit log diffs as changelogs. They contain noise like:
@@ -230,13 +213,11 @@ A changelog that only mentions some changes is as dangerous as no changelog. Mai
 Avoid regional date formats. Use ISO 8601 (`YYYY-MM-DD`) for clarity across all locales.
 
 ## File Naming
-
 Name the file `CHANGELOG.md` (uppercase, `.md` extension).
 
 Alternative names exist (`HISTORY`, `NEWS`, `RELEASES`) but `CHANGELOG.md` is the most discoverable and widely recognized convention.
 
 ## GitHub Releases Integration
-
 GitHub Releases can complement a CHANGELOG.md:
 - Create releases from git tags (e.g., `v1.0.0`)
 - Add release notes manually or pull from annotated tags
@@ -245,12 +226,11 @@ GitHub Releases can complement a CHANGELOG.md:
 **Note:** GitHub Releases are not portable (only visible on GitHub). Keep a CHANGELOG.md file for portability and discoverability.
 
 ## Workflow Example
-
 ### Before Release
 
 ```markdown
-## [Unreleased]
 
+## [Unreleased]
 ### Added
 
 - New export feature (#234).
@@ -263,8 +243,8 @@ GitHub Releases can complement a CHANGELOG.md:
 ### At Release Time (v1.1.0)
 
 ```markdown
-## [1.1.0] - 2024-03-20
 
+## [1.1.0] - 2024-03-20
 ### Added
 
 - New export feature (#234).
@@ -274,7 +254,6 @@ GitHub Releases can complement a CHANGELOG.md:
 - Crash when importing large files (#235).
 
 ## [Unreleased]
-
 ### Added
 
 - Next feature in development.
@@ -283,7 +262,6 @@ GitHub Releases can complement a CHANGELOG.md:
 ```
 
 ## Tools and Automation
-
 Several tools can help maintain changelogs:
 
 - **git-changelog**: Generate changelogs from git commits
@@ -292,13 +270,11 @@ Several tools can help maintain changelogs:
 - **semantic-release**: Automated versioning and changelog generation
 
 ## Resources
-
 - [Keep a Changelog v1.1.0](https://keepachangelog.com/en/1.1.0/) - Official specification
 - [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) - Versioning standard
 - [GNU Changelog Style Guide](https://www.gnu.org/prep/standards/html_node/Style-of-Change-Logs.html) - Alternative style guide
 
 ## Troubleshooting
-
 **Q: Should I rewrite an existing changelog?**
 
 A: Yes, if it improves clarity or adds missing releases. Many projects benefit from retroactive changelog improvements.
@@ -311,6 +287,3 @@ A: Focus on notable changes that affect users. Internal refactoring without user
 
 A: Keep a Changelog is available in 28+ languages. Consider providing changelogs in your project's supported languages.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

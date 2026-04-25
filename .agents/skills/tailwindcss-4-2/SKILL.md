@@ -17,21 +17,12 @@ external_references:
   - https://tailwindcss.com/docs
   - https://github.com/tailwindlabs/tailwindcss
 ---
-
-# Tailwind CSS v4.2
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A skill for using Tailwind CSS v4.2, a utility-first CSS framework with CSS-based configuration, OKLCH color space, cascade layers, and Lightning CSS optimization. Use when building responsive web interfaces, customizing design systems, or migrating from Tailwind v3.
 
 Tailwind CSS v4.2 is a utility-first CSS framework for rapidly building custom user interfaces without leaving HTML. Version 4 introduces a completely redesigned architecture with CSS-based configuration, native cascade layers, OKLCH color space support, and integrated Lightning CSS optimization.
 
 ## When to Use
-
 - Building responsive web interfaces with utility classes
 - Creating design systems with custom themes
 - Migrating projects from Tailwind CSS v3 to v4
@@ -39,8 +30,10 @@ Tailwind CSS v4.2 is a utility-first CSS framework for rapidly building custom u
 - Customizing default spacing, colors, fonts, and breakpoints
 - Using modern build tools (Vite, PostCSS, CLI)
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Installation Options
 
 **Browser Build (No Build Step Required)**
@@ -61,7 +54,7 @@ Perfect for prototyping, documentation, learning, and static sites:
 </html>
 ```
 
-See [Browser Usage Guide](references/05-browser-usage.md) for comprehensive in-browser usage documentation.
+See [Browser Usage Guide](reference/05-browser-usage.md) for comprehensive in-browser usage documentation.
 
 **CLI Tool**
 ```bash
@@ -117,8 +110,7 @@ Or use explicit cascade layers:
 @import 'tailwindcss/utilities' layer(utilities);
 ```
 
-## Quick Start
-
+## Usage Examples
 ### Hello World Example
 
 ```html
@@ -139,24 +131,22 @@ Or use explicit cascade layers:
 </html>
 ```
 
-See [Core Concepts](references/01-core-concepts.md) for detailed explanation of the v4 architecture.
+See [Core Concepts](reference/01-core-concepts.md) for detailed explanation of the v4 architecture.
 
-Refer to [Theming & Customization](references/02-theming-customization.md) for custom design systems.
+Refer to [Theming & Customization](reference/02-theming-customization.md) for custom design systems.
 
-Consult [Utility Reference](references/03-utility-reference.md) for complete utility documentation.
+Consult [Utility Reference](reference/03-utility-reference.md) for complete utility documentation.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-core-concepts.md`](references/01-core-concepts.md) - v4 architecture, cascade layers, and @theme directive
-- [`references/02-theming-customization.md`](references/02-theming-customization.md) - Custom themes, OKLCH colors, and configuration patterns
-- [`references/03-utility-reference.md`](references/03-utility-reference.md) - Complete utility class reference with examples
-- [`references/04-v3-migration.md`](references/04-v3-migration.md) - Migration guide from Tailwind CSS v3 to v4
-- [`references/05-browser-usage.md`](references/05-browser-usage.md) - In-browser usage with @tailwindcss/browser (no build step)
-
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/tailwindcss-4-2/`). All paths are relative to this directory.
+- [Core Concepts](reference/01-core-concepts.md)
+- [Theming Customization](reference/02-theming-customization.md)
+- [Utility Reference](reference/03-utility-reference.md)
+- [V3 Migration](reference/04-v3-migration.md)
+- [Browser Usage](reference/05-browser-usage.md)
 
 ## Common Patterns
-
 ### Responsive Design
 ```html
 <div class="w-full md:w-1/2 lg:w-1/3">Responsive width</div>
@@ -183,10 +173,9 @@ Then use in HTML:
 <button class="bg-brand text-white">Brand Button</button>
 ```
 
-See [Theming & Customization](references/02-theming-customization.md) for advanced patterns.
+See [Theming & Customization](reference/02-theming-customization.md) for advanced patterns.
 
 ## Troubleshooting
-
 ### Utilities Not Applying
 - Ensure build process is running and watching files
 - Check that input CSS includes `@import 'tailwindcss'`
@@ -202,8 +191,5 @@ See [Theming & Customization](references/02-theming-customization.md) for advanc
 - Ensure Tailwind v4 packages are installed (`tailwindcss@^4`)
 - Check for conflicting PostCSS plugins
 
-See [v3 Migration Guide](references/04-v3-migration.md) for upgrade-related issues.
+See [v3 Migration Guide](reference/04-v3-migration.md) for upgrade-related issues.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

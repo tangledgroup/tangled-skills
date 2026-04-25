@@ -18,15 +18,7 @@ external_references:
   - https://github.com/solidjs/solid/tree/main/packages/dom
   - https://www.npmjs.com/package/@solidjs/meta
 ---
-
-# Solid Meta 0.29
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A skill for managing document head tags in SolidJS applications with @solidjs/meta v0.29, providing asynchronous SSR-ready Document Head management including Title, Meta, Link, Style, Base, and Stylesheet components with MetaProvider context.
 
 Solid Meta is an asynchronous SSR-ready Document Head management library for SolidJS applications. It allows you to define `document.head` tags at any level of your component hierarchy, making it easy to manage contextual metadata like titles, meta tags, stylesheets, and links throughout your application.
@@ -34,7 +26,6 @@ Solid Meta is an asynchronous SSR-ready Document Head management library for Sol
 Based on [React Head](https://github.com/tizmagik/react-head), this library has no dependencies and seamlessly integrates with SolidJS's asynchronous rendering model.
 
 ## When to Use
-
 - Managing SEO metadata (title, description, Open Graph tags) in SolidJS applications
 - Implementing server-side rendering (SSR) with dynamic head tags
 - Adding conditional meta tags based on component state or route
@@ -42,8 +33,10 @@ Based on [React Head](https://github.com/tizmagik/react-head), this library has 
 - Building SPAs that need to update document head on navigation
 - Working with SolidStart projects requiring meta tag management
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Installation
 
 ```bash
@@ -73,10 +66,9 @@ The library exports the following components:
 | `<Base />` | Base URL | `<base>` |
 | `<Stylesheet />` | Stylesheet link helper | `<link rel="stylesheet">` |
 
-See [Component API Reference](references/01-component-api.md) for detailed usage.
+See [Component API Reference](reference/01-component-api.md) for detailed usage.
 
-## Quick Start
-
+## Usage Examples
 ### SolidStart Setup (Recommended)
 
 Wrap your app with `<MetaProvider />` inside the `root` of the `<Router />` component:
@@ -152,19 +144,17 @@ const Page = () => (
 );
 ```
 
-See [Common Patterns](references/02-common-patterns.md) for real-world usage examples.
+See [Common Patterns](reference/02-common-patterns.md) for real-world usage examples.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-component-api.md`](references/01-component-api.md) - Complete API reference for all components and props
-- [`references/02-common-patterns.md`](references/02-common-patterns.md) - Common patterns: dynamic titles, conditional meta tags, theme switching
-- [`references/03-server-rendering.md`](references/03-server-rendering.md) - SSR setup, hydration, and SolidStart integration
-- [`references/04-troubleshooting.md`](references/04-troubleshooting.md) - Common issues, errors, and debugging tips
-
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/solid-meta-0-29/`). All paths are relative to this directory.
+- [Component Api](reference/01-component-api.md)
+- [Common Patterns](reference/02-common-patterns.md)
+- [Server Rendering](reference/03-server-rendering.md)
+- [Troubleshooting](reference/04-troubleshooting.md)
 
 ## How It Works
-
 1. **Provider Setup**: Wrap your app with `<MetaProvider />` to establish context
 2. **Tag Injection**: Render head tag components (`<Title />`, `<Meta />`, etc.) anywhere in your component tree
 3. **Server Collection**: During SSR, tags are collected and injected via `getAssets()` or automatic rendering
@@ -179,10 +169,9 @@ Certain tags have special "cascading" behavior where only the last instance is r
 - `<Meta />`: Meta tags with the same `name` or `property` attribute cascade (last one wins)
 - Other tags (`<Link />`, `<Style />`, `<Base />`) are all rendered
 
-See [Component API Reference](references/01-component-api.md) for detailed behavior.
+See [Component API Reference](reference/01-component-api.md) for detailed behavior.
 
 ## Troubleshooting
-
 ### Common Issues
 
 **Error: `<MetaProvider /> should be in the tree`**
@@ -201,8 +190,5 @@ See [Component API Reference](references/01-component-api.md) for detailed behav
 - Ensure `getAssets()` is called in your server HTML template
 - Don't manually add `<title>` tags in server entry files
 
-See [Troubleshooting Guide](references/04-troubleshooting.md) for more solutions.
+See [Troubleshooting Guide](reference/04-troubleshooting.md) for more solutions.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

@@ -21,21 +21,12 @@ external_references:
   - https://docs.astral.sh/ruff
   - https://github.com/astral-sh/ruff
 ---
-
-# Ruff 0.4.10
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A skill for using Ruff 0.4.10, an extremely fast Python linter and formatter written in Rust that replaces Flake8, isort, pydocstyle, pyupgrade, autoflake, Black, and more with unified configuration and 10x-100x faster performance. Use when linting Python code for style and correctness issues, formatting code consistently, configuring rule selection across 800+ lint rules, suppressing violations with noqa comments, or needing fast incremental analysis in CI/CD pipelines and editors.
 
 An extremely fast Python linter and formatter written in Rust. Ruff replaces Flake8 (plus dozens of plugins), isort, pydocstyle, pyupgrade, autoflake, Black, and more with unified configuration and 10x-100x faster performance. It supports 800+ lint rules across 50+ built-in plugins and provides a Black-compatible formatter.
 
 ## When to Use
-
 - Linting Python code for style, correctness, and best practices
 - Formatting code consistently with Black compatibility
 - Replacing multiple tools (Flake8, isort, Black, pyupgrade) with one
@@ -44,8 +35,10 @@ An extremely fast Python linter and formatter written in Rust. Ruff replaces Fla
 - Editor integrations for real-time linting and formatting
 - Migrating from Flake8 or Black configurations
 
-## Quick Start
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Installation
 
 **pip (recommended):**
@@ -59,7 +52,7 @@ pip install ruff
 - **Docker:** `docker run -v .:/io --rm ghcr.io/astral-sh/ruff check`
 - **Arch Linux:** `pacman -S ruff`
 
-See [Installation](references/01-installation.md) for all installation options.
+See [Installation](reference/01-installation.md) for all installation options.
 
 ### Linting
 
@@ -94,10 +87,9 @@ ruff format --check
 ruff format src/
 ```
 
-See [Linter](references/02-linter.md) and [Formatter](references/03-formatter.md) for detailed usage.
+See [Linter](reference/02-linter.md) and [Formatter](reference/03-formatter.md) for detailed usage.
 
 ## Core Features
-
 ### Rule Selection
 
 Ruff supports 800+ lint rules across 50+ plugins:
@@ -117,7 +109,7 @@ select = [
 ]
 ```
 
-See [Rules](references/04-rules.md) for the complete rules reference.
+See [Rules](reference/04-rules.md) for the complete rules reference.
 
 ### Fixes
 
@@ -156,7 +148,7 @@ value = unknown()  # noqa
 # noqa: F401
 ```
 
-See [Suppression](references/05-suppression.md) for detailed patterns.
+See [Suppression](reference/05-suppression.md) for detailed patterns.
 
 ### Configuration
 
@@ -186,10 +178,9 @@ quote-style = "single"
 docstring-code-format = true
 ```
 
-See [Configuration](references/06-configuration.md) for complete settings.
+See [Configuration](reference/06-configuration.md) for complete settings.
 
 ## Editor Integration
-
 Ruff integrates with most Python editors via LSP or native plugins:
 
 - **VS Code:** Use the official Ruff extension
@@ -198,10 +189,9 @@ Ruff integrates with most Python editors via LSP or native plugins:
 - **Vim:** Use `ALE` or `coc-pyright`
 - **Emacs:** Use `eglot` or `lsp-mode`
 
-See [Integrations](references/07-integrations.md) for setup instructions.
+See [Integrations](reference/07-integrations.md) for setup instructions.
 
 ## Common Workflows
-
 ### Quick Lint and Fix
 
 ```bash
@@ -246,21 +236,21 @@ pip install ruff
 # Convert configuration (see migration guide)
 ```
 
-See [Migration](references/08-migration.md) for detailed guides.
+See [Migration](reference/08-migration.md) for detailed guides.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-installation.md`](references/01-installation.md) - Installation methods and setup
-- [`references/02-linter.md`](references/02-linter.md) - Linting commands, rule selection, fixes
-- [`references/03-formatter.md`](references/03-formatter.md) - Formatting code, Black compatibility, docstring formatting
-- [`references/04-rules.md`](references/04-rules.md) - Rule categories, selection strategies, popular rules
-- [`references/05-suppression.md`](references/05-suppression.md) - noqa comments, per-file ignores, format suppression
-- [`references/06-configuration.md`](references/06-configuration.md) - Complete configuration reference
-- [`references/07-integrations.md`](references/07-integrations.md) - Editor integrations and CI/CD setup
-- [`references/08-migration.md`](references/08-migration.md) - Migrating from Flake8, Black, isort
+- [Installation](reference/01-installation.md)
+- [Linter](reference/02-linter.md)
+- [Formatter](reference/03-formatter.md)
+- [Rules](reference/04-rules.md)
+- [Suppression](reference/05-suppression.md)
+- [Configuration](reference/06-configuration.md)
+- [Integrations](reference/07-integrations.md)
+- [Migration](reference/08-migration.md)
 
 ## Troubleshooting
-
 ### Rules Not Applying
 
 ```toml
@@ -293,7 +283,6 @@ exclude = ["venv", "node_modules", "build"]
 ```
 
 ## Best Practices
-
 1. **Start with defaults** - Ruff's default rules catch common errors with zero configuration
 2. **Add rules gradually** - Enable one category at a time (e.g., add "B" for bugbear)
 3. **Use `--fix` in CI** - Auto-fix in PRs, require clean lint in main branch
@@ -302,7 +291,6 @@ exclude = ["venv", "node_modules", "build"]
 6. **Combine lint and format** - Use Ruff for both to avoid conflicts
 
 ## Performance
-
 Ruff is 10x-100x faster than alternative tools:
 - **vs Flake8:** 10-100x faster due to Rust implementation
 - **vs Black:** 20-300x faster for formatting
@@ -310,12 +298,8 @@ Ruff is 10x-100x faster than alternative tools:
 - **Parallel execution:** Automatically uses multiple CPU cores
 
 ## Online Resources
-
 - **Documentation:** https://docs.astral.sh/ruff/
 - **Rules reference:** https://docs.astral.sh/ruff/rules/
 - **GitHub:** https://github.com/astral-sh/ruff
 - **Playground:** https://play.ruff.rs/
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

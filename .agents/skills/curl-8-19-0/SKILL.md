@@ -21,15 +21,10 @@ external_references:
   - https://curl.se/libcurl/
   - https://github.com/curl/curl
 ---
-
-# curl 8.19.0
-
 ## Overview
-
 curl is a command-line tool and libcurl C library for transferring data from or to servers using URLs. It supports over 30 protocols including HTTP, HTTPS, FTP, SFTP, SMTP, IMAP, POP3, LDAP, MQTT, RTMP, WebSocket, and more. curl is powered by libcurl for all transfer-related features and is one of the most widely used network tools in existence.
 
 ## When to Use
-
 - Making HTTP/HTTPS requests from the terminal or scripts
 - Downloading/uploading files via FTP/SFTP/SMB
 - Sending POST data or multipart form submissions
@@ -41,7 +36,6 @@ curl is a command-line tool and libcurl C library for transferring data from or 
 - Configuring proxies (HTTP, SOCKS4/5)
 
 ## Core Concepts
-
 ### Protocol Support
 
 curl supports these protocols (URL schemes):
@@ -289,7 +283,6 @@ curl --parallel --parallel-max 8 \
 ```
 
 ## Installation / Setup
-
 ### Install curl
 
 ```bash
@@ -314,7 +307,6 @@ curl --version
 ```
 
 ## Usage Examples
-
 ### Basic HTTP Requests
 
 ```bash
@@ -414,15 +406,10 @@ curl -i -N \
 ```
 
 ## Advanced Topics
+## Advanced Topics
 
-For detailed documentation on advanced topics, see the reference files:
-
-- **libcurl Tutorial**: Complete guide to programming with libcurl in C
-- **libcurl Easy Interface**: Single-transfer API (curl_easy_* functions)
-- **libcurl Multi Interface**: Concurrent transfers API (curl_multi_* functions)
-- **Command-Line Options**: Full reference of all curl CLI options
-- **URL Syntax**: Detailed URL parsing and globbing rules
-- **HTTP Cookies**: Cookie handling in depth
-- **SSL/TLS Configuration**: Certificate management, cipher suites, ECH, HSTS
-- **HTTP/3 Support**: QUIC protocol support details
+- [Libcurl Tutorial](reference/01-libcurl-tutorial.md)
+- [Libcurl Easy Interface](reference/02-libcurl-easy-interface.md)
+- [Libcurl Multi Interface](reference/03-libcurl-multi-interface.md)
+- [Command Line Options](reference/04-command-line-options.md)
 

@@ -28,17 +28,12 @@ required_environment_variables:
 
 external_references:
 ---
-
-# agent-ralph-wiggum-fstandhartinger
-
 ## Overview
-
 Autonomous AI coding with spec-driven development combining iterative bash loops and SpecKit-style specifications for fully autonomous AI-assisted software development. Use when building projects that require hands-free AI implementation, working from specification files, or running autonomous development loops with completion verification.
 
 Autonomous AI coding with spec-driven development. Ralph Wiggum combines Geoffrey Huntley's original iterative bash loop methodology with SpecKit-style specifications for fully autonomous AI-assisted software development.
 
 ## When to Use
-
 - Building projects that require hands-free AI implementation
 - Working from specification files with clear acceptance criteria
 - Running autonomous development loops with completion verification
@@ -46,8 +41,7 @@ Autonomous AI coding with spec-driven development. Ralph Wiggum combines Geoffre
 - Managing multiple specs in priority order
 - Needing fresh context windows for each iteration
 
-## Quick Start
-
+## Usage Examples
 ### Install as Agent Skill
 
 ```bash
@@ -60,10 +54,9 @@ openskills install agent-ralph-wiggum-fstandhartinger
 
 ### Manual Setup
 
-See [Setup and Configuration](references/01-setup-configuration.md) for detailed installation.
+See [Setup and Configuration](reference/01-setup-configuration.md) for detailed installation.
 
 ## Core Concepts
-
 Ralph Wiggum operates on a simple but powerful principle: **each iteration picks ONE task, implements it completely, verifies acceptance criteria, and only outputs `<promise>DONE</promise>` when 100% complete**.
 
 ### The Ralph Loop
@@ -93,10 +86,9 @@ Ralph Wiggum operates on a simple but powerful principle: **each iteration picks
 └─────────────────────────────────────────────────────────────┘
 ```
 
-See [The Ralph Loop Methodology](references/02-ralph-loop-methodology.md) for detailed workflow explanation.
+See [The Ralph Loop Methodology](reference/02-ralph-loop-methodology.md) for detailed workflow explanation.
 
 ## Running Ralph
-
 ### Build Mode (Default)
 
 ```bash
@@ -110,10 +102,9 @@ See [The Ralph Loop Methodology](references/02-ralph-loop-methodology.md) for de
 ./scripts/ralph-loop.sh plan      # Create IMPLEMENTATION_PLAN.md from specs
 ```
 
-See [Running Ralph Loops](references/03-running-ralph-loops.md) for all commands and modes.
+See [Running Ralph Loops](reference/03-running-ralph-loops.md) for all commands and modes.
 
 ## Creating Specifications
-
 Specifications define what to build with clear acceptance criteria:
 
 ```bash
@@ -124,21 +115,19 @@ Specifications define what to build with clear acceptance criteria:
 "Create a spec for implementing the billing dashboard"
 ```
 
-See [Creating Specifications](references/04-creating-specifications.md) for spec structure and templates.
+See [Creating Specifications](reference/04-creating-specifications.md) for spec structure and templates.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-setup-configuration.md`](references/01-setup-configuration.md) - Installation, directory structure, and configuration
-- [`references/02-ralph-loop-methodology.md`](references/02-ralph-loop-methodology.md) - Core concepts, workflow, and completion signals
-- [`references/03-running-ralph-loops.md`](references/03-running-ralph-loops.md) - Commands, modes, logging, and monitoring
-- [`references/04-creating-specifications.md`](references/04-creating-specifications.md) - Spec templates, acceptance criteria, and examples
-- [`references/05-advanced-features.md`](references/05-advanced-features.md) - Telegram notifications, GitHub issues, circuit breakers
-- [`references/06-troubleshooting.md`](references/06-troubleshooting.md) - Common issues, stuck specs, and debugging
-
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/agent-ralph-wiggum-fstandhartinger/`). All paths are relative to this directory.
+- [Setup Configuration](reference/01-setup-configuration.md)
+- [Ralph Loop Methodology](reference/02-ralph-loop-methodology.md)
+- [Running Ralph Loops](reference/03-running-ralph-loops.md)
+- [Creating Specifications](reference/04-creating-specifications.md)
+- [Advanced Features](reference/05-advanced-features.md)
+- [Troubleshooting](reference/06-troubleshooting.md)
 
 ## Troubleshooting
-
 ### Stuck Specs
 
 After 10 attempts without completion, specs are flagged as stuck:
@@ -148,7 +137,7 @@ source scripts/lib/nr_of_tries.sh
 print_stuck_specs_summary
 ```
 
-Consider splitting into smaller specs. See [Troubleshooting](references/06-troubleshooting.md).
+Consider splitting into smaller specs. See [Troubleshooting](reference/06-troubleshooting.md).
 
 ### Circuit Breaker
 
@@ -163,14 +152,9 @@ reset_circuit_breaker "Fixed blocking issue"
 ```
 
 ## Important Notes
-
 1. **Acceptance criteria must be testable** - Not "works correctly" but specific verifiable conditions
 2. **Fresh context each loop** - Every iteration starts with clean context window
 3. **Shared state on disk** - `IMPLEMENTATION_PLAN.md` persists between loops
 4. **Planning is optional** - Most projects work fine directly from specs
 5. **YOLO mode recommended** - Enables autonomous command execution without approval prompts
 
-
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

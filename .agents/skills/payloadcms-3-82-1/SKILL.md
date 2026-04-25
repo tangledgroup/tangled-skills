@@ -28,17 +28,7 @@ external_references:
   - https://payloadcms.com/docs
   - https://github.com/payloadcms/payload
 ---
-
-# Payload CMS v3.82.1
-
-Complete toolkit for Payload CMS v3.82.1 headless CMS development including collections, fields, access control, authentication, custom components, and Local API operations. Use when building content management systems, creating admin interfaces, implementing role-based access control, developing custom React components, or integrating with Next.js applications using TypeScript-first patterns with proper security practices.
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Payload CMS is a TypeScript-first headless CMS providing:
 - **Admin Panel**: Auto-generated React admin interface
 - **APIs**: REST and GraphQL out of the box
@@ -48,7 +38,6 @@ Payload CMS is a TypeScript-first headless CMS providing:
 - **Type Safety**: Full TypeScript support with generated types
 
 ## When to Use
-
 - Building content management systems with custom data models
 - Creating admin interfaces for content editors
 - Implementing role-based access control (RBAC)
@@ -58,8 +47,10 @@ Payload CMS is a TypeScript-first headless CMS providing:
 - Requiring custom React components in admin panel
 - Integrating with external services via hooks
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Prerequisites
 
 - Node.js 18.17 or higher
@@ -79,10 +70,9 @@ npm install payload @payloadcms/db-mongodb @payloadcms/richtext-lexical
 
 ### Minimal Configuration
 
-See [Configuration Options](references/06-configuration-options.md) for complete setup patterns.
+See [Configuration Options](reference/06-configuration-options.md) for complete setup patterns.
 
-## Quick Start
-
+## Usage Examples
 ### Creating Collections
 
 Define data models with collections:
@@ -106,7 +96,7 @@ export const Posts: CollectionConfig = {
 }
 ```
 
-See [Collections & Fields](references/01-collections-fields.md) for detailed patterns.
+See [Collections & Fields](reference/01-collections-fields.md) for detailed patterns.
 
 ### Implementing Access Control
 
@@ -134,7 +124,7 @@ export const Posts: CollectionConfig = {
 }
 ```
 
-See [Access Control & Authentication](references/02-access-control-auth.md) for security patterns.
+See [Access Control & Authentication](reference/02-access-control-auth.md) for security patterns.
 
 ### Custom Components
 
@@ -156,7 +146,7 @@ export const Posts: CollectionConfig = {
 }
 ```
 
-See [Custom Components](references/03-custom-components.md) for component patterns.
+See [Custom Components](reference/03-custom-components.md) for component patterns.
 
 ### Local API Operations
 
@@ -189,20 +179,20 @@ await payload.find({
 })
 ```
 
-See [Local API Operations](references/04-local-api-operations.md) for operation patterns.
+See [Local API Operations](reference/04-local-api-operations.md) for operation patterns.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-collections-fields.md`](references/01-collections-fields.md) - Data modeling with collections and all field types
-- [`references/02-access-control-auth.md`](references/02-access-control-auth.md) - Security patterns, RBAC, authentication
-- [`references/03-custom-components.md`](references/03-custom-components.md) - React component customization for admin panel
-- [`references/04-local-api-operations.md`](references/04-local-api-operations.md) - Programmatic database operations with security
-- [`references/05-hooks-extensions.md`](references/05-hooks-extensions.md) - Lifecycle hooks and plugin development
-- [`references/06-configuration-options.md`](references/06-configuration-options.md) - Complete Payload configuration reference
-- [`references/07-common-patterns.md`](references/07-common-patterns.md) - Best practices and common gotchas
+- [Collections Fields](reference/01-collections-fields.md)
+- [Access Control Auth](reference/02-access-control-auth.md)
+- [Custom Components](reference/03-custom-components.md)
+- [Local Api Operations](reference/04-local-api-operations.md)
+- [Hooks Extensions](reference/05-hooks-extensions.md)
+- [Configuration Options](reference/06-configuration-options.md)
+- [Common Patterns](reference/07-common-patterns.md)
 
 ## Troubleshooting
-
 ### Common Issues
 
 **Types not updating after schema changes:**
@@ -219,16 +209,12 @@ Use context flags to prevent recursive operations in hooks.
 **Transaction failures in MongoDB:**
 Ensure replica set is configured for multi-operation transactions.
 
-See [Common Patterns](references/07-common-patterns.md) for detailed troubleshooting.
+See [Common Patterns](reference/07-common-patterns.md) for detailed troubleshooting.
 
 ## Resources
-
 - **Official Docs**: https://payloadcms.com/docs
 - **GitHub Repository**: https://github.com/payloadcms/payload
 - **Examples**: https://github.com/payloadcms/payload/tree/v3.82.1/examples
 - **Templates**: https://github.com/payloadcms/payload/tree/v3.82.1/templates
 - **Plugins**: https://payloadcms.com/docs/plugins/overview
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

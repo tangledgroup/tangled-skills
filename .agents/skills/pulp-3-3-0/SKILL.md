@@ -17,17 +17,12 @@ external_references:
   - https://www.coin-or.org/
   - https://github.com/coin-or/pulp/tree/3.3.0
 ---
-
-# PuLP 3.3.0
-
 ## Overview
-
 PuLP is a linear and mixed integer programming modeler written in Python. With PuLP, it is simple to create MILP optimisation problems and solve them with the latest open-source (or proprietary) solvers. PuLP can generate MPS or LP files and call solvers such as GLPK, COIN-OR CLP/CBC, CPLEX, GUROBI, MOSEK, HiGHS, CHOCO, MIPCL, SCIP/FSCIP, COPT, and XPRESS.
 
 PuLP is part of the COIN-OR project. It requires Python 3.9 or newer.
 
 ## When to Use
-
 - Formulating and solving linear programming (LP) or mixed-integer programming (MIP) problems in Python
 - Creating optimization models for production planning, scheduling, transportation, blending, resource allocation
 - Need to switch between multiple solvers (CBC, GLPK, Gurobi, CPLEX, HiGHS, etc.) without changing model code
@@ -36,7 +31,6 @@ PuLP is part of the COIN-OR project. It requires Python 3.9 or newer.
 - Working with integer, binary, or continuous decision variables
 
 ## Core Concepts
-
 ### Problem Types
 
 **Linear Programming (LP):** Decision variables are real-valued; objective and constraints are linear expressions of the form `a1*x1 + a2*x2 + ... + an*xn <=/=/>= b`.
@@ -85,7 +79,6 @@ PuLP is part of the COIN-OR project. It requires Python 3.9 or newer.
 - `LpStatusUndefined` (= -3) — "Undefined"
 
 ## Installation / Setup
-
 ```bash
 # Core installation
 pip install pulp
@@ -108,7 +101,6 @@ pip install pulp[open_py]
 ```
 
 ## Usage Examples
-
 ### Basic Problem (Whiskas Cat Food — Minimization)
 
 ```python
@@ -278,9 +270,10 @@ prob.solve()
 ```
 
 ## Advanced Topics
+## Advanced Topics
 
-- [Reference: Solvers and Configuration](references/01-solvers-and-configuration.md) — All solver APIs, environment variables, path configuration, solver-specific functionality
-- [Reference: Model Export/Import and Utilities](references/02-export-import-utilities.md) — JSON/MPS/LP export/import, utility functions, variable dictionaries
-- [Reference: Case Studies](references/03-case-studies.md) — Blending, transportation, set partitioning, production planning problems
-- [Reference: Complete API Reference](references/04-api-reference.md) — Full class and function reference
+- [Solvers And Configuration](reference/01-solvers-and-configuration.md)
+- [Export Import Utilities](reference/02-export-import-utilities.md)
+- [Case Studies](reference/03-case-studies.md)
+- [Api Reference](reference/04-api-reference.md)
 

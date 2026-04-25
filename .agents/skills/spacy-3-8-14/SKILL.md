@@ -24,13 +24,7 @@ external_references:
   - https://spacy.io/usage#changelog
   - https://spacy.io/
 ---
-
-# spaCy 3.8.14
-
-Industrial-strength Natural Language Processing library for Python and Cython, built on the latest research and designed for real-world products. Supports 70+ languages with state-of-the-art speed, neural network models, pretrained transformers, and production-ready training systems.
-
 ## Overview
-
 spaCy is a comprehensive NLP toolkit that provides:
 
 - **Tokenization** - Linguistically-motivated text segmentation
@@ -45,7 +39,6 @@ spaCy is a comprehensive NLP toolkit that provides:
 - **Rule-based Matching** - Pattern matching with Matcher and Similarity
 
 ## When to Use
-
 Use spaCy when you need:
 
 - Production-ready NLP pipelines for applications
@@ -58,7 +51,6 @@ Use spaCy when you need:
 - GPU-accelerated processing for large datasets
 
 ## Quick Start
-
 ### Installation
 
 ```bash
@@ -114,7 +106,6 @@ python -m spacy validate
 ```
 
 ## Core Concepts
-
 ### The `nlp` Object (Language Pipeline)
 
 The `nlp` object is a pipeline of components that process text:
@@ -181,29 +172,19 @@ print(doc.text)       # Full text
 print(len(doc))       # Number of tokens
 ```
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-For detailed guides on specific topics, see:
+- [Pipelines Components](reference/01-pipelines-components.md)
+- [Linguistic Features](reference/02-linguistic-features.md)
+- [Matching Patterns](reference/03-matching-patterns.md)
+- [Training Customization](reference/04-training-customization.md)
+- [Transformers Embeddings](reference/05-transformers-embeddings.md)
+- [Performance Deployment](reference/06-performance-deployment.md)
+- [Cli Tools](reference/07-cli-tools.md)
+- [Visualizers](reference/08-visualizers.md)
 
-### Core Workflows
-
-- [`references/01-pipelines-components.md`](references/01-pipelines-components.md) - Processing pipelines, component types, adding/removing components, custom components
-- [`references/02-linguistic-features.md`](references/02-linguistic-features.md) - Tokenization, POS tagging, dependency parsing, NER, lemmatization, morphological analysis
-- [`references/03-matching-patterns.md`](references/03-matching-patterns.md) - Rule-based matching with Matcher, PhraseMatcher, SpanMatcher, similarity
-
-### Advanced Topics
-
-- [`references/04-training-customization.md`](references/04-training-customization.md) - Training custom models, data formats, configuration files, evaluation, fine-tuning
-- [`references/05-transformers-embeddings.md`](references/05-transformers-embeddings.md) - Transformer models (BERT, RoBERTa), word vectors, embeddings, contextual representations
-- [`references/06-performance-deployment.md`](references/06-performance-deployment.md) - GPU processing, batch processing, multiprocessing, serialization, deployment
-
-### Utilities and Tools
-
-- [`references/07-cli-tools.md`](references/07-cli-tools.md) - Command-line interface: download, train, evaluate, visualize, migrate
-- [`references/08-visualizers.md`](references/08-visualizers.md) - displaCy visualization for NER, dependency parsing, entity linking
-
-## Installation Details
-
+## Installation / Setup
 ### Requirements
 
 - **Python**: >= 3.7, < 3.13 (64-bit only)
@@ -248,7 +229,6 @@ pip install --no-build-isolation --editable .
 ```
 
 ## Common Patterns
-
 ### Text Classification
 
 ```python
@@ -318,7 +298,6 @@ for doc in nlp.pipe(texts, batch_size=32):
 ```
 
 ## Troubleshooting
-
 ### Model Not Found Error
 
 ```
@@ -364,7 +343,6 @@ pip install --no-cache-dir spacy
 ```
 
 ## Performance Tips
-
 1. **Use the right model size**: `_sm` for speed, `_lg` for accuracy
 2. **Batch processing**: Use `nlp.pipe()` instead of looping with `nlp()`
 3. **Exclude unused components**: Load only what you need
@@ -372,7 +350,6 @@ pip install --no-cache-dir spacy
 5. **Caching**: Reuse the `nlp` object, don't reload in loops
 
 ## Migration from v2.x
-
 Key changes in spaCy 3.x:
 
 1. **Configuration files**: Now use `.cfg` format instead of Python scripts
@@ -383,9 +360,5 @@ Key changes in spaCy 3.x:
 See the [migration guide](https://spacy.io/usage/v3) for detailed instructions.
 
 ## License
-
 spaCy is released under the MIT License. See https://github.com/explosion/spaCy/blob/master/LICENSE
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

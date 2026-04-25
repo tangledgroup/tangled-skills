@@ -17,11 +17,7 @@ external_references:
   - https://rustfs.com/
   - https://github.com/rustfs/rustfs
 ---
-
-# RustFS 1.0.0-alpha.93
-
 ## Overview
-
 RustFS is a high-performance, distributed object storage system built in Rust that provides S3-compatible API, OpenStack Swift support, and comprehensive observability features. It combines the simplicity of MinIO with memory safety and raw performance of Rust, offering full S3 compatibility under the permissive Apache 2.0 license.
 
 Key capabilities include:
@@ -34,7 +30,6 @@ Key capabilities include:
 - **Console UI**: Web-based management interface for buckets, objects, users, and monitoring
 
 ## When to Use
-
 Use this skill when:
 - Deploying RustFS as an S3-compatible object storage backend
 - Configuring distributed or single-node RustFS clusters
@@ -47,7 +42,6 @@ Use this skill when:
 - Building data lake solutions requiring high-throughput storage
 
 ## Core Concepts
-
 ### Architecture Modes
 
 | Mode | Use Case | Description |
@@ -79,8 +73,7 @@ RustFS uses the `RUSTFS_VOLUMES` environment variable to define storage paths:
 - **OpenStack Keystone**: X-Auth-Token authentication for Swift API
 - **TLS/mTLS**: Certificate-based encryption and mutual authentication
 
-## Installation Methods
-
+## Installation / Setup
 ### Method 1: One-Click Installer
 
 ```bash
@@ -205,7 +198,7 @@ helm install rustfs rustfs/rustfs \
   --set service.type=LoadBalancer
 ```
 
-See [Installation Guide](references/01-installation.md) for complete installation options.
+See [Installation Guide](reference/01-installation.md) for complete installation options.
 
 ### Method 5: Nix Flake
 
@@ -235,7 +228,6 @@ rustfs --help
 ```
 
 ## Basic Usage
-
 ### Access Console
 
 1. Navigate to `http://localhost:9001`
@@ -299,13 +291,19 @@ mc cp my-file.txt myrustfs/my-bucket/
 mc ls myrustfs/my-bucket/
 ```
 
-See [Configuration Reference](references/02-configuration.md) for environment variables and settings.
-
+See [Configuration Reference](reference/02-configuration.md) for environment variables and settings.
 
 ## See Also
-
-- [Advanced Features](references/03-advanced-features.md) - Advanced configuration, observability, troubleshooting, and performance tuning
+- [Advanced Features](reference/03-advanced-features.md) - Advanced configuration, observability, troubleshooting, and performance tuning
 
 ## Advanced Topics
+## Advanced Topics
 
-For more details on advanced usage, refer to the official documentation listed in the References section.
+- [Installation](reference/01-installation.md)
+- [Configuration](reference/02-configuration.md)
+- [Advanced Features](reference/03-advanced-features.md)
+- [Openstack Integration](reference/04-openstack-integration.md)
+- [Observability](reference/05-observability.md)
+- [Troubleshooting](reference/06-troubleshooting.md)
+- [Performance](reference/07-performance.md)
+

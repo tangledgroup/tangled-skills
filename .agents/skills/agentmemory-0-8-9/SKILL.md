@@ -17,11 +17,7 @@ external_references:
   - https://github.com/rohitg00/agentmemory/blob/v0.8.9/CHANGELOG.md
   - https://iii.dev/docs
 ---
-
-# agentmemory 0.8.9
-
 ## Overview
-
 **agentmemory** is a persistent memory engine for AI coding agents that automatically captures every tool use, compresses it into searchable memory, and injects relevant context when sessions start. It eliminates the need to re-explain architecture, re-discover bugs, or re-teach preferences across sessions.
 
 **Key capabilities:**
@@ -34,7 +30,6 @@ external_references:
 - **Cross-agent compatible**: Same memory server works for Claude Code, Cursor, Gemini CLI, OpenCode, Hermes, OpenClaw, and 32+ other agents
 
 ## When to Use
-
 Load this skill when:
 - Setting up persistent memory for AI coding agents (Claude Code, Cursor, Gemini CLI, etc.)
 - Configuring MCP server for multi-agent memory sharing
@@ -46,7 +41,6 @@ Load this skill when:
 - Configuring embedding providers (local, OpenAI, Gemini, Voyage AI, Cohere)
 
 ## Core Concepts
-
 ### Memory Tiers (4-Tier Consolidation)
 
 Inspired by human memory consolidation:
@@ -100,8 +94,7 @@ Triple-stream retrieval with Reciprocal Rank Fusion (RRF, k=60):
 
 Session-diversified results (max 3 per session).
 
-## Quick Start
-
+## Installation / Setup
 ### Basic Installation (30 seconds)
 
 ```bash
@@ -144,8 +137,8 @@ Add to your agent's MCP config (example for Cursor, Claude Desktop, Cline):
 Agent-specific configs:
 - **Cursor**: `~/.cursor/mcp.json`
 - **Gemini CLI**: `gemini mcp add agentmemory -- npx -y @agentmemory/mcp`
-- **OpenCode**: See [OpenClaw/OpenCode Config](references/02-agent-integrations.md)
-- **Hermes**: See [Hermes Integration](references/02-agent-integrations.md)
+- **OpenCode**: See [OpenClaw/OpenCode Config](reference/02-agent-integrations.md)
+- **Hermes**: See [Hermes Integration](reference/02-agent-integrations.md)
 
 ### From Source
 
@@ -157,7 +150,6 @@ npm install && npm run build && npm start
 Requires Node.js >= 20 and either [iii-engine](https://iii.dev/docs) or Docker.
 
 ## Configuration
-
 ### Environment Variables
 
 Create `~/.agentmemory/.env`:
@@ -218,7 +210,6 @@ Create `~/.agentmemory/.env`:
 Local embeddings provide +8pp recall over BM25-only with zero API costs.
 
 ## MCP Tools (43 Total)
-
 ### Core Tools (Always Available)
 
 | Tool | Description |
@@ -233,7 +224,7 @@ Local embeddings provide +8pp recall over BM25-only with zero API costs.
 
 ### Extended Tools (Set `AGENTMEMORY_TOOLS=all`)
 
-See [Extended MCP Tools](references/03-mcp-tools.md) for the complete 43-tool reference including:
+See [Extended MCP Tools](reference/03-mcp-tools.md) for the complete 43-tool reference including:
 - Pattern detection (`memory_patterns`, `memory_timeline`)
 - Knowledge graph queries (`memory_graph_query`, `memory_relations`)
 - Multi-agent coordination (`memory_lease`, `memory_signal_send`, `memory_mesh_sync`)
@@ -253,7 +244,6 @@ See [Extended MCP Tools](references/03-mcp-tools.md) for the complete 43-tool re
 | Skill | `/forget` | Delete observations/sessions |
 
 ## REST API
-
 109 endpoints on port `3111`. Protected endpoints require `Authorization: Bearer <secret>` when `AGENTMEMORY_SECRET` is set.
 
 ### Key Endpoints
@@ -271,10 +261,9 @@ See [Extended MCP Tools](references/03-mcp-tools.md) for the complete 43-tool re
 | `GET` | `/agentmemory/profile` | Project profile |
 | `GET` | `/agentmemory/export` | Export all data |
 
-See [REST API Reference](references/04-api-reference.md) for complete endpoint documentation.
+See [REST API Reference](reference/04-api-reference.md) for complete endpoint documentation.
 
 ## Real-Time Viewer
-
 Auto-starts on port `3113`. Features:
 - Live observation stream
 - Session explorer
@@ -290,7 +279,6 @@ open http://localhost:3113
 The viewer binds to `127.0.0.1` by default with CSP nonces and no inline handlers (security fix in v0.8.2).
 
 ## Security Features
-
 **v0.8.2+ security hardening:**
 - Default localhost binding (`127.0.0.1`) instead of `0.0.0.0`
 - Viewer CSP with per-response nonces, `script-src-attr 'none'`
@@ -306,8 +294,7 @@ The viewer binds to `127.0.0.1` by default with CSP nonces and no inline handler
 - Custom `<private>` tags
 
 ## Troubleshooting
-
-See [Troubleshooting Guide](references/05-troubleshooting.md) for:
+See [Troubleshooting Guide](reference/05-troubleshooting.md) for:
 - "Connection refused on port 3111"
 - "No memories returned"
 - Windows setup (iii-engine installation)
@@ -316,7 +303,6 @@ See [Troubleshooting Guide](references/05-troubleshooting.md) for:
 - Token usage concerns
 
 ## Benchmarks
-
 ### Retrieval Accuracy (LongMemEval-S, ICLR 2025)
 
 | System | R@5 | R@10 | MRR |
@@ -333,10 +319,14 @@ See [Troubleshooting Guide](references/05-troubleshooting.md) for:
 | **agentmemory** (API embeddings) | **~170K** | **~$10** |
 | **agentmemory** (local embeddings) | **~170K** | **$0** |
 
-See [Benchmark Comparison](references/06-benchmarks.md) for detailed comparison vs mem0, Letta, Khoj, claude-mem, Hippo.
-
-
+See [Benchmark Comparison](reference/06-benchmarks.md) for detailed comparison vs mem0, Letta, Khoj, claude-mem, Hippo.
 
 ## Advanced Topics
+## Advanced Topics
 
-For more details on advanced usage, refer to the official documentation listed in the References section.
+- [Agent Integrations](reference/02-agent-integrations.md)
+- [Mcp Tools](reference/03-mcp-tools.md)
+- [Api Reference](reference/04-api-reference.md)
+- [Troubleshooting](reference/05-troubleshooting.md)
+- [Benchmarks](reference/06-benchmarks.md)
+

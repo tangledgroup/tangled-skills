@@ -16,24 +16,10 @@ external_references:
   - https://argon-cffi.readthedocs.io/
   - https://github.com/hynek/argon2_cffi
 ---
-
-# argon2-25 (argon2-cffi)
-
 ## Overview
-
 Python toolkit for password hashing and verification using the Argon2 algorithm via argon2-cffi. Use when implementing secure password storage, user authentication systems, or migrating legacy password hashes to modern standards.
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.## Overview
-
-Python toolkit for password hashing and verification using the Argon2 algorithm via argon2-cffi. Use when implementing secure password storage, user authentication systems, or migrating legacy password hashes to modern standards.
-
-Comprehensive Python toolkit for secure password hashing and verification using the Argon2 algorithm, winner of the Password Hashing Competition. Provides both high-level APIs for common use cases and low-level access for advanced customization.
 
 ## When to Use
-
 - Implementing password storage in new applications
 - Migrating legacy password hashes (bcrypt, PBKDF2, scrypt) to Argon2
 - Building authentication systems requiring modern cryptographic standards
@@ -41,8 +27,14 @@ Comprehensive Python toolkit for secure password hashing and verification using 
 - Requiring async password hashing for non-blocking operations
 - Customizing hash parameters for specific security/performance requirements
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
 
+Python toolkit for password hashing and verification using the Argon2 algorithm via argon2-cffi. Use when implementing secure password storage, user authentication systems, or migrating legacy password hashes to modern standards.
+
+Comprehensive Python toolkit for secure password hashing and verification using the Argon2 algorithm, winner of the Password Hashing Competition. Provides both high-level APIs for common use cases and low-level access for advanced customization.
+
+## Installation / Setup
 Install the library:
 
 ```bash
@@ -55,8 +47,7 @@ For async support:
 pip install argon2-cffi-bindings
 ```
 
-## Quick Start
-
+## Usage Examples
 ### Basic Password Hashing
 
 The high-level API uses RFC 9106 recommended parameters by default:
@@ -102,10 +93,9 @@ def login(db, user, password):
     return True
 ```
 
-See [Password Hashing Guide](references/01-password-hashing.md) for detailed examples and best practices.
+See [Password Hashing Guide](reference/01-password-hashing.md) for detailed examples and best practices.
 
 ## Preconfigured Profiles
-
 Use standardized parameter profiles from RFC 9106:
 
 ```python
@@ -119,17 +109,17 @@ ph_low = PasswordHasher.from_parameters(RFC_9106_LOW_MEMORY)
 ph_high = PasswordHasher.from_parameters(RFC_9106_HIGH_MEMORY)
 ```
 
-See [Parameter Selection Guide](references/02-parameters.md) for choosing the right profile.
+See [Parameter Selection Guide](reference/02-parameters.md) for choosing the right profile.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-password-hashing.md`](references/01-password-hashing.md) - Complete password hashing workflows and authentication patterns
-- [`references/02-parameters.md`](references/02-parameters.md) - Parameter selection, RFC 9106 profiles, and performance tuning
-- [`references/03-api-reference.md`](references/03-api-reference.md) - Full API documentation including low-level functions and exceptions
-- [`references/04-migration.md`](references/04-migration.md) - Migrating from bcrypt, PBKDF2, scrypt to Argon2
+- [Password Hashing](reference/01-password-hashing.md)
+- [Parameters](reference/02-parameters.md)
+- [Api Reference](reference/03-api-reference.md)
+- [Migration](reference/04-migration.md)
 
 ## Troubleshooting
-
 ### Memory Issues in Docker
 
 The default 64 MiB memory requirement can cause swapping in constrained environments:
@@ -166,10 +156,5 @@ Adjust parameters to achieve 40-500ms verification time depending on use case.
 - `VerificationError`: Verification failed for reasons other than mismatch
 - `HashingError`: Hash creation failed (usually parameter issues)
 
-See [API Reference](references/03-api-reference.md) for complete exception documentation.
-
-
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.
+See [API Reference](reference/03-api-reference.md) for complete exception documentation.
 

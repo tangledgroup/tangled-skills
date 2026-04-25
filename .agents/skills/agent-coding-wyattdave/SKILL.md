@@ -15,24 +15,10 @@ required_environment_variables: []
 
 external_references:
 ---
-
-# WyattDave Coding Agent
-
 ## Overview
-
 A toolkit for creating custom AI coding agents using prompt engineering, instruction files, and skill modules. Use when building bespoke coding assistants for niche domains where general LLM training data is insufficient or misleading, particularly for specialized frameworks like Power Platform Code Apps with vanilla JavaScript.
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.## Overview
-
-A toolkit for creating custom AI coding agents using prompt engineering, instruction files, and skill modules. Use when building bespoke coding assistants for niche domains where general LLM training data is insufficient or misleading, particularly for specialized frameworks like Power Platform Code Apps with vanilla JavaScript.
-
-A comprehensive approach to building custom AI coding agents through layered prompt engineering, instruction files, and modular skill systems. This methodology enables creation of specialized coding assistants for niche domains where general LLM training is insufficient or counterproductive.
 
 ## When to Use
-
 - Building coding agents for specialized frameworks or SDKs with limited documentation
 - Creating domain-specific assistants that avoid misleading general training data
 - Developing VS Code extensions that integrate AI with custom UI and CLI commands
@@ -40,8 +26,14 @@ A comprehensive approach to building custom AI coding agents through layered pro
 - Optimizing context usage for LLMs with token limits
 - Training agents through iterative testing and documentation of learnings
 
-## Quick Start
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
 
+A toolkit for creating custom AI coding agents using prompt engineering, instruction files, and skill modules. Use when building bespoke coding assistants for niche domains where general LLM training data is insufficient or misleading, particularly for specialized frameworks like Power Platform Code Apps with vanilla JavaScript.
+
+A comprehensive approach to building custom AI coding agents through layered prompt engineering, instruction files, and modular skill systems. This methodology enables creation of specialized coding assistants for niche domains where general LLM training is insufficient or counterproductive.
+
+## Quick Start
 ### Understanding the Prompt Stack
 
 The agent uses a hierarchical prompt structure:
@@ -52,7 +44,7 @@ The agent uses a hierarchical prompt structure:
 4. **Skill.md** - Task-specific knowledge loaded dynamically
 5. **User Prompt** - The actual request with context
 
-See [Prompt Stack Architecture](references/01-prompt-stack.md) for detailed explanation of each layer.
+See [Prompt Stack Architecture](reference/01-prompt-stack.md) for detailed explanation of each layer.
 
 ### Platform Selection
 
@@ -64,7 +56,7 @@ Choose implementation platform based on requirements:
 | CLI Wrapper | Cross-platform, scriptable, lightweight | Automation and DevOps |
 | GitHub Copilot Extensions | Leverages existing Copilot license | Enhanced Copilot functionality |
 
-Refer to [Platform Implementation](references/02-platform-implementation.md) for build guidance.
+Refer to [Platform Implementation](reference/02-platform-implementation.md) for build guidance.
 
 ### Core Components
 
@@ -74,18 +66,18 @@ Build three main advantages over generic assistants:
 2. **Custom system prompt** - Prevent LLM from using misleading general training
 3. **Skill files** - Document all learnings from implementation experience
 
-See [Implementation Guide](references/03-implementation.md) for component details.
+See [Implementation Guide](reference/03-implementation.md) for component details.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-prompt-stack.md`](references/01-prompt-stack.md) - Complete prompt hierarchy with examples and best practices
-- [`references/02-platform-implementation.md`](references/02-platform-implementation.md) - VS Code extension development and alternative platforms
-- [`references/03-implementation.md`](references/03-implementation.md) - Building UI commands, system prompts, and skill files
-- [`references/04-context-optimization.md`](references/04-context-optimization.md) - Managing token limits and context stack issues
-- [`references/05-training-workflow.md`](references/05-training-workflow.md) - Iterative testing and learning documentation process
+- [Prompt Stack](reference/01-prompt-stack.md)
+- [Platform Implementation](reference/02-platform-implementation.md)
+- [Implementation](reference/03-implementation.md)
+- [Context Optimization](reference/04-context-optimization.md)
+- [Training Workflow](reference/05-training-workflow.md)
 
 ## Troubleshooting
-
 ### Context Limit Issues
 
 **Symptom**: "No choices" errors or failures on work accounts with lower limits
@@ -97,7 +89,7 @@ See [Implementation Guide](references/03-implementation.md) for component detail
 - Implement decision log files to compact history
 - Break projects into tasks, remove tool calls after completion
 
-See [Context Optimization](references/04-context-optimization.md) for detailed strategies.
+See [Context Optimization](reference/04-context-optimization.md) for detailed strategies.
 
 ### Model Performance Variations
 
@@ -114,15 +106,9 @@ See [Context Optimization](references/04-context-optimization.md) for detailed s
 **Note:** Code is deterministic - move critical functionality to traditional code/UI whenever possible.
 
 ## Key Principles
-
 1. **Iterative Training** - Build many apps, read reasoning, document every bug resolution
 2. **Test Extensively** - Each test generates nudges/tweaks to instructions and prompts
 3. **Document Learnings** - The secret sauce is learning from experience and documenting it
 4. **Minimize Context** - Optimize prompt stack size for token-limited environments
 5. **Move to Code** - When possible, implement in deterministic code rather than LLM decisions
-
-
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.
 

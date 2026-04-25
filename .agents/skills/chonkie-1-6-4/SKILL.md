@@ -22,11 +22,7 @@ external_references:
   - https://github.com/chonkie-inc/chonkie/tree/v1.6.4
   - https://docs.chonkie.ai/common/open-source
 ---
-
-# Chonkie 1.6.4
-
 ## Overview
-
 Chonkie is a lightweight text chunking library designed for fast, efficient, and robust RAG pipelines. It provides multiple chunking strategies (12+ chunkers), a fluent Pipeline API, refineries for post-processing, and direct integrations with 10+ vector databases. Available in both Python and JavaScript/TypeScript.
 
 Key characteristics:
@@ -36,7 +32,6 @@ Key characteristics:
 - **Flexible**: Modular optional installs, custom tokenizers, recipe-based configuration
 
 ## When to Use
-
 Use this skill when:
 - Building document ingestion pipelines for RAG applications
 - Splitting text into embeddings-ready chunks
@@ -46,7 +41,6 @@ Use this skill when:
 - Need async chunking in web frameworks (FastAPI, aiohttp, Starlette)
 
 ## Core Concepts
-
 ### Chunking Principles
 
 An ideal chunk is:
@@ -98,8 +92,7 @@ chunks = await chunker.achunk(text)
 chunks = await chunker.achunk_batch(texts)
 ```
 
-## Installation
-
+## Installation / Setup
 ### Python
 
 ```bash
@@ -113,7 +106,7 @@ pip install "chonkie[semantic]"
 pip install "chonkie[all]"
 ```
 
-See [Reference: Installation](references/02-installation.md) for all optional extras.
+See [Reference: Installation](reference/02-installation.md) for all optional extras.
 
 ### JavaScript
 
@@ -123,8 +116,7 @@ npm install @chonkiejs/cloud   # API access
 npm install @chonkiejs/token   # Custom tokenizers
 ```
 
-## Quick Start
-
+## Usage Examples
 ```python
 from chonkie import RecursiveChunker
 
@@ -138,17 +130,17 @@ for chunk in chunks:
     print(f"Tokens: {chunk.token_count}")
 ```
 
-## Advanced Topics
-
-- [Reference: Chunkers](references/01-chunkers.md) — All 12 chunkers with parameters and examples
-- [Reference: Installation](references/02-installation.md) — Optional extras, dependencies, chunker availability
-- [Reference: Pipelines](references/03-pipelines.md) — CHOMP architecture, fetchers, chefs, porters
-- [Reference: Embeddings](references/04-embeddings.md) — 10+ embedding providers and AutoEmbeddings
-- [Reference: Handshakes](references/05-handshakes.md) — Vector database integrations (ChromaDB, Qdrant, etc.)
-- [Reference: API Server](references/06-api-server.md) — Self-hosted REST API with Docker
-
 ## Version Notes (1.6.2 → 1.6.4)
-
 - **v1.6.3**: Added LanceDB handshake, TeraflopAI chunker, HTML table support via TableChef/TableChunker, metadata `filename` field
 - **v1.6.4**: Fixed pandas import error (`ModuleNotFoundError: No module named 'pandas'`) when installed without `[table]` extra — pandas now lazy-loaded
+
+## Advanced Topics
+## Advanced Topics
+
+- [Chunkers](reference/01-chunkers.md)
+- [Installation](reference/02-installation.md)
+- [Pipelines](reference/03-pipelines.md)
+- [Embeddings](reference/04-embeddings.md)
+- [Handshakes](reference/05-handshakes.md)
+- [Api Server](reference/06-api-server.md)
 

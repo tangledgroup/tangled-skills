@@ -20,17 +20,12 @@ external_references:
   - https://docs.deno.com/
   - https://github.com/denoland/deno
 ---
-
-# Deno 2.7 Runtime Toolkit
-
 ## Overview
-
 A comprehensive toolkit for the Deno 2.x JavaScript/TypeScript runtime, covering installation, permissions, built-in APIs, development tools (task runner, test runner, lint, fmt), TypeScript support, npm integration, workspaces, and deployment patterns. Use when building applications with Deno, managing Deno projects, working with Deno's standard library (@std on JSR), configuring permissions, or deploying to Deno Deploy.
 
 A comprehensive toolkit for using Deno, the modern JavaScript and TypeScript runtime with secure defaults. Deno is built on V8, Rust, and Tokio, providing a secure, fast, and developer-friendly environment for building web servers, CLI tools, and full-stack applications.
 
 ## When to Use
-
 - Building JavaScript/TypeScript applications with secure defaults
 - Creating HTTP servers, APIs, or web services
 - Developing CLI tools and scripts
@@ -41,8 +36,7 @@ A comprehensive toolkit for using Deno, the modern JavaScript and TypeScript run
 - Running tests with built-in test runner
 - Configuring project-specific tasks with `deno task`
 
-## Quick Start
-
+## Installation / Setup
 ### Installation
 
 Install Deno using one of these methods:
@@ -98,10 +92,9 @@ deno run --allow-net server.ts
 
 Visit http://localhost:8000.
 
-See [Building Web Servers](references/02-web-servers.md) for advanced patterns.
+See [Building Web Servers](reference/02-web-servers.md) for advanced patterns.
 
 ## Core Concepts
-
 ### Permissions Model
 
 Deno requires explicit permissions for filesystem, network, and environment access:
@@ -126,7 +119,7 @@ deno run --allow-run=git script.ts
 deno run -A script.ts
 ```
 
-See [Permissions and Security](references/01-permissions.md) for detailed guidance.
+See [Permissions and Security](reference/01-permissions.md) for detailed guidance.
 
 ### TypeScript First-Class Support
 
@@ -146,7 +139,7 @@ deno check app.ts
 deno check --all app.ts
 ```
 
-Deno uses strict mode by default. See [TypeScript Configuration](references/03-typescript.md) for advanced setup.
+Deno uses strict mode by default. See [TypeScript Configuration](reference/03-typescript.md) for advanced setup.
 
 ### Module System
 
@@ -166,10 +159,9 @@ import express from "npm:express@4.18.2";
 import { join } from "@std/path/join";
 ```
 
-See [Module Resolution](references/03-typescript.md#module-resolution) for import maps and workspaces.
+See [Module Resolution](reference/03-typescript.md#module-resolution) for import maps and workspaces.
 
 ## Development Tools
-
 ### Task Runner (`deno task`)
 
 Define reusable commands in `deno.json`:
@@ -191,7 +183,7 @@ deno task start
 deno task test
 ```
 
-See [Task Runner Guide](references/04-task-runner.md) for dependencies, wildcards, and advanced syntax.
+See [Task Runner Guide](reference/04-task-runner.md) for dependencies, wildcards, and advanced syntax.
 
 ### Test Runner (`deno test`)
 
@@ -233,7 +225,7 @@ deno test --coverage
 deno test --watch
 ```
 
-See [Testing Guide](references/05-testing.md) for mocks, fixtures, and coverage.
+See [Testing Guide](reference/05-testing.md) for mocks, fixtures, and coverage.
 
 ### Linter (`deno lint`)
 
@@ -312,7 +304,6 @@ deno doc | deno run -A jsr:@deno/doc-viewer
 ```
 
 ## Configuration
-
 Create `deno.json` in project root:
 
 ```json
@@ -344,7 +335,6 @@ Create `deno.json` in project root:
 ```
 
 ## Standard Library (@std)
-
 Deno's standard library is hosted on JSR:
 
 ```typescript
@@ -372,19 +362,19 @@ import { Client } from "@std/sql";
 
 Browse all modules: https://jsr.io/@std
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-permissions.md`](references/01-permissions.md) - Permissions model, security best practices, and permission descriptors
-- [`references/02-web-servers.md`](references/02-web-servers.md) - Building HTTP servers, routing, WebSockets, and file serving
-- [`references/03-typescript.md`](references/03-typescript.md) - TypeScript configuration, import maps, type checking, and module resolution
-- [`references/04-task-runner.md`](references/04-task-runner.md) - Task runner syntax, dependencies, wildcards, and environment variables
-- [`references/05-testing.md`](references/05-testing.md) - Test runner, assertions, mocks, fixtures, and coverage
-- [`references/06-api-reference.md`](references/06-api-reference.md) - Deno namespace APIs: filesystem, network, processes, FFI
-- [`references/07-npm-integration.md`](references/07-npm-integration.md) - Using npm packages, compatibility mode, and migration patterns
-- [`references/08-workspaces.md`](references/08-workspaces.md) - Multi-package workspaces, shared dependencies, and monorepo setup
+- [Permissions](reference/01-permissions.md)
+- [Web Servers](reference/02-web-servers.md)
+- [Typescript](reference/03-typescript.md)
+- [Task Runner](reference/04-task-runner.md)
+- [Testing](reference/05-testing.md)
+- [Api Reference](reference/06-api-reference.md)
+- [Npm Integration](reference/07-npm-integration.md)
+- [Workspaces](reference/08-workspaces.md)
 
 ## Troubleshooting
-
 ### Permission Denied Errors
 
 Always grant required permissions:
@@ -426,7 +416,6 @@ deno cache --reload script.ts
 ```
 
 ## Additional Resources
-
 - [Official Documentation](https://docs.deno.com)
 - [Deno Standard Library](https://jsr.io/@std)
 - [JSR Package Registry](https://jsr.io)
@@ -434,6 +423,3 @@ deno cache --reload script.ts
 - [GitHub Repository](https://github.com/denoland/deno)
 - [Deno Playground](https://play.deno.dev)
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

@@ -20,21 +20,12 @@ external_references:
   - https://docs.astral.sh/uv/
   - https://github.com/astral-sh/uv
 ---
-
-# uv 0.11.6
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A skill for using uv 0.11.6, an extremely fast Python package and project manager written in Rust that replaces pip, pip-tools, pipx, poetry, pyenv, twine, virtualenv, and more with 10-100x faster performance. Use when managing Python projects, installing packages, running scripts with dependencies, managing Python versions, working with tools published as Python packages, or needing high-performance dependency resolution and universal lockfiles.
 
 An extremely fast Python package and project manager, written in Rust. uv provides a unified interface to replace `pip`, `pip-tools`, `pipx`, `poetry`, `pyenv`, `twine`, `virtualenv`, and more with 10-100x faster performance than pip.
 
 ## When to Use
-
 - Installing and managing Python versions across projects
 - Creating and managing Python projects with `pyproject.toml`
 - Running Python scripts with inline dependency metadata
@@ -44,8 +35,10 @@ An extremely fast Python package and project manager, written in Rust. uv provid
 - Working with monorepos using workspace support
 - Building and publishing Python packages
 
-## Quick Start
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Installation
 
 Install uv with the standalone installer:
@@ -80,7 +73,6 @@ echo 'uv generate-shell-completion fish | source' > ~/.config/fish/completions/u
 ```
 
 ## Core Features
-
 ### Python Versions
 
 Install and manage Python versions directly:
@@ -108,7 +100,7 @@ uv python pin 3.12
 uv python uninstall 3.11
 ```
 
-See [Python Versions](references/01-python-versions.md) for detailed information on discovery, automatic downloads, and managed installations.
+See [Python Versions](reference/01-python-versions.md) for detailed information on discovery, automatic downloads, and managed installations.
 
 ### Scripts
 
@@ -143,7 +135,7 @@ import requests
 from rich.pretty import pprint
 ```
 
-See [Scripts Guide](references/02-scripts.md) for comprehensive examples and metadata formats.
+See [Scripts Guide](reference/02-scripts.md) for comprehensive examples and metadata formats.
 
 ### Projects
 
@@ -185,7 +177,7 @@ uv build
 uv publish
 ```
 
-See [Projects Guide](references/03-projects.md) for detailed workflows including workspaces, dependency management, and publishing.
+See [Projects Guide](reference/03-projects.md) for detailed workflows including workspaces, dependency management, and publishing.
 
 ### Tools
 
@@ -214,7 +206,7 @@ uv tool uninstall ruff
 uv tool upgrade ruff
 ```
 
-See [Tools Guide](references/04-tools.md) for advanced usage including extras, git sources, and plugin management.
+See [Tools Guide](reference/04-tools.md) for advanced usage including extras, git sources, and plugin management.
 
 ### pip Interface
 
@@ -248,19 +240,19 @@ uv pip uninstall requests
 uv pip tree
 ```
 
-See [pip Interface](references/05-pip-interface.md) for compatibility details and advanced options.
+See [pip Interface](reference/05-pip-interface.md) for compatibility details and advanced options.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-python-versions.md`](references/01-python-versions.md) - Python installation, discovery, and management
-- [`references/02-scripts.md`](references/02-scripts.md) - Running scripts with inline dependencies
-- [`references/03-projects.md`](references/03-projects.md) - Project management, workspaces, and publishing
-- [`references/04-tools.md`](references/04-tools.md) - Tool installation and execution
-- [`references/05-pip-interface.md`](references/05-pip-interface.md) - pip-compatible commands and workflows
-- [`references/06-configuration.md`](references/06-configuration.md) - Configuration files, cache, and environment variables
+- [Python Versions](reference/01-python-versions.md)
+- [Scripts](reference/02-scripts.md)
+- [Projects](reference/03-projects.md)
+- [Tools](reference/04-tools.md)
+- [Pip Interface](reference/05-pip-interface.md)
+- [Configuration](reference/06-configuration.md)
 
 ## Common Workflows
-
 ### Migrate from pip
 
 ```bash
@@ -310,7 +302,6 @@ uv tool uninstall tool
 ```
 
 ## Troubleshooting
-
 ### Cache Issues
 
 ```bash
@@ -359,8 +350,5 @@ uv pip compile requirements.in --constraint constraints.txt
 uv pip compile requirements.in --override overrides.txt
 ```
 
-See [Configuration](references/06-configuration.md) for advanced settings and environment variable control.
+See [Configuration](reference/06-configuration.md) for advanced settings and environment variable control.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

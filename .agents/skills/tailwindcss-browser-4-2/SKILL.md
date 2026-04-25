@@ -18,21 +18,12 @@ external_references:
   - https://www.npmjs.com/package/@tailwindcss/browser
   - https://github.com/tailwindlabs/tailwindcss
 ---
-
-# Tailwind CSS Browser v4.2
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A skill for using Tailwind CSS v4.2 browser build (@tailwindcss/browser) that enables in-browser Tailwind compilation without a build step. Use when prototyping, creating documentation sites, building static pages, or learning Tailwind CSS without setting up Node.js tooling.
 
 Tailwind CSS Browser is a specialized build of Tailwind CSS v4.2 that compiles utility classes directly in the browser using Web Workers. This enables using Tailwind without any build step, Node.js, or configuration files—perfect for rapid prototyping, documentation sites, static pages, and learning.
 
 ## When to Use
-
 - Rapidly prototyping UI components without build tooling
 - Creating documentation sites with live code examples
 - Building static HTML pages quickly
@@ -41,8 +32,10 @@ Tailwind CSS Browser is a specialized build of Tailwind CSS v4.2 that compiles u
 - Hotwire/Turbo-based applications
 - Simple landing pages and marketing sites
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### CDN Usage (Recommended)
 
 Add the script tag to your HTML `<head>`:
@@ -102,7 +95,6 @@ Or download directly from npmjs.org:
 4. Place in your project and reference locally
 
 ## Quick Start Examples
-
 ### Basic Button Component
 
 ```html
@@ -190,7 +182,6 @@ Or download directly from npmjs.org:
 ```
 
 ## Customization
-
 ### Custom Theme Variables
 
 Extend Tailwind's theme using CSS custom properties:
@@ -259,9 +250,10 @@ Usage:
 ```
 
 ## See Also
-
-- [Advanced Usage and Examples](references/01-advanced-usage.md) - Complete examples, advanced patterns, and troubleshooting
+- [Advanced Usage and Examples](reference/01-advanced-usage.md) - Complete examples, advanced patterns, and troubleshooting
 
 ## Advanced Topics
+## Advanced Topics
 
-For more details on advanced usage, refer to the official documentation listed in the References section.
+- [Advanced Usage](reference/01-advanced-usage.md)
+

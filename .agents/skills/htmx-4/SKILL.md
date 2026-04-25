@@ -19,11 +19,7 @@ external_references:
   - https://four.htmx.org/
   - https://github.com/bigskysoftware/htmx
 ---
-
-# htmx-4
-
 ## Overview
-
 A skill for building interactive web applications with htmx 4.0, a JavaScript library that provides HTML attributes for AJAX requests, CSS transitions, WebSockets, and Server-Sent Events without writing JavaScript. Use when creating dynamic user interfaces with hypermedia-driven architecture, migrating from htmx 2.x, or implementing modern web patterns using declarative HTML syntax.
 
 A comprehensive toolkit for building interactive web applications with htmx 4.0, a JavaScript library that allows accessing AJAX, CSS Transitions, WebSockets, and Server-Sent Events directly in HTML using attributes. htmx completes HTML as a hypertext by removing arbitrary constraints on which elements can make HTTP requests, which events can trigger them, which HTTP methods are available, and how responses can be swapped into the DOM.
@@ -36,7 +32,6 @@ A comprehensive toolkit for building interactive web applications with htmx 4.0,
 - 60-second default timeout (vs unlimited in htmx 2.x)
 
 ## When to Use
-
 Load this skill when:
 - Building dynamic web interfaces without JavaScript frameworks
 - Adding AJAX functionality to existing HTML applications
@@ -46,8 +41,7 @@ Load this skill when:
 - Needing progressive enhancement with graceful degradation
 - Working with server-side rendering frameworks
 
-## Quick Start
-
+## Usage Examples
 ### Installation via CDN
 
 Add this to your `<head>` tag:
@@ -74,8 +68,7 @@ Add this to your `<head>` tag:
 The `hx-post` attribute triggers an AJAX request on the default event (click for buttons, submit for forms). The `hx-swap` attribute specifies how to replace the target element with the server response.
 
 ## Core Concepts
-
-See [Core Concepts](references/01-core-concepts.md) for detailed explanation of:
+See [Core Concepts](reference/01-core-concepts.md) for detailed explanation of:
 - Request lifecycle and flow
 - Attribute inheritance with `:inherited` modifier
 - Target selection strategies
@@ -83,17 +76,16 @@ See [Core Concepts](references/01-core-concepts.md) for detailed explanation of:
 - Multi-target updates with `<hx-partial>`
 
 ## Common Operations
-
 ### HTTP Methods
 
-See [HTTP Attributes Reference](references/02-http-attributes.md) for:
+See [HTTP Attributes Reference](reference/02-http-attributes.md) for:
 - `hx-get`, `hx-post`, `hx-put`, `hx-patch`, `hx-delete`
 - `hx-method` and `hx-action` for flexible method specification
 - Request configuration with `hx-config`
 
 ### Triggers and Events
 
-See [Triggers and Events](references/03-triggers-events.md) for:
+See [Triggers and Events](reference/03-triggers-events.md) for:
 - Standard DOM events (click, input, submit, keyup)
 - Synthetic events (load, revealed, intersect)
 - Event filters and modifiers (delay, throttle, changed, once)
@@ -102,7 +94,7 @@ See [Triggers and Events](references/03-triggers-events.md) for:
 
 ### Response Handling
 
-See [Response Handling](references/04-response-handling.md) for:
+See [Response Handling](reference/04-response-handling.md) for:
 - Swap styles (innerHTML, outerHTML, beforebegin, afterend, etc.)
 - Out-of-band swaps with `hx-swap-oob`
 - Status code handling with `hx-status`
@@ -110,13 +102,12 @@ See [Response Handling](references/04-response-handling.md) for:
 
 ### Real-time Features
 
-See [Real-time Communication](references/05-realtime.md) for:
+See [Real-time Communication](reference/05-realtime.md) for:
 - Server-Sent Events (SSE) with `hx-sse:connect`
 - WebSocket communication with `hx-ws:connect`
 - Extension loading and configuration
 
 ## Configuration
-
 htmx 4.0 introduces new configuration options and changes defaults from htmx 2.x:
 
 ```javascript
@@ -133,10 +124,9 @@ htmx.config.history = "reload";  // Full page reload on history navigation
 htmx.config.history = false;  // Disable history
 ```
 
-See [Configuration Reference](references/06-configuration.md) for complete config options.
+See [Configuration Reference](reference/06-configuration.md) for complete config options.
 
 ## Extensions
-
 htmx 4 ships with 9 core extensions loaded by including their script files:
 
 ```html
@@ -156,10 +146,9 @@ Core extensions include:
 - **upsert**: Update/insert elements by ID
 - **ws**: WebSocket communication
 
-See [Extensions Guide](references/07-extensions.md) for extension details.
+See [Extensions Guide](reference/07-extensions.md) for extension details.
 
 ## Migration from htmx 2.x
-
 ### Breaking Changes Summary
 
 1. **Explicit inheritance**: Add `:inherited` to attributes that should inherit down DOM tree
@@ -191,23 +180,21 @@ All events now follow pattern: `htmx:phase:action[:sub-action]`
 | `htmx:configRequest` | `htmx:config:request` |
 | All error events | `htmx:error` (consolidated) |
 
-See [Migration Guide](references/08-migration.md) for complete migration checklist.
+See [Migration Guide](reference/08-migration.md) for complete migration checklist.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-core-concepts.md`](references/01-core-concepts.md) - Request lifecycle, attribute inheritance, target selection, swap mechanics
-- [`references/02-http-attributes.md`](references/02-http-attributes.md) - HTTP method attributes, request configuration, headers, values
-- [`references/03-triggers-events.md`](references/03-triggers-events.md) - Trigger syntax, event filters, modifiers, custom events
-- [`references/04-response-handling.md`](references/04-response-handling.md) - Swap styles, OOB swaps, status codes, view transitions
-- [`references/05-realtime.md`](references/05-realtime.md) - SSE and WebSocket extensions, real-time patterns
-- [`references/06-configuration.md`](references/06-configuration.md) - Config options, meta tags, environment setup
-- [`references/07-extensions.md`](references/07-extensions.md) - Core extensions, custom extension development
-- [`references/08-migration.md`](references/08-migration.md) - Complete htmx 2.x to 4.0 migration guide
-
-**Note:** `{baseDir}` refers to the skill's base directory (e.g., `.agents/skills/htmx-4/`). All paths are relative to this directory.
+- [Core Concepts](reference/01-core-concepts.md)
+- [Http Attributes](reference/02-http-attributes.md)
+- [Triggers Events](reference/03-triggers-events.md)
+- [Response Handling](reference/04-response-handling.md)
+- [Realtime](reference/05-realtime.md)
+- [Configuration](reference/06-configuration.md)
+- [Extensions](reference/07-extensions.md)
+- [Migration](reference/08-migration.md)
 
 ## Troubleshooting
-
 ### Common Issues
 
 **Requests not firing:**
@@ -233,8 +220,5 @@ See [Migration Guide](references/08-migration.md) for complete migration checkli
 - Use `htmx.config.history = "reload"` for full page reload instead
 - Set `htmx.config.history = false` to disable history entirely
 
-See [Migration Guide](references/08-migration.md) for additional troubleshooting and the [Patterns](https://four.htmx.org/patterns) page for common use cases.
+See [Migration Guide](reference/08-migration.md) for additional troubleshooting and the [Patterns](https://four.htmx.org/patterns) page for common use cases.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

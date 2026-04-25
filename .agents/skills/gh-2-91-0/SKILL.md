@@ -20,19 +20,10 @@ external_references:
   - https://cli.github.com/manual/
   - https://github.com/cli/cli/releases/tag/v2.91.0
 ---
-
-# GitHub CLI v2.91.0
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 `gh` is GitHub on the command line. It brings pull requests, issues, releases, workflows, and other GitHub concepts to the terminal next to where you are already working with `git` and your code. Written in Go, it supports macOS, Windows, and Linux, and works with GitHub.com, GitHub Enterprise Cloud, and GitHub Enterprise Server 2.20+.
 
 ## When to Use
-
 - Managing pull requests, issues, or releases from the terminal
 - Scripting GitHub API calls without writing custom HTTP clients
 - Automating CI/CD workflows (triggering runs, managing secrets)
@@ -41,8 +32,10 @@ This skill covers the key concepts and fundamental ideas related to this topic.
 - Building shell scripts that interact with GitHub programmatically
 - Setting up aliases for frequently used GitHub operations
 
-## Installation
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 **macOS (Homebrew):**
 
 ```bash
@@ -77,7 +70,6 @@ gh at verify -R cli/cli gh_2.91.0_macOS_arm64.zip
 ```
 
 ## Authentication
-
 Authenticate with GitHub:
 
 ```bash
@@ -101,7 +93,6 @@ gh auth switch
 ```
 
 ## Quick Start Examples
-
 ```bash
 # List issues in current repo
 gh issue list
@@ -126,7 +117,6 @@ gh api repos/{owner}/{repo}/issues
 ```
 
 ## Core Command Groups
-
 ### Issues
 
 Work with GitHub issues: create, list, view, edit, close, comment, lock, pin, transfer.
@@ -227,7 +217,6 @@ gh search repos --topic rust --private
 ```
 
 ## Configuration
-
 ```bash
 # View/edit settings
 gh config get git_protocol
@@ -242,7 +231,6 @@ gh config clear-cache
 **Respected settings:** `git_protocol`, `editor`, `prompt`, `prefer_editor_prompt`, `pager`, `browser`, `color_labels`, `accessible_colors`, `spinner`, `telemetry`.
 
 ## Aliases
-
 Create shortcuts for frequently used commands.
 
 ```bash
@@ -254,7 +242,6 @@ gh alias delete co
 ```
 
 ## Extensions
-
 Extend `gh` with community-built plugins.
 
 ```bash
@@ -269,7 +256,6 @@ gh extension browse  # open extensions marketplace in browser
 Extension repositories must start with `gh-` and contain an executable of the same name. Browse available extensions at <https://github.com/topics/gh-extension>.
 
 ## Output Formatting
-
 Commands support multiple output formats for scripting:
 
 ```bash
@@ -286,7 +272,6 @@ gh release list --template '{{range .}}{{.TagName}} {{end}}'
 Template functions: `autocolor`, `color`, `join`, `pluck`, `tablerow`, `tablerender`, `timeago`, `timefmt`, `truncate`.
 
 ## Environment Variables
-
 Key environment variables for configuration:
 
 - `GH_TOKEN` / `GITHUB_TOKEN` — authentication token for github.com
@@ -301,7 +286,6 @@ Key environment variables for configuration:
 - `GLAMOUR_STYLE` — Markdown rendering style
 
 ## Exit Codes
-
 | Code | Meaning |
 |------|---------|
 | 0 | Command completed successfully |
@@ -310,10 +294,10 @@ Key environment variables for configuration:
 | 4 | Authentication required |
 
 ## Advanced Topics
+## Advanced Topics
 
-- [Command Reference](references/01-command-reference.md) — Complete list of all `gh` commands and subcommands
-- [GitHub Codespaces](references/02-codespaces.md) — Managing codespaces from the terminal
-- [GitHub Projects](references/03-projects.md) — Working with GitHub Projects via CLI
-- [Attestation & Security](references/04-attestation.md) — Build provenance verification and security features
-
+- [Command Reference](reference/01-command-reference.md)
+- [Codespaces](reference/02-codespaces.md)
+- [Projects](reference/03-projects.md)
+- [Attestation](reference/04-attestation.md)
 

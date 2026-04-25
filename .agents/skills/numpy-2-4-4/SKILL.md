@@ -23,11 +23,7 @@ external_references:
   - https://numpy.org/doc/stable/
   - https://github.com/numpy/numpy/tree/v2.4.4
 ---
-
-# NumPy 2.4.4
-
 ## Overview
-
 NumPy is the fundamental package for scientific computing with Python, providing:
 
 - **Powerful n-dimensional arrays** (`ndarray`) with vectorization, indexing, and broadcasting
@@ -41,7 +37,6 @@ NumPy is the fundamental package for scientific computing with Python, providing
 NumPy 2.4.4 includes significant improvements from the NumPy 2.0 release, including updated type promotion rules (NEP 50), cleaned namespace, improved error messages, and better performance across all operations.
 
 ## When to Use
-
 Use this skill when:
 
 - Creating or manipulating multi-dimensional numerical arrays in Python
@@ -54,7 +49,6 @@ Use this skill when:
 - Migrating code to NumPy 2.0+ compatibility
 
 ## Core Concepts
-
 ### The ndarray Object
 
 NumPy's fundamental data structure is the `ndarray` (n-dimensional array):
@@ -133,8 +127,7 @@ np.sin(arr), np.exp(arr), np.log(arr)
 np.add(arr1, arr2), np.multiply(arr1, arr2)
 ```
 
-## Installation
-
+## Installation / Setup
 ```bash
 # Using pip
 pip install numpy==2.4.4
@@ -150,10 +143,9 @@ python -c "import numpy; print(numpy.__version__)"
 ```
 
 ## Usage Examples
-
 ### Array Creation
 
-See [Array Creation](references/01-array-creation.md) for comprehensive examples.
+See [Array Creation](reference/01-array-creation.md) for comprehensive examples.
 
 ```python
 import numpy as np
@@ -184,7 +176,7 @@ integers = rng.integers(0, 10, (5,))   # Integers in [0, 10)
 
 ### Indexing and Slicing
 
-See [Indexing and Slicing](references/02-indexing-slicing.md) for advanced techniques.
+See [Indexing and Slicing](reference/02-indexing-slicing.md) for advanced techniques.
 
 ```python
 arr = np.arange(20).reshape(4, 5)
@@ -208,7 +200,7 @@ selected = arr[indices]
 
 ### Array Manipulation
 
-See [Array Manipulation](references/03-array-manipulation.md) for reshaping and combining.
+See [Array Manipulation](reference/03-array-manipulation.md) for reshaping and combining.
 
 ```python
 arr = np.arange(12)
@@ -234,7 +226,7 @@ hsplit = np.hsplit(matrix, 2)      # Horizontal split
 
 ### Mathematical Operations
 
-See [Mathematical Functions](references/04-mathematical-functions.md) for complete reference.
+See [Mathematical Functions](reference/04-mathematical-functions.md) for complete reference.
 
 ```python
 arr = np.array([1, 2, 3, 4, 5])
@@ -262,7 +254,7 @@ np.floor(3.7), np.ceil(3.2), np.round(3.5)
 
 ### Linear Algebra
 
-See [Linear Algebra](references/05-linear-algebra.md) for advanced operations.
+See [Linear Algebra](reference/05-linear-algebra.md) for advanced operations.
 
 ```python
 import numpy as np
@@ -318,7 +310,7 @@ np.savetxt('data.csv', arr, delimiter=',',
 
 ### Random Number Generation
 
-See [Random Number Generation](references/06-random-generation.md) for comprehensive guide.
+See [Random Number Generation](reference/06-random-generation.md) for comprehensive guide.
 
 ```python
 import numpy as np
@@ -347,67 +339,7 @@ np.random.seed(42)
 np.random.rand(3, 3)     # Use Generator instead
 ```
 
-## Advanced Topics
-
-### NumPy 2.0 Migration
-
-See [NumPy 2.0 Migration](references/07-numpy2-migration.md) for upgrade guide.
-
-Key changes in NumPy 2.0+:
-
-1. **Type promotion** (NEP 50): Scalars preserve precision
-   ```python
-   # Now returns float32, not float64
-   result = np.float32(3) + 3.0
-   ```
-
-2. **Cleaned namespace**: ~100 members removed/moved
-   ```python
-   # Use np.all instead of np.alltrue
-   # Use np.isin instead of np.in1d
-   # Use np.trapezoid instead of np.trapz
-   ```
-
-3. **Private namespaces**: `np.core` → `np._core`
-
-4. **Default integer**: Now 64-bit on all 64-bit systems (was C `long`)
-
-### Performance Optimization
-
-See [Performance Tips](references/08-performance-tips.md) for advanced techniques.
-
-```python
-# Use vectorized operations instead of loops
-result = np.sum(arr * weights)  # Not: sum(a*w for a,w in zip(arr, weights))
-
-# Pre-allocate arrays instead of growing
-arr = np.empty(n)
-for i in range(n):
-    arr[i] = compute_value(i)  # Not: arr = np.append(arr, value)
-
-# Use appropriate dtypes to save memory
-arr = np.array(data, dtype=np.float32)  # Half the memory of float64
-
-# In-place operations when possible
-np.add(arr1, arr2, out=arr1)  # Not: arr1 = arr1 + arr2
-```
-
-### Array API Standard
-
-NumPy 2.x implements the [Array API standard](https://data-apis.org/array-api/) for interoperability:
-
-```python
-import numpy as np
-
-# Use np.array_api namespace for standard-compliant code
-import numpy.array_api as xp
-
-x = xp.asarray([1, 2, 3])
-y = xp.add(x, 1)
-```
-
 ## Troubleshooting
-
 ### Common Issues
 
 **"Cannot cast ufunc output" error**: Occurs when result type doesn't fit destination dtype.
@@ -449,7 +381,6 @@ for chunk in np.memmap('large_file.dat', dtype='float32', mode='r', shape=(10000
 ```
 
 ## Best Practices
-
 1. **Always use the modern random API**: `np.random.default_rng()` instead of legacy functions
 2. **Be explicit about dtypes**: Specify dtype when creating arrays to avoid surprises
 3. **Use vectorized operations**: Avoid Python loops for numerical computations
@@ -458,3 +389,16 @@ for chunk in np.memmap('large_file.dat', dtype='float32', mode='r', shape=(10000
 6. **Use `np.einsum` for complex tensor operations**: Often faster and clearer than multiple reshapes
 7. **Leverage NumPy's broadcasting**: Write cleaner code without explicit loops
 8. **Read the migration guide when upgrading**: NumPy 2.0 has breaking changes
+
+## Advanced Topics
+## Advanced Topics
+
+- [Array Creation](reference/01-array-creation.md)
+- [Indexing Slicing](reference/02-indexing-slicing.md)
+- [Array Manipulation](reference/03-array-manipulation.md)
+- [Mathematical Functions](reference/04-mathematical-functions.md)
+- [Linear Algebra](reference/05-linear-algebra.md)
+- [Random Generation](reference/06-random-generation.md)
+- [Numpy2 Migration](reference/07-numpy2-migration.md)
+- [Performance Tips](reference/08-performance-tips.md)
+

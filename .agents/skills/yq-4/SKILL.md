@@ -20,17 +20,12 @@ external_references:
   - https://mikefarah.gitbook.io/yq/sitemap.md
   - https://github.com/mikefarah/yq
 ---
-
-# yq v4.x
-
 ## Overview
-
 Complete toolkit for yq v4.x, the lightweight portable command-line YAML, JSON, XML, INI, TOML, HCL, CSV/TSV, Properties, Base64, and Lua processor using jq-like syntax. Use when reading, writing, merging, or transforming YAML/JSON/XML files from the terminal, scripting, CI/CD pipelines, or Docker containers without needing Python or Node.js dependencies.
 
 A lightweight and portable command-line **YAML, JSON, INI, XML, TOML, HCL, CSV/TSV, Properties, Base64, and Lua** processor. `yq` uses [jq](https://github.com/stedolan/jq) like syntax but works with YAML files as well as JSON, XML, and more. It is written in Go — a single dependency-free binary for any platform.
 
 ## When to Use
-
 - **Read values** from YAML/JSON/XML config files via CLI
 - **Update/patch** configuration files in-place (`-i`)
 - **Merge** multiple YAML/JSON files together
@@ -41,8 +36,7 @@ A lightweight and portable command-line **YAML, JSON, INI, XML, TOML, HCL, CSV/T
 - **Work with XML** including attributes, namespaces, and processing instructions
 - **Process front matter** in Markdown documents
 
-## Quick Start
-
+## Usage Examples
 ```bash
 # Read a value from YAML
 yq '.a.b[0].c' file.yaml
@@ -67,7 +61,6 @@ yq -n '.a.b.c = "cat"'
 ```
 
 ## Core Concepts
-
 ### Expression Model
 
 In yq, expressions are made up of **operators** and **pipes**. A context of nodes is passed through the expression, and each operation takes the context as input and returns a new context. That output is piped to the next operation.
@@ -138,8 +131,7 @@ yq '(.items[] | select(.name == "foo") | .count) |= . + 1' file.yaml
 - **URI**: `uri`
 - **Shell variables**: `s`, `shell`
 
-## Installation
-
+## Installation / Setup
 ### Download Binary (Recommended)
 
 ```bash
@@ -212,7 +204,6 @@ docker run --rm --security-opt=no-new-privileges --cap-drop all --network none \
 ```
 
 ## Usage Patterns
-
 ### Reading & Querying
 
 ```bash
@@ -397,8 +388,7 @@ yq --security-disable-env-ops '.data' file.yaml
 ```
 
 ## Key Operators Reference
-
-See [references/01-operators-reference.md](references/01-operators-reference.md) for a complete index of all 60+ operators.
+See [reference/01-operators-reference.md](reference/01-operators-reference.md) for a complete index of all 60+ operators.
 
 Key operator categories:
 - **Assignment**: `=`, `|=` (relative update), `+=` (concatenate)
@@ -413,8 +403,7 @@ Key operator categories:
 - **Type ops**: `tag`, `kind`, `style`, `to_number`
 
 ## Common Recipes
-
-See [references/02-common-recipes.md](references/02-common-recipes.md) for practical examples including:
+See [reference/02-common-recipes.md](reference/02-common-recipes.md) for practical examples including:
 - Finding and updating items in arrays
 - Deeply pruning trees
 - Sorting, filtering, flattening
@@ -425,8 +414,7 @@ See [references/02-common-recipes.md](references/02-common-recipes.md) for pract
 - Base64 encoding/decoding
 
 ## Tips & Gotchas
-
-See [references/03-tips-and-tricks.md](references/03-tips-and-tricks.md) for:
+See [reference/03-tips-and-tricks.md](reference/03-tips-and-tricks.md) for:
 - YAML validation patterns
 - PowerShell quoting issues
 - Multi-line expressions and comments
@@ -435,19 +423,22 @@ See [references/03-tips-and-tricks.md](references/03-tips-and-tricks.md) for:
 - Performance considerations
 
 ## Upgrading from v3
-
-yq v4 is a complete rewrite with significant changes. See [references/04-upgrading-from-v3.md](references/04-upgrading-from-v3.md) for migration guide including:
+yq v4 is a complete rewrite with significant changes. See [reference/04-upgrading-from-v3.md](reference/04-upgrading-from-v3.md) for migration guide including:
 - How to do v3 things in v4
 - Breaking changes
 - New features available in v4
 
 ## Known Limitations
-
 - `yq` attempts to preserve comment positions and whitespace, but does not handle all scenarios (see [go-yaml/yaml#3](https://github.com/go-yaml/yaml/tree/v3) for details)
 - PowerShell has unique quoting requirements — use single quotes or escape double quotes carefully
 - `"yes"`, `"no"` are treated as booleans per YAML 1.2 standard (which yq uses)
 - `yq` does not yet support everything `jq` does, but covers the most common operations
 
 ## Advanced Topics
+## Advanced Topics
 
-For more details on advanced usage, refer to the official documentation listed in the References section.
+- [Operators Reference](reference/01-operators-reference.md)
+- [Common Recipes](reference/02-common-recipes.md)
+- [Tips And Tricks](reference/03-tips-and-tricks.md)
+- [Upgrading From V3](reference/04-upgrading-from-v3.md)
+

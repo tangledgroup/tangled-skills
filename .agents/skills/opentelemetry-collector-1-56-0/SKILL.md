@@ -22,15 +22,10 @@ external_references:
   - https://opentelemetry.io/docs/collector/
   - https://opentelemetry.io/docs/collector/quick-start/
 ---
-
-# OpenTelemetry Collector 1.56
-
 ## Overview
-
 The OpenTelemetry Collector is a vendor-agnostic implementation for receiving, processing, and exporting telemetry data (traces, metrics, and logs). It removes the need to run multiple agents/collectors and provides scalability, protocol support, and extensibility. The collector can be deployed as an agent (sidecar/daemon) or as a gateway service.
 
 ## When to Use
-
 - Deploying telemetry collection infrastructure for traces, metrics, and logs
 - Configuring OTLP receivers/exporters for application instrumentation pipelines
 - Setting up agent or gateway deployment patterns in Kubernetes or VMs
@@ -40,7 +35,6 @@ The OpenTelemetry Collector is a vendor-agnostic implementation for receiving, p
 - Adding TLS/mTLS security to receiver and exporter endpoints
 
 ## Core Concepts
-
 ### Pipeline Architecture
 
 Data flows through pipelines: **Receivers → Processors → Exporters**. Each pipeline handles one signal type (traces, metrics, or logs). The same receiver can feed multiple pipelines; the same exporter can receive from multiple pipelines.
@@ -204,8 +198,7 @@ The Open Agent Management Protocol (OpAMP) enables centralized fleet management:
 
 Use `opampsupervisor` binary to run collector under OpAMP supervision.
 
-## Installation
-
+## Installation / Setup
 ### Docker (Quick Start)
 ```bash
 docker pull otel/opentelemetry-collector:1.56.0
@@ -242,7 +235,6 @@ exporters:
 3. Run `./ocb --config builder-config.yaml`
 
 ## Usage Examples
-
 ### Basic OTLP Pipeline (Traces + Metrics + Logs)
 See Configuration Structure above for complete example.
 
@@ -333,11 +325,10 @@ service:
 ```
 
 ## Advanced Topics
+## Advanced Topics
 
-- **Transform processor CEL expressions**: Write complex telemetry transformations
-- **Tail sampling processor**: Sample entire traces based on conditions at tail end
-- **Kubernetes attributes processor**: Auto-enrich with pod/node/namespace metadata
-- **Resiliency configuration**: Configure retry, queue, and backpressure behavior
-- **Configuration merging**: Combine multiple config files or use environment variable substitution
-- **Custom authenticator extensions**: Build custom auth for receivers/exporters
+- [Receivers](reference/01-receivers.md)
+- [Processors](reference/02-processors.md)
+- [Exporters](reference/03-exporters.md)
+- [Deployment Patterns](reference/04-deployment-patterns.md)
 

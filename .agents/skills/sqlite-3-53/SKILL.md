@@ -23,21 +23,12 @@ required_environment_variables: []
 external_references:
   - https://www.sqlite.org/docs.html
 ---
-
-# SQLite 3.53
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Complete toolkit for SQLite 3.53 covering all official documentation topics including SQL queries, C API integration, JSON/JSONB processing, FTS5 full-text search, virtual tables, R-Tree spatial indexing, transactions and isolation levels, STRICT tables, WITHOUT ROWID optimization, UPSERT/RETURNING patterns, CLI commands, and all built-in extensions (Sessions, CSV, Spellfix, Percentile, DBSTAT, generate_series, CARRAY, Zipfile). Use when building applications requiring embedded SQL databases, performing data analysis, implementing persistent storage, or working with any SQLite feature from basic CRUD to advanced spatial queries, change tracking, and concurrent transaction management.
 
 Comprehensive toolkit for SQLite 3.53, a self-contained, serverless, zero-configuration, transactional SQL database engine. This skill covers SQL language features, C API integration, JSON/JSONB processing, full-text search (FTS3/FTS5), virtual tables, and advanced database operations.
 
 ## When to Use
-
 - Building applications requiring lightweight embedded databases
 - Performing SQL queries and data manipulation
 - Working with JSON data using SQLite's JSON1 extension
@@ -48,8 +39,10 @@ Comprehensive toolkit for SQLite 3.53, a self-contained, serverless, zero-config
 - Using window functions and advanced SQL features
 - Integrating SQLite via C API in applications
 
-## Quick Start
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Basic Setup
 
 SQLite requires no installation for command-line use. The `sqlite3` CLI tool is available on most systems:
@@ -88,7 +81,7 @@ SELECT * FROM users WHERE name LIKE '%li%';
 SELECT json_object('id', id, 'name', name) AS user_json FROM users;
 ```
 
-See [SQL Basics](references/01-sql-basics.md) for detailed SQL language coverage.
+See [SQL Basics](reference/01-sql-basics.md) for detailed SQL language coverage.
 
 ### JSON Processing
 
@@ -116,7 +109,7 @@ SELECT jsonb(data) AS binary_json FROM products;
 SELECT jsonb_extract(jsonb(data), '$.tags[0]') AS first_tag FROM products;
 ```
 
-Refer to [JSON and JSONB Functions](references/04-json-jsonb.md) for complete JSON function reference.
+Refer to [JSON and JSONB Functions](reference/04-json-jsonb.md) for complete JSON function reference.
 
 ### Full-Text Search
 
@@ -145,47 +138,29 @@ WHERE documents MATCH 'database'
 ORDER BY rank;
 ```
 
-See [Full-Text Search with FTS5](references/05-fts5.md) for comprehensive FTS5 documentation.
+See [Full-Text Search with FTS5](reference/05-fts5.md) for comprehensive FTS5 documentation.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-This skill includes detailed reference files organized by topic:
-
-### Core SQL and Database Operations
-
-- [`references/01-sql-basics.md`](references/01-sql-basics.md) - SQL language fundamentals, data types, DDL statements, SELECT queries, joins, and subqueries
-- [`references/02-c-api.md`](references/02-c-api.md) - C API integration including connection management, prepared statements, binding parameters, and result retrieval
-- [`references/03-pragmas.md`](references/03-pragmas.md) - Configuration pragmas for database behavior, performance tuning, and SQLite customization
-
-### Advanced Features
-
-- [`references/04-json-jsonb.md`](references/04-json-jsonb.md) - Complete JSON and binary JSON (JSONB) function reference with examples for data extraction, modification, and validation
-- [`references/05-fts5.md`](references/05-fts5.md) - Full-text search implementation using FTS5 including tokenizers, query syntax, ranking, and configuration
-- [`references/06-virtual-tables.md`](references/06-virtual-tables.md) - Virtual table creation, loadable extensions, and custom module development
-
-### Performance and Administration
-
-- [`references/07-performance.md`](references/07-performance.md) - Query optimization, indexing strategies, EXPLAIN analysis, and performance tuning techniques
-- [`references/08-administration.md`](references/08-administration.md) - Database maintenance, backup/recovery, WAL mode, integrity checking, and security considerations
-
-### SQL Functions and Features
-
-- [`references/09-sql-functions.md`](references/09-sql-functions.md) - Built-in SQL functions including aggregate, mathematical, string, date/time, and window functions
-- [`references/10-advanced-sql.md`](references/10-advanced-sql.md) - Advanced SQL features: CTEs, recursive queries, triggers, views, and window functions
-
-### CLI and Modern Features
-
-- [`references/11-cli-commands.md`](references/11-cli-commands.md) - Complete SQLite command-line interface reference including dot-commands, output modes, and interactive features
-- [`references/12-strict-tables-without-rowid.md`](references/12-strict-tables-without-rowid.md) - STRICT tables for type enforcement and WITHOUT ROWID tables for optimization
-- [`references/13-upsert-returning.md`](references/13-upsert-returning.md) - UPSERT (INSERT...ON CONFLICT) patterns and RETURNING clause usage
-- [`references/14-transactions-isolation.md`](references/14-transactions-isolation.md) - Transaction management, isolation levels, savepoints, and concurrency control
-- [`references/15-additional-extensions.md`](references/15-additional-extensions.md) - R-Tree spatial indexing, Sessions extension, CSV virtual table, Spellfix, Percentile, DBSTAT, generate_series, CARRAY, and Zipfile extensions
-- [`references/16-error-codes-limits.md`](references/16-error-codes-limits.md) - Complete error code reference, result codes, constraint violations, system limits, and error handling best practices
-
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/sqlite-3-53/`). All paths are relative to this directory.
+- [Sql Basics](reference/01-sql-basics.md)
+- [C Api](reference/02-c-api.md)
+- [Pragmas](reference/03-pragmas.md)
+- [Json Jsonb](reference/04-json-jsonb.md)
+- [Fts5](reference/05-fts5.md)
+- [Virtual Tables](reference/06-virtual-tables.md)
+- [Performance](reference/07-performance.md)
+- [Administration](reference/08-administration.md)
+- [Sql Functions](reference/09-sql-functions.md)
+- [Advanced Sql](reference/10-advanced-sql.md)
+- [Cli Commands](reference/11-cli-commands.md)
+- [Strict Tables Without Rowid](reference/12-strict-tables-without-rowid.md)
+- [Upsert Returning](reference/13-upsert-returning.md)
+- [Transactions Isolation](reference/14-transactions-isolation.md)
+- [Additional Extensions](reference/15-additional-extensions.md)
+- [Error Codes Limits](reference/16-error-codes-limits.md)
 
 ## Common Operations
-
 ### Database Backup and Restore
 
 ```sql
@@ -264,7 +239,6 @@ FROM metrics;
 ```
 
 ## Troubleshooting
-
 ### Common Issues
 
 **Database is locked:**
@@ -305,10 +279,9 @@ sqlite3 database.db "PRAGMA integrity_check;"
 EXPLAIN QUERY PLAN SELECT * FROM users WHERE email = 'test@example.com';
 ```
 
-See [Administration and Maintenance](references/08-administration.md) for detailed troubleshooting guidance.
+See [Administration and Maintenance](reference/08-administration.md) for detailed troubleshooting guidance.
 
 ## Best Practices
-
 1. **Use prepared statements** - Always use parameterized queries to prevent SQL injection
 2. **Enable WAL mode** - For better concurrency in multi-reader applications: `PRAGMA journal_mode=WAL;`
 3. **Add indexes strategically** - Index columns used in WHERE, JOIN, and ORDER BY clauses
@@ -319,7 +292,6 @@ See [Administration and Maintenance](references/08-administration.md) for detail
 8. **Limit result sets** - Use LIMIT clauses to prevent accidentally loading all data
 
 ## Performance Tips
-
 - Set `PRAGMA cache_size` appropriately for your workload (negative value = KB of cache)
 - Use `PRAGMA synchronous=NORMAL` for better performance with acceptable safety
 - Enable `PRAGMA temp_store=MEMORY` for faster temporary table operations
@@ -327,7 +299,6 @@ See [Administration and Maintenance](references/08-administration.md) for detail
 - Use FTS5 instead of LIKE for text search on large datasets
 
 ## Limitations
-
 - Maximum database size: ~140 Terabytes (theoretical)
 - Maximum row size: ~2GB
 - Maximum number of columns per table: 32,766
@@ -336,6 +307,3 @@ See [Administration and Maintenance](references/08-administration.md) for detail
 
 For complete documentation, see the [SQLite Documentation](https://sqlite.org/docs.html).
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

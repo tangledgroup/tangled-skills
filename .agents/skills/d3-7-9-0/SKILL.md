@@ -19,11 +19,7 @@ external_references:
   - https://github.com/d3
   - https://observablehq.com/@d3/gallery
 ---
-
-# D3.js 7.9.0
-
 ## Overview
-
 **D3** (or **D3.js**) is a free, open-source JavaScript library for visualizing data. Its low-level approach built on web standards offers unparalleled flexibility in authoring dynamic, data-driven graphics. For over a decade D3 has powered groundbreaking and award-winning visualizations.
 
 D3 was created by Mike Bostock in 2011. It was co-authored with Jeff Heer and Vadim Ogievetsky at Stanford. The name "D3" stands for *data-driven documents*, where *documents* refers to the Document Object Model (DOM).
@@ -33,7 +29,6 @@ D3 is not a charting library. It has no concept of "charts". Instead, it provide
 **D3 is for bespoke visualization.** It makes things possible, not necessarily easy. Use D3 when you need maximal expressiveness for custom interactive visualizations. For simpler needs, consider Observable Plot.
 
 ## When to Use
-
 - Building custom, bespoke data visualizations that no charting library can produce
 - Creating interactive charts with dynamic data updates (enter/update/exit pattern)
 - Implementing geographic maps with D3 geo-projections
@@ -44,7 +39,6 @@ D3 is not a charting library. It has no concept of "charts". Instead, it provide
 - Needing fine-grained control over every visual encoding (position, color, size, shape)
 
 ## Core Concepts
-
 ### The Data Join
 
 D3's most novel concept. Given a set of data and a set of DOM elements, the data join applies separate operations for *entering*, *updating*, and *exiting* elements. This allows extremely performant updates — only touch elements that need changing.
@@ -134,7 +128,6 @@ const data = await d3.csv("data.csv");
 ```
 
 ## Installation / Setup
-
 ### CDN (Vanilla HTML)
 
 ESM + CDN — recommended:
@@ -172,7 +165,6 @@ import {mean, median} from "d3-array";
 - **Vue**: Similar pattern — compute D3 shapes/scales in computed properties, apply DOM changes in lifecycle hooks.
 
 ## Usage Examples
-
 ### Basic Line Chart
 
 ```js
@@ -282,23 +274,22 @@ svg.selectAll("rect")
 ```
 
 ## Advanced Topics
+## Advanced Topics
 
-For detailed API reference on each module, load the relevant reference file:
-
-- [Reference: Selections — Selecting Elements](references/01-selection-selecting.md)
-- [Reference: Selections — Modifying Elements](references/02-selection-modifying.md)
-- [Reference: Selections — Data Joining](references/03-selection-joining.md)
-- [Reference: Selections — Events](references/04-selection-events.md)
-- [Reference: Scales](references/05-scales.md)
-- [Reference: Axes](references/06-axes.md)
-- [Reference: Shapes](references/07-shapes.md)
-- [Reference: Transitions and Animation](references/08-transitions.md)
-- [Reference: Interaction — Zoom, Drag, Brush](references/09-interaction.md)
-- [Reference: Data — Arrays, Format, Fetch, Time](references/10-data-processing.md)
-- [Reference: Color](references/11-color.md)
-- [Reference: Force Simulation](references/12-force.md)
-- [Reference: Geo-Projections](references/13-geo.md)
-- [Reference: Hierarchy Layouts](references/14-hierarchy.md)
-- [Reference: Array Utilities](references/15-array-utilities.md)
-- [Reference: Additional Modules](references/16-additional-modules.md)
+- [Selection Selecting](reference/01-selection-selecting.md)
+- [Selection Modifying](reference/02-selection-modifying.md)
+- [Selection Joining](reference/03-selection-joining.md)
+- [Selection Events](reference/04-selection-events.md)
+- [Scales](reference/05-scales.md)
+- [Axes](reference/06-axes.md)
+- [Shapes](reference/07-shapes.md)
+- [Transitions](reference/08-transitions.md)
+- [Interaction](reference/09-interaction.md)
+- [Data Processing](reference/10-data-processing.md)
+- [Color](reference/11-color.md)
+- [Force](reference/12-force.md)
+- [Geo](reference/13-geo.md)
+- [Hierarchy](reference/14-hierarchy.md)
+- [Array Utilities](reference/15-array-utilities.md)
+- [Additional Modules](reference/16-additional-modules.md)
 

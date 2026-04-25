@@ -21,15 +21,7 @@ external_references:
   - https://github.com/h4ckf0r0day/obscura/releases/tag/v0.1.0
   - https://github.com/h4ckf0r0day/obscura/releases
 ---
-
-# Obscura 0.1.0
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Obscura is a headless browser engine written in Rust, built for web scraping and AI agent automation. It runs real JavaScript via V8 (through `deno_core`), implements the Chrome DevTools Protocol, and serves as a drop-in replacement for headless Chrome with Puppeteer and Playwright.
 
 Key advantages over headless Chrome:
@@ -43,15 +35,16 @@ Key advantages over headless Chrome:
 Single binary. No Chrome, no Node.js, no external dependencies.
 
 ## When to Use
-
 - Web scraping at scale with lower resource usage than headless Chrome
 - AI agent workflows needing browser automation
 - Replacing Puppeteer/Playwright backend without changing client code
 - Environments where stealth (anti-fingerprinting + tracker blocking) matters
 - Parallel scraping workloads with many concurrent pages
 
-## Architecture
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Architecture
 Obscura is a Rust workspace with six crates:
 
 - **obscura-dom** — HTML parsing via `html5ever`, CSS selectors via `selectors`/`cssparser`
@@ -61,8 +54,7 @@ Obscura is a Rust workspace with six crates:
 - **obscura-cdp** — Chrome DevTools Protocol implementation over WebSocket (`tokio-tungstenite`)
 - **obscura-cli** — CLI binaries (`obscura` main + `obscura-worker` for parallel scraping)
 
-## Installation
-
+## Installation / Setup
 ### Prebuilt Binaries
 
 Download from [Releases](https://github.com/h4ckf0r0day/obscura/releases):
@@ -97,7 +89,6 @@ cargo build --release --features stealth
 Requires Rust 1.75+. First build takes ~5 minutes (V8 compiles from source, cached on subsequent builds).
 
 ## Usage Examples
-
 ### Fetch a page
 
 ```bash
@@ -182,9 +173,9 @@ await page.evaluate(() => {
 ```
 
 ## Advanced Topics
+## Advanced Topics
 
-- [Reference: Stealth Mode](references/01-stealth-mode.md) — Anti-fingerprinting and tracker blocking details
-- [Reference: CDP API Reference](references/02-cdp-api.md) — Chrome DevTools Protocol domain coverage
-- [Reference: CLI Reference](references/03-cli-reference.md) — Complete command and flag reference
-
+- [Stealth Mode](reference/01-stealth-mode.md)
+- [Cdp Api](reference/02-cdp-api.md)
+- [Cli Reference](reference/03-cli-reference.md)
 

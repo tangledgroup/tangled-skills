@@ -23,17 +23,12 @@ external_references:
   - https://github.com/haproxy/haproxy/blob/v3.3.0/doc/peers.txt
   - https://github.com/haproxy/haproxy/blob/v3.3.0/doc/proxy-protocol.txt
 ---
-
-# HAProxy 3.3.0
-
 ## Overview
-
 HAProxy (HTTP Proxy) is a high-performance TCP/HTTP reverse proxy and load balancer written in C. It is widely used in production environments to distribute traffic across multiple servers, providing high availability, SSL/TLS termination, and advanced traffic management. HAProxy operates at both Layer 4 (TCP) and Layer 7 (HTTP), making it suitable for a wide range of use cases from simple reverse proxying to complex content switching and API gateway patterns.
 
 HAProxy supports HTTP/1.x, HTTP/2, and HTTP/3 (QUIC) protocols, with features including SSL/TLS termination, compression, caching, rate limiting, and extensive monitoring capabilities. It uses an event-driven architecture that allows it to handle tens of thousands of concurrent connections with minimal resource consumption.
 
 ## When to Use
-
 Use this skill when:
 - Configuring HTTP or TCP load balancers for web applications
 - Implementing SSL/TLS termination at the proxy layer
@@ -47,7 +42,6 @@ Use this skill when:
 - Implementing HTTP request/response rewriting and redirections
 
 ## Core Concepts
-
 ### Architecture
 
 HAProxy configuration is organized into named sections:
@@ -169,7 +163,6 @@ HAProxy supports master-worker (`-W`) mode where:
 - No service interruption during configuration updates
 
 ## Installation / Setup
-
 ### Building from Source
 
 ```bash
@@ -216,7 +209,6 @@ haproxy -c -f /etc/haproxy/haproxy.cfg
 ```
 
 ## Usage Examples
-
 ### Basic HTTP Reverse Proxy
 
 ```haproxy
@@ -417,77 +409,7 @@ echo "reload" | socat /run/haproxy-master.sock stdio
 ```
 
 ## Advanced Topics
+## Advanced Topics
 
-### Lua Scripting
-
-HAProxy embeds Lua 5.3 for custom logic:
-
-```haproxy
-global
-    lua-load /etc/haproxy/lua/myscript.lua
-
-defaults
-    http-request deny if { lua.myscript -m bool }
-```
-
-See [Lua Integration](references/01-lua-integration.md) for detailed Lua API usage.
-
-### DNS Resolution in HAProxy
-
-HAProxy can resolve server hostnames at runtime with health-aware DNS:
-
-```haproxy
-resolvers mydns
-    parse-resolv-conf
-    timeout resolve 5s
-    timeout retry   2s
-
-backend app_servers
-    balance roundrobin
-    option httpchk
-    server srv1 app.example.com:80 check resolvers mydns resolve-prefer ipv4
-```
-
-### HTTP Compression
-
-```haproxy
-defaults
-    compression algo gzip
-    compression type text/html text/css text/javascript application/json
-
-# Or per-backend
-backend api
-    compression algo gzip
-    compression type application/json
-```
-
-### Error Pages
-
-```haproxy
-errorfile 403 /etc/haproxy/errors/403.http
-errorfile 408 /etc/haproxy/errors/408.http
-errorfile 500 /etc/haproxy/errors/500.http
-errorfile 502 /etc/haproxy/errors/502.http
-errorfile 503 /etc/haproxy/errors/503.http
-errorfile 504 /etc/haproxy/errors/504.http
-```
-
-### Connection Slots (Per-Server maxconn)
-
-```haproxy
-backend app_servers
-    balance roundrobin
-    server srv1 10.0.0.1:80 check connslots 100
-    server srv2 10.0.0.2:80 check connslots 100
-```
-
-### Referenced Configuration Keywords Quick Reference
-
-**Global section keywords**: `daemon`, `maxconn`, `log`, `chroot`, `user`, `group`, `uid`, `gid`, `ssl-default-bind-options`, `ssl-default-bind-ciphers`, `master-worker`, `stats socket`, `tune.ssl.default-dh-param`, `spread-checks`
-
-**Frontend keywords**: `bind`, `default_backend`, `use_backend`, `acl`, `http-request`, `http-response`, `mode`, `maxconn`, `timeout client`, `log`, `option httplog`, `cookie`, `capture`, `stats`, `redirect`
-
-**Backend keywords**: `balance`, `server`, `default-server`, `option httpchk`, `cookie`, `retries`, `timeout server`, `hash-type`, `http-reuse`, `maxconn`, `fullconn`
-
-**Defaults keywords**: Inheritable settings for any section type (precedence: section > named defaults > anonymous defaults)
+- [Lua Integration](reference/01-lua-integration.md)
 

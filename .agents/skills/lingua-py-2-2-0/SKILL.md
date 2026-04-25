@@ -17,11 +17,7 @@ external_references:
   - https://pypi.org/project/lingua-language-detector
   - https://www.apache.org/licenses/LICENSE-2.0
 ---
-
-# Lingua-Py 2.2.0
-
 ## Overview
-
 Lingua is an accurate natural language detection library for Python that identifies which language text is written in. It supports **75 languages** and excels at detecting languages in both long and short text fragments, including single words and mixed-language content. Built on Rust bindings (PyO3) for high performance and low memory usage.
 
 **Key features:**
@@ -34,7 +30,6 @@ Lingua is an accurate natural language detection library for Python that identif
 - Multi-threaded parallel processing for batch operations
 
 ## When to Use
-
 Use Lingua when:
 
 - **Language identification**: Need to detect which language text is written in
@@ -50,8 +45,7 @@ Use Lingua when:
 - You require script detection only (use other libraries for this)
 - You need to detect programming languages
 
-## Installation
-
+## Installation / Setup
 Install via pip from PyPI:
 
 ```bash
@@ -70,8 +64,7 @@ pip install lingua-language-detector
 Language.ENGLISH
 ```
 
-## Quick Start
-
+## Usage Examples
 ### Basic Detection
 
 ```python
@@ -117,8 +110,7 @@ print(language.iso_code_639_3.name)  # 'FRA'
 ```
 
 ## Supported Languages
-
-Lingua supports 75 languages. See [Language Reference](references/02-language-reference.md) for complete list with ISO codes.
+Lingua supports 75 languages. See [Language Reference](reference/02-language-reference.md) for complete list with ISO codes.
 
 **Popular languages:**
 - English, Spanish, French, German, Italian
@@ -127,10 +119,9 @@ Lingua supports 75 languages. See [Language Reference](references/02-language-re
 - Dutch, Swedish, Norwegian, Danish, Finnish
 - Polish, Czech, Greek, Hungarian, Romanian
 
-See [Language Reference](references/02-language-reference.md) for all 75 languages.
+See [Language Reference](reference/02-language-reference.md) for all 75 languages.
 
 ## Core Concepts
-
 ### Detection Accuracy
 
 Lingua uses two complementary approaches:
@@ -161,22 +152,20 @@ The library is fully thread-safe:
 - Language models are loaded once and shared between detector instances
 - All detection methods are safe for concurrent use
 
-See [Advanced Configuration](references/03-advanced-configuration.md) for performance tuning.
+See [Advanced Configuration](reference/03-advanced-configuration.md) for performance tuning.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-For detailed topics, see:
-
-- [`references/01-api-reference.md`](references/01-api-reference.md) - Complete API documentation with all builder methods and detection functions
-- [`references/02-language-reference.md`](references/02-language-reference.md) - All 75 supported languages with ISO codes and examples
-- [`references/03-advanced-configuration.md`](references/03-advanced-configuration.md) - Builder options, accuracy modes, loading strategies, and performance tuning
-- [`references/04-mixed-language-detection.md`](references/04-mixed-language-detection.md) - Detecting multiple languages in code-switching texts
-- [`references/05-parallel-processing.md`](references/05-parallel-processing.md) - Multi-threaded batch processing for large datasets
-- [`references/06-confidence-values.md`](references/06-confidence-values.md) - Computing and interpreting language confidence scores
-- [`references/07-troubleshooting.md`](references/07-troubleshooting.md) - Common issues, limitations, and solutions
+- [Api Reference](reference/01-api-reference.md)
+- [Language Reference](reference/02-language-reference.md)
+- [Advanced Configuration](reference/03-advanced-configuration.md)
+- [Mixed Language Detection](reference/04-mixed-language-detection.md)
+- [Parallel Processing](reference/05-parallel-processing.md)
+- [Confidence Values](reference/06-confidence-values.md)
+- [Troubleshooting](reference/07-troubleshooting.md)
 
 ## Use Cases
-
 ### Content Routing
 
 Route user messages to appropriate language-specific handlers:
@@ -240,17 +229,13 @@ print(detector.detect_language_of("merci"))  # Language.FRENCH
 print(detector.detect_language_of("breaking news"))  # Language.ENGLISH
 ```
 
-See [Mixed-Language Detection](references/04-mixed-language-detection.md) for code-switching scenarios.
+See [Mixed-Language Detection](reference/04-mixed-language-detection.md) for code-switching scenarios.
 
 ## Version Information
-
 - **Current version**: 2.2.0
 - **Python compatibility**: >= 3.12, < 3.15
 - **Implementation**: Rust with PyO3 bindings
 - **Previous pure Python implementation**: Available in `pure-python-impl` branch (version 1.*)
 
-For migration from version 1.x to 2.x, see [Troubleshooting](references/07-troubleshooting.md).
+For migration from version 1.x to 2.x, see [Troubleshooting](reference/07-troubleshooting.md).
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

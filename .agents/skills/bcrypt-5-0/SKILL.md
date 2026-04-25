@@ -17,32 +17,24 @@ external_references:
   - https://bcrypt.readthedocs.io/
   - https://github.com/pyca/bcrypt
 ---
-
-# bcrypt-5-0
-
 ## Overview
-
 A skill for password hashing and key derivation using bcrypt 5.0 in Python. Use when implementing secure password storage, verifying passwords, or deriving cryptographic keys with bcrypt_pbkdf.
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.## Overview
-
-A skill for password hashing and key derivation using bcrypt 5.0 in Python. Use when implementing secure password storage, verifying passwords, or deriving cryptographic keys with bcrypt_pbkdf.
-
-A Python library for modern password hashing using the bcrypt algorithm. Provides secure password storage, verification, and key derivation functions implemented in Rust for performance and safety.
 
 ## When to Use
-
 - Hashing passwords before storing them in a database
 - Verifying user-provided passwords against stored hashes
 - Deriving cryptographic keys from passwords using bcrypt_pbkdf
 - Migrating from other password hashing libraries (py-bcrypt, passlib)
 - Building authentication systems requiring industry-standard password protection
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
 
+A skill for password hashing and key derivation using bcrypt 5.0 in Python. Use when implementing secure password storage, verifying passwords, or deriving cryptographic keys with bcrypt_pbkdf.
+
+A Python library for modern password hashing using the bcrypt algorithm. Provides secure password storage, verification, and key derivation functions implemented in Rust for performance and safety.
+
+## Installation / Setup
 ### Installation
 
 Install bcrypt via pip:
@@ -82,7 +74,6 @@ bcrypt 5.0 supports:
 - Windows on ARM
 
 ## Usage
-
 ### Password Hashing
 
 Hash a password with a randomly-generated salt:
@@ -252,7 +243,6 @@ key = bcrypt.kdf(
 ```
 
 ## Common Usage Patterns
-
 ### Add, Hash, Store (Registration Flow)
 
 The typical password registration workflow:
@@ -353,7 +343,6 @@ validate_bcrypt_config()
 ```
 
 ## Complete Authentication Example
-
 A complete user registration and login system:
 
 ```python
@@ -398,7 +387,6 @@ else:
 ```
 
 ## Best Practices
-
 ### Security Recommendations
 
 1. **Always use bcrypt.gensalt()** - Never reuse salts or use static salts
@@ -472,11 +460,10 @@ if bcrypt.checkpw(password, stored_hash):
 ```
 
 ## See Also
-
-- [Advanced Usage and Examples](references/01-advanced-usage.md) - Complete examples, advanced patterns, and troubleshooting
-
+- [Advanced Usage and Examples](reference/01-advanced-usage.md) - Complete examples, advanced patterns, and troubleshooting
 
 ## Advanced Topics
+## Advanced Topics
 
-For more details on advanced usage, refer to the official documentation listed in the References section.
+- [Advanced Usage](reference/01-advanced-usage.md)
 

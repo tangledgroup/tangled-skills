@@ -19,21 +19,12 @@ external_references:
   - https://lodash.com/
   - https://github.com/lodash/lodash
 ---
-
-# Lodash 4.18 Toolkit
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Complete toolkit for Lodash 4.18 utility library providing 300+ helper functions for arrays, collections, objects, strings, numbers, dates, and functions. Use when building JavaScript applications requiring robust data manipulation, functional programming patterns, type checking, or cross-platform compatibility without native ES6+ features.
 
 Complete toolkit for [Lodash](https://lodash.com/) v4.18, a modern JavaScript utility library providing over 300 modular helper functions for arrays, collections, objects, strings, numbers, dates, and functions. Lodash emphasizes composability, performance, and cross-platform compatibility.
 
 ## When to Use
-
 - Working with arrays that need chunking, slicing, filtering, or transformation
 - Manipulating objects with deep cloning, merging, or property access
 - Processing strings with case conversion, padding, truncation, or templating
@@ -44,8 +35,10 @@ Complete toolkit for [Lodash](https://lodash.com/) v4.18, a modern JavaScript ut
 - Building API utilities with consistent argument handling
 - Needing cross-browser compatibility without polyfills
 
-## Installation
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ```bash
 # npm
 npm install lodash
@@ -74,8 +67,7 @@ import { chunk, debounce, map } from 'lodash';
 const _ = require('lodash');
 ```
 
-## Quick Start
-
+## Usage Examples
 ### Array Operations
 
 Split arrays into chunks, remove duplicates, or find elements:
@@ -93,7 +85,7 @@ uniq([1, 2, 1, 3]); // [1, 2, 3]
 find(users, { age: 30 }); // { name: 'Fred', age: 30 }
 ```
 
-See [Array Methods](references/01-array-methods.md) for 56 array utilities.
+See [Array Methods](reference/01-array-methods.md) for 56 array utilities.
 
 ### Collection Iteration
 
@@ -115,7 +107,7 @@ groupBy(users, 'age'); // { '25': [...], '30': [...] }
 sortBy(users, ['user', 'age']);
 ```
 
-See [Collection Methods](references/02-collection-methods.md) for 24 iteration utilities.
+See [Collection Methods](reference/02-collection-methods.md) for 24 iteration utilities.
 
 ### Object Manipulation
 
@@ -137,7 +129,7 @@ set(object, 'a.b.c', 1);
 omit(user, ['password', 'token']); // { name: 'Fred', age: 30 }
 ```
 
-See [Object Methods](references/04-object-methods.md) for 46 object utilities.
+See [Object Methods](reference/04-object-methods.md) for 46 object utilities.
 
 ### String Utilities
 
@@ -157,7 +149,7 @@ const tpl = template('Hello <%= name %>!');
 tpl({ name: 'Fred' }); // 'Hello Fred!'
 ```
 
-See [String Methods](references/07-string-methods.md) for 29 string utilities.
+See [String Methods](reference/07-string-methods.md) for 29 string utilities.
 
 ### Function Utilities
 
@@ -181,25 +173,23 @@ const greet = flow([capitalize, str => `Hello ${str}`]);
 greet('fred'); // 'Hello Fred'
 ```
 
-See [Function Methods](references/03-function-methods.md) for 24 function utilities.
+See [Function Methods](reference/03-function-methods.md) for 24 function utilities.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-array-methods.md`](references/01-array-methods.md) - 56 array manipulation methods (chunk, compact, difference, flatten, intersection, union, uniq, zip, etc.)
-- [`references/02-collection-methods.md`](references/02-collection-methods.md) - 24 collection iteration methods (countBy, filter, find, forEach, groupBy, map, reduce, sortBy, etc.)
-- [`references/03-function-methods.md`](references/03-function-methods.md) - 24 function utilities (after, ary, bind, curry, debounce, memoize, partial, throttle, wrap, etc.)
-- [`references/04-object-methods.md`](references/04-object-methods.md) - 46 object manipulation methods (assign, cloneDeep, get, has, merge, omit, pick, set, transform, etc.)
-- [`references/05-lang-methods.md`](references/05-lang-methods.md) - 49 type checking and conversion methods (isArray, isPlainObject, isEqual, toNumber, toString, etc.)
-- [`references/06-math-methods.md`](references/06-math-methods.md) - 16 mathematical operations (add, ceil, floor, max, min, round, sum, etc.)
-- [`references/07-string-methods.md`](references/07-string-methods.md) - 29 string utilities (camelCase, escape, pad, replace, split, template, truncate, words, etc.)
-- [`references/08-util-methods.md`](references/08-util-methods.md) - 34 utility methods (attempt, cond, constant, flow, identity, matches, property, times, uniqueId, etc.)
-- [`references/09-seq-methods.md`](references/09-seq-methods.md) - 12 chaining methods (_(), chain, tap, thru, prototype.value, etc.)
-- [`references/10-other-methods.md`](references/10-other-methods.md) - Date and Number category methods (now, clamp, inRange, random)
-
-**Note:** `{baseDir}` refers to the skill's base directory (e.g., `.agents/skills/lodash-4-18/`). All paths are relative to this directory.
+- [Array Methods](reference/01-array-methods.md)
+- [Collection Methods](reference/02-collection-methods.md)
+- [Function Methods](reference/03-function-methods.md)
+- [Object Methods](reference/04-object-methods.md)
+- [Lang Methods](reference/05-lang-methods.md)
+- [Math Methods](reference/06-math-methods.md)
+- [String Methods](reference/07-string-methods.md)
+- [Util Methods](reference/08-util-methods.md)
+- [Seq Methods](reference/09-seq-methods.md)
+- [Other Methods](reference/10-other-methods.md)
 
 ## Common Patterns
-
 ### Iteration vs Array Methods
 
 Lodash provides both array-specific and generic collection methods:
@@ -284,7 +274,6 @@ _.differenceWith([2.1, 1.2], [2.3, 1.5], (a, b) => Math.abs(a - b) < 0.5); // [1
 ```
 
 ## Performance Notes
-
 - Use array-specific methods (`_.indexOf`) over generic ones (`_.includes`) for arrays when possible
 - Chaining creates intermediate wrappers; use `.value()` to finalize
 - Individual imports enable tree-shaking in bundlers
@@ -292,7 +281,6 @@ _.differenceWith([2.1, 1.2], [2.3, 1.5], (a, b) => Math.abs(a - b) < 0.5); // [1
 - Immutable methods return new arrays/objects; mutating methods modify in-place
 
 ## Troubleshooting
-
 **Issue:** Bundle size too large
 - **Solution:** Import individual modules: `import debounce from 'lodash/debounce'`
 
@@ -310,6 +298,3 @@ _.differenceWith([2.1, 1.2], [2.3, 1.5], (a, b) => Math.abs(a - b) < 0.5); // [1
 
 See [Individual reference files](#reference-files) for method-specific documentation and examples.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

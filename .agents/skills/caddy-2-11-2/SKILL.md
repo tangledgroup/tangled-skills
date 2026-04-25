@@ -23,13 +23,7 @@ external_references:
   - https://caddyserver.com/docs/caddyfile-tutorial
   - https://github.com/caddyserver/website
 ---
-
-# Caddy 2.11.2
-
-A powerful, enterprise-ready, open source web server with automatic HTTPS written in Go. Every site on HTTPS by default.
-
 ## Overview
-
 Caddy is an extensible server platform that uses TLS by default. It supports:
 
 - **Easy configuration** with the [Caddyfile](https://caddyserver.com/docs/caddyfile)
@@ -45,7 +39,6 @@ Caddy is an extensible server platform that uses TLS by default. It supports:
 Caddy is a project of [ZeroSSL](https://zerossl.com).
 
 ## When to Use
-
 Use this skill when:
 - Configuring Caddy as a web server or reverse proxy
 - Setting up automatic HTTPS with Let's Encrypt or ZeroSSL
@@ -59,7 +52,6 @@ Use this skill when:
 - Deploying Caddy via systemd, Docker, or cloud platforms
 
 ## Core Concepts
-
 ### Configuration Formats
 
 Caddy's native configuration is a **JSON document**. However, you can use config adapters to write in other formats:
@@ -68,7 +60,7 @@ Caddy's native configuration is a **JSON document**. However, you can use config
 |--------|-------------|----------|
 | JSON (native) | Caddy's native format | Programmatic config, API usage |
 | Caddyfile | Human-friendly config file | Manual editing, quick setup |
-| JSON5, YAML, TOML | Alternative structured formats | Preferences/team conventions |
+| JSON5, YAML, TOML | Alternative structured formats | Preference/team conventions |
 | NGINX | NGINX config adapter | Migration from NGINX |
 
 ### The Caddyfile Structure
@@ -287,8 +279,7 @@ example.com {
 }
 ```
 
-## Installation
-
+## Installation / Setup
 ### Package Managers
 
 ```bash
@@ -341,364 +332,17 @@ xcaddy build \
     --with github.com/caddy-custom/module
 ```
 
-## Usage Examples
-
-### Basic Static File Server
-
-```caddyfile
-example.com {
-    root * /var/www/html
-    file_server
-}
-```
-
-### Reverse Proxy
-
-```caddyfile
-api.example.com {
-    reverse_proxy localhost:3000
-}
-
-# With load balancing
-lb.example.com {
-    reverse_proxy {
-        to backend1:8080 backend2:8080 backend3:8080
-        lb_policy round_robin
-        health_uri /health
-        health_interval 10s
-        health_timeout 5s
-    }
-}
-
-# With headers
-proxy.example.com {
-    reverse_proxy localhost:8080 {
-        header_up Host {upstream_hostport}
-        header_up X-Real-IP {remote_host}
-        header_down X-Caddy-Proxy "true"
-    }
-}
-```
-
-### HTTPS Redirect
-
-```caddyfile
-# Auto HTTP→HTTPS redirect (default)
-example.com { ... }
-
-# Disable auto redirect
-example.com {
-    auto_https off
-}
-```
-
-### TLS Configuration
-
-```caddyfile
-secure.example.com {
-    tls admin@example.com {
-        protocols tls1.3
-        ciphers TLS_AES_256_GCM_SHA384
-        curves x25519 secp384r1
-        
-        client_auth {
-            mode verify_if_given
-            trusted_leaf_cert_file /etc/caddy/client-ca.pem
-        }
-        
-        key_type ed25519
-    }
-}
-```
-
-### Basic Authentication
-
-```caddyfile
-protected.example.com {
-    basicauth {
-        # Use: caddy hash-password --plaintext mypassword
-        admin $2a$14$...hash...
-        user $2a$14$...hash...
-    }
-    file_server
-}
-```
-
-### Template Rendering
-
-```caddyfile
-# With Go templates
-blog.example.com {
-    root * /var/www/blog
-    templates
-    file_server
-}
-
-# With frontmatter (YAML, JSON, TOML) in markdown files
-{{ define "title" }}My Blog{{ end }}
----
-title: "Welcome"
-date: 2024-01-01
----
-Hello, world!
-```
-
-### HTTP/3 Support
-
-```caddyfile
-# HTTP/3 enabled by default when HTTPS is on
-example.com {
-    reverse_proxy localhost:8080
-}
-
-# Specify protocols explicitly
-example.com {
-    bind example.com
-    protocols h1 h2 h3
-    reverse_proxy localhost:8080
-}
-```
-
-### Admin API Usage
-
-```bash
-# Get current config
-curl localhost:2019/config/ | jq
-
-# Load new config
-curl localhost:2019/load \
-    -H "Content-Type: application/json" \
-    -d @caddy.json
-
-# Partial config update (add a route)
-curl -X POST localhost:2019/config/apps/http/servers/myserver/routes/... \
-    -H "Content-Type: application/json" \
-    -d '{
-        "handle": [{"handler": "static_response", "body": "Updated!"}]
-    }'
-
-# Reload config file
-caddy reload --config Caddyfile
-
-# Validate config without running
-caddy validate --config Caddyfile
-
-# Adapt Caddyfile to JSON
-caddy adapt --config Caddyfile --pretty > caddy.json
-```
-
-### Systemd Service
-
-```ini
-# /etc/systemd/system/caddy.service
-[Unit]
-Description=Caddy Web Server
-Documentation=https://caddyserver.com/docs/
-After=network-online.target
-
-[Service]
-User=caddy
-Group=caddy
-ExecReload=/usr/bin/caddy reload --config /etc/caddy/Caddyfile --force
-TimeoutStopSec=5s
-LimitNOFILE=1048576
-PrivateTmp=true
-ProtectSystem=full
-AmbientCapabilities=CAP_NET_BIND_SERVICE
-
-[Install]
-WantedBy=multi-user.target
-```
-
-### Docker
-
-```bash
-docker run -d --name caddy \
-    -p 80:80 -p 443:443 \
-    -v $(pwd)/Caddyfile:/etc/caddy/Caddyfile \
-    -v caddy_data:/data \
-    -v caddy_config:/config \
-    caddy:latest
-```
-
-## Caddyfile Directives Reference
-
-### Core HTTP Directives
-
-| Directive | Type | Description |
-|-----------|------|-------------|
-| `respond` | Handler | Return a fixed response |
-| `redir` | Handler | Redirect requests |
-| `file_server` | Handler | Serve static files |
-| `reverse_proxy` | Handler | Proxy to upstream servers |
-| `abort` | Handler | Abort the request immediately |
-| `error` | Handler | Generate an error response |
-| `route` | Container | Group directives with custom order |
-| `handle` | Container | Match and group directives |
-| `handle_path` | Container | Strip prefix and match |
-| `vars` | Handler | Set variables/placeholders |
-| `log` | Config | Configure access logging |
-| `skip_log` | Handler | Skip logging for matched requests |
-
-### TLS Directives
-
-| Directive | Type | Description |
-|-----------|------|-------------|
-| `tls` | Config | Configure TLS certificates and settings |
-| `bind` | Config | Specify network interfaces and protocols |
-
-### Authentication & Security
-
-| Directive | Type | Description |
-|-----------|------|-------------|
-| `basicauth` | Handler | HTTP Basic Authentication |
-| `forward_auth` | Handler | Forward authentication to external service |
-
-### Advanced Directives
-
-| Directive | Type | Description |
-|-----------|------|-------------|
-| `handle_errors` | Config | Configure error page handling |
-| `invoke` | Handler | Invoke another named route |
-| `templates` | Handler | Render Go templates and markdown with frontmatter |
-| `request_body` | Handler | Read request body into variable |
-
-## CLI Commands Reference
-
-### Server Management
-
-| Command | Description |
-|---------|-------------|
-| `caddy run` | Start Caddy in foreground (daemon mode) |
-| `caddy start` | Start Caddy in background |
-| `caddy stop` | Stop running Caddy process |
-| `caddy reload` | Gracefully reload config without downtime |
-
-### Configuration
-
-| Command | Description |
-|---------|-------------|
-| `caddy adapt` | Convert Caddyfile to JSON |
-| `caddy validate` | Validate a configuration file |
-| `caddy fmt` | Format/pretty-print a Caddyfile |
-
-### Diagnostics & Utilities
-
-| Command | Description |
-|---------|-------------|
-| `caddy version` | Print version |
-| `caddy build-info` | Print build information |
-| `caddy list-modules` | List installed modules |
-| `caddy environ` | Print environment variables |
-| `caddy hash-password` | Hash a password for basicauth |
-| `caddy completion` | Generate shell completions |
-
-### Server Utilities
-
-| Command | Description |
-|---------|-------------|
-| `caddy file-server` | Quick static file server |
-| `caddy respond` | Quick hard-coded HTTP server |
-| `caddy reverse-proxy` | Quick reverse proxy |
-
-### Storage & Certificates
-
-| Command | Description |
-|---------|-------------|
-| `caddy trust` | Install CA cert into system trust store |
-| `caddy untrust` | Remove CA cert from trust store |
-| `caddy storage export` | Export storage contents |
-| `caddy storage import` | Import storage contents |
-
-### Upgrade (Experimental)
-
-| Command | Description |
-|---------|-------------|
-| `caddy upgrade` | Replace binary with latest version |
-| `caddy add-package` | Add plugins to current binary |
-| `caddy remove-package` | Remove plugins from current binary |
-
-## Signal Handling
-
-| Signal | Behavior |
-|--------|----------|
-| `SIGINT` | Graceful exit (send again for immediate) |
-| `SIGQUIT` | Immediate quit, cleans up storage locks |
-| `SIGTERM` | Graceful exit |
-| `SIGUSR1` | Reload config (if running with Caddyfile, no API changes) |
-
-## JSON Configuration Structure
-
-Caddy's native config is a JSON document:
-
-```json
-{
-  "admin": {
-    "listen": ":2019"
-  },
-  "logging": {
-    "logs": {
-      "default": {
-        "writer": {
-          "output": "file",
-          "filename": "/var/log/caddy/access.log"
-        }
-      }
-    }
-  },
-  "apps": {
-    "http": {
-      "servers": {
-        "example": {
-          "listen": [":443"],
-          "routes": [
-            {
-              "handle": [
-                {
-                  "handler": "subroute",
-                  "routes": [
-                    {
-                      "handle": [
-                        {
-                          "handler": "static_response",
-                          "body": "Hello, world!"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
-          "tls_connection_policies": [...],
-          "listeners": [...]
-        }
-      }
-    },
-    "tls": {
-      "automation": {
-        "policies": [...]
-      }
-    },
-    "pki": {
-      "cas": {
-        "local": {}
-      }
-    }
-  }
-}
-```
-
-## Reference Files
-
-- [`references/01-caddyfile-directives.md`](references/01-caddyfile-directives.md) - Complete directive reference with syntax, options, and examples
-- [`references/02-tls-ssl-guide.md`](references/02-tls-ssl-guide.md) - TLS configuration, certificates, client auth, ECH, ALPN
-- [`references/03-reverse-proxy.md`](references/03-reverse-proxy.md) - Reverse proxy patterns, load balancing, health checks, circuit breakers
-- [`references/04-json-config.md`](references/04-json-config.md) - JSON configuration structure, API operations, traversal with @id
-- [`references/05-pki-certificates.md`](references/05-pki-certificates.md) - PKI app, CA management, certificate lifecycle, ACME settings
-
-
-
+## Advanced Topics
 ## Advanced Topics
 
-For more details on advanced usage, refer to the official documentation listed in the References section.
+- [Caddyfile Directives](reference/01-caddyfile-directives.md)
+- [Tls Ssl Guide](reference/02-tls-ssl-guide.md)
+- [Reverse Proxy](reference/03-reverse-proxy.md)
+- [Json Config](reference/04-json-config.md)
+- [Pki Certificates](reference/05-pki-certificates.md)
+- [Usage Examples](reference/06-usage-examples.md)
+- [Caddyfile Directives Reference](reference/07-caddyfile-directives-reference.md)
+- [Cli Commands Reference](reference/08-cli-commands-reference.md)
+- [Signal Handling](reference/09-signal-handling.md)
+- [Json Configuration Structure](reference/10-json-configuration-structure.md)
+

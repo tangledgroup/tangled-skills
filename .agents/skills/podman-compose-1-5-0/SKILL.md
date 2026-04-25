@@ -18,21 +18,12 @@ external_references:
   - https://github.com/containers/podman-compose
   - https://compose-spec.io
 ---
-
-# Podman Compose 1.5.0
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Orchestrates multi-container applications using Compose specification files with Podman backend. Use when deploying containerized stacks, managing services defined in compose.yaml files, or migrating from docker-compose to a daemonless rootless workflow.
 
 A Python-based implementation of the [Compose Specification](https://compose-spec.io/) with a Podman backend. Provides daemonless, rootless container orchestration by directly executing podman commands without requiring a running daemon service.
 
 ## When to Use
-
 - Deploying multi-container applications defined in `compose.yaml` or `docker-compose.yml` files
 - Migrating from docker-compose workflows while maintaining compatibility
 - Running containerized stacks in rootless mode for improved security
@@ -40,8 +31,10 @@ A Python-based implementation of the [Compose Specification](https://compose-spe
 - Building images and orchestrating containers without a daemon process
 - Creating systemd services for container orchestration
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Prerequisites
 
 - **Podman** version 3.4 or newer (version 3.1.0+ for legacy podman-compose 0.1.x)
@@ -131,10 +124,9 @@ export PODMAN_COMPOSE_WARNING_LOGS=false
 podman-compose up
 ```
 
-See [Core Concepts](references/01-core-concepts.md) for detailed architecture explanation.
+See [Core Concepts](reference/01-core-concepts.md) for detailed architecture explanation.
 
-## Quick Start
-
+## Usage Examples
 ### Basic Usage
 
 Navigate to a directory containing a `compose.yaml` file and start services:
@@ -162,7 +154,7 @@ podman-compose ps
 podman-compose logs -f
 ```
 
-See [Command Reference](references/02-command-reference.md) for complete command documentation.
+See [Command Reference](reference/02-command-reference.md) for complete command documentation.
 
 ### Example Compose File
 
@@ -210,17 +202,17 @@ networks:
   backend:
 ```
 
-See [Compose File Guide](references/03-compose-file-guide.md) for complete file format documentation.
+See [Compose File Guide](reference/03-compose-file-guide.md) for complete file format documentation.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-core-concepts.md`](references/01-core-concepts.md) - Architecture, daemonless model, and podman integration
-- [`references/02-command-reference.md`](references/02-command-reference.md) - Complete command syntax with options and examples
-- [`references/03-compose-file-guide.md`](references/03-compose-file-guide.md) - Compose specification format, services, networks, volumes, configs, secrets
-- [`references/04-troubleshooting.md`](references/04-troubleshooting.md) - Common issues, debugging, and migration from docker-compose
+- [Core Concepts](reference/01-core-concepts.md)
+- [Command Reference](reference/02-command-reference.md)
+- [Compose File Guide](reference/03-compose-file-guide.md)
+- [Troubleshooting](reference/04-troubleshooting.md)
 
 ## Troubleshooting
-
 ### Container Name Resolution Fails
 
 If containers cannot resolve each other by service name:
@@ -260,8 +252,5 @@ podman-compose --version
 export PATH=$HOME/.local/bin:$PATH
 ```
 
-See [Troubleshooting Guide](references/04-troubleshooting.md) for comprehensive issue resolution.
+See [Troubleshooting Guide](reference/04-troubleshooting.md) for comprehensive issue resolution.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

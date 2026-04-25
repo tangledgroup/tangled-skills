@@ -29,17 +29,12 @@ required_environment_variables:
     help: "A random secret string for signing cookies and tokens (use: openssl rand -base64 32)"
     required_for: "application security"
 ---
-
-# Payload CMS Blank Template 3.82.1
-
 ## Overview
-
 Minimal Payload CMS 3.82.1 starter template providing a clean foundation for building custom headless CMS applications with Next.js App Router, MongoDB, and Lexical editor. Use when starting new Payload projects from scratch, needing a minimal configuration without pre-built collections or content types, or requiring full control over data modeling and admin panel customization.
 
 The Payload Blank Template provides a minimal, production-ready foundation for building custom headless CMS applications using Payload 3.82.1 with Next.js App Router, MongoDB database adapter, and Lexical rich text editor. This template includes only essential configurations, allowing complete control over data modeling, authentication, and admin panel customization without pre-built content types or opinions about project structure.
 
 ## When to Use
-
 - Starting a new Payload CMS project from scratch
 - Needing minimal configuration without predefined collections
 - Building custom headless CMS with specific data requirements
@@ -49,7 +44,6 @@ The Payload Blank Template provides a minimal, production-ready foundation for b
 - Developing microservices or modular monoliths with Payload as backend
 
 ## Core Concepts
-
 **Payload Architecture:**
 - **Collections**: Database models with automatic REST/GraphQL APIs and admin UI
 - **Fields**: Declarative schema definitions for data structure and validation
@@ -66,8 +60,7 @@ The Payload Blank Template provides a minimal, production-ready foundation for b
 - Custom React components for admin panel extension
 - Local API for server-side data operations
 
-## Quick Start
-
+## Installation / Setup
 ### Prerequisites
 
 - Node.js 18.20.2+ or 20.9.0+
@@ -123,10 +116,9 @@ docker-compose up
 docker-compose up -d
 ```
 
-See [Project Structure](references/01-project-structure.md) for detailed directory layout and file purposes.
+See [Project Structure](reference/01-project-structure.md) for detailed directory layout and file purposes.
 
 ## Common Operations
-
 ### Creating Collections
 
 Define new content types by creating collection configuration files:
@@ -165,7 +157,7 @@ export default buildConfig({
 })
 ```
 
-See [Collections and Fields](references/02-collections-and-fields.md) for comprehensive field types and collection options.
+See [Collections and Fields](reference/02-collections-and-fields.md) for comprehensive field types and collection options.
 
 ### Setting Up Authentication
 
@@ -186,7 +178,7 @@ export const Users: CollectionConfig = {
 }
 ```
 
-See [Authentication Setup](references/03-authentication-setup.md) for advanced auth patterns and access control.
+See [Authentication Setup](reference/03-authentication-setup.md) for advanced auth patterns and access control.
 
 ### Building Custom Routes
 
@@ -209,21 +201,19 @@ export const GET = async (request: Request) => {
 }
 ```
 
-See [API Integration](references/05-api-integration.md) for REST and GraphQL patterns.
+See [API Integration](reference/05-api-integration.md) for REST and GraphQL patterns.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-project-structure.md`](references/01-project-structure.md) - Directory layout, file purposes, and configuration files
-- [`references/02-collections-and-fields.md`](references/02-collections-and-fields.md) - Complete field types, collection options, and schema patterns
-- [`references/03-authentication-setup.md`](references/03-authentication-setup.md) - Auth configuration, access control, and security best practices
-- [`references/04-custom-components.md`](references/04-custom-components.md) - Admin panel customization with React components
-- [`references/05-api-integration.md`](references/05-api-integration.md) - REST API, GraphQL, Local API, and custom routes
-- [`references/06-deployment-and-config.md`](references/06-deployment-and-config.md) - Environment setup, deployment strategies, and production considerations
-
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/payloadcms-blank-3-82-1/`). All paths are relative to this directory.
+- [Project Structure](reference/01-project-structure.md)
+- [Collections And Fields](reference/02-collections-and-fields.md)
+- [Authentication Setup](reference/03-authentication-setup.md)
+- [Custom Components](reference/04-custom-components.md)
+- [Api Integration](reference/05-api-integration.md)
+- [Deployment And Config](reference/06-deployment-and-config.md)
 
 ## Troubleshooting
-
 ### Common Issues
 
 **TypeScript errors after adding collections:**
@@ -238,8 +228,5 @@ Ensure Sharp is installed (`pnpm install`) and check file permissions for upload
 **Admin panel not loading:**
 Check browser console for errors. Clear `.next` cache with `pnpm devsafe` if needed.
 
-See [Deployment and Config](references/06-deployment-and-config.md) for production troubleshooting and environment-specific issues.
+See [Deployment and Config](reference/06-deployment-and-config.md) for production troubleshooting and environment-specific issues.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

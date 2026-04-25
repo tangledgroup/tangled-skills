@@ -18,19 +18,7 @@ external_references:
   - https://github.com/huggingface/transformers/tree/v5.5.4/docs
   - https://huggingface.co/docs/transformers/en/index
 ---
-
-# Transformers 5.5.4
-
-<h3 align="center">
-    State-of-the-art Machine Learning for Text, Vision, Audio, and Multimodal Models
-</h3>
-
-Transformers is the model-definition framework for state-of-the-art machine learning models across text, computer vision, audio, video, and multimodal domains. It centralizes model definitions to ensure compatibility across the ecosystem including training frameworks (Axolotl, Unsloth, DeepSpeed, FSDP), inference engines (vLLM, SGLang, TGI), and adjacent libraries (llama.cpp, mlx).
-
-With **1M+ pretrained model checkpoints** on the [Hugging Face Hub](https://huggingface.co/models), Transformers provides everything needed for inference and training with cutting-edge models.
-
 ## Overview
-
 Transformers acts as the pivot across frameworks: if a model definition is supported, it will be compatible with the majority of training frameworks, inference engines, and modeling libraries that leverage the model definition from `transformers`.
 
 ### Key Features
@@ -47,7 +35,6 @@ Transformers acts as the pivot across frameworks: if a model definition is suppo
 2. **Pretrained models**: Reduce carbon footprint, compute cost, and time by using pretrained models with state-of-the-art performance
 
 ## When to Use
-
 Use Transformers 5.5.4 when:
 
 - **Inference tasks**: Text classification, generation, QA, summarization, translation, named entity recognition
@@ -58,8 +45,7 @@ Use Transformers 5.5.4 when:
 - **Production deployment**: Optimize models with quantization, compilation, and efficient inference
 - **Research**: Experiment with cutting-edge architectures (Llama, Mistral, Qwen, CLIP, Whisper, etc.)
 
-## Installation
-
+## Installation / Setup
 ### Quick Start with uv
 
 ```bash
@@ -114,8 +100,7 @@ cd transformers
 uv pip install -e .
 ```
 
-## Quick Start
-
+## Usage Examples
 ### Using Pipeline API
 
 The simplest way to use Transformers:
@@ -185,7 +170,6 @@ print(probabilities)
 ```
 
 ## Core Concepts
-
 ### Model Architecture Pattern
 
 Every model in Transformers follows a consistent three-class pattern:
@@ -247,28 +231,18 @@ model = AutoModelForCausalLM.from_pretrained("large-model")
 model = model.half().cuda(0)
 ```
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-For detailed coverage of specific topics, see:
-
-### Core Functionality
-
-- [`references/01-pipeline-api.md`](references/01-pipeline-api.md) - Complete Pipeline API guide with 50+ task types, batching, streaming, and customization
-- [`references/02-models-and-tokenizers.md`](references/02-models-and-tokenizers.md) - Model loading, tokenizer patterns, auto classes, and configuration management
-- [`references/03-generation-api.md`](references/03-generation-api.md) - Text generation with LLMs, decoding strategies, streaming, and advanced features
-
-### Training and Optimization
-
-- [`references/04-training-with-trainer.md`](references/04-training-with-trainer.md) - Trainer API, custom training loops, distributed training, and mixed precision
-- [`references/05-optimization-and-deployment.md`](references/05-optimization-and-deployment.md) - Quantization, torch.compile, FlashAttention, model sharding, and deployment patterns
-
-### Advanced Topics
-
-- [`references/06-custom-models-and-pipelines.md`](references/06-custom-models-and-pipelines.md) - Creating custom models, pipelines, and integrating with external frameworks
-- [`references/07-multimodal-and-specialized-tasks.md`](references/07-multimodal-and-specialized-tasks.md) - Vision, audio, multimodal models, and specialized task implementations
+- [Pipeline Api](reference/01-pipeline-api.md)
+- [Models And Tokenizers](reference/02-models-and-tokenizers.md)
+- [Generation Api](reference/03-generation-api.md)
+- [Training With Trainer](reference/04-training-with-trainer.md)
+- [Optimization And Deployment](reference/05-optimization-and-deployment.md)
+- [Custom Models And Pipelines](reference/06-custom-models-and-pipelines.md)
+- [Multimodal And Specialized Tasks](reference/07-multimodal-and-specialized-tasks.md)
 
 ## Common Patterns
-
 ### Batch Processing
 
 ```python
@@ -341,7 +315,6 @@ tokenizer.push_to_hub("username/my-model")
 ```
 
 ## Troubleshooting
-
 ### Common Issues
 
 **Memory errors with large models:**
@@ -392,7 +365,6 @@ export HUGGING_FACE_HUB_TOKEN=your_token
 ```
 
 ## Performance Tips
-
 1. **Use batching** for multiple inputs to maximize GPU utilization
 2. **Enable quantization** (8-bit/4-bit) to reduce memory usage by 50-75%
 3. **Use `device_map="auto"`** for automatic multi-GPU distribution
@@ -401,7 +373,6 @@ export HUGGING_FACE_HUB_TOKEN=your_token
 6. **Cache tokenizers** to avoid reprocessing common inputs
 
 ## Resources
-
 ### Official Documentation
 
 - [Transformers Documentation](https://huggingface.co/docs/transformers)
@@ -422,7 +393,6 @@ export HUGGING_FACE_HUB_TOKEN=your_token
 - [Slack Community](https://huggingface.co/slack)
 
 ## Version Information
-
 - **Version**: 5.5.4
 - **Python**: 3.10+
 - **PyTorch**: 2.4+
@@ -430,7 +400,6 @@ export HUGGING_FACE_HUB_TOKEN=your_token
 - **Repository**: https://github.com/huggingface/transformers
 
 ## See Also
-
 Related skills in this repository:
 - `peft` - Parameter-efficient fine-tuning
 - `accelerate` - Distributed training and mixed precision
@@ -438,6 +407,3 @@ Related skills in this repository:
 - `evaluate` - Model evaluation metrics
 - `sentence-transformers` - Sentence embeddings
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

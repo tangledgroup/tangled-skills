@@ -20,21 +20,12 @@ external_references:
   - https://github.com/containers/crun
   - https://github.com/containers/crun/blob/main/Documentation/crun.md
 ---
-
-# crun 1.27
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Lightweight OCI container runtime written in C for running Linux containers with low memory footprint and high performance. Use when deploying containers via podman, building container orchestration tools, checkpointing/restoring containers with CRIU, running WebAssembly workloads, or needing faster container startup than runc provides.
 
 A fast and lightweight OCI (Open Container Initiative) container runtime fully written in C. crun provides lower memory footprint and faster execution compared to runc, making it ideal for resource-constrained environments and high-performance container workloads.
 
 ## When to Use
-
 - Running containers with podman as the default OCI runtime
 - Needing faster container startup times (approximately 50% faster than runc)
 - Deploying in memory-constrained environments (works with as little as 512KB memory limit)
@@ -43,8 +34,10 @@ A fast and lightweight OCI (Open Container Initiative) container runtime fully w
 - Building container orchestration tools that need a runtime library
 - Working with cgroup v1 or v2 systems
 
-## Quick Start
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Usage Examples
 ### Installation
 
 **Fedora:**
@@ -81,7 +74,6 @@ crun list
 ```
 
 ## Core Commands
-
 ### Container Lifecycle Management
 
 **Create and start a container:**
@@ -176,18 +168,18 @@ crun update --pids-limit 100 container-id
 crun update --cpu-quota 80000 --cpu-period 100000 container-id
 ```
 
-See [Resource Management](references/02-resource-management.md) for detailed resource options.
+See [Resource Management](reference/02-resource-management.md) for detailed resource options.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-oci-bundle-setup.md`](references/01-oci-bundle-setup.md) - Creating OCI bundles and config.json files
-- [`references/02-resource-management.md`](references/02-resource-management.md) - Cgroup controllers, limits, and cgroup v1/v2 conversion
-- [`references/03-checkpoint-restore.md`](references/03-checkpoint-restore.md) - CRIU checkpointing and container migration
-- [`references/04-advanced-features.md`](references/04-advanced-features.md) - WebAssembly support, security features, mount options
-- [`references/05-troubleshooting.md`](references/05-troubleshooting.md) - Common issues and debugging
+- [Oci Bundle Setup](reference/01-oci-bundle-setup.md)
+- [Resource Management](reference/02-resource-management.md)
+- [Checkpoint Restore](reference/03-checkpoint-restore.md)
+- [Advanced Features](reference/04-advanced-features.md)
+- [Troubleshooting](reference/05-troubleshooting.md)
 
 ## Troubleshooting
-
 **Container won't start:**
 ```bash
 # Enable debug logging
@@ -222,10 +214,9 @@ crun --root /custom/crun-state run container-id
 # Unprivileged: $XDG_RUNTIME_DIR/crun
 ```
 
-For more troubleshooting, see [references/05-troubleshooting.md](references/05-troubleshooting.md).
+For more troubleshooting, see [reference/05-troubleshooting.md](reference/05-troubleshooting.md).
 
 ## Performance Comparison
-
 crun outperforms runc in both speed and memory usage:
 
 | Metric | crun | runc | Improvement |
@@ -234,7 +225,6 @@ crun outperforms runc in both speed and memory usage:
 | Minimum memory limit | 512KB | 4MB+ | 87.5% less |
 
 ## Key Features
-
 - **Low memory footprint**: Written in C, no runtime dependencies
 - **Fast startup**: No re-exec pattern like runc
 - **CRIU integration**: Native checkpoint/restore support
@@ -244,7 +234,6 @@ crun outperforms runc in both speed and memory usage:
 - **Rootless containers**: Automatic user namespace creation
 
 ## Compatibility
-
 - **OCI Runtime Spec**: Fully compliant
 - **Podman**: Default runtime on many distributions
 - **Buildah**: Compatible image building
@@ -253,6 +242,3 @@ crun outperforms runc in both speed and memory usage:
 
 **Note:** cgroup v1 support is deprecated and will be removed in future releases.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

@@ -20,17 +20,12 @@ external_references:
   - https://www.solidjs.com/docs
   - https://github.com/solidjs/solid
 ---
-
-# SolidJS 1.19
-
 ## Overview
-
 A comprehensive toolkit for building reactive user interfaces with SolidJS 1.19, a declarative JavaScript framework using fine-grained reactivity. Use when creating web applications, components, or UI libraries requiring efficient state management and minimal virtual DOM overhead.
 
 SolidJS is a declarative, efficient JavaScript framework for building user interfaces using fine-grained reactivity and a small footprint. Unlike virtual DOM-based frameworks, Solid uses fine-grained reactive updates that compile to direct DOM manipulation, resulting in exceptional performance with minimal overhead.
 
 ## When to Use
-
 - Building performant single-page applications (SPAs)
 - Creating reusable UI components with precise state management
 - Developing real-time dashboards requiring frequent updates
@@ -39,8 +34,7 @@ SolidJS is a declarative, efficient JavaScript framework for building user inter
 - Projects requiring optimal bundle size and runtime performance
 - Applications needing fine-grained control over reactivity
 
-## Setup
-
+## Installation / Setup
 ### Prerequisites
 
 - Node.js 16+ (LTS recommended), Bun, or Deno
@@ -91,8 +85,7 @@ npm run build        # Production build
 npm run preview      # Preview production build
 ```
 
-## Quick Start
-
+## Usage Examples
 ### Basic Component
 
 Components are JavaScript functions that return JSX:
@@ -125,26 +118,25 @@ render(() => <App />, document.getElementById("root"));
 ```
 
 ## Core Concepts
-
 SolidJS reactivity is built on signals, which track dependencies and update only affected parts of the UI. See detailed guides:
 
-- [Reactivity Fundamentals](references/01-reactivity-fundamentals.md) - Signals, memos, effects, and tracking scopes
-- [Component Patterns](references/02-component-patterns.md) - Props, children, events, and lifecycle
-- [Control Flow](references/03-control-flow.md) - Show, For, Index, Portal, Suspense components
-- [State Management](references/04-state-management.md) - Stores, context, and complex state patterns
-- [Advanced Patterns](references/05-advanced-patterns.md) - Fine-grained reactivity, custom hooks, optimization
+- [Reactivity Fundamentals](reference/01-reactivity-fundamentals.md) - Signals, memos, effects, and tracking scopes
+- [Component Patterns](reference/02-component-patterns.md) - Props, children, events, and lifecycle
+- [Control Flow](reference/03-control-flow.md) - Show, For, Index, Portal, Suspense components
+- [State Management](reference/04-state-management.md) - Stores, context, and complex state patterns
+- [Advanced Patterns](reference/05-advanced-patterns.md) - Fine-grained reactivity, custom hooks, optimization
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-reactivity-fundamentals.md`](references/01-reactivity-fundamentals.md) - Signals, memos, effects, computed values
-- [`references/02-component-patterns.md`](references/02-component-patterns.md) - Props, events, refs, lifecycle hooks
-- [`references/03-control-flow.md`](references/03-control-flow.md) - Show, For, Index, Portal, ErrorBoundary, Suspense
-- [`references/04-state-management.md`](references/04-state-management.md) - Stores API, Context, state patterns
-- [`references/05-advanced-patterns.md`](references/05-advanced-patterns.md) - Custom hooks, optimization, SSR, hydration
-- [`references/06-build-less-setup.md`](references/06-build-less-setup.md) - HyperScript (h) and Tagged Templates (html) for build-less browser setups
+- [Reactivity Fundamentals](reference/01-reactivity-fundamentals.md)
+- [Component Patterns](reference/02-component-patterns.md)
+- [Control Flow](reference/03-control-flow.md)
+- [State Management](reference/04-state-management.md)
+- [Advanced Patterns](reference/05-advanced-patterns.md)
+- [Build Less Setup](reference/06-build-less-setup.md)
 
 ## Common Patterns
-
 ### Event Handlers
 
 ```jsx
@@ -229,7 +221,6 @@ function UserDisplay() {
 ```
 
 ## Troubleshooting
-
 ### Common Issues
 
 **Signal not updating UI:** Ensure you're calling the signal as a function `count()` within JSX or a tracking scope. Using `count` without parentheses gets the signal object, not its value.
@@ -257,7 +248,6 @@ function UserDisplay() {
 - Use `<Suspense>` boundaries to manage async data loading gracefully
 
 ## Build-Less Browser Setup
-
 SolidJS can be used without any build tools by importing directly from a CDN:
 
 ```html
@@ -268,13 +258,12 @@ SolidJS can be used without any build tools by importing directly from a CDN:
 </script>
 ```
 
-See [Build-Less Setup](references/06-build-less-setup.md) for comprehensive guide on:
+See [Build-Less Setup](reference/06-build-less-setup.md) for comprehensive guide on:
 - HyperScript (`solid-js/h`) - Function-based API
 - Tagged Template Literals (`solid-js/html`) - HTML-like syntax
 - Complete working examples and best practices
 
 ## Ecosystem
-
 ### Official Packages
 
 - `solid-js` - Core framework
@@ -294,7 +283,6 @@ See [Build-Less Setup](references/06-build-less-setup.md) for comprehensive guid
 - `patronum` - Custom hooks and utilities
 
 ## Migration from React
-
 SolidJS shares JSX syntax with React but differs in reactivity:
 
 | React | SolidJS |
@@ -312,8 +300,5 @@ Key differences:
 - JSX is compiled to DOM APIs, not object trees
 - Signals must be called in tracking scopes to establish dependencies
 
-See [Advanced Patterns](references/05-advanced-patterns.md) for detailed migration guidance.
+See [Advanced Patterns](reference/05-advanced-patterns.md) for detailed migration guidance.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

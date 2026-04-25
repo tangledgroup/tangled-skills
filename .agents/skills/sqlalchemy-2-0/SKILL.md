@@ -24,21 +24,12 @@ external_references:
   - https://docs.sqlalchemy.org/
   - https://github.com/sqlalchemy/sqlalchemy
 ---
-
-# SQLAlchemy 2.0 Skill
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Complete SQLAlchemy 2.0 toolkit for database operations, ORM mapping, and SQL expression construction. Use when building Python applications that require database connectivity, object-relational mapping, or programmatic SQL generation with support for PostgreSQL, MySQL, SQLite, Oracle, and MSSQL.
 
 Complete toolkit for working with databases in Python using SQLAlchemy 2.0, including the Core SQL Expression Language and Object Relational Mapper (ORM). Supports synchronous and asynchronous operations across PostgreSQL, MySQL, SQLite, Oracle, and Microsoft SQL Server.
 
 ## When to Use
-
 - Building Python applications requiring database connectivity
 - Implementing object-relational mapping for domain models
 - Constructing SQL queries programmatically with type safety
@@ -48,8 +39,10 @@ Complete toolkit for working with databases in Python using SQLAlchemy 2.0, incl
 - Building CRUD operations with transaction management
 - Implementing complex queries with joins, aggregations, and subqueries
 
-## Quick Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Quick Setup
 ```bash
 # Install SQLAlchemy with async support
 pip install "sqlalchemy[asyncio]"
@@ -62,16 +55,14 @@ pip install asyncpg          # PostgreSQL async
 ```
 
 ## Architecture Overview
-
 SQLAlchemy consists of two main components:
 
 - **Core**: Foundational SQL toolkit with engine, connection pooling, SQL Expression Language, and schema definition
 - **ORM**: Object Relational Mapper built on Core for mapping Python classes to database tables
 
-See [Architecture Details](references/01-architecture-overview.md) for comprehensive component breakdown.
+See [Architecture Details](reference/01-architecture-overview.md) for comprehensive component breakdown.
 
-## Quick Start
-
+## Usage Examples
 ### Basic Engine Creation
 
 ```python
@@ -96,7 +87,7 @@ async_engine = create_async_engine(
 )
 ```
 
-See [Engine Configuration](references/02-engine-connections.md) for complete options.
+See [Engine Configuration](reference/02-engine-connections.md) for complete options.
 
 ### Defining Models (ORM)
 
@@ -129,7 +120,7 @@ class Post(Base):
     author = relationship("User", back_populates="posts")
 ```
 
-See [ORM Mapping Guide](references/05-orm-mapping.md) for complete mapping options.
+See [ORM Mapping Guide](reference/05-orm-mapping.md) for complete mapping options.
 
 ### Session Management
 
@@ -158,7 +149,7 @@ with SessionLocal() as session:
     session.commit()
 ```
 
-See [Session Management](references/06-orm-session.md) for transaction patterns.
+See [Session Management](reference/06-orm-session.md) for transaction patterns.
 
 ### Core SELECT Queries
 
@@ -186,7 +177,7 @@ from sqlalchemy import func
 stmt = select(func.count(User.id), func.avg(User.age))
 ```
 
-See [Core Querying](references/04-core-querying.md) for complete query guide.
+See [Core Querying](reference/04-core-querying.md) for complete query guide.
 
 ### Async Operations
 
@@ -220,7 +211,7 @@ async def get_users():
         return users
 ```
 
-See [AsyncIO Support](references/07-orm-asyncio.md) for comprehensive async patterns including:
+See [AsyncIO Support](reference/07-orm-asyncio.md) for comprehensive async patterns including:
 - Async engine and session configuration
 - Preventing implicit IO with AsyncAttrs and eager loading
 - Running sync code under asyncio with run_sync()
@@ -228,53 +219,30 @@ See [AsyncIO Support](references/07-orm-asyncio.md) for comprehensive async patt
 - Async scoped sessions for task-local management
 - Streaming results and result set API
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-The following reference files provide comprehensive documentation organized by topic:
-
-### Core Fundamentals
-
-- [`references/01-architecture-overview.md`](references/01-architecture-overview.md) - Component architecture, installation, version info
-- [`references/02-engine-connections.md`](references/02-engine-connections.md) - Engine creation, connection pooling, transactions
-- [`references/03-core-schema-types.md`](references/03-core-schema-types.md) - Table definition, Column types, constraints
-- [`references/04-core-querying.md`](references/04-core-querying.md) - SELECT, INSERT, UPDATE, DELETE with Core
-- [`references/05-orm-mapping.md`](references/05-orm-mapping.md) - Declarative mapping, class configuration
-- [`references/06-orm-session.md`](references/06-orm-session.md) - Session API, unit of work pattern, flushing
-- [`references/07-orm-asyncio.md`](references/07-orm-asyncio.md) - Async engine, async session, await patterns
-
-### ORM Advanced Topics
-
-- [`references/08-orm-relationships.md`](references/08-orm-relationships.md) - Relationship configuration, loading strategies
-- [`references/09-orm-querying.md`](references/09-orm-querying.md) - ORM query guide, eager loading, joins
-- [`references/10-orm-hybrid-attributes.md`](references/10-orm-hybrid-attributes.md) - Hybrid properties, expressions
-- [`references/11-orm-extensions.md`](references/11-orm-extensions.md) - Association proxy, automap, mutable
-
-### Core Advanced Topics
-
-- [`references/12-core-sql-expressions.md`](references/12-core-sql-expressions.md) - SQL Expression Language, operators, functions
-- [`references/13-core-reflection.md`](references/13-core-reflection.md) - Schema introspection, metadata reflection
-- [`references/14-core-events.md`](references/14-core-events.md) - Event listeners, instrumentation hooks
-- [`references/15-core-custom-types.md`](references/15-core-custom-types.md) - Type engineering, composite types
-
-### Dialects and Database-Specific
-
-- [`references/16-dialects-overview.md`](references/16-dialects-overview.md) - Dialect architecture, DBAPI specifics
-- [`references/17-dialect-postgresql.md`](references/17-dialect-postgresql.md) - PostgreSQL-specific features, types
-- [`references/18-dialect-mysql.md`](references/18-dialect-mysql.md) - MySQL/MariaDB features, configurations
-- [`references/19-dialect-sqlite.md`](references/19-dialect-sqlite.md) - SQLite features, limitations
-- [`references/20-dialect-oracle-mssql.md`](references/20-dialect-oracle-mssql.md) - Oracle and MSSQL specifics
-
-### Migration and Troubleshooting
-
-- [`references/21-migration-2-0.md`](references/21-migration-2-0.md) - 1.x to 2.0 migration guide, breaking changes
-- [`references/22-whats-new-2-0.md`](references/22-whats-new-2-0.md) - New features in 2.0, improvements
-- [`references/23-troubleshooting-faq.md`](references/23-troubleshooting-faq.md) - Common issues, FAQ, error messages
-- [`references/24-best-practices.md`](references/24-best-practices.md) - Performance tips, patterns, anti-patterns
-
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/sqlalchemy-2-0/`). All paths are relative to this directory.
+- [Architecture Overview](reference/01-architecture-overview.md)
+- [Engine Connections](reference/02-engine-connections.md)
+- [Core Schema Types](reference/03-core-schema-types.md)
+- [Core Querying](reference/04-core-querying.md)
+- [Orm Mapping](reference/05-orm-mapping.md)
+- [Orm Session](reference/06-orm-session.md)
+- [Orm Asyncio](reference/07-orm-asyncio.md)
+- [Orm Relationships](reference/08-orm-relationships.md)
+- [Orm Querying](reference/09-orm-querying.md)
+- [Orm Hybrid Attributes](reference/10-orm-hybrid-attributes.md)
+- [Orm Extensions](reference/11-orm-extensions.md)
+- [Core Sql Expressions](reference/12-core-sql-expressions.md)
+- [Core Reflection](reference/13-core-reflection.md)
+- [Core Events](reference/14-core-events.md)
+- [Core Custom Types](reference/15-core-custom-types.md)
+- [Dialects Overview](reference/16-dialects-overview.md)
+- [Dialect Postgresql](reference/17-dialect-postgresql.md)
+- [Migration And Troubleshooting](reference/18-migration-and-troubleshooting.md)
+- [Best Practices](reference/19-best-practices.md)
 
 ## Common Patterns
-
 ### N+1 Query Problem Solution
 
 ```python
@@ -333,7 +301,6 @@ session.query(User).filter(
 ```
 
 ## Troubleshooting
-
 ### Common Issues
 
 - **ConnectionPoolError**: Check pool_size and max_overflow settings
@@ -341,7 +308,7 @@ session.query(User).filter(
 - **DetachedInstanceError**: Ensure object is attached to active session
 - **FlushError**: Check for constraint violations before commit
 
-See [Troubleshooting Guide](references/23-troubleshooting-faq.md) for detailed solutions.
+See [Troubleshooting Guide](reference/18-migration-and-troubleshooting.md) for detailed solutions.
 
 ### Enable Echo for Debugging
 
@@ -356,7 +323,6 @@ logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 ```
 
 ## Key Concepts
-
 - **Engine**: Entry point for database connectivity, manages connection pool
 - **Connection**: Represents single database connection from pool
 - **Session**: ORM interface for transactional persistence (unit of work)
@@ -366,10 +332,9 @@ logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 - **Select**: Construct for building SELECT statements
 - **Result**: Container for query results with row access
 
-See [Glossary](references/23-troubleshooting-faq.md#sqlalchemy-glossary) for complete terminology.
+See [Glossary](reference/18-migration-and-troubleshooting.md#sqlalchemy-glossary) for complete terminology.
 
 ## Performance Tips
-
 1. Use connection pooling appropriately for your workload
 2. Prefer `select()` over legacy `Query` API in 2.0
 3. Use eager loading (joinedload, subqueryload) to avoid N+1 queries
@@ -377,8 +342,5 @@ See [Glossary](references/23-troubleshooting-faq.md#sqlalchemy-glossary) for com
 5. Use async engine for I/O-bound applications
 6. Index foreign keys and frequently queried columns
 
-See [Best Practices](references/24-best-practices.md) for comprehensive guidance.
+See [Best Practices](reference/19-best-practices.md) for comprehensive guidance.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

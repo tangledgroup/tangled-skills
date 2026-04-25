@@ -20,21 +20,12 @@ external_references:
   - https://oat.ink
   - https://github.com/knadh/oat
 ---
-
-# Oat UI 0.6.0
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Ultra-lightweight semantic UI component library with zero dependencies (~8KB). Use when building web applications with vanilla HTML/CSS/JS, needing accessible components without framework overhead or build tools.
 
 Ultra-lightweight HTML + CSS semantic UI component library with zero dependencies. ~6KB CSS and ~2.2KB JS (minified + gzipped). No framework, build tools, or dev complexity required.
 
 ## When to Use
-
 - Building web applications with vanilla HTML/CSS/JS
 - Needing accessible, semantic components without framework overhead
 - Projects requiring minimal bundle size (< 10KB total)
@@ -42,8 +33,10 @@ Ultra-lightweight HTML + CSS semantic UI component library with zero dependencie
 - Creating responsive UIs with automatic dark mode support
 - Preferring native HTML elements over custom classes
 
-## Quick Start
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### CDN Installation (Fastest)
 
 ```html
@@ -70,7 +63,6 @@ wget https://raw.githubusercontent.com/knadh/oat/refs/heads/gh-pages/oat.min.js
 ```
 
 ## Basic Usage
-
 Oat styles semantic HTML elements automatically. No classes needed for basic styling:
 
 ```html
@@ -92,7 +84,6 @@ Oat styles semantic HTML elements automatically. No classes needed for basic sty
 ```
 
 ## Core Principles
-
 - **Semantic HTML First**: Native elements like `<button>`, `<input>`, `<dialog>` are styled directly without classes
 - **Zero Dependencies**: No JavaScript frameworks, CSS preprocessors, or build tools required
 - **Accessibility Built-in**: ARIA roles and keyboard navigation work out of the box
@@ -100,7 +91,6 @@ Oat styles semantic HTML elements automatically. No classes needed for basic sty
 - **Web Components**: Dynamic components use minimal vanilla JavaScript
 
 ## Component Overview
-
 Oat provides 20+ components covering common UI patterns:
 
 ### Layout & Structure
@@ -142,40 +132,31 @@ Oat provides 20+ components covering common UI patterns:
 - Switch toggles
 - Helper classes for spacing, alignment, flexbox
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-Comprehensive documentation organized by topic:
-
-### Core Documentation
-- [`references/01-introduction.md`](references/01-introduction.md) - Philosophy, features, and design principles
-- [`references/02-installation.md`](references/02-installation.md) - CDN, npm, download options and setup
-- [`references/03-customization.md`](references/03-customization.md) - CSS variables, theming, dark mode customization
-
-### Component Documentation
-- [`references/04-typography.md`](references/04-typography.md) - Headings, paragraphs, lists, code blocks
-- [`references/05-buttons.md`](references/05-buttons.md) - Button variants, sizes, groups, and states
-- [`references/06-forms.md`](references/06-forms.md) - Input fields, validation, error states, fieldsets
-- [`references/07-dialogs.md`](references/07-dialogs.md) - Modal dialogs, forms in dialogs, return values
-- [`references/08-dropdowns-tabs.md`](references/08-dropdowns-tabs.md) - Dropdown menus, popover dropdowns, tab components
-- [`references/09-layout-components.md`](references/09-layout-components.md) - Cards, grids, sidebars, containers
-- [`references/10-feedback-components.md`](references/10-feedback-components.md) - Alerts, toasts, progress, spinners, skeletons
-- [`references/11-data-display.md`](references/11-data-display.md) - Tables, avatars, badges, meters
-- [`references/12-navigation.md`](references/12-navigation.md) - Breadcrumbs, pagination, navigation patterns
-
-### Advanced Topics
-- [`references/13-recipes.md`](references/13-recipes.md) - Composable widget examples (split buttons, form cards, stats cards)
-- [`references/14-utilities.md`](references/14-utilities.md) - Helper classes for spacing, flexbox, alignment
-
-### Ecosystem
-- [`references/15-tinyrouter-js.md`](references/15-tinyrouter-js.md) - Frontend routing (~950 bytes)
-- [`references/16-highlighted-input-js.md`](references/16-highlighted-input-js.md) - Keyword highlighting in inputs (~450 bytes)
-- [`references/17-floatype-js.md`](references/17-floatype-js.md) - Floating autocomplete for textareas (~1200 bytes)
-- [`references/18-dragmove-js.md`](references/18-dragmove-js.md) - Draggable DOM elements (~500 bytes)
-- [`references/19-indexed-cache-js.md`](references/19-indexed-cache-js.md) - Static asset caching in IndexedDB (~2.1KB)
-- [`references/20-extensions.md`](references/20-extensions.md) - Third-party extensions (oat-chips, oat-animate)
+- [Introduction](reference/01-introduction.md)
+- [Installation](reference/02-installation.md)
+- [Customization](reference/03-customization.md)
+- [Typography](reference/04-typography.md)
+- [Buttons](reference/05-buttons.md)
+- [Forms](reference/06-forms.md)
+- [Dialogs](reference/07-dialogs.md)
+- [Dropdowns Tabs](reference/08-dropdowns-tabs.md)
+- [Layout Components](reference/09-layout-components.md)
+- [Feedback Components](reference/10-feedback-components.md)
+- [Data Display](reference/11-data-display.md)
+- [Navigation](reference/12-navigation.md)
+- [Recipes](reference/13-recipes.md)
+- [Utilities](reference/14-utilities.md)
+- [Tinyrouter Js](reference/15-tinyrouter-js.md)
+- [Highlighted Input Js](reference/16-highlighted-input-js.md)
+- [Floatype Js](reference/17-floatype-js.md)
+- [Dragmove Js](reference/18-dragmove-js.md)
+- [Indexed Cache Js](reference/19-indexed-cache-js.md)
+- [Extensions](reference/20-extensions.md)
 
 ## Common Patterns
-
 ### Button with Icon
 
 ```html
@@ -236,7 +217,6 @@ Comprehensive documentation organized by topic:
 ```
 
 ## Troubleshooting
-
 ### Styles Not Applying
 - Ensure CSS file loads before page content
 - Check for conflicting CSS in your project
@@ -257,18 +237,13 @@ Comprehensive documentation organized by topic:
 - Use `!important` sparingly; CSS variables should override cleanly
 
 ## Resources
-
 - **Official Documentation**: https://oat.ink
 - **GitHub Repository**: https://github.com/knadh/oat
 - **npm Package**: https://www.npmjs.com/package/@knadh/oat
 - **Live Demo**: https://oat.ink/demo
 
 ## Version Notes
-
 **Current version: 0.6.0** (pre-v1, breaking changes possible until v1.0)
 
-For detailed information on any topic, see the reference files listed above. Each component and feature has comprehensive documentation with examples in the `references/` directory.
+For detailed information on any topic, see the reference files listed above. Each component and feature has comprehensive documentation with examples in the `reference/` directory.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

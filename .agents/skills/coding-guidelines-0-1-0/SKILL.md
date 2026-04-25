@@ -14,15 +14,7 @@ external_references:
   - https://github.com/forrestchang/andrej-karpathy-skills
   - https://x.com/karpathy/status/2015883857489522876
 ---
-
-# Coding Guidelines v0.1.0
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Behavioral guidelines to reduce common LLM coding mistakes including overcomplication, hidden assumptions, orthogonal edits, and weak success criteria. Use when writing, reviewing, or refactoring code to enforce simplicity, surgical changes, explicit reasoning, and verifiable outcomes. Derived from Andrej Karpathy's observations on LLM coding pitfalls, curated by Forrest Chang.
 
 Behavioral guidelines to reduce common LLM coding mistakes, derived from observations on LLM coding pitfalls.
@@ -30,15 +22,16 @@ Behavioral guidelines to reduce common LLM coding mistakes, derived from observa
 > **Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
 
 ## When to Use
-
 - **Writing new code** - Apply before implementation to enforce simplicity and reasoning
 - **Code review** - Check diffs against each principle
 - **Refactoring** - Ensure surgical scope, no drive-by changes
 - **Bug fixing** - Define verifiable success criteria before starting
 - **AGENTS.md / agent configuration** - Include as behavioral guardrails
 
-## The Four Principles
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## The Four Principles
 ### 1. Think Before Coding
 
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
@@ -105,7 +98,6 @@ For multi-step tasks, state a brief plan:
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
 
 ## Combining the Principles
-
 These principles reinforce each other:
 
 1. **Think** → identify the simplest correct approach
@@ -116,7 +108,6 @@ These principles reinforce each other:
 When in doubt, ask: "What would the simplest thing that could possibly work look like?" Then do that.
 
 ## How to Know It's Working
-
 These guidelines are working if you see:
 
 - **Fewer unnecessary changes in diffs** - Only requested changes appear
@@ -124,6 +115,3 @@ These guidelines are working if you see:
 - **Clarifying questions come before implementation** - Not after mistakes
 - **Clean, minimal PRs** - No drive-by refactoring or "improvements"
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

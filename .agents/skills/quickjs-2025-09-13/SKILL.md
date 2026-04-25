@@ -20,15 +20,10 @@ external_references:
   - https://github.com/bellard/quickjs
   - https://bellard.org/quickjs/Changelog
 ---
-
-# QuickJS 2025-09-13
-
 ## Overview
-
 QuickJS is a small, fast, and embeddable JavaScript engine that supports the ES2023 specification including modules, asynchronous generators, proxies, and BigInt. It consists of just a few C files with no external dependencies, producing executables as small as 210 KiB for a "hello world" program.
 
 ## When to Use
-
 - Embedding a lightweight JavaScript engine in a C/C++ application
 - Compiling JavaScript sources into standalone executables with no runtime dependency via `qjsc`
 - Running JavaScript scripts or an interactive REPL via the `qjs` command line interpreter
@@ -36,7 +31,6 @@ QuickJS is a small, fast, and embeddable JavaScript engine that supports the ES2
 - Working with JavaScript engines that support ES2023 with near-complete test262 compliance
 
 ## Core Concepts
-
 ### Architecture
 
 QuickJS consists of three main components:
@@ -77,7 +71,6 @@ make test     # Run built-in tests
 On some OSes you may need `-latomics` in `LIBS` or disable `CONFIG_ATOMICS` in `quickjs.c`.
 
 ## Installation / Setup
-
 ### Quick Start with qjs
 
 ```bash
@@ -131,7 +124,6 @@ gcc -o hello hello.c                        # Compile the generated C
 | `-fno-[eval\|string-normalize\|regexp\|...]` | Disable features for smaller binary |
 
 ## Usage Examples
-
 ### Using the std Module
 
 ```javascript
@@ -211,22 +203,19 @@ JS_FreeContext(ctx);
 JS_FreeRuntime(rt);
 ```
 
-## Advanced Topics
-
-- **C API**: Full embedding interface with JSValue management, C functions, classes, and exotic objects
-- **Bytecode & qjsc**: Direct bytecode compilation, binary JSON format, feature stripping for smaller binaries
-- **Garbage Collection**: Reference counting with cycle removal, memory limits, custom allocators
-- **Runtime Internals**: Strings (8/16-bit), atoms, NaN boxing, optimized function calls
-- **RegExp Engine**: Standalone ES2023-compliant regex library (~15 KiB)
-- **Unicode Library**: Case conversion, normalization, scripts, categories (~45 KiB)
-- **test262 Testing**: Run ECMAScript conformance tests with included runner
-
 ## Changelog Highlights (2025-09-13)
-
 - JSON modules and import attributes
 - `JS_PrintValue()` API
 - Pretty print objects in `qjs` REPL
 - RegExp v flag, modifiers, and `RegExp.escape`
 - `Float16Array`, `Promise.try`, `Error.isError()`
 - `JS_FreePropertyEnum()` and `JS_AtomToCStringLen()` API
+
+## Advanced Topics
+## Advanced Topics
+
+- [C Api](reference/01-c-api.md)
+- [Internals](reference/02-internals.md)
+- [Standard Library](reference/03-standard-library.md)
+- [Specifications](reference/04-specifications.md)
 

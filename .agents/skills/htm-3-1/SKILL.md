@@ -19,21 +19,12 @@ required_environment_variables: []
 external_references:
   - https://github.com/developit/htm
 ---
-
-# htm 3.1 (Hyperscript Tagged Markup)
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A skill for using htm 3.1, a tagged template syntax library that provides JSX-like markup in plain JavaScript without requiring a transpiler. Use when building browser-compatible React/Preact applications with native ES modules, implementing server-side rendering, or creating lightweight UI components without build tooling.
 
 A skill for using **htm** (Hyperscript Tagged Markup), a library that provides JSX-like syntax in plain JavaScript using tagged template literals. No transpiler required - works directly in modern browsers with native ES modules.
 
 ## When to Use
-
 - Building React/Preact applications without build tooling
 - Developing browser-based prototypes with native ES modules
 - Implementing server-side rendering (SSR) without JSX compilation
@@ -41,8 +32,10 @@ A skill for using **htm** (Hyperscript Tagged Markup), a library that provides J
 - Working in environments where Babel/transpilation is unavailable
 - Needing HTML-style syntax for configuration objects (webpack, etc.)
 
-## Quick Start
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Browser Usage (No Build Tool)
 
 ```js
@@ -84,8 +77,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);
 ```
 
 ## Core Syntax
-
-See [Core Concepts](references/01-core-concepts.md) for detailed syntax reference.
+See [Core Concepts](reference/01-core-concepts.md) for detailed syntax reference.
 
 ### Basic Elements
 
@@ -170,7 +162,6 @@ render(html`<${Counter} />`, document.body);
 ```
 
 ## Key Features
-
 - **No transpiler needed** - Uses native JavaScript tagged templates
 - **Multiple root elements** - Fragments without special syntax
 - **HTML comments** - `<!-- comment -->` supported and ignored
@@ -178,10 +169,9 @@ render(html`<${Counter} />`, document.body);
 - **Spread props** - `<div ...${props}>` instead of JSX `{...props}`
 - **Optional quotes** - `<div class=foo>` works without quotes
 
-See [Advanced Features](references/02-advanced-features.md) for detailed examples.
+See [Advanced Features](reference/02-advanced-features.md) for detailed examples.
 
 ## Performance & Size
-
 | Build | Size (gzipped) | Notes |
 |-------|---------------|-------|
 | `htm` (full) | < 600 bytes | With template caching |
@@ -189,16 +179,16 @@ See [Advanced Features](references/02-advanced-features.md) for detailed example
 | `htm/mini` | < 450 bytes | No caching, smallest size |
 | `babel-plugin-htm` | 0 bytes | Compiles htm away at build time |
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-core-concepts.md`](references/01-core-concepts.md) - Complete syntax reference with examples
-- [`references/02-advanced-features.md`](references/02-advanced-features.md) - Components, state management, patterns
-- [`references/03-integrations.md`](references/03-integrations.md) - React, Preact, custom hyperscript functions
-- [`references/04-babel-plugin.md`](references/04-babel-plugin.md) - babel-plugin-htm configuration and options
-- [`references/05-migration-guide.md`](references/05-migration-guide.md) - Migrating from JSX to htm
+- [Core Concepts](reference/01-core-concepts.md)
+- [Advanced Features](reference/02-advanced-features.md)
+- [Integrations](reference/03-integrations.md)
+- [Babel Plugin](reference/04-babel-plugin.md)
+- [Migration Guide](reference/05-migration-guide.md)
 
 ## Troubleshooting
-
 ### Common Issues
 
 **"html is not defined"** - Ensure you've bound htm to a hyperscript function:
@@ -266,8 +256,5 @@ const html = htm.bind(function h(type, props, children) {
 });
 ```
 
-See [Static Caching Tests](references/01-core-concepts.md#caching-behavior) for detailed caching semantics.
+See [Static Caching Tests](reference/01-core-concepts.md#caching-behavior) for detailed caching semantics.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

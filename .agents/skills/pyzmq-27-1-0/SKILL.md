@@ -22,11 +22,7 @@ external_references:
   - https://pyzmq.readthedocs.io/
   - https://github.com/zeromq/pyzmq
 ---
-
-# PyZMQ 27.x Toolkit
-
 ## Overview
-
 Complete toolkit for Python bindings to ZeroMQ (pyzmq 27.x) covering socket types, messaging patterns, async/await integration, security mechanisms, and distributed computing architectures. Use when building Python applications requiring high-performance messaging, pub/sub systems, request-reply patterns, load balancing, or inter-process communication with ZeroMQ's decentralized architecture.
 
 Complete toolkit for using pyzmq (Python bindings for ZeroMQ/ØMQ) version 27.x, providing type-safe access to ZeroMQ's high-performance messaging library with support for all socket types, security mechanisms, asyncio integration, and advanced patterns for distributed computing.
@@ -34,7 +30,6 @@ Complete toolkit for using pyzmq (Python bindings for ZeroMQ/ØMQ) version 27.x,
 PyZMQ works with Python 3.9+ and PyPy via CFFI. Binary distributions (wheels on PyPI) ship with libzmq 4.3.5 built with default configuration and CURVE support provided by libsodium.
 
 ## When to Use
-
 - Building high-performance message-passing systems in Python
 - Implementing pub/sub, request-reply, or pipeline patterns
 - Creating distributed applications requiring decentralized architecture
@@ -44,8 +39,7 @@ PyZMQ works with Python 3.9+ and PyPy via CFFI. Binary distributions (wheels on 
 - Implementing custom transport protocols or network architectures
 - Requiring cross-language interoperability (ZeroMQ supports 40+ languages)
 
-## Setup
-
+## Installation / Setup
 ### Installation
 
 ```bash
@@ -82,11 +76,10 @@ print(zmq.pyzmq_version_info())    # e.g., (27, 1, 0)
 print(zmq.has("libzmq-4.1"))       # True if libzmq >= 4.1
 ```
 
-## Quick Start
-
+## Usage Examples
 ### Basic Request-Reply Pattern
 
-See [Messaging Fundamentals](references/01-messaging-fundamentals.md) for detailed explanation.
+See [Messaging Fundamentals](reference/01-messaging-fundamentals.md) for detailed explanation.
 
 ```python
 import zmq
@@ -120,7 +113,7 @@ context.term()
 
 ### Pub/Sub Pattern
 
-Refer to [Socket Types and Patterns](references/02-socket-types-patterns.md) for complex scenarios.
+Refer to [Socket Types and Patterns](reference/02-socket-types-patterns.md) for complex scenarios.
 
 ```python
 import zmq
@@ -146,7 +139,7 @@ print(message)  # "Hello, World!"
 
 ### Asyncio Integration
 
-See [Async and Concurrent Operations](references/03-async-concurrent.md) for advanced patterns.
+See [Async and Concurrent Operations](reference/03-async-concurrent.md) for advanced patterns.
 
 ```python
 import asyncio
@@ -165,20 +158,18 @@ async def worker():
 # asyncio.run(worker())
 ```
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-messaging-fundamentals.md`](references/01-messaging-fundamentals.md) - Core concepts, Context/Socket lifecycle, send/recv operations
-- [`references/02-socket-types-patterns.md`](references/02-socket-types-patterns.md) - All 19 socket types with usage patterns and examples
-- [`references/03-async-concurrent.md`](references/03-async-concurrent.md) - asyncio integration, Poller, threading models
-- [`references/04-security-authentication.md`](references/04-security-authentication.md) - CURVE, PLAIN, GSSAPI security mechanisms
-- [`references/05-socket-options.md`](references/05-socket-options.md) - Complete socket options reference with configuration examples
-- [`references/06-advanced-topics.md`](references/06-advanced-topics.md) - Devices, monitoring, serialization, performance tuning
-- [`references/07-troubleshooting.md`](references/07-troubleshooting.md) - Common issues, error handling, debugging techniques
-
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/pyzmq-27-1-0/`). All paths are relative to this directory.
+- [Messaging Fundamentals](reference/01-messaging-fundamentals.md)
+- [Socket Types Patterns](reference/02-socket-types-patterns.md)
+- [Async Concurrent](reference/03-async-concurrent.md)
+- [Security Authentication](reference/04-security-authentication.md)
+- [Socket Options](reference/05-socket-options.md)
+- [Advanced Topics](reference/06-advanced-topics.md)
+- [Troubleshooting](reference/07-troubleshooting.md)
 
 ## Core Concepts Overview
-
 ### Context and Socket Lifecycle
 
 1. **Create Context**: One `Context` per application (thread-local)
@@ -225,8 +216,7 @@ except zmq.Again:
 ```
 
 ## Troubleshooting
-
-Common issues and solutions are documented in [Troubleshooting Guide](references/07-troubleshooting.md). Key points:
+Common issues and solutions are documented in [Troubleshooting Guide](reference/07-troubleshooting.md). Key points:
 
 - **Connection errors**: Check bind/connect addresses match, verify ports not in use
 - **Message ordering**: Use ROUTER/DEALER with routing IDs for guaranteed delivery
@@ -272,14 +262,12 @@ finally:
 ```
 
 ## Additional Resources
-
 - [ZeroMQ Guide](https://zguide.zeromq.org/) - Comprehensive tutorial with Python examples
 - [PyZMQ Documentation](https://pyzmq.readthedocs.io/) - Official API reference
 - [ZeroMQ wiki](https://github.com/zeromq/libzmq/wiki) - Best practices and patterns
 - [PyZMQ GitHub](https://github.com/zeromq/pyzmq) - Source code and examples
 
 ## Important Notes
-
 1. **One context per thread**: Contexts are not thread-safe; create one per thread
 2. **Sockets are not thread-safe**: Don't share sockets across threads
 3. **Blocking by default**: Set timeouts or use Poller for non-blocking I/O
@@ -288,6 +276,3 @@ finally:
 6. **Connection establishment**: Connect can happen before bind (asynchronous)
 7. **HWM backpressure**: High Water Mark limits queue sizes to prevent memory exhaustion
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

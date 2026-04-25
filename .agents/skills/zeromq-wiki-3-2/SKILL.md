@@ -22,17 +22,12 @@ external_references:
   - http://wiki.zeromq.org
   - https://github.com/zeromq
 ---
-
-# ZeroMQ Wiki 3.2
-
 ## Overview
-
 A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and best practices. Use when building distributed applications, implementing messaging patterns like REQ/REP, PUB/SUB, PUSH/PULL, designing multi-threaded architectures, working with ZMTP protocol, CURVE security, or understanding ØMQ internals for performance tuning and troubleshooting.
 
 A comprehensive toolkit for the ZeroMQ (ØMQ) messaging library, covering socket patterns, transport protocols, security mechanisms, architecture internals, and best practices for building distributed applications.
 
 ## When to Use
-
 - Designing distributed applications with asynchronous messaging
 - Implementing socket patterns: REQ/REP, PUB/SUB, PUSH/PULL, PAIR, DEALER/ROUTER
 - Building multi-threaded applications with ØMQ's thread-safe sockets
@@ -43,11 +38,10 @@ A comprehensive toolkit for the ZeroMQ (ØMQ) messaging library, covering socket
 - Writing language bindings for ZeroMQ
 - Understanding Majordomo Protocol (MDP) for service orchestration
 
-## Quick Start
-
+## Usage Examples
 ### Basic REQ/REP Pattern
 
-See [Socket Patterns](references/01-socket-patterns.md) for detailed explanation and examples.
+See [Socket Patterns](reference/01-socket-patterns.md) for detailed explanation and examples.
 
 ```c
 // Server (REP)
@@ -61,7 +55,7 @@ zmq_connect(socket, "tcp://server:5555");
 
 ### Basic PUB/SUB Pattern
 
-Refer to [Messaging Patterns](references/02-messaging-patterns.md) for complex scenarios.
+Refer to [Messaging Patterns](reference/02-messaging-patterns.md) for complex scenarios.
 
 ```c
 // Publisher
@@ -75,7 +69,6 @@ zmq_setsockopt(sub, ZMQ_SUBSCRIBE, "topic", 5);
 ```
 
 ## Core Concepts
-
 ZeroMQ provides a **socket library** that replaces standard sockets (BSD sockets) with sockets that implement various messaging patterns out of the box. Key concepts:
 
 - **Asynchronous I/O**: ØMQ handles all network I/O asynchronously using I/O threads
@@ -84,10 +77,9 @@ ZeroMQ provides a **socket library** that replaces standard sockets (BSD sockets
 - **No central daemon**: Pure peer-to-peer communication, no broker required
 - **Message framing**: Automatic message boundaries unlike TCP streams
 
-See [Architecture Overview](references/03-architecture.md) for deep dive into internals.
+See [Architecture Overview](reference/03-architecture.md) for deep dive into internals.
 
 ## Socket Types and Patterns
-
 | Socket Type | Pairs With | Pattern | Use Case |
 |-------------|------------|---------|----------|
 | REQ | REP | Request-Reply | RPC, client-server |
@@ -102,10 +94,9 @@ See [Architecture Overview](references/03-architecture.md) for deep dive into in
 | XSUB | XPUB | Ext. Pub-Sub | Internal use by proxies |
 | XPUB | XSUB | Ext. Pub-Sub | Internal use by proxies |
 
-See [Socket Patterns](references/01-socket-patterns.md) for detailed RFC specifications.
+See [Socket Patterns](reference/01-socket-patterns.md) for detailed RFC specifications.
 
 ## Transport Protocols
-
 ### tcp:// (TCP/IP)
 - Standard TCP transport over IP networks
 - Supports both bind and connect operations
@@ -121,14 +112,13 @@ See [Socket Patterns](references/01-socket-patterns.md) for detailed RFC specifi
 - Requires exact endpoint name match
 - Example: `inproc://myinternal`
 
-See [Transport Protocols](references/04-protocols.md) for ZMTP wire protocol details.
+See [Transport Protocols](reference/04-protocols.md) for ZMTP wire protocol details.
 
 ## Security
-
 ZeroMQ supports authentication through the ZMTP (ZeroMQ Messaging Transport Protocol):
 
 ### ZMTP-PLAIN (Username/Password)
-Simple username and password authentication. See [Security Guide](references/05-security.md).
+Simple username and password authentication. See [Security Guide](reference/05-security.md).
 
 ```c
 // Set credentials on client
@@ -152,22 +142,20 @@ zmq_curve_public(client_secret, client_public);
 zmq_curve_keypair(client, server_public, client_public, client_secret);
 ```
 
-See [ZMTP-CURVE RFC](references/05-security.md) for complete specification.
+See [ZMTP-CURVE RFC](reference/05-security.md) for complete specification.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-socket-patterns.md`](references/01-socket-patterns.md) - Complete guide to REQ/REP, PUB/SUB, PUSH/PULL, DEALER/ROUTER patterns with RFC specifications
-- [`references/02-messaging-patterns.md`](references/02-messaging-patterns.md) - Advanced patterns: task queues, pub-sub with catchup, request-reply with load balancing
-- [`references/03-architecture.md`](references/03-architecture.md) - Internal architecture: threading model, I/O threads, message scheduling, pipes, object trees
-- [`references/04-protocols.md`](references/04-protocols.md) - ZMTP wire protocol specification, transport layers, framing
-- [`references/05-security.md`](references/05-security.md) - ZMTP-PLAIN, ZMTP-CURVE, ZAP authentication, security best practices
-- [`references/06-performance.md`](references/06-performance.md) - Performance benchmarks, tuning parameters, scalability guidelines
-- [`references/07-faq-troubleshooting.md`](references/07-faq-troubleshooting.md) - Common issues, debugging tips, frequently asked questions
-
-**Note:** `{baseDir}` refers to the skill's base directory (e.g., `.agents/skills/zeromq-wiki-3-2/`). All paths are relative to this directory.
+- [Socket Patterns](reference/01-socket-patterns.md)
+- [Messaging Patterns](reference/02-messaging-patterns.md)
+- [Architecture](reference/03-architecture.md)
+- [Protocols](reference/04-protocols.md)
+- [Security](reference/05-security.md)
+- [Performance](reference/06-performance.md)
+- [Faq Troubleshooting](reference/07-faq-troubleshooting.md)
 
 ## API Reference
-
 The ZeroMQ C API is documented in RFC 8/MMI and the official API reference:
 - **Context**: `zmq_init()`, `zmq_term()`
 - **Sockets**: `zmq_socket()`, `zmq_close()`
@@ -175,10 +163,9 @@ The ZeroMQ C API is documented in RFC 8/MMI and the official API reference:
 - **Messaging**: `zmq_send()`, `zmq_recv()`, `zmq_sendmsg()`, `zmq_recvmsg()`
 - **Options**: `zmq_setsockopt()`, `zmq_getsockopt()`
 
-See [Socket Patterns](references/01-socket-patterns.md) for API examples and [Architecture Overview](references/03-architecture.md) for threading guidelines.
+See [Socket Patterns](reference/01-socket-patterns.md) for API examples and [Architecture Overview](reference/03-architecture.md) for threading guidelines.
 
 ## Troubleshooting
-
 ### Messages Not Being Received
 1. Check that PUB/SUB topics match exactly (including trailing bytes)
 2. Verify SUB socket has `ZMQ_SUBSCRIBE` set before connecting
@@ -191,7 +178,7 @@ See [Socket Patterns](references/01-socket-patterns.md) for API examples and [Ar
 3. Use `inproc://` for same-process communication
 4. Consider message batching for small messages
 
-See [FAQ and Troubleshooting](references/07-faq-troubleshooting.md) for more common issues.
+See [FAQ and Troubleshooting](reference/07-faq-troubleshooting.md) for more common issues.
 
 ### Common Pitfalls
 
@@ -202,21 +189,16 @@ See [FAQ and Troubleshooting](references/07-faq-troubleshooting.md) for more com
 **SUB socket late subscription**: SUB sockets miss messages published before subscription. Consider catchup mechanisms.
 
 ## Community and Resources
-
 - **Official Guide (ZGuide)**: http://zguide.zeromq.org - Hundreds of worked examples
 - **API Reference**: http://api.zeromq.org - Complete C API documentation
 - **RFCs**: http://rfc.zeromq.org - Protocol specifications
 - **Wiki**: http://wiki.zeromq.org - Community documentation
 - **GitHub**: https://github.com/zeromq - Source code and issues
-- **Mailing lists**: See [Community Resources](references/07-faq-troubleshooting.md)
+- **Mailing lists**: See [Community Resources](reference/07-faq-troubleshooting.md)
 
 ## Related Skills
-
 Consider using with:
 - `cryptography-46` for implementing custom encryption layers
 - `sqlalchemy-2-0` for persistent message storage
 - `aiohttp-3-13` for HTTP bridges to ØMQ backends
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

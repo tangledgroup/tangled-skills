@@ -19,21 +19,12 @@ external_references:
   - https://day.js.org/
   - https://github.com/iamkun/dayjs
 ---
-
-# Day.js 1.11
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Complete toolkit for date and time manipulation using Day.js 1.11, a minimalist 2kB library with Moment.js-compatible API. Use when parsing, validating, manipulating, and displaying dates in JavaScript applications requiring immutable operations, i18n support, and plugin extensibility.
 
 Day.js is a minimalist JavaScript library (~2KB) that parses, validates, manipulates, and displays dates and times for modern browsers with a largely Moment.js-compatible API. It provides immutable operations, chainable methods, internationalization support, and an extensive plugin ecosystem.
 
 ## When to Use
-
 - Parsing date strings into manipulatable objects
 - Formatting dates for display in various locales
 - Adding/subtracting time periods (days, months, years)
@@ -44,8 +35,10 @@ Day.js is a minimalist JavaScript library (~2KB) that parses, validates, manipul
 - Handling international date formats and locales
 - Needing a lightweight alternative to Moment.js
 
-## Quick Start
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Installation
 
 ```bash
@@ -72,10 +65,9 @@ dayjs().add(7, 'day').subtract(1, 'month')
 dayjs().isBefore(dayjs('2025-01-01')) // true
 ```
 
-See [Core API Reference](references/01-core-api.md) for complete method documentation.
+See [Core API Reference](reference/01-core-api.md) for complete method documentation.
 
 ## Plugin System
-
 Day.js extends functionality through plugins. Import and extend as needed:
 
 ```javascript
@@ -138,10 +130,9 @@ dayjs('2024-01-01').fromNow() // '3 months ago'
 - `isMoment` - Check if object is Moment.js instance
 - `isLeapYear` - Leap year detection
 
-See [Plugin Reference](references/02-plugins.md) for detailed documentation of all 37 plugins.
+See [Plugin Reference](reference/02-plugins.md) for detailed documentation of all 37 plugins.
 
 ## Internationalization
-
 Day.js supports 80+ locales out of the box:
 
 ```javascript
@@ -158,20 +149,18 @@ dayjs().locale('zh-cn').format()
 dayjs.locale() // 'en'
 ```
 
-See [Internationalization Guide](references/03-i18n.md) for locale configuration and custom locale creation.
+See [Internationalization Guide](reference/03-i18n.md) for locale configuration and custom locale creation.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-core-api.md`](references/01-core-api.md) - Complete API reference: parsing, formatting, manipulation, querying
-- [`references/02-plugins.md`](references/02-plugins.md) - All 37 plugins with usage examples and TypeScript types
-- [`references/03-i18n.md`](references/03-i18n.md) - Locale configuration, custom locales, available locales list
-- [`references/04-type-definitions.md`](references/04-type-definitions.md) - Complete TypeScript type definitions for core and plugins
-- [`references/05-migration-guide.md`](references/05-migration-guide.md) - Migrating from Moment.js to Day.js
-
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/dayjs-1-11/`). All paths are relative to this directory.
+- [Core Api](reference/01-core-api.md)
+- [Plugins](reference/02-plugins.md)
+- [I18N](reference/03-i18n.md)
+- [Type Definitions](reference/04-type-definitions.md)
+- [Migration Guide](reference/05-migration-guide.md)
 
 ## Common Patterns
-
 ### Immutable Operations
 
 All operations return new instances:
@@ -205,7 +194,6 @@ if (!date.isValid()) {
 ```
 
 ## Troubleshooting
-
 **Plugin methods not available:** Ensure plugins are extended before use:
 ```javascript
 dayjs.extend(utc) // Must call this first
@@ -225,8 +213,5 @@ dayjs.extend(customParseFormat)
 dayjs('01/15/2024', 'MM/DD/YYYY') // Now works
 ```
 
-See [Plugin Reference](references/02-plugins.md) for plugin-specific issues and [Migration Guide](references/05-migration-guide.md) for Moment.js compatibility notes.
+See [Plugin Reference](reference/02-plugins.md) for plugin-specific issues and [Migration Guide](reference/05-migration-guide.md) for Moment.js compatibility notes.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

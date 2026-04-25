@@ -18,29 +18,22 @@ external_references:
   - https://datatracker.ietf.org/doc/html/rfc7914
   - https://github.com/warner/python-scrypt
 ---
-
-# Scrypt
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Python toolkit for scrypt-based key derivation and password hashing. Use when implementing secure password storage, deriving encryption keys from passwords, or verifying passwords with memory-hard key derivation functions resistant to hardware-assisted attacks.
 
 Python toolkit for scrypt-based key derivation functions (KDF) using both the standard library `hashlib.scrypt` and the `cryptography` library's `Scrypt` class. Scrypt is a memory-hard KDF designed by Colin Percival to be resistant against hardware-assisted attackers (GPU/ASIC) by having tunable memory cost, as specified in [RFC 7914](https://datatracker.ietf.org/doc/html/rfc7914).
 
 ## When to Use
-
 - Deriving encryption keys from passwords for disk encryption or file encryption
 - Storing password hashes with resistance to brute-force and hardware attacks
 - Implementing authentication systems requiring memory-hard key derivation
 - Generating cryptographic keys from low-entropy input (passwords, passphrases)
 - Migrating from weaker KDFs like PBKDF2 to more secure alternatives
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Standard Library (Python 3.6+)
 
 No installation required - `hashlib.scrypt` is built into Python 3.6+:
@@ -63,7 +56,6 @@ from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 ```
 
 ## Usage
-
 ### Basic Key Derivation with hashlib
 
 Derive a 32-byte key from a password:
@@ -292,11 +284,11 @@ print(f"Wrote {bytes_written} bytes to buffer")
 print(f"Key: {bytes(buffer).hex()}")
 ```
 
-
 ## See Also
-
-- [Advanced Usage](references/01-advanced-usage.md) - Parameter selection, error handling, and advanced patterns
+- [Advanced Usage](reference/01-advanced-usage.md) - Parameter selection, error handling, and advanced patterns
 
 ## Advanced Topics
+## Advanced Topics
 
-For more details on advanced usage, refer to the official documentation listed in the References section.
+- [Advanced Usage](reference/01-advanced-usage.md)
+

@@ -22,21 +22,12 @@ external_references:
   - https://opentelemetry.io/ecosystem/registry/?component=instrumentation&language=python
   - https://opentelemetry.io/docs/languages/python/
 ---
-
-# OpenTelemetry Python 1.41.0
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Complete OpenTelemetry Python toolkit v1.41.0 for distributed tracing, metrics collection, and log management with support for OTLP exporters, automatic instrumentation, custom sampling, context propagation, and semantic conventions. Use when instrumenting Python applications for observability, configuring trace/metric/log pipelines, setting up OTLP exporters, implementing custom samplers, or integrating with distributed tracing backends like Jaeger, Zipkin, Prometheus, or the OpenTelemetry Collector.
 
 Complete toolkit for OpenTelemetry Python v1.41.0, the official observability framework for distributed tracing, metrics, and logs in Python applications. Provides API and SDK packages with support for OTLP protocol exporters, automatic instrumentation via `opentelemetry-instrument`, custom sampling strategies, context propagation across multiple formats, and semantic conventions for common frameworks.
 
 ## When to Use
-
 - Instrumenting Python applications (Flask, Django, FastAPI, etc.) for distributed tracing
 - Setting up metrics collection with counters, histograms, gauges, and UpDownCounters
 - Configuring OTLP exporters (HTTP/gRPC) for sending telemetry to backends
@@ -46,8 +37,10 @@ Complete toolkit for OpenTelemetry Python v1.41.0, the official observability fr
 - Integrating Python services with the OpenTelemetry Collector
 - Setting up log correlation with trace/span IDs
 
-## Architecture Overview
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Architecture Overview
 OpenTelemetry Python is split into two main packages:
 
 1. **`opentelemetry-api`** — Abstract interfaces and no-op implementations. Libraries that produce telemetry depend only on this.
@@ -58,10 +51,9 @@ The three signals are:
 - **Metrics** — Counters, histograms, gauges for quantitative data (Stable)
 - **Logs** — Log records correlated with traces (Development/Stabilizing in 1.41.0)
 
-See [Core Concepts](references/01-core-concepts.md) for detailed architecture diagrams and signal explanations.
+See [Core Concepts](reference/01-core-concepts.md) for detailed architecture diagrams and signal explanations.
 
-## Installation
-
+## Installation / Setup
 ### Core Packages
 
 ```bash
@@ -114,7 +106,6 @@ pip install opentelemetry-instrumentation-psycopg2
 ```
 
 ## Quick Start: Tracing
-
 ### Minimal Setup
 
 ```python
@@ -141,10 +132,9 @@ with tracer.start_as_current_span("operation-name") as span:
     span.set_attribute("key", "value")
 ```
 
-See [Tracing Deep Dive](references/02-tracing-deep-dive.md) for advanced patterns including nested spans, decorators, context propagation, explicit parent contexts, and custom exporters.
+See [Tracing Deep Dive](reference/02-tracing-deep-dive.md) for advanced patterns including nested spans, decorators, context propagation, explicit parent contexts, and custom exporters.
 
 ## Quick Start: Metrics
-
 ### Minimal Setup
 
 ```python
@@ -164,10 +154,9 @@ counter = meter.create_counter("http.requests", unit="1")
 counter.add(1, {"method": "GET"})
 ```
 
-See [Metrics Deep Dive](references/03-metrics-deep-dive.md) for synchronous/asynchronous instruments, views, exemplars, and all instrument types.
+See [Metrics Deep Dive](reference/03-metrics-deep-dive.md) for synchronous/asynchronous instruments, views, exemplars, and all instrument types.
 
 ## Quick Start: Logs
-
 > **Note:** The Logs signal is under development in v1.41.0 and may change.
 
 ```python
@@ -187,7 +176,6 @@ logging.getLogger(__name__).info("Application started")
 ```
 
 ## Quick Start: OTLP Export (Production)
-
 ```python
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
@@ -199,10 +187,9 @@ exporter = OTLPSpanExporter(
 provider.add_span_processor(BatchSpanProcessor(exporter))
 ```
 
-See [Exporters and Propagators](references/04-exporters-and-propagators.md) for complete exporter reference, gRPC vs HTTP comparison, all environment variables, propagator configuration (B3, Jaeger, X-Ray), and shutdown patterns.
+See [Exporters and Propagators](reference/04-exporters-and-propagators.md) for complete exporter reference, gRPC vs HTTP comparison, all environment variables, propagator configuration (B3, Jaeger, X-Ray), and shutdown patterns.
 
 ## Automatic (Zero-Code) Instrumentation
-
 ```bash
 # Install the distribution package
 pip install opentelemetry-distro
@@ -219,7 +206,6 @@ opentelemetry-instrument \
 ```
 
 ## Sampling Configuration
-
 ```python
 from opentelemetry.sdk.trace.sampling import (
     ALWAYS_ON, ALWAYS_OFF, TraceIdRatioBased, ParentBasedTraceIdRatio,
@@ -236,7 +222,6 @@ export OTEL_TRACES_SAMPLER_ARG=0.1
 ```
 
 ## Testing with In-Memory Exporters
-
 ```python
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor, InMemorySpanExporter
 from opentelemetry import trace
@@ -256,7 +241,6 @@ assert len(spans) == 1
 ```
 
 ## Key Environment Variables Reference
-
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `OTEL_SERVICE_NAME` | — | Primary service name (highest priority) |
@@ -291,7 +275,6 @@ assert len(spans) == 1
 | `OTEL_EXPORTER_OTLP_HEADERS` | — | Comma-separated key=value pairs |
 
 ## Common Patterns
-
 ### Flask with Auto-Instrumentation
 
 ```bash
@@ -324,5 +307,10 @@ async def get_item(item_id: int):
 ```
 
 ## Advanced Topics
+## Advanced Topics
 
-For more details on advanced usage, refer to the official documentation listed in the References section.
+- [Core Concepts](reference/01-core-concepts.md)
+- [Tracing Deep Dive](reference/02-tracing-deep-dive.md)
+- [Metrics Deep Dive](reference/03-metrics-deep-dive.md)
+- [Exporters And Propagators](reference/04-exporters-and-propagators.md)
+

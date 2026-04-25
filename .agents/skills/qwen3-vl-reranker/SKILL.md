@@ -23,11 +23,7 @@ external_references:
   - https://qwenlm.github.io/blog/qwen3-embedding/
   - https://huggingface.co/Qwen/Qwen3-VL-Reranker-8B
 ---
-
-# Qwen3-VL-Reranker 1.0
-
 ## Overview
-
 Qwen3-VL-Reranker is a series of multimodal reranking models built on the Qwen3-VL foundation architecture, designed for state-of-the-art cross-modal and text-only relevance scoring. The series includes two variants: **2B** (2 billion parameters, 28 layers) and **8B** (8 billion parameters, 36 layers), both supporting 32K context length across text, images, screenshots, videos, and arbitrary multimodal combinations.
 
 The reranker takes a **(query, document) pair** as input—where both may contain arbitrary single or mixed modalities—and outputs a precise relevance score. It is typically used in tandem with an embedding model: the embedding performs efficient initial recall, while the reranker refines results in a second stage, significantly boosting retrieval accuracy.
@@ -35,7 +31,6 @@ The reranker takes a **(query, document) pair** as input—where both may contai
 Both models support 30+ languages and are instruction-aware, meaning you can provide custom instructions tailored to your specific task for 1–5% improvement over default behavior.
 
 ## When to Use
-
 - **Reranking search results** after an initial embedding-based recall step
 - **Multimodal retrieval pipelines** where documents include images, screenshots, or videos alongside text
 - **Visual document retrieval** (e.g., extracting relevant pages from scanned PDFs)
@@ -44,7 +39,6 @@ Both models support 30+ languages and are instruction-aware, meaning you can pro
 - **Scoring arbitrary query-document pairs** with text-only, image-only, or multimodal documents
 
 ## Core Concepts
-
 ### Model Architecture
 
 | Feature | Qwen3-VL-Reranker-2B | Qwen3-VL-Reranker-8B |
@@ -73,7 +67,6 @@ Raw scores are unbounded real numbers. Apply `torch.nn.Sigmoid()` to map them to
 - **Recommendation**: Always provide a custom `prompt`/instruction tailored to your task. In multilingual contexts, write instructions in English for best results (training data was primarily English).
 
 ## Installation / Setup
-
 ### Dependencies
 
 ```bash
@@ -94,7 +87,6 @@ pip install vllm
 - Flash Attention 2 is recommended for both models to reduce memory and accelerate inference
 
 ## Usage Examples
-
 ### Method 1: Sentence Transformers (Recommended for Most Use Cases)
 
 ```python
@@ -213,12 +205,9 @@ for doc_dict in documents:
 ```
 
 ## Advanced Topics
+## Advanced Topics
 
-- **Two-stage retrieval pipeline**: Use `Qwen3-VL-Embedding` for initial recall → `Qwen3-VL-Reranker` for final ranking
-- **Instruction engineering**: Crafting effective instructions can yield 1–5% improvement; write them in English even for non-English queries
-- **Batch processing**: Both APIs support batch scoring of multiple (query, document) pairs simultaneously
-- **Video processing**: Use the `fps` parameter to control frame sampling rate for video documents
-- **Score calibration**: Apply sigmoid activation for probability-like scores useful for thresholding
-
-See [reference files](references/) for detailed benchmarks, performance comparisons, and hardware optimization guides.
+- [Benchmarks And Performance](reference/01-benchmarks-and-performance.md)
+- [Retrieval Pipeline Patterns](reference/02-retrieval-pipeline-patterns.md)
+- [Api Reference](reference/03-api-reference.md)
 

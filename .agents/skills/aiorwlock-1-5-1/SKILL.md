@@ -17,33 +17,26 @@ external_references:
   - https://github.com/hmarr/aiorwlock
   - https://aiorwlock.readthedocs.io/
 ---
-
-# aiorwlock-1.5.1
-
 ## Overview
-
 Async read-write lock implementation for Python asyncio providing concurrent reader access and exclusive writer access. Use when building async applications requiring fine-grained synchronization where multiple readers can access shared data simultaneously but writers need exclusive access.
 
 Async read-write lock for Python asyncio that maintains a pair of associated locks: one for read-only operations and one for writing. Multiple reader tasks can hold the read lock simultaneously, while the write lock is exclusive. Ideal for scenarios where data is frequently read but infrequently modified.
 
 ## When to Use
-
 - Building async applications requiring concurrent access to shared resources
 - Implementing caches or collections that are read more often than written
 - Needing fine-grained synchronization in asyncio event loops
 - Requiring multiple readers but exclusive writer access patterns
 - Migrating from threading.RWLock to async equivalents
 
-## Installation
-
+## Installation / Setup
 ```bash
 pip install aiorwlock==1.5.1
 ```
 
 **Requirements:** Python 3.9+
 
-## Quick Start
-
+## Usage Examples
 ```python
 import asyncio
 import aiorwlock
@@ -67,7 +60,6 @@ asyncio.run(main())
 ```
 
 ## Core Concepts
-
 ### Reader-Writer Semantics
 
 The RWLock provides two separate lock objects:
@@ -93,7 +85,6 @@ The RWLock provides two separate lock objects:
 **Cross-lock recursion:** A task holding the writer lock can acquire the reader lock, but **cannot upgrade** from reader to writer (raises `RuntimeError`).
 
 ## Usage Patterns
-
 ### Basic Read-Write Pattern
 
 ```python
@@ -233,10 +224,10 @@ async def writer_priority_example():
 ```
 
 ## See Also
-
-- [Advanced Usage and Examples](references/01-advanced-usage.md) - Complete examples, advanced patterns, and troubleshooting
-
+- [Advanced Usage and Examples](reference/01-advanced-usage.md) - Complete examples, advanced patterns, and troubleshooting
 
 ## Advanced Topics
+## Advanced Topics
 
-For more details on advanced usage, refer to the official documentation listed in the References section.
+- [Advanced Usage](reference/01-advanced-usage.md)
+

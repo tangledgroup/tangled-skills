@@ -23,21 +23,12 @@ external_references:
   - https://nuitka.net/doc/
   - https://github.com/Nuitka/Nuitka
 ---
-
-# Nuitka 4.0.8 - Python Compiler
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Python compiler that translates Python code to C and native executables. Use when compiling Python applications for distribution, creating extension modules, optimizing performance, or building standalone binaries across Windows, Linux, macOS, and FreeBSD.
 
 Nuitka is **the** Python compiler. It translates Python modules into C-level programs that use `libpython` and static C files to execute in the same way as CPython does. Nuitka compiles every construct that Python 2 (2.6, 2.7) and Python 3 (3.4 - 3.14) have, when itself run with that Python version.
 
 ## When to Use
-
 - **Distributing Python applications** without requiring Python installation
 - **Creating extension modules** for performance-critical code paths
 - **Optimizing application startup time** and runtime performance (up to 3.7x faster)
@@ -47,8 +38,10 @@ Nuitka is **the** Python compiler. It translates Python modules into C-level pro
 - **Cross-platform deployment** (Windows, Linux, macOS, FreeBSD)
 - **Reducing runtime overhead** through constant propagation and type inference
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Prerequisites
 
 1. **Python**: 2.6, 2.7 or 3.4 - 3.14 (CPython only, not PyPy/Jython)
@@ -71,8 +64,7 @@ Nuitka is **the** Python compiler. It translates Python modules into C-level pro
 - **macOS**: Use Homebrew Python. Avoid pyenv (known incompatibility).
 - **Linux**: Build on oldest target OS for maximum compatibility (glibc version matters).
 
-## Quick Start
-
+## Usage Examples
 ### Basic Compilation
 
 ```bash
@@ -94,7 +86,7 @@ python -m nuitka --standalone --follow-imports program.py
 # Copy the entire .dist folder to target machine
 ```
 
-See [Core Concepts](references/01-core-concepts.md) for detailed compilation modes.
+See [Core Concepts](reference/01-core-concepts.md) for detailed compilation modes.
 
 ### Onefile Mode (Single Executable)
 
@@ -106,10 +98,9 @@ python -m nuitka --onefile --follow-imports program.py
 # Distribute the single file - it unpacks to temp directory on execution
 ```
 
-Refer to [Advanced Workflows](references/02-advanced-workflows.md) for platform-specific deployment.
+Refer to [Advanced Workflows](reference/02-advanced-workflows.md) for platform-specific deployment.
 
 ## Common Operations
-
 ### Extension Module Compilation
 
 ```bash
@@ -120,7 +111,7 @@ python -m nuitka --module some_module.py
 # Use instead of some_module.py - drop-in replacement
 ```
 
-See [Module and Package Compilation](references/03-module-compilation.md).
+See [Module and Package Compilation](reference/03-module-compilation.md).
 
 ### Package Compilation
 
@@ -153,7 +144,7 @@ python -m nuitka --standalone --enable-plugin=tensorflow model.py
 python -m nuitka --standalone --enable-plugin=pyzmq zmq_app.py
 ```
 
-Refer to [Plugin System](references/04-plugins.md) for complete plugin list.
+Refer to [Plugin System](reference/04-plugins.md) for complete plugin list.
 
 ### Performance Optimization
 
@@ -167,22 +158,20 @@ python -m nuitka --pgo-c --standalone program.py  # First pass: instrument
 python -m nuitka --pgo-c=yes --standalone program.py  # Second pass: optimize
 ```
 
-See [Performance Guide](references/05-performance.md) for optimization strategies.
+See [Performance Guide](reference/05-performance.md) for optimization strategies.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-core-concepts.md`](references/01-core-concepts.md) - Compilation modes, output formats, and fundamental concepts
-- [`references/02-advanced-workflows.md`](references/02-advanced-workflows.md) - Platform-specific deployment (Windows, macOS, Linux), icons, splash screens
-- [`references/03-module-compilation.md`](references/03-module-compilation.md) - Extension modules, packages, import control
-- [`references/04-plugins.md`](references/04-plugins.md) - Standard plugins for third-party libraries, plugin architecture
-- [`references/05-performance.md`](references/05-performance.md) - LTO, PGO, caching, compiler selection, benchmarking
-- [`references/06-command-reference.md`](references/06-command-reference.md) - Complete command-line options and Nuitka Project syntax
-- [`references/07-troubleshooting.md`](references/07-troubleshooting.md) - Common issues, debugging, memory problems, missing files
-
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/nuitka-4-0-8/`). All paths are relative to this directory.
+- [Core Concepts](reference/01-core-concepts.md)
+- [Advanced Workflows](reference/02-advanced-workflows.md)
+- [Module Compilation](reference/03-module-compilation.md)
+- [Plugins](reference/04-plugins.md)
+- [Performance](reference/05-performance.md)
+- [Command Reference](reference/06-command-reference.md)
+- [Troubleshooting](reference/07-troubleshooting.md)
 
 ## Troubleshooting
-
 ### Missing Data Files in Standalone Mode
 
 ```bash
@@ -230,10 +219,9 @@ python -m nuitka --jobs=1 program.py
 python -m nuitka --lto=no program.py
 ```
 
-See [Troubleshooting Guide](references/07-troubleshooting.md) for comprehensive solutions.
+See [Troubleshooting Guide](reference/07-troubleshooting.md) for comprehensive solutions.
 
 ## Important Notes
-
 1. **Use `python -m nuitka`** to ensure correct Python interpreter is used
 2. **Test with `--standalone` first** before using `--onefile` (easier debugging)
 3. **Enable appropriate plugins** for third-party libraries in standalone mode
@@ -244,7 +232,6 @@ See [Troubleshooting Guide](references/07-troubleshooting.md) for comprehensive 
 8. **Nuitka does not set `sys.frozen`** - use `__compiled__` attribute to detect compiled code
 
 ## Limitations (Non-Commercial)
-
 This skill covers Nuitka's open-source features. Commercial-only features include:
 - File embedding for data protection
 - Traceback encryption (de-Jong-Stacks)
@@ -255,6 +242,3 @@ This skill covers Nuitka's open-source features. Commercial-only features includ
 
 For commercial features, see https://nuitka.net/doc/commercial.html
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

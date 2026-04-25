@@ -18,21 +18,12 @@ external_references:
   - https://daisyui.com/
   - https://github.com/saadeghi/daisyui
 ---
-
-# DaisyUI 5.5
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 A skill for using DaisyUI 5.5, a component library for Tailwind CSS 4 that provides semantic class names for common UI components with built-in theming support. Use when building responsive web interfaces with pre-styled components, implementing theme switching, or creating consistent design systems without writing custom CSS.
 
 DaisyUI 5.5 is a component library for Tailwind CSS 4 that provides semantic class names for common UI components. It enables rapid UI development with built-in theming, dark mode support, and accessible components without writing custom CSS.
 
 ## When to Use
-
 - Building responsive web interfaces with pre-styled components
 - Implementing theme switching (light/dark mode or custom themes)
 - Creating consistent design systems quickly
@@ -40,8 +31,10 @@ DaisyUI 5.5 is a component library for Tailwind CSS 4 that provides semantic cla
 - Adding accessible components (modals, dropdowns, menus) to applications
 - Styling forms, buttons, cards, navigation, and other common UI elements
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Installation
 
 DaisyUI 5 requires **Tailwind CSS 4**. The traditional `tailwind.config.js` file is deprecated in Tailwind CSS v4.
@@ -66,8 +59,7 @@ npm install -D daisyui@latest
 <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
 ```
 
-## Quick Start
-
+## Usage Examples
 ### Basic Button
 
 ```html
@@ -97,10 +89,9 @@ npm install -D daisyui@latest
 </div>
 ```
 
-See [Core Concepts](references/01-core-concepts.md) for detailed theming and color usage.
+See [Core Concepts](reference/01-core-concepts.md) for detailed theming and color usage.
 
 ## Core Features
-
 ### Theming
 
 DaisyUI includes 27+ built-in themes that can be enabled:
@@ -119,7 +110,7 @@ Apply themes with `data-theme` attribute:
 <div data-theme="dark">Dark themed section</div>
 ```
 
-Refer to [Theming Guide](references/02-theming-guide.md) for custom theme creation.
+Refer to [Theming Guide](reference/02-theming-guide.md) for custom theme creation.
 
 ### Semantic Colors
 
@@ -146,7 +137,6 @@ All DaisyUI components follow a consistent pattern:
 - **Modifier**: Behavior changes (e.g., `btn-block`, `dropdown-hover`)
 
 ## Component Categories
-
 ### Form Components
 - **Input** - Text fields with styles and sizes
 - **Select** - Dropdown selects
@@ -156,7 +146,7 @@ All DaisyUI components follow a consistent pattern:
 - **File Input** - File upload fields
 - **Textarea** - Multi-line text inputs
 
-See [Form Components](references/03-form-components.md) for detailed usage.
+See [Form Components](reference/03-form-components.md) for detailed usage.
 
 ### Interactive Components
 - **Button** - Action buttons with multiple styles
@@ -167,7 +157,7 @@ See [Form Components](references/03-form-components.md) for detailed usage.
 - **Tooltip** - Hover hints
 - **Popover** - Contextual popups
 
-Refer to [Interactive Components](references/04-interactive-components.md) for implementation details.
+Refer to [Interactive Components](reference/04-interactive-components.md) for implementation details.
 
 ### Layout Components
 - **Navbar** - Top navigation bars
@@ -176,7 +166,7 @@ Refer to [Interactive Components](references/04-interactive-components.md) for i
 - **Hero** - Large hero sections
 - **Container** - Content containers
 
-See [Layout Components](references/05-layout-components.md) for responsive patterns.
+See [Layout Components](reference/05-layout-components.md) for responsive patterns.
 
 ### Display Components
 - **Card** - Content cards with images
@@ -187,7 +177,7 @@ See [Layout Components](references/05-layout-components.md) for responsive patte
 - **Stats** - Statistics displays
 - **Timeline** - Vertical timelines
 
-Refer to [Display Components](references/06-display-components.md) for usage examples.
+Refer to [Display Components](reference/06-display-components.md) for usage examples.
 
 ### Feedback Components
 - **Loading** - Loading animations (spinner, dots, bars)
@@ -195,18 +185,18 @@ Refer to [Display Components](references/06-display-components.md) for usage exa
 - **Progress** - Progress bars
 - **Radial Progress** - Circular progress indicators
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-core-concepts.md`](references/01-core-concepts.md) - Color system, theming basics, and CSS customization
-- [`references/02-theming-guide.md`](references/02-theming-guide.md) - Built-in themes, custom theme creation, and theme switching
-- [`references/03-form-components.md`](references/03-form-components.md) - Input, select, checkbox, radio, range, and form styling
-- [`references/04-interactive-components.md`](references/04-interactive-components.md) - Button, modal, dropdown, accordion, tabs, tooltip, popover
-- [`references/05-layout-components.md`](references/05-layout-components.md) - Navbar, footer, drawer, hero, and layout patterns
-- [`references/06-display-components.md`](references/06-display-components.md) - Card, alert, badge, avatar, table, stats, timeline
-- [`references/07-advanced-patterns.md`](references/07-advanced-patterns.md) - Customization, overrides, responsive design, and best practices
+- [Core Concepts](reference/01-core-concepts.md)
+- [Theming Guide](reference/02-theming-guide.md)
+- [Form Components](reference/03-form-components.md)
+- [Interactive Components](reference/04-interactive-components.md)
+- [Layout Components](reference/05-layout-components.md)
+- [Display Components](reference/06-display-components.md)
+- [Advanced Patterns](reference/07-advanced-patterns.md)
 
 ## Troubleshooting
-
 ### Components not styling correctly
 - Ensure Tailwind CSS 4 is properly configured
 - Verify `@plugin "daisyui";` is included in CSS after `@import "tailwindcss"`
@@ -227,8 +217,5 @@ Refer to [Display Components](references/06-display-components.md) for usage exa
 - For checkbox modals, ensure label `for` attribute matches checkbox `id`
 - Check for unique IDs if multiple modals exist
 
-See [Advanced Patterns](references/07-advanced-patterns.md) for more solutions.
+See [Advanced Patterns](reference/07-advanced-patterns.md) for more solutions.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

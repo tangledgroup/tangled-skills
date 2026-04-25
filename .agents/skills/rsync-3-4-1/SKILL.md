@@ -20,17 +20,12 @@ external_references:
   - https://rsync.samba.org/examples.html
   - https://github.com/rsyncproject/rsync
 ---
-
-# rsync 3.4.1
-
 ## Overview
-
 Rsync is a fast, extraordinarily versatile file-copying tool for both remote and local file synchronization. It uses the **delta-transfer algorithm** which reduces network data by sending only the differences between source and destination files, without requiring both sets of files to exist at one end beforehand.
 
 Rsync is widely used for backups, mirroring, and as an improved `cp` command for everyday use. Both sender and receiver can be run on the same or different hosts.
 
 ## When to Use
-
 - **Incremental backups** — sync only changed files between source and destination
 - **Remote file synchronization** — copy files across SSH or rsync daemon
 - **Mirroring** — maintain exact copies of directory trees across systems
@@ -40,7 +35,6 @@ Rsync is widely used for backups, mirroring, and as an improved `cp` command for
 - **Daemon configuration** — set up authenticated rsync servers for public/private file distribution
 
 ## Core Concepts
-
 ### Transfer Modes
 
 Rsync supports three transfer modes:
@@ -86,7 +80,6 @@ A trailing slash on the **source** changes behavior:
 Since rsync 3.0.0, recursive scanning uses **incremental recursion** by default, which builds the file list in chunks and holds each chunk in memory only as needed. This dramatically reduces memory usage for large transfers. Some options (like `--delete-before`, `--delete-after`, `--prune-empty-dirs`) disable this mode.
 
 ## Installation / Setup
-
 ### From Package Manager (Recommended)
 
 ```bash
@@ -122,10 +115,9 @@ sudo make install
 - `libacl1-dev` — ACL support
 - `libattr1-dev` — extended attribute support
 
-See [references/01-installation-and-building.md](references/01-installation-and-building.md) for detailed build instructions.
+See [reference/01-installation-and-building.md](reference/01-installation-and-building.md) for detailed build instructions.
 
 ## Usage Examples
-
 ### Basic Local Copy
 
 ```bash
@@ -269,19 +261,7 @@ done
 rsync -av --bwlimit=1000 /source/ user@remote:/dest/
 ```
 
-## Advanced Topics
-
-For detailed coverage of advanced topics, see the reference files:
-
-- **[references/02-filter-rules.md](references/02-filter-rules.md)** — Comprehensive filter rule syntax, include/exclude patterns, per-directory filters, and CVS ignore mode
-- **[references/03-delete-modes.md](references/03-delete-modes.md)** — Delete modes (--delete, --delete-before/after/during/delay), partial transfer handling, and safety options
-- **[references/04-dest-options.md](references/04-dest-options.md)** — compare-dest, copy-dest, link-dest for sparse backups and flash cutover
-- **[references/05-daemon-config.md](references/05-daemon-config.md)** — Complete rsyncd.conf reference, authentication, access control, logging, and security
-- **[references/06-symlink-and-security.md](references/06-symlink-and-security.md)** — Symlink handling options, CVE-2024 vulnerabilities, and safe transfer practices
-- **[references/07-exit-codes-and-troubleshooting.md](references/07-exit-codes-and-troubleshooting.md)** — All exit codes, common errors, and debugging techniques
-
 ## Key Options Quick Reference
-
 | Option | Short | Description |
 |--------|-------|-------------|
 | `--archive` | `-a` | Archive mode (-rlptgoD) |
@@ -311,10 +291,20 @@ For detailed coverage of advanced topics, see the reference files:
 | `--iconv=SPEC` | — | Convert filename character sets |
 
 ## Statistics
-
 - **Protocol number**: 32 (rsync 3.4.x)
 - **Original authors**: Andrew Tridgell and Paul Mackerras
 - **Current maintainer**: Wayne Davison (until 3.3.0), then Andrew Tridgell (from 3.4.0)
 - **License**: GNU GPL
 - **Latest CVE fixes**: 3.4.0 fixed 6 security vulnerabilities (CVE-2024-12084 through CVE-2024-12747)
+
+## Advanced Topics
+## Advanced Topics
+
+- [Installation And Building](reference/01-installation-and-building.md)
+- [Filter Rules](reference/02-filter-rules.md)
+- [Delete Modes](reference/03-delete-modes.md)
+- [Dest Options](reference/04-dest-options.md)
+- [Daemon Config](reference/05-daemon-config.md)
+- [Symlink And Security](reference/06-symlink-and-security.md)
+- [Exit Codes And Troubleshooting](reference/07-exit-codes-and-troubleshooting.md)
 

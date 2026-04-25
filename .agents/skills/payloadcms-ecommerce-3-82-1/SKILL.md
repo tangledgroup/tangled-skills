@@ -42,15 +42,7 @@ external_references:
   - https://payloadcms.com/docs/ecommerce/plugin
   - https://github.com/payloadcms/payload/tree/v3.82.1/templates/ecommerce
 ---
-
-# Payload CMS Ecommerce Template v3.82.1
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Complete guide for Payload CMS ecommerce template v3.82.1 providing production-ready online store with products, variants, carts, orders, Stripe payments, multi-currency support, user accounts, guest checkout, and transaction tracking. Use when building e-commerce platforms, online stores, marketplaces, or any digital commerce project requiring product catalogs, shopping carts, order management, payment processing, customer accounts, and inventory management following official Payload best practices.
 
 A production-ready, enterprise-grade ecommerce template for building online stores, marketplaces, and digital commerce platforms with Payload CMS v3.82.1, Next.js 16.2.2, TypeScript, MongoDB, Stripe payments, and advanced features including product variants, shopping carts, order management, customer accounts, guest checkout, multi-currency support, and transaction tracking.
@@ -58,7 +50,6 @@ A production-ready, enterprise-grade ecommerce template for building online stor
 **Note:** This template is in **BETA**. Use for learning and development; review thoroughly before production deployment.
 
 ## When to Use
-
 - Building online stores or e-commerce platforms
 - Creating marketplaces with product catalogs
 - Implementing shopping cart and checkout flows
@@ -70,8 +61,10 @@ A production-ready, enterprise-grade ecommerce template for building online stor
 - Tracking inventory and product availability
 - Building subscription or recurring billing systems
 
-## What This Template Includes
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## What This Template Includes
 ### Pre-configured Collections
 
 **Core Content:**
@@ -138,8 +131,7 @@ A production-ready, enterprise-grade ecommerce template for building online stor
 - **Styling**: Tailwind CSS 4.1+ with Radix UI components
 - **Package Manager**: pnpm 9+ or 10+
 
-## Quick Start
-
+## Installation / Setup
 ### Prerequisites
 
 - Node.js 18.20.2+ or 20.9.0+ installed
@@ -208,10 +200,9 @@ A production-ready, enterprise-grade ecommerce template for building online stor
    - Visit: http://localhost:3000/next/seed
    - Creates sample products, categories, and pages
 
-See [Setup and Configuration](references/01-setup-configuration.md) for detailed setup instructions and Stripe configuration.
+See [Setup and Configuration](reference/01-setup-configuration.md) for detailed setup instructions and Stripe configuration.
 
 ## Project Structure
-
 ```
 src/
 ├── app/                          # Next.js App Router
@@ -255,10 +246,9 @@ src/
 └── utilities/                     # Helper functions
 ```
 
-See [Project Structure](references/02-project-structure.md) for detailed explanation of each directory and file purpose.
+See [Project Structure](reference/02-project-structure.md) for detailed explanation of each directory and file purpose.
 
 ## Core Ecommerce Features
-
 ### Products and Variants
 
 **Simple Products:** Single SKU, no variants (e.g., a book)
@@ -272,7 +262,7 @@ See [Project Structure](references/02-project-structure.md) for detailed explana
   - Independent inventory
   - Specific images
 
-See [Products and Variants](references/03-products-variants.md) for complete configuration.
+See [Products and Variants](reference/03-products-variants.md) for complete configuration.
 
 ### Shopping Cart
 
@@ -291,7 +281,7 @@ See [Products and Variants](references/03-products-variants.md) for complete con
 4. Enter shipping/billing info
 5. Complete payment
 
-See [Shopping Cart](references/04-shopping-cart.md) for cart management patterns.
+See [Shopping Cart](reference/04-shopping-cart.md) for cart management patterns.
 
 ### Checkout and Payments
 
@@ -309,7 +299,7 @@ See [Shopping Cart](references/04-shopping-cart.md) for cart management patterns
 4. **Payment Processing**: Secure Stripe checkout
 5. **Order Confirmation**: Email with order details
 
-See [Payments and Checkout](references/05-payments-checkout.md) for Stripe setup and webhook configuration.
+See [Payments and Checkout](reference/05-payments-checkout.md) for Stripe setup and webhook configuration.
 
 ### Orders and Transactions
 
@@ -325,7 +315,7 @@ See [Payments and Checkout](references/05-payments-checkout.md) for Stripe setup
 - **Customers**: Access to their own orders via account dashboard
 - **Guests**: Secure access via email + accessToken (sent in confirmation email)
 
-See [Orders and Transactions](references/06-orders-transactions.md) for order management.
+See [Orders and Transactions](reference/06-orders-transactions.md) for order management.
 
 ### Customer Accounts
 
@@ -339,10 +329,9 @@ See [Orders and Transactions](references/06-orders-transactions.md) for order ma
 - Account settings and preferences
 - Password management
 
-See [Customer Accounts](references/07-customer-accounts.md) for user management.
+See [Customer Accounts](reference/07-customer-accounts.md) for user management.
 
 ## Common Operations
-
 ### Add a New Product
 
 1. Navigate to Admin Panel → Products → Create New Product
@@ -357,7 +346,7 @@ See [Customer Accounts](references/07-customer-accounts.md) for user management.
 4. Configure SEO metadata
 5. Publish product
 
-See [Products and Variants](references/03-products-variants.md) for detailed guide.
+See [Products and Variants](reference/03-products-variants.md) for detailed guide.
 
 ### Process a Payment
 
@@ -371,7 +360,7 @@ See [Products and Variants](references/03-products-variants.md) for detailed gui
 8. Order marked complete
 9. Confirmation email sent
 
-See [Payments and Checkout](references/05-payments-checkout.md) for payment flow details.
+See [Payments and Checkout](reference/05-payments-checkout.md) for payment flow details.
 
 ### View Guest Order
 
@@ -382,7 +371,7 @@ See [Payments and Checkout](references/05-payments-checkout.md) for payment flow
 
 Alternative: Visit `/find-order`, enter email + order ID, receive email with secure link.
 
-See [Orders and Transactions](references/06-orders-transactions.md) for guest access patterns.
+See [Orders and Transactions](reference/06-orders-transactions.md) for guest access patterns.
 
 ### Manage Inventory
 
@@ -395,10 +384,9 @@ See [Orders and Transactions](references/06-orders-transactions.md) for guest ac
 - Each variant tracked independently
 - Low stock warnings configurable
 
-See [Products and Variants](references/03-products-variants.md#inventory-management) for inventory patterns.
+See [Products and Variants](reference/03-products-variants.md#inventory-management) for inventory patterns.
 
 ## Testing
-
 ### Run Integration Tests
 
 ```bash
@@ -422,10 +410,9 @@ Use Stripe test cards:
 - **Decline**: 4000 0000 0000 0002
 - **3D Secure**: 4000 0025 0000 3155
 
-See [Testing](references/08-testing.md) for test patterns.
+See [Testing](reference/08-testing.md) for test patterns.
 
 ## Production Deployment
-
 ### Build for Production
 
 ```bash
@@ -451,10 +438,9 @@ pnpm start
 3. Update `STRIPE_WEBHOOKS_SIGNING_SECRET` with live secret
 4. Test with real payment (small amount)
 
-See [Production Deployment](references/09-production-deployment.md) for deployment guides.
+See [Production Deployment](reference/09-production-deployment.md) for deployment guides.
 
 ## Troubleshooting
-
 **Webhooks not working**: Verify webhook endpoint is accessible from internet, check Stripe Dashboard for failed deliveries.
 
 **Payment fails silently**: Check browser console for Stripe errors, verify publishable key is correct.
@@ -463,33 +449,23 @@ See [Production Deployment](references/09-production-deployment.md) for deployme
 
 **Variants not showing**: Verify variant types and options are properly linked.
 
-See [Troubleshooting Guide](references/10-troubleshooting.md) for comprehensive solutions.
+See [Troubleshooting Guide](reference/10-troubleshooting.md) for comprehensive solutions.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-This skill includes detailed reference documentation organized by topic:
-
-### Core Setup
-
-- [`references/01-setup-configuration.md`](references/01-setup-configuration.md) - Environment variables, Stripe setup, dependencies, plugins
-- [`references/02-project-structure.md`](references/02-project-structure.md) - Directory organization, file purposes, TypeScript paths
-
-### Ecommerce Features
-
-- [`references/03-products-variants.md`](references/03-products-variants.md) - Product configuration, variants, inventory, pricing
-- [`references/04-shopping-cart.md`](references/04-shopping-cart.md) - Cart management, guest carts, persistence
-- [`references/05-payments-checkout.md`](references/05-payments-checkout.md) - Stripe integration, webhooks, checkout flow
-- [`references/06-orders-transactions.md`](references/06-orders-transactions.md) - Order lifecycle, guest access, transaction tracking
-- [`references/07-customer-accounts.md`](references/07-customer-accounts.md) - User roles, account features, address management
-
-### Operations and Deployment
-
-- [`references/08-testing.md`](references/08-testing.md) - Integration tests, E2E tests, Stripe test mode
-- [`references/09-production-deployment.md`](references/09-production-deployment.md) - Build process, Stripe live mode, monitoring
-- [`references/10-troubleshooting.md`](references/10-troubleshooting.md) - Common errors, debugging techniques, payment issues
+- [Setup Configuration](reference/01-setup-configuration.md)
+- [Project Structure](reference/02-project-structure.md)
+- [Products Variants](reference/03-products-variants.md)
+- [Shopping Cart](reference/04-shopping-cart.md)
+- [Payments Checkout](reference/05-payments-checkout.md)
+- [Orders Transactions](reference/06-orders-transactions.md)
+- [Customer Accounts](reference/07-customer-accounts.md)
+- [Testing](reference/08-testing.md)
+- [Production Deployment](reference/09-production-deployment.md)
+- [Troubleshooting](reference/10-troubleshooting.md)
 
 ## Important Notes
-
 1. **Beta Status**: Template is in BETA; review all code before production use
 2. **Stripe Keys**: Never commit Stripe keys to version control
 3. **Webhook Security**: Always verify webhook signatures using signing secret
@@ -500,7 +476,6 @@ This skill includes detailed reference documentation organized by topic:
 8. **Access Control**: Guest order access requires both email AND accessToken
 
 ## Resources
-
 - **Payload Docs**: https://payloadcms.com/docs
 - **Ecommerce Plugin**: https://payloadcms.com/docs/ecommerce/plugin
 - **Stripe Documentation**: https://stripe.com/docs
@@ -508,6 +483,3 @@ This skill includes detailed reference documentation organized by topic:
 
 **Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/payloadcms-ecommerce-3-82-1/`). All paths in this skill are relative to this directory.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

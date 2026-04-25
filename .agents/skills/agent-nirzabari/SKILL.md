@@ -20,24 +20,10 @@ required_environment_variables: []
 
 external_references:
 ---
-
-# Nir Zabari Agent Skill
-
 ## Overview
-
 A comprehensive guide to understanding and building coding agent harnesses, covering the 7-layer architecture, context engineering, tool orchestration, safety systems, and real-world implementations from Codex, OpenCode, Cursor, and Claude Code. Use when designing agentic systems, analyzing agent architectures, implementing harness patterns, or studying production-grade coding agent implementations.
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.## Overview
-
-A comprehensive guide to understanding and building coding agent harnesses, covering the 7-layer architecture, context engineering, tool orchestration, safety systems, and real-world implementations from Codex, OpenCode, Cursor, and Claude Code. Use when designing agentic systems, analyzing agent architectures, implementing harness patterns, or studying production-grade coding agent implementations.
-
-A comprehensive toolkit for understanding and building production-grade coding agent harnesses, based on deep analysis of real-world implementations including Codex CLI, OpenCode, Cursor, and Claude Code. This skill covers the complete architecture from agent loops to safety systems, with practical patterns from systems that have written millions of lines of code autonomously.
 
 ## When to Use
-
 - Designing a coding agent system or harness architecture
 - Analyzing the difference between LLMs and agentic systems
 - Implementing context building strategies for agents
@@ -48,8 +34,14 @@ A comprehensive toolkit for understanding and building production-grade coding a
 - Planning long-running autonomous coding tasks
 - Researching harness engineering best practices
 
-## Quick Start
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
 
+A comprehensive guide to understanding and building coding agent harnesses, covering the 7-layer architecture, context engineering, tool orchestration, safety systems, and real-world implementations from Codex, OpenCode, Cursor, and Claude Code. Use when designing agentic systems, analyzing agent architectures, implementing harness patterns, or studying production-grade coding agent implementations.
+
+A comprehensive toolkit for understanding and building production-grade coding agent harnesses, based on deep analysis of real-world implementations including Codex CLI, OpenCode, Cursor, and Claude Code. This skill covers the complete architecture from agent loops to safety systems, with practical patterns from systems that have written millions of lines of code autonomously.
+
+## Usage Examples
 ### The Core Insight
 
 **LLM ≠ Agent**. An LLM is a text generation model. A coding agent is a **harness** - a runtime system that repeatedly builds context, calls the model, executes tools, persists state, and loops back. The gap between "call an LLM" and "ship a coding product" is entirely product engineering.
@@ -66,7 +58,7 @@ Every production coding agent implements these layers:
 6. **Client Surface** - TUI, Web, or IDE interface
 7. **Extensibility** - MCP, plugins, AGENTS.md conventions
 
-See [Layer Architecture Deep Dive](references/01-layer-architecture.md) for complete breakdown of each layer with code examples.
+See [Layer Architecture Deep Dive](reference/01-layer-architecture.md) for complete breakdown of each layer with code examples.
 
 ### Simple vs Production Agents
 
@@ -78,23 +70,23 @@ while :; do cat PROMPT.md | claude-code --dangerously-skip-permissions; done
 
 This works surprisingly well but lacks: context management, safety boundaries, persistence, recovery mechanisms, and multi-client support. Production agents add all of these through harness engineering.
 
-Learn more in [Ralph Wiggum Pattern](references/02-ralph-wiggum-pattern.md).
+Learn more in [Ralph Wiggum Pattern](reference/02-ralph-wiggum-pattern.md).
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-layer-architecture.md`](references/01-layer-architecture.md) - Complete 7-layer breakdown with Codex vs OpenCode comparison
-- [`references/02-ralph-wiggum-pattern.md`](references/02-ralph-wiggum-pattern.md) - Simple loop pattern and Geoffrey Huntley's insights
-- [`references/03-context-engineering.md`](references/03-context-engineering.md) - Context building strategies, AGENTS.md patterns, prompt design
-- [`references/04-tool-systems.md`](references/04-tool-systems.md) - Tool orchestration, registry patterns, model-aware tool swapping
-- [`references/05-safety-systems.md`](references/05-safety-systems.md) - Approvals, AST parsing, sandboxing, permission brokers
-- [`references/06-streaming-apis.md`](references/06-streaming-apis.md) - SSE events, Anthropic vs OpenAI streaming contracts
-- [`references/07-multi-agent-coordination.md`](references/07-multi-agent-coordination.md) - Parallel agents, planner/worker patterns, lock-free coordination
-- [`references/08-codex-deep-dive.md`](references/08-codex-deep-dive.md) - Codex CLI architecture, Rust implementation details
-- [`references/09-opencode-deep-dive.md`](references/09-opencode-deep-dive.md) - OpenCode client-server architecture, TypeScript/Bun implementation
-- [`references/10-scaling-patterns.md`](references/10-scaling-patterns.md) - Long-running agents, million-line codebases, Cursor's scaling experiments
+- [Layer Architecture](reference/01-layer-architecture.md)
+- [Ralph Wiggum Pattern](reference/02-ralph-wiggum-pattern.md)
+- [Context Engineering](reference/03-context-engineering.md)
+- [Tool Systems](reference/04-tool-systems.md)
+- [Safety Systems](reference/05-safety-systems.md)
+- [Streaming Apis](reference/06-streaming-apis.md)
+- [Multi Agent Coordination](reference/07-multi-agent-coordination.md)
+- [Codex Deep Dive](reference/08-codex-deep-dive.md)
+- [Opencode Deep Dive](reference/09-opencode-deep-dive.md)
+- [Scaling Patterns](reference/10-scaling-patterns.md)
 
 ## Key Concepts
-
 ### Harness Engineering
 
 The term "harness" (used by OpenAI) refers to the system around the model that makes it useful. Key principles:
@@ -130,7 +122,6 @@ This solved coordination problems that flat agent structures couldn't handle.
 **Humans steer. Agents execute.** The question is whether we can build harnesses that let them do it reliably.
 
 ## Troubleshooting
-
 ### Common Agent Issues
 
 | Problem | Likely Cause | Solution |
@@ -141,10 +132,9 @@ This solved coordination problems that flat agent structures couldn't handle.
 | Lock contention in multi-agent | Flat agent structure with locks | Switch to planner/worker hierarchy, use optimistic concurrency |
 | Agent stuck on same bug | No feedback loop | Add self-evaluation steps, compile/test in loop |
 
-See [Layer Architecture](references/01-layer-architecture.md) and [Scaling Patterns](references/10-scaling-patterns.md) for detailed solutions.
+See [Layer Architecture](reference/01-layer-architecture.md) and [Scaling Patterns](reference/10-scaling-patterns.md) for detailed solutions.
 
 ## Related Resources
-
 - **OpenAI Harness Engineering**: https://openai.com/index/harness-engineering/
 - **Anthropic Building Effective Agents**: https://www.anthropic.com/engineering/building-effective-agents
 - **Cursor Scaling Blog**: https://cursor.com/blog/scaling-agents
@@ -153,7 +143,6 @@ See [Layer Architecture](references/01-layer-architecture.md) and [Scaling Patte
 - **AGENTS.md Best Practices**: https://github.blog/ai-and-ml/github-copilot/how-to-write-a-great-agents-md/
 
 ## Architecture Comparison
-
 | Dimension | Codex CLI | OpenCode | Cursor |
 |-----------|-----------|----------|--------|
 | **Architecture** | Single-process Rust TUI | Client-server TS/Bun | Proprietary IDE |
@@ -163,10 +152,9 @@ See [Layer Architecture](references/01-layer-architecture.md) and [Scaling Patte
 | **Safety** | Orchestrator approvals + sandbox | AST parsing + permission broker | Proprietary |
 | **Extensibility** | MCP as runtime component | First-class plugins | Marketplace |
 
-See individual deep dives in [Codex Architecture](references/08-codex-deep-dive.md) and [OpenCode Architecture](references/09-opencode-deep-dive.md).
+See individual deep dives in [Codex Architecture](reference/08-codex-deep-dive.md) and [OpenCode Architecture](reference/09-opencode-deep-dive.md).
 
 ## Important Notes
-
 1. **Context management is the hardest problem** - Context window rot limits all long-running agents
 2. **Model choice matters for role** - Different models excel at planning vs execution
 3. **Simplicity wins** - Many improvements came from removing complexity, not adding it
@@ -176,9 +164,4 @@ See individual deep dives in [Codex Architecture](references/08-codex-deep-dive.
 7. **Cost vs quality tradeoff** - $20k for 100K lines (Anthropic C compiler case) is cost-effective but needs human verification
 
 This skill is based on Nir Zabari's March 2026 analysis of coding agent architectures, supplemented with documentation from Codex, OpenCode, Cursor, and related research. The field evolves rapidly - always check latest documentation for specific implementations.
-
-
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.
 

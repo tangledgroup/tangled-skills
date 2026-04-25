@@ -22,17 +22,12 @@ external_references:
   - https://huggingface.co/Qwen/Qwen3-Embedding-4B
   - https://huggingface.co/Qwen/Qwen3-Embedding-8B
 ---
-
-# Qwen3 Embedding Models
-
 ## Overview
-
 Complete toolkit for Qwen3 Embedding models (0.6B, 4B, 8B) and Qwen3 Reranker models providing state-of-the-art text embedding, semantic search, reranking, and multilingual retrieval with support for Sentence Transformers, raw Transformers, vLLM, and TEI inference engines. Use when generating text embeddings, building semantic search or RAG pipelines, performing cross-lingual retrieval, code retrieval, text classification/clustering, or reranking search results with Qwen3-Embedding or Qwen3-Reranker models.
 
 Complete toolkit for the **Qwen3 Embedding series** — state-of-the-art text embedding and reranking models built on the Qwen3 foundation. Supports three sizes (0.6B, 4B, 8B) with multilingual capability across 100+ languages, 32K context length, user-defined output dimensions, and instruction-aware prompting.
 
 ## When to Use
-
 - **Semantic search / retrieval** — Build vector-based search over documents, knowledge bases, or code
 - **RAG pipelines** — Embed documents and queries for retrieval-augmented generation systems
 - **Cross-lingual retrieval** — Search across language boundaries (e.g., English query → Chinese documents)
@@ -42,7 +37,6 @@ Complete toolkit for the **Qwen3 Embedding series** — state-of-the-art text em
 - **Multilingual applications** — Any application needing embeddings in 100+ languages
 
 ## Model Overview
-
 | Model | Type | Params | Layers | Context | Default Dim | MRL Range |
 |-------|------|--------|--------|---------|-------------|-----------|
 | Qwen3-Embedding-0.6B | Embedding | 0.6B | 28 | 32K | 1,024 | 32–1,024 |
@@ -60,7 +54,6 @@ Complete toolkit for the **Qwen3 Embedding series** — state-of-the-art text em
 - **Apache 2.0 license**
 
 ## Quick Start — Sentence Transformers (Recommended)
-
 ```python
 # pip install sentence-transformers>=2.7.0 transformers>=4.51.0 torch
 from sentence_transformers import SentenceTransformer
@@ -77,7 +70,6 @@ print(similarity)  # tensor([[0.7646]])
 ```
 
 ## Core Concepts
-
 ### Dual-Encoder vs Cross-Encoder Architecture
 
 - **Embedding models** use a dual-encoder: encode query and document independently → fast nearest-neighbor search via dot product
@@ -120,8 +112,7 @@ model = SentenceTransformer(
 )
 ```
 
-## Installation
-
+## Installation / Setup
 ```bash
 # Sentence Transformers (recommended for most use cases)
 pip install sentence-transformers>=2.7.0 transformers>=4.51.0 torch
@@ -136,7 +127,6 @@ pip install vllm>=0.8.5
 **Critical:** `transformers>=4.51.0` is required. Earlier versions raise `KeyError: 'qwen3'`.
 
 ## Model Selection Guide
-
 | Use Case | Recommended Model | GPU Memory |
 |----------|-------------------|------------|
 | Edge / mobile / low latency | Qwen3-Embedding-0.6B | ~4 GB |
@@ -144,7 +134,6 @@ pip install vllm>=0.8.5
 | Highest accuracy (MTEB #1) | Qwen3-Embedding-8B | ~24 GB |
 
 ## Usage Patterns
-
 ### Semantic Search Pipeline
 
 ```python
@@ -188,14 +177,12 @@ similarity = model.similarity(query_emb, code_emb)
 3. Feed reranked results to LLM
 
 ## Advanced Topics
+## Advanced Topics
 
-For detailed usage, see the reference files:
-
-- **[Model Architecture & Training](references/01-model-architecture.md)** — Dual/cross-encoder architecture, MRL support, training pipeline, hardware requirements
-- **[Sentence Transformers Usage](references/02-sentence-transformers-usage.md)** — Complete Sentence Transformers API, custom instructions, dimension control, semantic search pipelines
-- **[Transformers Library Usage](references/03-transformers-usage.md)** — Low-level PyTorch usage, flash attention 2, custom pooling, memory profiling
-- **[vLLM and TEI Usage](references/04-vllm-and-tei-usage.md)** — Production serving with vLLM, Docker deployment with TEI, REST API, multi-GPU setup
-- **[Evaluation & Benchmarks](references/05-evaluation-benchmarks.md)** — MTEB scores, reranking benchmarks, language support, citation
-- **[Complete Examples](references/06-complete-examples.md)** — Full RAG pipeline, multilingual search, code retrieval, clustering, data export
-
+- [Model Architecture](reference/01-model-architecture.md)
+- [Sentence Transformers Usage](reference/02-sentence-transformers-usage.md)
+- [Transformers Usage](reference/03-transformers-usage.md)
+- [Vllm And Tei Usage](reference/04-vllm-and-tei-usage.md)
+- [Evaluation Benchmarks](reference/05-evaluation-benchmarks.md)
+- [Complete Examples](reference/06-complete-examples.md)
 

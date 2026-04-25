@@ -24,13 +24,7 @@ external_references:
   - https://www.sbert.net/index.html
   - https://huggingface.co/sentence-transformers
 ---
-
-# Sentence Transformers 5.4.1
-
-A comprehensive framework for computing embeddings from text, images, and audio using state-of-the-art transformer models. Supports dense embeddings (Sentence Transformer), sparse embeddings (Sparse Encoder), and reranking (Cross Encoder) with training capabilities for custom models.
-
 ## Overview
-
 Sentence Transformers is the go-to library for:
 
 - **Dense Embeddings**: Convert text to fixed-size vector representations for semantic similarity
@@ -41,7 +35,6 @@ Sentence Transformers is the go-to library for:
 - **100+ Languages**: Multilingual support including English, German, French, Spanish, Chinese, Arabic, and more
 
 ## When to Use
-
 Load this skill when you need to:
 
 - Generate sentence/document embeddings for semantic search or clustering
@@ -54,7 +47,6 @@ Load this skill when you need to:
 - Evaluate embedding models using MTEB benchmarks
 
 ## Core Concepts
-
 ### Three Model Types
 
 | Model Type | Class | Use Case | Speed | Accuracy |
@@ -76,8 +68,7 @@ Load this skill when you need to:
 - **Domain Adaptation**: Adapt pretrained models to specific domains
 - **Distillation**: Compress large models into smaller, faster versions
 
-## Installation
-
+## Installation / Setup
 ### Basic Installation
 
 ```bash
@@ -113,8 +104,7 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
 # Or follow https://pytorch.org/get-started/locally/
 ```
 
-## Quick Start
-
+## Usage Examples
 ### Dense Embeddings (Sentence Transformer)
 
 ```python
@@ -192,39 +182,23 @@ stats = SparseEncoder.sparsity(embeddings)
 print(f"Sparsity: {stats['sparsity_ratio']:.2%}")  # Sparsity: 99.84%
 ```
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-This skill is organized into modular reference files for efficient context loading:
-
-### Core Usage
-
-- [`references/01-sentence-transformer.md`](references/01-sentence-transformer.md) - Dense embeddings, encoding options, prompt templates, batch processing, multi-GPU
-- [`references/02-cross-encoder.md`](references/02-cross-encoder.md) - Reranking models, scoring pairs, ranking APIs, custom models
-- [`references/03-sparse-encoder.md`](references/03-sparse-encoder.md) - Sparse embeddings, SPLADE models, hybrid search, sparsity statistics
-
-### Applications
-
-- [`references/04-applications.md`](references/04-applications.md) - Semantic search, clustering, paraphrase mining, STS, image search, retrieve-and-rerank
-- [`references/05-multimodal.md`](references/05-multimodal.md) - Image-text models, audio processing, video embeddings, cross-modal retrieval
-
-### Training
-
-- [`references/06-training-overview.md`](references/06-training-overview.md) - Training components, datasets, loss functions, evaluators, trainer API
-- [`references/07-loss-functions.md`](references/07-loss-functions.md) - 20+ loss functions for different tasks (contrastive, triplet, softmax, margin mining)
-- [`references/08-training-examples.md`](references/08-training-examples.md) - STS, NLI, paraphrases, MS MARCO, multilingual, matryoshka embeddings
-
-### Advanced Topics
-
-- [`references/09-model-optimization.md`](references/09-model-optimization.md) - ONNX, OpenVINO, quantization, distillation, PEFT adapters, Unsloth
-- [`references/10-pretrained-models.md`](references/10-pretrained-models.md) - Model zoo, multilingual models, domain-specific models, MTEB leaderboard
-
-### Migration & Utilities
-
-- [`references/11-migration-guide.md`](references/11-migration-guide.md) - v5.x to v5.4 migration, breaking changes, API updates
-- [`references/12-evaluation.md`](references/12-evaluation.md) - MTEB evaluation, leaderboard submission, custom metrics
+- [Sentence Transformer](reference/01-sentence-transformer.md)
+- [Cross Encoder](reference/02-cross-encoder.md)
+- [Sparse Encoder](reference/03-sparse-encoder.md)
+- [Applications](reference/04-applications.md)
+- [Multimodal](reference/05-multimodal.md)
+- [Training Overview](reference/06-training-overview.md)
+- [Loss Functions](reference/07-loss-functions.md)
+- [Training Examples](reference/08-training-examples.md)
+- [Model Optimization](reference/09-model-optimization.md)
+- [Pretrained Models](reference/10-pretrained-models.md)
+- [Migration Guide](reference/11-migration-guide.md)
+- [Evaluation](reference/12-evaluation.md)
 
 ## Common Patterns
-
 ### Semantic Search Pipeline
 
 ```python
@@ -295,7 +269,6 @@ for cluster_id in range(num_clusters):
 ```
 
 ## Best Practices
-
 1. **Choose the right model type**: Use Sentence Transformer for retrieval (fast), Cross Encoder for reranking (accurate)
 2. **Normalize embeddings** for cosine similarity when using dense vectors
 3. **Use asymmetric models** (`multi-qa-*`) for query-document search tasks
@@ -305,7 +278,6 @@ for cluster_id in range(num_clusters):
 7. **Start with pretrained models** before fine-tuning on custom data
 
 ## Troubleshooting
-
 ### Issue: Out of Memory Error
 
 **Solution**: Reduce batch size and use gradient checkpointing:
@@ -316,7 +288,7 @@ embeddings = model.encode(sentences, batch_size=16, show_progress_bar=True)
 
 ### Issue: Slow Encoding Speed
 
-**Solution**: Use ONNX or OpenVINO for optimization (see [`references/09-model-optimization.md`](references/09-model-optimization.md))
+**Solution**: Use ONNX or OpenVINO for optimization (see [`reference/09-model-optimization.md`](reference/09-model-optimization.md))
 
 ### Issue: Poor Retrieval Quality
 
@@ -327,7 +299,6 @@ embeddings = model.encode(sentences, batch_size=16, show_progress_bar=True)
 4. Try Matryoshka embeddings for better dimension trade-offs
 
 ## Version Information
-
 - **Version**: 5.4.1
 - **Release Date**: 2025
 - **Python Compatibility**: 3.10+
@@ -335,12 +306,8 @@ embeddings = model.encode(sentences, batch_size=16, show_progress_bar=True)
 - **Transformers Compatibility**: 4.34.0+
 
 ## See Also
-
 - [`transformers-5-5-4`](../../transformers-5-5-4/SKILL.md) - Hugging Face Transformers library
 - [`torch-2-6`]() - PyTorch deep learning framework
 - [`faiss-1-9`]() - Facebook AI Similarity Search for vector databases
 - [`chroma-1-0`]() - Chroma vector database for embeddings
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

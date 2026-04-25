@@ -19,17 +19,12 @@ external_references:
   - https://pkg.go.dev/code.gitea.io/tea
   - https://gitea.com/gitea/tea/src/branch/main/docs
 ---
-
-# Gitea Tea 0.14.0
-
 ## Overview
-
 Tea is the official command-line client for Gitea. Written in Go, it interacts with one or more Gitea instances via the Gitea API (using `code.gitea.io/sdk/gitea`). It manages issues, pull requests, releases, milestones, labels, notifications, actions/workflows, webhooks, repositories, branches, organizations, and admin users.
 
 Tea auto-detects context from the local git repository (`$PWD`), making it ideal for upstream/fork workflows where the local `main` branch tracks an upstream remote. Configuration persists in `$XDG_CONFIG_HOME/tea`.
 
 ## When to Use
-
 - Managing Gitea issues and pull requests from the terminal
 - Automating PR review, merge, or cleanup workflows
 - Scripting CI/CD interactions (workflow dispatch, run logs, secrets/variables)
@@ -38,8 +33,7 @@ Tea auto-detects context from the local git repository (`$PWD`), making it ideal
 - Working with multiple Gitea instances simultaneously
 - Building shell scripts that integrate with Gitea APIs
 
-## Installation
-
+## Installation / Setup
 ```bash
 # Homebrew (macOS, official)
 brew install tea
@@ -59,7 +53,6 @@ cd tea && make && make install
 ```
 
 ## Authentication
-
 First step: log in to a Gitea instance.
 
 ```bash
@@ -89,7 +82,6 @@ tea pulls --remote upstream           # discover login from "upstream" remote
 ```
 
 ## Core Concepts
-
 - **Repository context**: Tea reads the current directory's git remotes to determine which Gitea repo to operate on. Override with `--repo owner/name` or `--repo /path/to/local/repo`.
 - **Output formats**: All list commands support `--output simple|table|csv|tsv|yaml|json`. Use `--fields` to customize columns.
 - **Interactive mode**: Commands called without arguments enter interactive prompts (powered by Charm libraries).
@@ -97,7 +89,6 @@ tea pulls --remote upstream           # discover login from "upstream" remote
 - **Man page**: Hidden command `tea man` generates the full man page.
 
 ## Quick Examples
-
 ```bash
 # List open issues in current repo
 tea issues list
@@ -129,61 +120,20 @@ tea actions secrets list
 ```
 
 ## Command Reference
-
 Tea has a large command surface. See the reference files for full coverage:
 
-- [Reference: Issues & Pull Requests](references/01-issues-pulls.md) — issues, pulls (create, edit, checkout, review, merge, approve, reject, clean)
-- [Reference: Releases, Milestones, Labels](references/02-releases-milestones-labels.md) — releases, milestones, labels management
-- [Reference: Repositories & Organizations](references/03-repos-orgs.md) — repos (create, fork, migrate, search, edit), organizations
-- [Reference: Actions, Webhooks, Notifications](references/04-actions-webhooks-notifications.md) — CI actions/workflows, secrets, variables, webhooks, notifications
-- [Reference: Branches, Times, Comments, API](references/05-branches-times-comments-api.md) — branches, time tracking, comments, open, clone, admin, raw API
+- [Reference: Issues & Pull Requests](reference/01-issues-pulls.md) — issues, pulls (create, edit, checkout, review, merge, approve, reject, clean)
+- [Reference: Releases, Milestones, Labels](reference/02-releases-milestones-labels.md) — releases, milestones, labels management
+- [Reference: Repositories & Organizations](reference/03-repos-orgs.md) — repos (create, fork, migrate, search, edit), organizations
+- [Reference: Actions, Webhooks, Notifications](reference/04-actions-webhooks-notifications.md) — CI actions/workflows, secrets, variables, webhooks, notifications
+- [Reference: Branches, Times, Comments, API](reference/05-branches-times-comments-api.md) — branches, time tracking, comments, open, clone, admin, raw API
 
 ## Advanced Topics
+## Advanced Topics
 
-### Workflow Automation
-
-Tea integrates with Gitea Actions for CI/CD. Dispatch workflows, view run logs, and manage secrets:
-
-```bash
-# Trigger a workflow_dispatch workflow
-tea actions workflows dispatch deploy.yml --ref main \
-  --input env=production --input version=2.0.0
-
-# View recent workflow runs
-tea actions runs list --status failure
-
-# Stream logs from a running job
-tea actions runs logs <run-id> --follow
-```
-
-See [example-workflows.md](https://gitea.com/gitea/tea/src/branch/main/docs/example-workflows.md) for CI integration patterns, including auto-merge on approval.
-
-### Machine-Readable Output
-
-Pipe tea output into other tools:
-
-```bash
-# JSON output for scripting
-tea pr ls --output json | jq '.[] | select(.state=="open") | .title'
-
-# CSV for spreadsheets
-tea issues list --output csv --fields index,title,state,assignees,milestone > issues.csv
-
-# Simple text for shell parsing
-tea notifications --mine -o simple
-```
-
-### Docker Usage
-
-Run tea in a container for CI or ephemeral use:
-
-```bash
-docker run --rm gitea/tea tea whoami
-```
-
-Configuration is stored at `/app/.config/tea` inside the container. Mount a volume for persistence:
-
-```bash
-docker run --rm -v $HOME/.config/tea:/app/.config/tea gitea/tea tea pr ls
-```
+- [Issues Pulls](reference/01-issues-pulls.md)
+- [Releases Milestones Labels](reference/02-releases-milestones-labels.md)
+- [Repos Orgs](reference/03-repos-orgs.md)
+- [Actions Webhooks Notifications](reference/04-actions-webhooks-notifications.md)
+- [Branches Times Comments Api](reference/05-branches-times-comments-api.md)
 

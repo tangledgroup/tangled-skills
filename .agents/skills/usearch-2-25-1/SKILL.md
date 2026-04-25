@@ -21,11 +21,7 @@ external_references:
   - https://www.unum.cloud/blog/2023-11-07-scaling-vector-search-with-intel
   - https://github.com/unum-cloud/USearch/tree/main/docs
 ---
-
-# USearch 2.25.1
-
 ## Overview
-
 USearch is a smaller and faster single-file similarity search and clustering engine for vectors. It provides up to 10x faster HNSW implementation than FAISS, with a compact codebase (~3K SLOC vs FAISS's ~84K SLOC), no required dependencies, native bindings in 10+ languages, and support for user-defined metrics with JIT compilation.
 
 Key features:
@@ -40,7 +36,6 @@ Key features:
 - SQLite extensions for vector search in SQL
 
 ## When to Use
-
 Use this skill when:
 - Building approximate nearest neighbors (ANN) search systems
 - Implementing semantic search with custom distance metrics
@@ -52,7 +47,6 @@ Use this skill when:
 - Needing lightweight deployment (< 1MB Python wheel vs FAISS ~10MB)
 
 ## Core Concepts
-
 ### HNSW Algorithm
 
 USearch uses Hierarchical Navigable Small World (HNSW) graphs for approximate nearest neighbor search. The index builds a multi-layer proximity graph where higher layers provide long-range connections and lower layers provide fine-grained locality.
@@ -70,8 +64,7 @@ USearch uses Hierarchical Navigable Small World (HNSW) graphs for approximate ne
 
 Built-in metrics include: Cosine, Inner Product, L2 Squared, Pearson, Haversine, Jensen-Shannon Divergence, Hamming, Tanimoto (Jaccard), Sorensen (Dice). Custom metrics can be defined via JIT compilation.
 
-## Installation
-
+## Installation / Setup
 **Python:** `pip install usearch`
 **Rust:** `cargo add usearch`
 **JavaScript/Node.js:** `npm install usearch`
@@ -81,7 +74,6 @@ Built-in metrics include: Cosine, Inner Product, L2 Squared, Pearson, Haversine,
 **C:** Include `usearch.h` header (single-file C99)
 
 ## Quickstart Examples
-
 ### Python
 
 ```python
@@ -125,7 +117,6 @@ const results = index.search(new Float32Array([0.2, 0.6, 0.4]), 10);
 ```
 
 ## Serialization
-
 All bindings support save, load, and view (memory-mapped disk access):
 
 ```python
@@ -135,14 +126,15 @@ index.view('index.usearch')   # Memory-map, no RAM load
 ```
 
 ## Advanced Topics
+## Advanced Topics
 
-- [Reference: Quantization & Precision](references/01-quantization.md)
-- [Reference: User-Defined Metrics & JIT](references/02-custom-metrics.md)
-- [Reference: Filtering, Clustering & Joins](references/03-filtering-clustering.md)
-- [Reference: Multi-Language Bindings](references/04-bindings.md)
-- [Reference: SQLite Extensions](references/05-sqlite.md)
-- [Case Study: Semantic Joins via Stable Marriages](references/06-case-semantic-joins.md) — Use when matching two datasets with one-to-one or many-to-many fuzzy mappings (job matching, advertising, content recommendation, dating apps)
-- [Case Study: Molecular Search at Scale](references/07-case-molecular-search.md) — Use when searching similar molecules by structure, working with binary fingerprints (genomics, cheminformatics), or building drug discovery pipelines
-- [Case Study: FP8 Search & KV-Caching](references/08-case-fp8-kv-caching.md) — Use when building KV-cache-aware search for LLM inference, deploying on memory-constrained hardware, or targeting E5M2/E4M3 quantization (NumKong v7, 30+ backends, Giesen magic-number upcast)
-- [Case Study: Scaling Vector Search with Intel](references/09-case-intel-scaling.md) — Use when benchmarking on Sapphire Rapids/Granite Rapids, migrating from FAISS for 10–100× speedup at 100M+ scale, or comparing CPU vs GPU vector search costs
+- [Quantization](reference/01-quantization.md)
+- [Custom Metrics](reference/02-custom-metrics.md)
+- [Filtering Clustering](reference/03-filtering-clustering.md)
+- [Bindings](reference/04-bindings.md)
+- [Sqlite](reference/05-sqlite.md)
+- [Case Semantic Joins](reference/06-case-semantic-joins.md)
+- [Case Molecular Search](reference/07-case-molecular-search.md)
+- [Case Fp8 Kv Caching](reference/08-case-fp8-kv-caching.md)
+- [Case Intel Scaling](reference/09-case-intel-scaling.md)
 

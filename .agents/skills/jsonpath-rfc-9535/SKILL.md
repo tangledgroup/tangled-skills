@@ -18,11 +18,7 @@ external_references:
   - https://www.rfc-editor.org/rfc/rfc8259
   - https://www.rfc-editor.org/rfc/rfc9485
 ---
-
-# JSONPath RFC 9535
-
 ## Overview
-
 JSONPath defines a string syntax for selecting and extracting JSON (RFC 8259) values from within a given JSON value. It is not intended as a replacement for JSON Pointer (RFC 6901), but as a more powerful companion.
 
 A JSONPath expression is applied to a JSON value (the query argument) and produces a **nodelist** — a list of zero or more nodes, where each node is a pair of a value and its location within the query argument.
@@ -30,7 +26,6 @@ A JSONPath expression is applied to a JSON value (the query argument) and produc
 JSONPath was published as an IETF Standards Track document in February 2024 by Gössner, Normington, and Bormann. It supersedes earlier informal JSONPath specifications with a formal ABNF grammar and well-defined semantics.
 
 ## When to Use
-
 - Writing JSONPath query expressions to select specific data from JSON documents
 - Understanding the difference between child segments (`[...]`) and descendant segments (`..[...]`)
 - Implementing filter expressions with comparison operators, logical operators, and function extensions
@@ -39,7 +34,6 @@ JSONPath was published as an IETF Standards Track document in February 2024 by G
 - Understanding security considerations for JSONPath implementations
 
 ## Core Concepts
-
 ### JSON Values as Trees of Nodes
 
 JSON values are treated as trees where:
@@ -69,7 +63,6 @@ root-identifier = "$"
 | `@` | Current node identifier | Only inside filter selectors (2.3.5) |
 
 ## Syntax Overview
-
 ### Table: JSONPath Syntax Elements
 
 | Syntax Element | Description | Section |
@@ -101,7 +94,6 @@ $..author                ≡    $..['author']
 ```
 
 ## Selectors
-
 Selectors appear inside child segments (`[...]`) and descendant segments (`..[...]`). Each produces a nodelist of zero or more children of the input value.
 
 ### Name Selector
@@ -186,7 +178,6 @@ true, false, null          # JSON literals (lowercase only)
 ```
 
 ## Function Extensions
-
 Function extensions extend filter expression functionality with registered functions. Each function has a unique lowercase name, declared parameter types, and a declared return type. Functions must be free of side effects.
 
 ### Predefined Functions
@@ -248,7 +239,6 @@ $[?value(@..color) == "red"]
 **Implicit conversions**: A `NodesType` can be converted to `LogicalType` (non-empty → LogicalTrue, empty → LogicalFalse). A `NodesType` cannot be implicitly converted to `ValueType`.
 
 ## Segments
-
 ### Child Segment
 
 Drills down exactly one level into the structure. Contains a comma-separated sequence of selectors in brackets.
@@ -274,7 +264,6 @@ $..book[?@.price < 10]            # books cheaper than 10, at any depth
 **Important**: `..` alone is not valid — it must be followed by a child segment (bracket notation).
 
 ## Semantics of null
-
 JSON `null` is treated as any other JSON value — it is NOT "undefined" or "missing". It can be used as an array element, object member value, and compared in filter expressions.
 
 ```
@@ -286,7 +275,6 @@ $.c[?@.d == null]                  # comparison with "missing" value
 ```
 
 ## Normalized Paths
-
 A **Normalized Path** is a unique representation of a node's location in a value. It uses restricted bracket notation with single quotes and non-negative indices only.
 
 ```
@@ -299,7 +287,6 @@ $.a.b[1:2]            →  $['a']['b'][1]
 Normalized Paths are useful for compact nodelist representation in JSON and for deterministic post-processing.
 
 ## Security Considerations
-
 ### Implementation Security (Section 4.1)
 
 - **Never use eval()** or feed query parts to underlying language engines — this leads to injection attacks
@@ -319,8 +306,7 @@ Normalized Paths are useful for compact nodelist representation in JSON and for 
 - Predictable behavior is expected only for arguments conforming to I-JSON (RFC 7493)
 - Differences between implementations can be exploited where JSONPath is part of a security mechanism
 
-## Examples — Bookstore Dataset
-
+## Usage Examples
 Using the classic bookstore example from RFC 9535:
 
 ```json
@@ -353,7 +339,6 @@ Using the classic bookstore example from RFC 9535:
 | `$..*` | All member values and array elements in the input |
 
 ## Comparison with JSON Pointer (RFC 6901)
-
 JSONPath is designed as a companion to, not a replacement for, JSON Pointer:
 
 - **JSON Pointer** (`/store/book/0/title`): Simple path navigation using forward slashes
@@ -361,6 +346,3 @@ JSONPath is designed as a companion to, not a replacement for, JSON Pointer:
 
 JSONPath supports operations that JSON Pointer cannot: wildcard selection (`*`), filtering (`?`), array slicing (`:`), and recursive descent (`..`).
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

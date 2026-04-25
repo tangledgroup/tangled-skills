@@ -21,17 +21,12 @@ external_references:
   - https://jqlang.org/tutorial/
   - https://github.com/jqlang/jq
 ---
-
-# jq 1.8.1
-
 ## Overview
-
 Complete toolkit for jq 1.8.1, the lightweight and flexible command-line JSON processor. Use when parsing, transforming, filtering, or generating JSON data from the shell, piping between commands, processing API responses, or writing reusable JSON transformation scripts with a concise declarative query language.
 
 jq is a lightweight and flexible command-line JSON processor, often described as "sed for JSON". It is written in portable C with zero runtime dependencies — a single binary that can be copied to any machine of the same architecture and work immediately.
 
 ## When to Use
-
 - **Parsing JSON**: Extract specific fields from JSON documents or API responses
 - **Transforming JSON**: Restructure, reshape, or reformat JSON data between different schemas
 - **Filtering JSON**: Select only elements matching certain criteria from arrays or objects
@@ -40,8 +35,7 @@ jq is a lightweight and flexible command-line JSON processor, often described as
 - **Data validation**: Validate JSON structure and extract values for shell variable assignment
 - **Report generation**: Aggregate, sort, group, and summarize data from JSON sources
 
-## Installation
-
+## Installation / Setup
 ### Download Pre-built Binary
 
 ```bash
@@ -85,7 +79,6 @@ winget install jqlang.jq
 ```
 
 ## Basic Usage
-
 ### Invoking jq
 
 jq filters run on a stream of JSON data. The input is parsed as whitespace-separated JSON values, passed through the filter one at a time, and outputs are written to stdout as newline-separated JSON.
@@ -136,7 +129,6 @@ jq '.users | length' data.json
 | `--exit-status` | `-e` | Exit 0 if last output is not false/null; exit 1 if it is. |
 
 ## Core Concepts
-
 ### The Filter Model
 
 A jq program is a **filter**: it takes an input and produces an output. Every filter has both an input and an output. Even literals like `"hello"` or `42` are filters — they take an input but always produce the same literal as output.
@@ -166,7 +158,6 @@ Filters can be combined:
 ```
 
 ## Essential Operations
-
 ### Identity and Access
 
 ```bash
@@ -277,7 +268,6 @@ echo '[1,2,3]' | jq 'reduce .[] as $x (0; . + $x)'  # 6 (sum)
 ```
 
 ## Input/Output Control
-
 ### Reading Non-JSON Input
 
 ```bash
@@ -311,7 +301,6 @@ echo '{"z":3,"a":1}' | jq -S '.'              # {"a":1,"z":3} (sorted keys)
 ```
 
 ## Type System and Conversion
-
 ### Type Checking
 
 ```bash
@@ -334,7 +323,6 @@ echo '42' | jq 'tojson'            # "42"
 ```
 
 ## Real-World Examples
-
 ### API Responses
 
 ```bash
@@ -401,7 +389,6 @@ jq -n '[range(3) | {id: ., label: ("item-\(.)")}]'
 ```
 
 ## Performance Tips
-
 ```bash
 # ✅ Use select() early to filter before expensive operations
 jq '[.[] | select(.active) | expensive_operation]' data.json
@@ -416,7 +403,6 @@ jq --stream '[.[] | select(.path[0] == "users")]' huge.json
 ```
 
 ## Common Pitfalls
-
 ```bash
 # Empty produces no output — use // or ? to handle
 echo 'null' | jq '.a.b // "default"'     # "default"
@@ -426,15 +412,11 @@ echo 'null' | jq '.a.b?'                  # null (no error)
 echo '[1,2,3]' | jq '[.[] | select(. > 10)]'   # [] (empty array)
 ```
 
-## Reference Files
-
-For detailed coverage of advanced topics, see the reference files:
-
-- [`references/01-core-filters.md`](references/01-core-filters.md) — Core filters, operators, built-in functions, string/array/object operations
-- [`references/02-regex-and-iteration.md`](references/02-regex-and-iteration.md) — Regular expressions, generators (range/repeat/while/until), reduce/foreach, walk/recursion
-- [`references/03-io-and-advanced.md`](references/03-io-and-advanced.md) — I/O control, assignment, error handling, modules, streaming, type system, user-defined functions
-- [`references/04-real-world-examples.md`](references/04-real-world-examples.md) — API responses, data transformation pipelines, shell integration, log parsing, validation, patterns cheat sheet
-
+## Advanced Topics
 ## Advanced Topics
 
-For more details on advanced usage, refer to the official documentation listed in the References section.
+- [Core Filters](reference/01-core-filters.md)
+- [Regex And Iteration](reference/02-regex-and-iteration.md)
+- [Io And Advanced](reference/03-io-and-advanced.md)
+- [Real World Examples](reference/04-real-world-examples.md)
+

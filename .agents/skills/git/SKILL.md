@@ -27,15 +27,10 @@ external_references:
   - https://piechowski.io/post/git-commands-before-reading-code/
   - https://raw.githubusercontent.com/forrestchang/andrej-karpathy-skills/refs/heads/main/skills/karpathy-guidelines/SKILL.md
 ---
-
-# Git Toolkit
-
 ## Overview
-
 Git version control, structured commit conventions (Conventional Commits), semantic versioning rules, and changelog formatting. Covers common daily workflows — no plumbing commands or obscure edge cases.
 
 ## When to Use
-
 - Setting up a new repository or cloning an existing one
 - Staging, committing, branching, merging, or rebasing changes
 - Writing commit messages following Conventional Commits format
@@ -44,7 +39,6 @@ Git version control, structured commit conventions (Conventional Commits), seman
 - Diagnosing a new codebase by analyzing its git history
 
 ## Core Concepts
-
 Git tracks snapshots through a directed acyclic graph of commits. Four areas:
 
 **Staging area (index)** — Intermediate layer between working tree and repo. Use `git add` to choose which changes enter the next commit, giving fine-grained control over commit granularity.
@@ -56,7 +50,6 @@ Git tracks snapshots through a directed acyclic graph of commits. Four areas:
 **Remotes** — Named references to other repositories (e.g., `origin`). Push to share commits, fetch/pull to sync with others.
 
 ## Workflow Shorthands
-
 When the user says "add, commit, push" (or similar shorthand), interpret as a three-step workflow operating on **all** changes by default, scoped to specific files if provided.
 
 ### Default Behavior — All Changes
@@ -90,7 +83,6 @@ git push origin <current-branch>
 - Dirty working directory and user says "push" → warn about pushing without committing first
 
 ## Essential Commands
-
 ### Initialize and Clone
 
 ```bash
@@ -258,7 +250,6 @@ git blame <file>
 ```
 
 ## Commit Conventions
-
 ### Conventional Commits Format
 
 Structure commit messages as:
@@ -308,7 +299,6 @@ Given version `MAJOR.MINOR.PATCH`:
 - Build metadata: `1.0.0+20130313144700` (ignored in precedence)
 
 ## Changelog Format
-
 ```markdown
 # Changelog
 
@@ -316,7 +306,6 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog, and this project adheres to SemVer.
 
 ## v<MAJOR>.<MINOR>.<PATCH>
-
 ### Added
 - New feature description
 
@@ -341,7 +330,6 @@ Omit empty sections.
 For unknown next `v<MAJOR>.<MINOR>.<PATCH>`, include `[Unreleased]` for work not yet shipped.
 
 ## Codebase Diagnostics
-
 Before reading code in a new project, run these five commands:
 
 ```bash
@@ -359,6 +347,3 @@ git log --oneline --since="1 year ago" | grep -iE 'revert|hotfix|emergency|rollb
 
 Cross-reference churn hotspots with bug clusters: files on both lists are highest-risk code.
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.

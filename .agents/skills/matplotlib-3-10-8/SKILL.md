@@ -19,15 +19,10 @@ external_references:
   - https://matplotlib.org/3.10.8/gallery/index.html
   - https://matplotlib.org/3.10.8/users/index.html
 ---
-
-# Matplotlib 3.10.8
-
 ## Overview
-
 Matplotlib is the foundational Python plotting library for creating a wide variety of static, animated, and interactive visualizations. It provides both a quick plotting interface via `pyplot` (MATLAB-like state machine) and an object-oriented API for fine-grained control over every element in a figure. Matplotlib serves as the visualization backend for pandas, seaborn, scikit-learn, and many other data science libraries.
 
 ## When to Use
-
 Use this skill when:
 - Creating line plots, scatter plots, bar charts, histograms, contour plots, or 3D visualizations
 - Customizing figure appearance: colors, colormaps, tick labels, legends, annotations
@@ -40,7 +35,6 @@ Use this skill when:
 - Configuring global defaults via `rcParams` or style sheets
 
 ## Core Concepts
-
 ### The Figure-Axes Architecture
 
 Every matplotlib figure follows a hierarchical structure:
@@ -209,7 +203,6 @@ import matplotlib.pyplot as plt
 Or set via environment variable: `MPLBACKEND=Agg` or `matplotlibrc`.
 
 ## Installation / Setup
-
 ```bash
 # Via pip
 pip install matplotlib
@@ -224,7 +217,6 @@ pip install matplotlib[dev]
 Required dependencies: NumPy, Python 3.10+. Optional: freetype, libpng, kiwisolver, cycler, pillow, pyparsing.
 
 ## Usage Examples
-
 ### Basic Plotting
 
 ```python
@@ -395,19 +387,17 @@ with plt.style.context('dark_background'):
 ```
 
 ## Advanced Topics
+## Advanced Topics
 
-For detailed API reference and advanced topics, see the reference files:
-
-- **Figure API** — Figure class, subfigures, layout engines, saving
-- **Axes API** — All plotting methods (line, scatter, bar, hist, contour, etc.), axis configuration, appearance
-- **Pyplot API** — State machine interface overview and function catalog
-- **Colors & Colormaps** — Color specification, normalization, colormap registry
-- **Text & Annotations** — Text rendering, LaTeX math, annotation arrows, bounding boxes
-- **Animation** — FuncAnimation, blitting, writer backends (ffmpeg, pillow)
-- **3D Toolkit (mplot3d)** — 3D axes, surfaces, wireframes, projections
-- **Widgets & Interactive** — Sliders, buttons, checkboxes, range selectors, event handling
-- **Transforms** — Coordinate systems, transformations, blending modes
-- **Artist API** — Base classes for all visual elements, property cycles
-- **Styles & Configuration** — rcParams, style sheets, matplotlibrc file
-- **Backends** — All available backends, switching, configuration
+- [Figure Api](reference/01-figure-api.rst)
+- [Axes Api](reference/02-axes-api.rst)
+- [Pyplot Api](reference/03-pyplot-api.rst)
+- [Colors Colormaps](reference/04-colors-colormaps.rst)
+- [Text Annotations](reference/05-text-annotations.rst)
+- [Animation](reference/06-animation.rst)
+- [Mplot3D Toolkit](reference/07-mplot3d-toolkit.rst)
+- [Widgets Events](reference/08-widgets-events.rst)
+- [Transforms Artists](reference/09-transforms-artists.rst)
+- [Styles Config](reference/10-styles-config.rst)
+- [Backends](reference/11-backends.rst)
 

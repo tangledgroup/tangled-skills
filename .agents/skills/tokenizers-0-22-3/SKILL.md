@@ -22,13 +22,7 @@ external_references:
   - https://pypi.org/project/tokenizers/
   - https://huggingface.co/docs/tokenizers
 ---
-
-# Tokenizers v0.22.3
-
-Fast state-of-the-art tokenizers optimized for both research and production, written in Rust with bindings for Python, Node.js, and Ruby.
-
 ## Overview
-
 🤗 Tokenizers provides implementations of today's most used tokenization algorithms (BPE, WordPiece, Unigram, ByteLevel, etc.) with a focus on performance and versatility. The library can tokenize a GB of text in less than 20 seconds on a server CPU.
 
 **Key features:**
@@ -39,7 +33,6 @@ Fast state-of-the-art tokenizers optimized for both research and production, wri
 - **Production-ready**: Used in Hugging Face Transformers library
 
 ## When to Use
-
 Use this skill when:
 - Training custom tokenizers on domain-specific text corpora
 - Implementing BPE, WordPiece, Unigram, or other tokenization algorithms
@@ -50,7 +43,6 @@ Use this skill when:
 - Creating custom vocabularies for language models
 
 ## Core Concepts
-
 ### Tokenization Pipeline
 
 The tokenization process follows four sequential steps:
@@ -83,8 +75,7 @@ Special tokens are reserved vocabulary entries for model-specific purposes:
 - `[PAD]`: Padding token for batch processing
 - `[MASK]`: Mask token for masked language modeling
 
-## Installation
-
+## Installation / Setup
 ### Python
 
 ```bash
@@ -109,10 +100,9 @@ Add to `Cargo.toml`:
 tokenizers = "0.22"
 ```
 
-See [Installation Guide](references/01-installation.md) for detailed setup instructions and building from source.
+See [Installation Guide](reference/01-installation.md) for detailed setup instructions and building from source.
 
-## Quick Start
-
+## Usage Examples
 ### Training a BPE Tokenizer
 
 ```python
@@ -157,81 +147,20 @@ print(encoding.ids)     # [12345, 67, 8901, 23]
 print(encoding.offsets[0])  # (0, 5) - position of "Hello" in original text
 ```
 
-See [Quick Start Guide](references/02-quick-start.md) for more examples including batch encoding and padding.
-
-## Reference Files
-
-### Core Workflows
-
-- [`references/01-installation.md`](references/01-installation.md) - Installation for Python, Node.js, Rust; building from source
-- [`references/02-quick-start.md`](references/02-quick-start.md) - Training tokenizers, encoding text, batch processing
-- [`references/03-pipeline-components.md`](references/03-pipeline-components.md) - Normalizers, pre-tokenizers, models, post-processors, decoders
-- [`references/04-models.md`](references/04-models.md) - BPE, WordPiece, Unigram, ByteLevel, WordLevel, SentencePiece, LLaMA
-
-### Advanced Topics
-
-- [`references/05-training-guide.md`](references/05-training-guide.md) - Training strategies, iterators, memory-efficient training
-- [`references/06-special-tokens.md`](references/06-special-tokens.md) - Adding tokens, template processing, sequence pairing
-- [`references/07-api-reference.md`](references/07-api-reference.md) - Complete API documentation for Tokenizer class and all components
+See [Quick Start Guide](reference/02-quick-start.md) for more examples including batch encoding and padding.
 
 ## Advanced Topics
+## Advanced Topics
 
-### Custom Pre-tokenizers
-
-Combine multiple pre-tokenizers for complex splitting logic:
-
-```python
-from tokenizers import Tokenizer
-from tokenizers.models import BPE
-from tokenizers.pre_tokenizers import PreTokenizer, ByteLevel, Whitespace
-
-# Chain pre-tokenizers: split on whitespace, then apply byte-level encoding
-tokenizer = Tokenizer(BPE())
-tokenizer.pre_tokenizer = PreTokenizer.Sequence([
-    Whitespace(),
-    ByteLevel(add_prefix_space=True)
-])
-```
-
-### Template Processing for Model-Specific Formatting
-
-```python
-from tokenizers.processors import TemplateProcessing
-
-# BERT-style formatting with [CLS] and [SEP] tokens
-tokenizer.post_processor = TemplateProcessing(
-    single="[CLS] $A [SEP]",
-    pair="[CLS] $A [SEP] $B:1 [SEP]:1",
-    special_tokens=[
-        ("[CLS]", tokenizer.token_to_id("[CLS]")),
-        ("[SEP]", tokenizer.token_to_id("[SEP]"))
-    ]
-)
-
-# Encode sequence pair
-encoding = tokenizer.encode("Hello", "World")
-print(encoding.tokens)  # ["[CLS]", "Hello", "[SEP]", "World", "[SEP]"]
-print(encoding.type_ids)  # [0, 0, 0, 1, 1]
-```
-
-### Padding and Truncation
-
-```python
-# Enable automatic padding
-tokenizer.enable_padding(length=128, pad_id=3, pad_token="[PAD]")
-
-# Enable truncation
-tokenizer.enable_truncation(length=512, strategy="longest_first")
-
-# Batch encode with padding/truncation applied
-encodings = tokenizer.encode_batch([
-    "Short text",
-    "This is a much longer text that will be truncated to fit the maximum length"
-])
-```
+- [Installation](reference/01-installation.md)
+- [Quick Start](reference/02-quick-start.md)
+- [Pipeline Components](reference/03-pipeline-components.md)
+- [Models](reference/04-models.md)
+- [Training Guide](reference/05-training-guide.md)
+- [Special Tokens](reference/06-special-tokens.md)
+- [Api Reference](reference/07-api-reference.md)
 
 ## Performance Tips
-
 1. **Use batch encoding**: `encode_batch()` is significantly faster than looping over `encode()`
 2. **Train with batches**: Provide file lists or iterators in batches for faster training
 3. **Choose right pre-tokenizer**: ByteLevel enables smaller vocabularies (256 base tokens)
@@ -239,7 +168,6 @@ encodings = tokenizer.encode_batch([
 5. **Cache tokenizers**: Load once and reuse across requests
 
 ## Troubleshooting
-
 ### "Tokenizer not found" errors
 
 Ensure you're loading the correct file format:
@@ -282,7 +210,6 @@ print(encoding.offsets[0])  # Points to "Café" in original, not normalized vers
 ```
 
 ## Version Compatibility
-
 | Component | Version | Notes |
 |-----------|---------|-------|
 | Rust Core | 0.22.2 | Base implementation |
@@ -291,7 +218,6 @@ print(encoding.offsets[0])  # Points to "Café" in original, not normalized vers
 | Ruby Bindings | 0.22.0 | Community-maintained |
 
 ## Migration Notes
-
 ### From v0.1x to v0.22.x
 
 - **Breaking change**: `tokenizer.encode_batch()` now returns list of `Encoding` objects (was tuple)
@@ -314,8 +240,8 @@ tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 ```
 
 ## Related Skills
-
 Consider these complementary skills:
 - **transformers**: For working with pre-trained models that use tokenizers
 - **datasets**: For loading and processing training corpora
 - **accelerate**: For distributed training with custom tokenizers
+

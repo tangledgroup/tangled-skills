@@ -20,24 +20,10 @@ external_references:
   - https://bun.sh/docs
   - https://github.com/oven-sh/bun
 ---
-
-# Bun 1.3.12
-
 ## Overview
-
 Complete toolkit for Bun 1.3.12 JavaScript runtime, package manager, bundler, and test runner. Use when building high-performance Node.js-compatible applications, migrating from npm/yarn/pnpm workflows, bundling JavaScript/TypeScript projects, running Jest-compatible tests, or developing full-stack applications with native HTTP servers, SQLite, Redis, and WebAssembly support.
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.## Overview
-
-Complete toolkit for Bun 1.3.12 JavaScript runtime, package manager, bundler, and test runner. Use when building high-performance Node.js-compatible applications, migrating from npm/yarn/pnpm workflows, bundling JavaScript/TypeScript projects, running Jest-compatible tests, or developing full-stack applications with native HTTP servers, SQLite, Redis, and WebAssembly support.
-
-Bun is a fast, all-in-one JavaScript/TypeScript toolkit replacing Node.js, npm/yarn/pnpm, Webpack/esbuild, and Jest. It provides a runtime, package manager, bundler, and test runner in a single binary with native support for TypeScript, JSX, CSS, Wasm, and more.
 
 ## When to Use
-
 - Building high-performance JavaScript/TypeScript applications
 - Replacing Node.js with faster alternative (10-30x faster startup)
 - Migrating from npm/yarn/pnpm to integrated package management
@@ -47,8 +33,14 @@ Bun is a fast, all-in-one JavaScript/TypeScript toolkit replacing Node.js, npm/y
 - Creating single-file executables from JavaScript/TypeScript
 - Working with TypeScript/JSX without transpilation steps
 
-## Quick Start
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.## Overview
 
+Complete toolkit for Bun 1.3.12 JavaScript runtime, package manager, bundler, and test runner. Use when building high-performance Node.js-compatible applications, migrating from npm/yarn/pnpm workflows, bundling JavaScript/TypeScript projects, running Jest-compatible tests, or developing full-stack applications with native HTTP servers, SQLite, Redis, and WebAssembly support.
+
+Bun is a fast, all-in-one JavaScript/TypeScript toolkit replacing Node.js, npm/yarn/pnpm, Webpack/esbuild, and Jest. It provides a runtime, package manager, bundler, and test runner in a single binary with native support for TypeScript, JSX, CSS, Wasm, and more.
+
+## Installation / Setup
 ### Installation
 
 ```bash
@@ -78,16 +70,15 @@ bun --revision # Output: 1.3.12+<commit-hash>
 
 See detailed guides in reference files below.
 
-**Runtime**: [references/01-runtime-basics.md](references/01-runtime-basics.md) - Running TypeScript/JavaScript directly
+**Runtime**: [reference/01-runtime-basics.md](reference/01-runtime-basics.md) - Running TypeScript/JavaScript directly
 
-**Package Manager**: [references/02-package-manager.md](references/02-package-manager.md) - `bun add`, `bun install`, workspaces
+**Package Manager**: [reference/02-package-manager.md](reference/02-package-manager.md) - `bun add`, `bun install`, workspaces
 
-**Bundler**: [references/03-bundler.md](references/03-bundler.md) - Building bundles, hot-reloading, single-file executables
+**Bundler**: [reference/03-bundler.md](reference/03-bundler.md) - Building bundles, hot-reloading, single-file executables
 
-**Test Runner**: [references/04-test-runner.md](references/04-test-runner.md) - Jest-compatible testing with lifecycle hooks, mocking, snapshots
+**Test Runner**: [reference/04-test-runner.md](reference/04-test-runner.md) - Jest-compatible testing with lifecycle hooks, mocking, snapshots
 
 ## Core Features
-
 ### Runtime
 - Native TypeScript & JSX support (no transpilation needed)
 - 10-30x faster than Node.js for many workloads
@@ -124,7 +115,6 @@ See detailed guides in reference files below.
 - DOM/JSX testing support
 
 ## Configuration
-
 Bun uses `bunfig.toml` for configuration (optional - works without config):
 
 ```toml title="bunfig.toml"
@@ -141,37 +131,30 @@ Bun uses `bunfig.toml` for configuration (optional - works without config):
 # Environment variables
 ```
 
-See [references/05-configuration.md](references/05-configuration.md) for complete configuration reference.
+See [reference/05-configuration.md](reference/05-configuration.md) for complete configuration reference.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-### Core Functionality
-- [`references/01-runtime-basics.md`](references/01-runtime-basics.md) - Runtime fundamentals, watch mode, REPL, debugging
-- [`references/02-package-manager.md`](references/02-package-manager.md) - Package installation, workspaces, catalogs, publishing
-- [`references/03-bundler.md`](references/03-bundler.md) - Build commands, HMR, targets, formats, single-file executables
-- [`references/04-test-runner.md`](references/04-test-runner.md) - Test patterns, lifecycle hooks, mocking, snapshots, coverage
-
-### Advanced Topics
-- [`references/05-configuration.md`](references/05-configuration.md) - bunfig.toml options and environment configuration
-- [`references/06-http-server.md`](references/06-http-server.md) - Built-in HTTP server, routing, websockets, TLS
-- [`references/07-data-storage.md`](references/07-data-storage.md) - SQLite, Redis, S3, file I/O, streams
-- [`references/08-nodejs-compat.md`](references/08-nodejs-compat.md) - Node.js compatibility, migration guide, known issues
-
-### Migration & Integration
-- [`references/09-migration-guides.md`](references/09-migration-guides.md) - Migrating from npm, yarn, pnpm, Webpack, Jest
-- [`references/10-ci-cd-deployment.md`](references/10-ci-cd-deployment.md) - GitHub Actions, Docker, Vercel, Railway deployment
-
-### Utilities & APIs
-- [`references/11-built-in-apis.md`](references/11-built-in-apis.md) - Hashing, glob, semver, TOML, YAML, JSON5, HTML rewriter
-- [`references/12-process-system.md`](references/12-process-system.md) - Child processes, shell commands, environment variables, cron jobs
+- [Runtime Basics](reference/01-runtime-basics.md)
+- [Package Manager](reference/02-package-manager.md)
+- [Bundler](reference/03-bundler.md)
+- [Test Runner](reference/04-test-runner.md)
+- [Configuration](reference/05-configuration.md)
+- [Http Server](reference/06-http-server.md)
+- [Data Storage](reference/07-data-storage.md)
+- [Nodejs Compat](reference/08-nodejs-compat.md)
+- [Migration Guides](reference/09-migration-guides.md)
+- [Ci Cd Deployment](reference/10-ci-cd-deployment.md)
+- [Built In Apis](reference/11-built-in-apis.md)
+- [Process System](reference/12-process-system.md)
 
 ## Troubleshooting
-
 ### Common Issues
 
 **Module resolution errors**: Bun uses Node.js-style resolution. Use `bun --bun` flag or configure in `bunfig.toml`.
 
-**Node.js compatibility issues**: Some native modules may not work. Check [compatibility docs](references/08-nodejs-compat.md).
+**Node.js compatibility issues**: Some native modules may not work. Check [compatibility docs](reference/08-nodejs-compat.md).
 
 **TypeScript errors**: Ensure `tsconfig.json` is compatible. Bun uses its own compiler for runtime but respects your config.
 
@@ -184,7 +167,6 @@ See [references/05-configuration.md](references/05-configuration.md) for complet
 - [Bun Documentation](https://bun.sh/docs) - Full official documentation
 
 ## Performance Tips
-
 1. Use `bun build --minify` for production bundles
 2. Enable bytecode compilation: `--bytecode` flag
 3. Use workspaces for monorepos to dedupe dependencies
@@ -192,7 +174,6 @@ See [references/05-configuration.md](references/05-configuration.md) for complet
 5. Use built-in SQLite instead of external database clients when possible
 
 ## Version Management
-
 ```bash
 # Check current version
 bun --version
@@ -211,7 +192,6 @@ bun upgrade --stable
 ```
 
 ## Environment Setup
-
 After installation, add Bun to PATH if needed:
 
 **macOS/Linux**: Add to `~/.bashrc` or `~/.zshrc`:
@@ -230,15 +210,9 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 ```
 
 ## Related Skills
-
 Consider also using:
 - `typescript` - For TypeScript configuration and patterns
 - `jest` - For Jest-specific features not yet in Bun test runner
 - `docker` - For containerized deployments
 - `github-actions` - For CI/CD integration
-
-
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.
 

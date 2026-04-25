@@ -18,16 +18,18 @@ external_references:
   - https://github.com/aio-libs/aiohttp_jinja2
   - https://aiohttp-jinja2.readthedocs.io/
 ---
-
-# aiohttp-jinja2-1-6
-
 ## Overview
-
 Jinja2 template renderer for aiohttp.web applications providing decorator-based rendering, context processors, URL helpers, and async template support. Use when building Python web applications with aiohttp that require HTML templating, dynamic content generation, or server-side rendering with Jinja2 syntax.
 
+## When to Use
+- Building aiohttp.web applications that require HTML templating
+- Need server-side rendering with Jinja2 syntax in async handlers
+- Want decorator-based template rendering (`@aiohttp_jinja2.template()`)
+- Require per-request context variables (current user, request object)
+- Need URL generation helpers in templates (`{{ url('route-name') }}`)
+- Building web applications with dynamic content and reusable layouts
 
 ## Core Concepts
-
 This skill covers the key concepts and fundamental ideas related to this topic.## Overview
 
 Jinja2 template renderer for aiohttp.web applications providing decorator-based rendering, context processors, URL helpers, and async template support. Use when building Python web applications with aiohttp that require HTML templating, dynamic content generation, or server-side rendering with Jinja2 syntax.
@@ -39,17 +41,7 @@ Jinja2 template renderer for aiohttp.web applications that integrates Jinja2 tem
 **Python:** 3.8+  
 **Dependencies:** aiohttp ≥3.6.3, Jinja2 ≥3.0
 
-## When to Use
-
-- Building aiohttp.web applications that require HTML templating
-- Need server-side rendering with Jinja2 syntax in async handlers
-- Want decorator-based template rendering (`@aiohttp_jinja2.template()`)
-- Require per-request context variables (current user, request object)
-- Need URL generation helpers in templates (`{{ url('route-name') }}`)
-- Building web applications with dynamic content and reusable layouts
-
-## Setup
-
+## Installation / Setup
 Install the package:
 
 ```bash
@@ -75,10 +67,9 @@ aiohttp_jinja2.setup(
 app[aiohttp_jinja2.static_root_key] = "/static"
 ```
 
-See [Core Concepts](references/01-core-concepts.md) for detailed setup options and configuration.
+See [Core Concepts](reference/01-core-concepts.md) for detailed setup options and configuration.
 
-## Quick Start
-
+## Usage Examples
 ### Decorator-Based Rendering (Recommended)
 
 The most convenient way to render templates is using the `@template` decorator:
@@ -98,7 +89,7 @@ class Handler(web.View):
         return {'user_id': self.request.match_info['id']}
 ```
 
-See [Template Rendering](references/02-template-rendering.md) for all rendering methods.
+See [Template Rendering](reference/02-template-rendering.md) for all rendering methods.
 
 ### Context Processors
 
@@ -119,7 +110,7 @@ aiohttp_jinja2.setup(
 )
 ```
 
-See [Context Processors](references/03-context-processors.md) for advanced usage.
+See [Context Processors](reference/03-context-processors.md) for advanced usage.
 
 ### Built-in Template Helpers
 
@@ -129,26 +120,26 @@ Three helpers are available by default in all templates:
 - `{{ url('route-name', id=123) }}` - Generate URLs from route names
 - `{{ static('file.css') }}` - Generate static file URLs
 
-See [Template Helpers](references/04-template-helpers.md) for usage examples.
+See [Template Helpers](reference/04-template-helpers.md) for usage examples.
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-core-concepts.md`](references/01-core-concepts.md) - Setup, environment configuration, loaders, autoescape
-- [`references/02-template-rendering.md`](references/02-template-rendering.md) - Decorator, render_template, render_string, async rendering
-- [`references/03-context-processors.md`](references/03-context-processors.md) - Per-request variables, middleware integration, request_processor
-- [`references/04-template-helpers.md`](references/04-template-helpers.md) - url(), static(), app globals, custom filters
-- [`references/05-advanced-patterns.md`](references/05-advanced-patterns.md) - Custom globals, error handling, multiple environments, subclassing
-- [`references/06-troubleshooting.md`](references/06-troubleshooting.md) - Common issues, debugging, performance tips
+- [Core Concepts](reference/01-core-concepts.md)
+- [Template Rendering](reference/02-template-rendering.md)
+- [Context Processors](reference/03-context-processors.md)
+- [Template Helpers](reference/04-template-helpers.md)
+- [Advanced Patterns](reference/05-advanced-patterns.md)
+- [Troubleshooting](reference/06-troubleshooting.md)
 
 ## Troubleshooting
-
 **Common issues:**
 
 - `RuntimeError: aiohttp_jinja2.setup(...) must be called first` - Call setup() before adding routes
 - `Template 'X' not found` - Check template path and loader configuration
 - Static files not loading - Set `app[aiohttp_jinja2.static_root_key] = "/static"`
 
-See [Troubleshooting Guide](references/06-troubleshooting.md) for detailed solutions.
+See [Troubleshooting Guide](reference/06-troubleshooting.md) for detailed solutions.
 
 **Key differences from other frameworks:**
 
@@ -158,7 +149,6 @@ See [Troubleshooting Guide](references/06-troubleshooting.md) for detailed solut
 - Async rendering (`enable_async=True`) requires `render_template_async()`
 
 ## Version Compatibility
-
 | aiohttp-jinja2 | Python | aiohttp | Jinja2 |
 |----------------|--------|---------|--------|
 | 1.6+           | 3.8-3.12 | ≥3.6.3  | ≥3.0   |
@@ -171,7 +161,6 @@ See [Troubleshooting Guide](references/06-troubleshooting.md) for detailed solut
 - Dropped Python 3.7 support
 
 ## Migration Notes
-
 **From Flask/Jinja2:**
 ```python
 # Flask style (not compatible)
@@ -192,10 +181,5 @@ app['static_root_url'] = '/static'
 app[aiohttp_jinja2.static_root_key] = '/static'
 ```
 
-See [Advanced Patterns](references/05-advanced-patterns.md) for migration strategies and custom configurations.
-
-
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.
+See [Advanced Patterns](reference/05-advanced-patterns.md) for migration strategies and custom configurations.
 

@@ -18,17 +18,12 @@ external_references:
   - https://ashvardanian.com/posts/numkong/
   - https://github.com/ashvardanian/NumKong
 ---
-
-# NumKong 7.6.0
-
 ## Overview
-
 NumKong is an ultra-fast mixed-precision vector similarity and distance library with 2,000+ SIMD kernels spanning x86 (Haswell through Sapphire Rapids AMX), ARM (NEON through SME), and RISC-V (RVV). It covers 17 numeric types from packed binary bits to 64-bit complex numbers, with automatic precision widening, Kahan-compensated summation, and zero hidden allocations or thread pools.
 
 Available for C/C++, Python, Rust, JavaScript/TypeScript, Swift, Go, with pre-built wheels/packages on PyPI, npm, and crates.io.
 
 ## When to Use
-
 - Computing dot products, angular distance, or euclidean distance with mixed precision
 - Vector search workloads requiring packed matrix reuse (pack once, query many times)
 - Self-similarity matrices where symmetric kernels avoid duplicate pair computation
@@ -42,7 +37,6 @@ Available for C/C++, Python, Rust, JavaScript/TypeScript, Swift, Go, with pre-bu
 - MaxSim late-interaction scoring (ColBERT-style retrieval)
 
 ## Core Concepts
-
 ### No Hidden Threads or Allocations
 
 NumKong never spawns threads, never allocates memory internally, and never throws exceptions. The caller owns all buffers and controls parallelism through explicit row-range partitioning. This avoids thread oversubscription with external schedulers and hidden allocation overhead.
@@ -60,7 +54,6 @@ For GEMM-like workloads where the right-hand side matrix is reused across many q
 For self-similarity or self-distance matrices, symmetric kernels (`dots_symmetric`, `angulars_symmetric`, `euclideans_symmetric`) skip duplicate (i,j) and (j,i) pairs, cutting pair count nearly in half with explicit row-range partitioning for parallel execution.
 
 ## Installation / Setup
-
 ### Python
 
 ```bash
@@ -105,7 +98,6 @@ npm install numkong
 Node.js >= 22, Bun, Deno supported. WASM bundle included for browser use without native addon.
 
 ## Usage Examples
-
 ### Dot Products (Python)
 
 ```python
@@ -212,10 +204,11 @@ console.log(angular(a, b));      // cosine distance
 ```
 
 ## Advanced Topics
+## Advanced Topics
 
-- [Reference: Numeric Types and Precision](references/01-numeric-types.md)
-- [Reference: Operation Families](references/02-operation-families.md)
-- [Reference: SIMD Backends and Dispatch](references/03-simd-backends.md)
-- [Reference: Memory Layout and Parallelism](references/04-memory-layout.md)
-- [Reference: Language Bindings Deep Dive](references/05-language-bindings.md)
+- [Numeric Types](reference/01-numeric-types.md)
+- [Operation Families](reference/02-operation-families.md)
+- [Simd Backends](reference/03-simd-backends.md)
+- [Memory Layout](reference/04-memory-layout.md)
+- [Language Bindings](reference/05-language-bindings.md)
 

@@ -19,11 +19,7 @@ external_references:
   - https://github.com/rohitg00/iii-engine
   - https://www.npmjs.com/package/@agentmemory/agentmemory
 ---
-
-# agentmemory v0.8.10
-
 ## Overview
-
 agentmemory is a persistent memory system for AI coding agents that silently captures what your agent does, compresses it into searchable memory, and injects the right context when the next session starts. Built on [iii-engine](https://github.com/rohitg00/iii-engine)'s three primitives (Worker/Function/Trigger), it provides 43 MCP tools, 109 REST endpoints, 12 auto-hooks, and a real-time viewer without external database dependencies.
 
 **Key capabilities:**
@@ -39,7 +35,6 @@ agentmemory is a persistent memory system for AI coding agents that silently cap
 - 654 tests passing, Apache-2.0 licensed
 
 ## When to Use
-
 Load this skill when:
 - Setting up agentmemory for the first time (installation, configuration, hooks)
 - Integrating with specific agents (Claude Code, Cursor, Gemini CLI, OpenCode, Hermes, Cline, etc.)
@@ -50,7 +45,6 @@ Load this skill when:
 - Extending agentmemory with custom functions or hooks
 
 ## Core Concepts
-
 ### Memory Lifecycle
 
 1. **Observation**: Raw hook events captured from agent interactions (tool calls, prompts, responses)
@@ -100,10 +94,9 @@ Query → [BM25 (40%)] + [Vector (35%)] + [Graph (25%)] → Combined Score → R
 - `VECTOR_WEIGHT`: 0.6 (default, requires embedding provider)
 - Graph score: derived from relation confidence and hop count
 
-See [Architecture Details](references/01-architecture.md) for deep dive into iii-engine integration and state management.
+See [Architecture Details](reference/01-architecture.md) for deep dive into iii-engine integration and state management.
 
-## Installation
-
+## Installation / Setup
 ### Quick Start
 
 ```bash
@@ -138,10 +131,9 @@ All data stored in `~/.agentmemory/`:
 - `.env` — Environment configuration
 - `viewer/` — Real-time viewer static files
 
-See [Configuration Guide](references/02-configuration.md) for environment variables and embedding setup.
+See [Configuration Guide](reference/02-configuration.md) for environment variables and embedding setup.
 
 ## Usage Examples
-
 ### 1. Claude Code Integration
 
 agentmemory ships with a Claude Code plugin that automatically captures observations and injects context.
@@ -262,72 +254,9 @@ agentmemory viewer
 - Search interface
 - Token savings dashboard
 
-See [MCP Tools Reference](references/03-mcp-tools.md) for all 43 tools and [REST API Reference](references/04-rest-api.md) for endpoint details.
-
-## Advanced Topics
-
-### Embedding Providers
-
-**Local (no API key required):**
-```bash
-# Uses @xenova/transformers with all-MiniLM-L6-v2
-EMBEDDING_PROVIDER=local npm start
-```
-
-**Cloud providers:**
-```bash
-# OpenAI
-OPENAI_API_KEY=sk-... EMBEDDING_PROVIDER=openai
-
-# Gemini
-GEMINI_API_KEY=ai-... EMBEDDING_PROVIDER=gemini
-
-# Voyage AI
-VOYAGE_API_KEY=voy-... EMBEDDING_PROVIDER=voyage
-
-# Cohere
-COHERE_API_KEY=co-... EMBEDDING_PROVIDER=cohere
-```
-
-**Fallback mode:** If no embedding provider configured, uses BM25-only search (86.2% R@5 accuracy vs 95.2% with vectors).
-
-### Knowledge Graph
-
-agentmemory automatically extracts entities and relationships:
-- **Nodes**: Files, concepts, decisions, patterns
-- **Edges**: `supersedes`, `extends`, `derives`, `contradicts`, `related`
-- **Confidence scoring**: Edge weights based on co-occurrence and semantic similarity
-
-**Query the graph:**
-```bash
-curl -X POST http://localhost:3111/agentmemory/graph-query \
-  -d '{
-    "startNodeId": "mem_abc123",
-    "maxHops": 2,
-    "minConfidence": 0.7
-  }'
-```
-
-### Team Collaboration
-
-**Shared memories across team members:**
-```bash
-# Create a team
-curl -X POST http://localhost:3111/agentmemory/team-create \
-  -d '{"teamId": "my-team", "name": "Backend Team"}'
-
-# Share specific memories
-curl -X POST http://localhost:3111/agentmemory/team-share \
-  -d '{
-    "teamId": "my-team",
-    "memoryIds": ["mem_abc123", "mem_def456"]
-  }'
-```
-
-See [Advanced Features](references/05-advanced-features.md) for team collaboration, governance, and snapshots.
+See [MCP Tools Reference](reference/03-mcp-tools.md) for all 43 tools and [REST API Reference](reference/04-rest-api.md) for endpoint details.
 
 ## Troubleshooting
-
 ### Memory Not Capturing
 
 **Check hooks are installed:**
@@ -368,5 +297,15 @@ netstat -an | grep 3112
 III_STREAMS_PORT=3112 agentmemory start
 ```
 
-See [Troubleshooting Guide](references/06-troubleshooting.md) for comprehensive debugging steps.
+See [Troubleshooting Guide](reference/06-troubleshooting.md) for comprehensive debugging steps.
+
+## Advanced Topics
+## Advanced Topics
+
+- [Architecture](reference/01-architecture.md)
+- [Configuration](reference/02-configuration.md)
+- [Mcp Tools](reference/03-mcp-tools.md)
+- [Rest Api](reference/04-rest-api.md)
+- [Advanced Features](reference/05-advanced-features.md)
+- [Troubleshooting](reference/06-troubleshooting.md)
 

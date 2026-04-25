@@ -23,15 +23,7 @@ external_references:
   - https://github.com/containers/podmanpy
   - https://podmanpy.readthedocs.io/
 ---
-
-# PodmanPy 5.8.0 - Python Client for Podman
-
-
-## Core Concepts
-
-This skill covers the key concepts and fundamental ideas related to this topic.
 ## Overview
-
 Python client library for Podman container engine providing programmatic access to containers, images, pods, networks, and volumes via RESTful API. Use when building Python applications that require container orchestration, automation scripts, CI/CD integration, or container management without Docker dependency.
 
 PodmanPy is a Python library that provides bindings to the Podman RESTful API, enabling programmatic management of containers, images, pods, networks, and volumes. It offers a Docker-compatible interface while leveraging Podman's daemonless architecture and security features.
@@ -45,7 +37,6 @@ PodmanPy is a Python library that provides bindings to the Podman RESTful API, e
 - Registry authentication and image search
 
 ## When to Use
-
 - Automate container deployment and management workflows in Python
 - Build CI/CD pipelines that interact with Podman
 - Create container orchestration tools without Docker dependency
@@ -54,8 +45,10 @@ PodmanPy is a Python library that provides bindings to the Podman RESTful API, e
 - Integrate Podman with monitoring or logging systems
 - Migrate Docker SDK scripts to Podman-compatible code
 
-## Setup
+## Core Concepts
+This skill covers the key concepts and fundamental ideas related to this topic.
 
+## Installation / Setup
 ### Installation
 
 ```bash
@@ -98,10 +91,9 @@ For root containers:
 sudo podman system service --timeout=0 unix:///run/podman/podman.sock &
 ```
 
-See [Connection Configuration](references/01-connection-config.md) for detailed connection options and authentication.
+See [Connection Configuration](reference/01-connection-config.md) for detailed connection options and authentication.
 
-## Quick Start
-
+## Usage Examples
 ### Basic Container Operations
 
 ```python
@@ -143,7 +135,7 @@ container.remove()
 client.close()
 ```
 
-See [Container Operations](references/02-container-operations.md) for comprehensive container management.
+See [Container Operations](reference/02-container-operations.md) for comprehensive container management.
 
 ### Working with Images
 
@@ -179,7 +171,7 @@ for img in client.images.list():
     print(f"{img.repository}:{img.tag} - {img.short_id}")
 ```
 
-See [Image Management](references/03-image-management.md) for advanced image operations.
+See [Image Management](reference/03-image-management.md) for advanced image operations.
 
 ### Pod Orchestration (Podman-Specific)
 
@@ -220,7 +212,7 @@ print(stats)
 pod.remove(force=True)
 ```
 
-See [Pod Management](references/04-pod-management.md) for complete pod orchestration guide.
+See [Pod Management](reference/04-pod-management.md) for complete pod orchestration guide.
 
 ### Context Manager Pattern (Recommended)
 
@@ -239,20 +231,18 @@ with PodmanClient(base_url="unix:///run/user/1000/podman/podman.sock") as client
     pass  # Client closes here
 ```
 
-## Reference Files
+## Advanced Topics
+## Advanced Topics
 
-- [`references/01-connection-config.md`](references/01-connection-config.md) - Connection URIs, authentication, TLS, SSH, and environment configuration
-- [`references/02-container-operations.md`](references/02-container-operations.md) - Complete container lifecycle: create, run, start, stop, exec, logs, and resource management
-- [`references/03-image-management.md`](references/03-image-management.md) - Image operations: pull, push, build, load, save, tag, and registry authentication
-- [`references/04-pod-management.md`](references/04-pod-management.md) - Pod orchestration for multi-container applications (Podman-specific feature)
-- [`references/05-networks-volumes.md`](references/05-networks-volumes.md) - Network creation, bridge configuration, volume management, and bind mounts
-- [`references/06-system-operations.md`](references/06-system-operations.md) - System info, diagnostics, prune operations, and event monitoring
-- [`references/07-error-handling.md`](references/07-error-handling.md) - Exception types, error codes, retry patterns, and troubleshooting
-
-**Note:** `{baseDir}` refers to the skill's base directory (`.agents/skills/podman-py-5-8-0/`). All paths are relative to this directory.
+- [Connection Config](reference/01-connection-config.md)
+- [Container Operations](reference/02-container-operations.md)
+- [Image Management](reference/03-image-management.md)
+- [Pod Management](reference/04-pod-management.md)
+- [Networks Volumes](reference/05-networks-volumes.md)
+- [System Operations](reference/06-system-operations.md)
+- [Error Handling](reference/07-error-handling.md)
 
 ## Common Patterns
-
 ### Health Check Before Operations
 
 ```python
@@ -366,7 +356,6 @@ def monitor_containers(container_names, duration=60, interval=5):
 ```
 
 ## Troubleshooting
-
 ### Common Issues
 
 | Problem | Solution |
@@ -414,8 +403,5 @@ with PodmanClient() as client:
     print(f"API version: {version['ApiVersion']}")
 ```
 
-For detailed error handling and troubleshooting, see [Error Handling](references/07-error-handling.md).
+For detailed error handling and troubleshooting, see [Error Handling](reference/07-error-handling.md).
 
-## Advanced Topics
-
-For more details on advanced usage, refer to the official documentation listed in the References section.
