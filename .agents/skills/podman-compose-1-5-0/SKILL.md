@@ -13,6 +13,10 @@ tags:
   - docker-compose-alternative
 category: devops
 required_environment_variables: []
+
+external_references:
+  - https://github.com/containers/podman-compose
+  - https://compose-spec.io
 ---
 
 # Podman Compose 1.5.0

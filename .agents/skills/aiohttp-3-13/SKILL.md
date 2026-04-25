@@ -13,6 +13,10 @@ tags:
   - websocket
 category: web-development
 required_environment_variables: []
+
+external_references:
+  - https://docs.aiohttp.org/en/stable/
+  - https://github.com/aio-libs/aiohttp
 ---
 
 # aiohttp-3-13 Skill

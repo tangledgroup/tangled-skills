@@ -11,6 +11,9 @@ tags:
   - software-versions
   - dependency-management
 category: development
+
+external_references:
+  - https://semver.org/spec/v2.0.0.html
 ---
 
 # Semantic Versioning 2.0.0 (SemVer)

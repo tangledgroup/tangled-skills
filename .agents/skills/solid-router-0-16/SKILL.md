@@ -14,6 +14,10 @@ tags:
   - web-development
 category: development
 required_environment_variables: []
+
+external_references:
+  - https://docs.solidjs.com/solid-router/
+  - https://github.com/solidjs/solid/tree/main/packages/router
 ---
 
 # Solid Router v0.16

@@ -17,6 +17,8 @@ tags:
   - cursor
 category: ai-agents
 required_environment_variables: []
+
+external_references:
 ---
 
 # Nir Zabari Agent Skill

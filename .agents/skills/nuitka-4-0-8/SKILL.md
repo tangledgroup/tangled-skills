@@ -18,6 +18,10 @@ required_environment_variables:
     prompt: "Nuitka requires a C compiler. Which compiler should be used?"
     help: "Install gcc/clang on Linux/macOS, or Visual Studio/MinGW64 on Windows"
     required_for: "compilation"
+
+external_references:
+  - https://nuitka.net/doc/
+  - https://github.com/Nuitka/Nuitka
 ---
 
 # Nuitka 4.0.8 - Python Compiler

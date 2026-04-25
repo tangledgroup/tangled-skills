@@ -12,6 +12,8 @@ tags:
   - customization
 category: development
 required_environment_variables: []
+
+external_references:
 ---
 
 # WyattDave Coding Agent

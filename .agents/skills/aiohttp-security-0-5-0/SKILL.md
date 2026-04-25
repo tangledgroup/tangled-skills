@@ -16,6 +16,10 @@ tags:
   - cookies
 category: web-security
 required_environment_variables: []
+
+external_references:
+  - https://github.com/aio-libs/aiohttp-security
+  - https://aiohttp-security.readthedocs.io/
 ---
 
 # aiohttp-security-0.5.0

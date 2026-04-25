@@ -15,6 +15,10 @@ tags:
   - navigation
 category: development
 required_environment_variables: []
+
+external_references:
+  - https://github.com/rxmarcel/pinecone-router
+  - https://www.npmjs.com/package/pinecone-router
 ---
 
 # Pinecone Router 7.5

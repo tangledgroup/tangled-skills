@@ -13,6 +13,10 @@ tags:
   - static-sites
   - cdn
 category: development
+
+external_references:
+  - https://www.npmjs.com/package/@tailwindcss/browser
+  - https://github.com/tailwindlabs/tailwindcss
 ---
 
 # Tailwind CSS Browser v4.2

@@ -14,6 +14,10 @@ tags:
   - server-rendered
   - progressive-enhancement
 category: development
+
+external_references:
+  - https://htmx.org/docs
+  - https://github.com/bigskysoftware/htmx
 ---
 
 # htmx-2 Skill

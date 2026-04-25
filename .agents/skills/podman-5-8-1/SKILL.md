@@ -26,6 +26,10 @@ compatibility:
     - opencode
     - claude
     - hermes
+
+external_references:
+  - https://docs.podman.io/
+  - https://github.com/containers/podman
 ---
 
 # Podman 5.8.1

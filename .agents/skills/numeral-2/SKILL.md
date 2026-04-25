@@ -12,6 +12,10 @@ tags:
   - localization
   - javascript
 category: utility
+
+external_references:
+  - https://numeraljs.com/
+  - https://github.com/adamwdraper/Numeral-js
 ---
 
 # Numeral.js 2

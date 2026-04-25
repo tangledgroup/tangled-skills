@@ -14,6 +14,10 @@ tags:
   - data-manipulation
 category: development
 required_environment_variables: []
+
+external_references:
+  - https://lodash.com/
+  - https://github.com/lodash/lodash
 ---
 
 # Lodash 4.18 Toolkit

@@ -12,6 +12,10 @@ tags:
   - key-derivation
 category: security
 required_environment_variables: []
+
+external_references:
+  - https://bcrypt.readthedocs.io/
+  - https://github.com/pyca/bcrypt
 ---
 
 # bcrypt-5-0

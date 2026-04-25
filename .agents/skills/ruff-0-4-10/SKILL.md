@@ -16,6 +16,10 @@ tags:
   - performance
 category: tooling
 required_environment_variables: []
+
+external_references:
+  - https://docs.astral.sh/ruff
+  - https://github.com/astral-sh/ruff
 ---
 
 # Ruff 0.4.10

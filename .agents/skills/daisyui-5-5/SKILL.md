@@ -13,6 +13,10 @@ tags:
   - web-design
 category: frontend-development
 required_environment_variables: []
+
+external_references:
+  - https://daisyui.com/
+  - https://github.com/saadeghi/daisyui
 ---
 
 # DaisyUI 5.5

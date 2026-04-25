@@ -26,6 +26,9 @@ required_environment_variables:
     prompt: "Install Python 3.11 or higher"
     help: "Required to run specify-cli"
     required_for: "full functionality"
+
+external_references:
+  - https://github.com/github/spec-kit
 ---
 
 # Spec Kit 0.6.1

@@ -31,6 +31,10 @@ required_environment_variables:
     prompt: "Enter AWS secret access key for automated S3 backups"
     help: "AWS credential for automated backup to S3 (optional)"
     required_for: "automated S3 backups"
+
+external_references:
+  - https://rqlite.io/docs/
+  - https://github.com/rqlite/rqlite
 ---
 
 # rqlite 9.4 Distributed Database Skill

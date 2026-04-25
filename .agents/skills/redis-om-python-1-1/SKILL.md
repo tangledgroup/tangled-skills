@@ -18,6 +18,10 @@ required_environment_variables:
     prompt: "Redis connection URL (e.g., redis://localhost:6379)"
     help: "Connection string for Redis Stack instance with RediSearch and RedisJSON modules enabled"
     required_for: "full functionality"
+
+external_references:
+  - https://redis-om.readthedocs.io/
+  - https://github.com/redis/redis-om-python
 ---
 
 # Redis OM Python v1.1.0

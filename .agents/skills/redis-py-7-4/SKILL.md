@@ -20,6 +20,10 @@ required_environment_variables:
     prompt: "What is your Redis connection URL?"
     help: "Redis connection string (e.g., redis://localhost:6379/0 or rediss:// for TLS)"
     required_for: "connecting to Redis server"
+
+external_references:
+  - https://redis.readthedocs.io/en/latest
+  - https://github.com/redis/redis-py
 ---
 
 # redis-py 7.4 - Python Client for Redis

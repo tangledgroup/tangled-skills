@@ -12,6 +12,10 @@ tags:
   - python
 category: development
 required_environment_variables: []
+
+external_references:
+  - https://github.com/hmarr/aiorwlock
+  - https://aiorwlock.readthedocs.io/
 ---
 
 # aiorwlock-1.5.1

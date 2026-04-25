@@ -12,6 +12,10 @@ tags:
   - minimal-css
   - web-development
 category: development
+
+external_references:
+  - https://picocss.com/
+  - https://github.com/picocss/pico
 ---
 
 # Pico CSS v2.1

@@ -12,6 +12,10 @@ tags:
   - utility-first
   - responsive-design
 category: development
+
+external_references:
+  - https://tailwindcss.com/docs
+  - https://github.com/tailwindlabs/tailwindcss
 ---
 
 # Tailwind CSS v4.2

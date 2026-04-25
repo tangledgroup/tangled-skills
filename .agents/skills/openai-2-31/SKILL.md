@@ -24,6 +24,10 @@ required_environment_variables:
     prompt: "Provide your OpenAI webhook secret (optional)"
     help: "Required for webhook signature verification, get from OpenAI platform settings"
     required_for: "webhook verification"
+
+external_references:
+  - https://platform.openai.com/docs/
+  - https://github.com/openai/openai-python
 ---
 
 # OpenAI Python SDK v2.31

@@ -23,6 +23,10 @@ required_environment_variables:
     prompt: "Enter your database connection string"
     help: "MongoDB: mongodb://localhost:27017/payload, PostgreSQL: postgresql://user:pass@host/db"
     required_for: "full functionality"
+
+external_references:
+  - https://payloadcms.com/docs
+  - https://github.com/payloadcms/payload
 ---
 
 # Payload CMS v3.82.1

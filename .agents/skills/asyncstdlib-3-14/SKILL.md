@@ -14,6 +14,10 @@ tags:
   - iterators
 category: development
 required_environment_variables: []
+
+external_references:
+  - https://github.com/aio-libs/asyncstdlib
+  - https://asyncstdlib.readthedocs.io/
 ---
 
 # asyncstdlib v3.14

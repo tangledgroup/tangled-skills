@@ -14,6 +14,10 @@ tags:
   - websockets-alternative
 category: development
 required_environment_variables: []
+
+external_references:
+  - https://github.com/hallazzang/aiohttp-sse
+  - https://aiohttp-sse.readthedocs.io/
 ---
 
 # aiohttp-sse v2.2.0

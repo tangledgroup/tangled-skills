@@ -14,6 +14,10 @@ tags:
   - plugins
   - immutable
 category: utilities
+
+external_references:
+  - https://day.js.org/
+  - https://github.com/iamkun/dayjs
 ---
 
 # Day.js 1.11

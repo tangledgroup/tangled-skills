@@ -15,6 +15,10 @@ tags:
   - git-packages
 category: tooling
 required_environment_variables: []
+
+external_references:
+  - https://www.npmjs.com/package/pacote
+  - https://github.com/npm/pacote
 ---
 
 # pacote-21-5

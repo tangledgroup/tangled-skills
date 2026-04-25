@@ -11,6 +11,10 @@ tags:
   - argon2
   - security
 category: security
+
+external_references:
+  - https://argon-cffi.readthedocs.io/
+  - https://github.com/hynek/argon2_cffi
 ---
 
 # argon2-25 (argon2-cffi)

@@ -14,6 +14,10 @@ tags:
   - html-ui
 category: development
 required_environment_variables: []
+
+external_references:
+  - https://pywebview.flowrl.com/
+  - https://github.com/r0x0r/pywebview
 ---
 
 # pywebview 6.2

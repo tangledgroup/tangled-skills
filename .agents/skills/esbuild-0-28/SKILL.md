@@ -20,6 +20,10 @@ tags:
   - commonjs
 category: tooling
 required_environment_variables: []
+
+external_references:
+  - https://esbuild.github.io/
+  - https://github.com/evanw/esbuild
 ---
 
 # esbuild-0-28

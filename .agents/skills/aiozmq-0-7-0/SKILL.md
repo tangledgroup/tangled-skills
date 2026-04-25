@@ -22,6 +22,10 @@ compatibility:
     - Linux
     - macOS
     - Windows (limited)
+
+external_references:
+  - https://aiozmq.readthedocs.io/en/v0.7.0/
+  - https://github.com/aio-libs/aiozmq
 ---
 
 # aiozmq 0.7.0

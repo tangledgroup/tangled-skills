@@ -18,6 +18,10 @@ required_environment_variables:
     prompt: "Podman service URL (e.g., unix:///run/user/1000/podman/podman.sock)"
     help: "Set to connect to Podman socket. Default: uses rootless socket path"
     required_for: "remote connections or non-default socket paths"
+
+external_references:
+  - https://github.com/containers/podmanpy
+  - https://podmanpy.readthedocs.io/
 ---
 
 # PodmanPy 5.8.0 - Python Client for Podman

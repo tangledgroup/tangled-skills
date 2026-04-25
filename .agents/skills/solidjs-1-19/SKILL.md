@@ -15,6 +15,10 @@ tags:
   - signals
   - state-management
 category: development
+
+external_references:
+  - https://www.solidjs.com/docs
+  - https://github.com/solidjs/solid
 ---
 
 # SolidJS 1.19

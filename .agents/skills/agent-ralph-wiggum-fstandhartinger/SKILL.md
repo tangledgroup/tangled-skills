@@ -25,6 +25,8 @@ required_environment_variables:
     prompt: "Enter your Chutes API key for audio TTS notifications (optional)"
     help: "Get from https://chutes.ai for voice message support"
     required_for: "Audio Telegram notifications"
+
+external_references:
 ---
 
 # agent-ralph-wiggum-fstandhartinger

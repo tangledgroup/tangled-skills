@@ -16,6 +16,10 @@ tags:
   - asynchronous
 category: messaging
 required_environment_variables: []
+
+external_references:
+  - https://zguide.zeromq.org/
+  - https://github.com/zeromq
 ---
 
 # ZeroMQ ZGuide 3.2

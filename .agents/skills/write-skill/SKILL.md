@@ -296,9 +296,9 @@ The following sections are **optional** — include only when applicable:
 ```markdown
 ## Advanced Topics
 
-**Core Concepts**: Deep dive into fundamentals → See [reference/01-core-concepts.md](reference/01-core-concepts.md)
-**Advanced Workflow**: Complex patterns and edge cases → See [reference/02-advanced-workflow.md](reference/02-advanced-workflow.md)
-**API Reference**: Detailed function/method documentation → See [reference/03-api-reference.md](reference/03-api-reference.md)
+**Core Concepts**: Deep dive into fundamentals → See [Core Concepts](reference/01-core-concepts.md)
+**Advanced Workflow**: Complex patterns and edge cases → See [Advanced Workflow](reference/02-advanced-workflow.md)
+**API Reference**: Detailed function/method documentation → See [API Reference](reference/03-api-reference.md)
 ```
 
 ### Reference File Template
@@ -306,8 +306,8 @@ The following sections are **optional** — include only when applicable:
 ```markdown
 # <Topic Name>
 
-> **Source:** <original URL or document name>
-> **Loaded from:** SKILL.md (via progressive disclosure)
+## <Subsection>
+Content here...
 
 ## <Subsection>
 Content here...

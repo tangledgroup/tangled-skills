@@ -13,6 +13,10 @@ tags:
   - context-processors
 category: development
 required_environment_variables: []
+
+external_references:
+  - https://github.com/aio-libs/aiohttp_jinja2
+  - https://aiohttp-jinja2.readthedocs.io/
 ---
 
 # aiohttp-jinja2-1-6

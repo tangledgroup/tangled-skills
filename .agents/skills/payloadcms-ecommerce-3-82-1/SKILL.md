@@ -37,6 +37,10 @@ required_environment_variables:
     prompt: "Enter your Stripe webhook signing secret (whsec_...)"
     help: "Get from Stripe Dashboard > Developers > Webhooks. Create a webhook endpoint to receive this secret."
     required_for: payment webhook verification
+
+external_references:
+  - https://payloadcms.com/docs/ecommerce/plugin
+  - https://github.com/payloadcms/payload/tree/v3.82.1/templates/ecommerce
 ---
 
 # Payload CMS Ecommerce Template v3.82.1

@@ -11,6 +11,10 @@ tags:
   - async-iterators
   - generators
 category: development
+
+external_references:
+  - https://github.com/pythonicdave/aioitertools
+  - https://aioitertools.readthedocs.io/
 ---
 
 # aioitertools-0-13

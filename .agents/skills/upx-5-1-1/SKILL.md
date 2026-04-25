@@ -11,6 +11,10 @@ tags:
   - optimization
   - deployment
 category: tooling
+
+external_references:
+  - https://upx.github.io
+  - https://github.com/upx/upx
 ---
 
 # UPX (Ultimate Packer for eXecutables) v5.1.1

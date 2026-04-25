@@ -15,6 +15,10 @@ tags:
   - browser
 category: development
 required_environment_variables: []
+
+external_references:
+  - https://axios-http.com/
+  - https://github.com/axios/axios
 ---
 
 # Axios 1.15

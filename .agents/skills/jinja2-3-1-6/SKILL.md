@@ -13,6 +13,10 @@ tags:
   - jinja
 category: development
 required_environment_variables: []
+
+external_references:
+  - https://jinja.palletsprojects.com/
+  - https://github.com/pallets/jinja
 ---
 
 # Jinja2 v3.1.6

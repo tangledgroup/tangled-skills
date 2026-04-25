@@ -17,6 +17,10 @@ tags:
   - python
 category: networking
 required_environment_variables: []
+
+external_references:
+  - https://pyzmq.readthedocs.io/
+  - https://github.com/zeromq/pyzmq
 ---
 
 # PyZMQ 27.x Toolkit

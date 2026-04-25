@@ -15,6 +15,10 @@ tags:
   - typescript
 category: framework
 required_environment_variables: []
+
+external_references:
+  - https://start.solidjs.com/
+  - https://github.com/solidjs/solid-start
 ---
 
 # SolidStart 1.3

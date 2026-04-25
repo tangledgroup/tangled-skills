@@ -15,6 +15,10 @@ tags:
   - cryptography
 category: runtime
 required_environment_variables: []
+
+external_references:
+  - https://nodejs.org/api/
+  - https://github.com/nodejs/node
 ---
 
 # Node.js 24.14

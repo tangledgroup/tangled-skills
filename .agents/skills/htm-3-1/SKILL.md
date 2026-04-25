@@ -15,6 +15,9 @@ tags:
   - hyperscript
 category: development
 required_environment_variables: []
+
+external_references:
+  - https://github.com/developit/htm
 ---
 
 # htm 3.1 (Hyperscript Tagged Markup)

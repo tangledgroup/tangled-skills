@@ -15,6 +15,10 @@ tags:
   - vanilla-js
 category: frontend
 required_environment_variables: []
+
+external_references:
+  - https://oat.ink
+  - https://github.com/knadh/oat
 ---
 
 # Oat UI 0.6.0

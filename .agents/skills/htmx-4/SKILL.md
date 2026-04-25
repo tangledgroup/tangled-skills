@@ -14,6 +14,10 @@ tags:
   - server-sent-events
   - websockets
 category: development
+
+external_references:
+  - https://four.htmx.org/
+  - https://github.com/bigskysoftware/htmx
 ---
 
 # htmx-4
