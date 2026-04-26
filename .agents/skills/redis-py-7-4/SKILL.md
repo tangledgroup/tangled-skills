@@ -3,7 +3,7 @@ name: redis-py-7-4
 description: Comprehensive Python client for Redis database and key-value store. Use when building Python applications requiring Redis connectivity, including standalone, cluster, sentinel, and async modes with support for all Redis commands, pipelines, pub/sub, Lua scripting, Redis modules (Bloom, JSON, Search, TimeSeries), RESP3 protocol, client-side caching, OpenTelemetry observability, connection pooling, retry logic, and distributed locking.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.3.0"
+version: "7.4.0"
 tags:
   - redis
   - database

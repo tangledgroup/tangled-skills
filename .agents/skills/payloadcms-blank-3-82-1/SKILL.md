@@ -1,7 +1,7 @@
 ---
 name: payloadcms-blank-3-82-1
 description: Minimal Payload CMS 3.82.1 starter template providing a clean foundation for building custom headless CMS applications with Next.js App Router, MongoDB, and Lexical editor. Use when starting new Payload projects from scratch, needing a minimal configuration without pre-built collections or content types, or requiring full control over data modeling and admin panel customization.
-version: "0.2.0"
+version: "3.82.1"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:

@@ -6,7 +6,7 @@ description: A comprehensive toolkit for the Deno 2.x JavaScript/TypeScript runt
   patterns. Use when building applications with Deno, managing Deno projects, working
   with Deno's standard library (@std on JSR), configuring permissions, or deploying
   to Deno Deploy.
-version: 0.2.0
+version: "2.7.0"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:

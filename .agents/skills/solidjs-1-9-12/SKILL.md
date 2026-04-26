@@ -1,5 +1,5 @@
 ---
-name: solidjs-1-19
+name: solidjs-1-9-12
 description: >-
   A comprehensive toolkit for building reactive user interfaces with SolidJS
   1.x, a declarative JavaScript framework using fine-grained reactivity.

@@ -1,5 +1,5 @@
 ---
-name: tailwindcss-4-2
+name: tailwindcss-4-2-4
 description: A skill for using Tailwind CSS v4.2, a utility-first CSS framework with CSS-based configuration via @theme, OKLCH color space, cascade layers, and Lightning CSS optimization. Use when building responsive web interfaces, customizing design systems, adding utility-class styling to HTML, or migrating from Tailwind v3.
 version: "4.2.4"
 author: Tangled <noreply@tangledgroup.com>

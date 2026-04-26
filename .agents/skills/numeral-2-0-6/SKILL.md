@@ -1,5 +1,5 @@
 ---
-name: numeral-2
+name: numeral-2-0-6
 description: A JavaScript library for formatting and manipulating numbers. Use when formatting currency, percentages, bytes, time durations, ordinals, exponential notation, or abbreviations in browser or Node.js applications.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>

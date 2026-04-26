@@ -1,5 +1,5 @@
 ---
-name: yq-4
+name: yq-4-53-2
 description: >-
   A skill for using yq v4.x, a lightweight and portable command-line YAML, JSON,
   XML, INI, Properties, CSV/TSV, HCL, TOML, Base64, and Lua processor with
