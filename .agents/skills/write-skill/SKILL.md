@@ -296,9 +296,9 @@ The following sections are **optional** — include only when applicable:
 ```markdown
 ## Advanced Topics
 
-**Core Concepts**: Deep dive into fundamentals → See [Core Concepts](reference/01-core-concepts.md)
-**Advanced Workflow**: Complex patterns and edge cases → See [Advanced Workflow](reference/02-advanced-workflow.md)
-**API Reference**: Detailed function/method documentation → See [API Reference](reference/03-api-reference.md)
+**Core Concepts**: Deep dive into fundamentals → [Core Concepts](reference/01-core-concepts.md)
+**Advanced Workflow**: Complex patterns and edge cases → [Advanced Workflow](reference/02-advanced-workflow.md)
+**API Reference**: Detailed function/method documentation → [API Reference](reference/03-api-reference.md)
 ```
 
 ### Reference File Template

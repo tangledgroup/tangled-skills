@@ -1,7 +1,7 @@
 ---
 name: rsync-3-4-1
 description: Complete toolkit for rsync 3.4.1, the fast and versatile file-copying tool using delta-transfer algorithm. Use when backing up files, mirroring directories, syncing data across hosts via SSH or rsync daemon, implementing incremental backups with --link-dest or --backup-dir, creating batch updates for bulk deployments, configuring rsyncd.conf daemons, or managing complex include/exclude filter rules.
-license: MIT
+license: GPL
 author: Tangled <noreply@tangledgroup.com>
 version: "3.4.1"
 tags:
@@ -25,162 +25,199 @@ external_references:
 
 ## Overview
 
-Rsync is a fast and extraordinarily versatile file-copying tool for Unix systems. It can copy locally, to/from another host over any remote shell (typically SSH), or to/from a remote rsync daemon. It is famous for its delta-transfer algorithm, which reduces the amount of data sent over the network by sending only the differences between the source files and the existing files in the destination.
+Rsync is a fast and extraordinarily versatile file-copying tool. It can copy locally, to/from another host over any remote shell (typically SSH), or to/from a remote rsync daemon. It is famous for its delta-transfer algorithm, which reduces the amount of data sent over the network by sending only the differences between the source files and the existing files in the destination. Rsync is widely used for backups, mirroring, and as an improved copy command for everyday use.
 
-Rsync finds files that need to be transferred using a "quick check" algorithm (by default) that looks for files changed in size or last-modified time. Changes in other preserved attributes are made on the destination file directly when quick check indicates the file's data does not need updating.
+Rsync finds files that need to be transferred using a "quick check" algorithm (by default) that looks for files that have changed in size or in last-modified time. Any changes in other preserved attributes are made on the destination file directly when the quick check indicates that the file's data does not need to be updated.
 
-Key features:
+Key features include:
 
-- Delta-transfer algorithm sends only differences between files
-- Supports copying links, devices, owners, groups, permissions, ACLs, and extended attributes
+- Delta-transfer algorithm for efficient network usage
+- Support for copying links, devices, owners, groups, and permissions
 - Exclude and exclude-from options similar to GNU tar
-- CVS exclude mode for ignoring build artifacts
-- Can use any transparent remote shell (SSH, rsh) or direct rsync daemon connection
-- Does not require super-user privileges
-- Pipelining of file transfers to minimize latency costs
-- Anonymous or authenticated rsync daemons ideal for mirroring
-- Batch mode for applying same updates to many identical systems
-- Compression support with zstd, lz4, zlib algorithms
+- CVS exclude mode for ignoring common build artifacts
+- Transparent remote shell support (SSH, rsh)
+- No super-user privileges required
+- Pipelining of file transfers to minimize latency
+- Anonymous or authenticated rsync daemons for mirroring
+- Incremental recursion for large file trees (reduced memory usage)
+- Batch mode for applying the same updates to many identical systems
+- Compression during transfer with configurable algorithms
+- ACL and extended attribute preservation
 
 ## When to Use
 
 - Backing up files locally or across hosts
-- Mirroring directory trees and filesystems
-- Incremental backups with rotating history (using `--backup-dir` or `--link-dest`)
-- Syncing data between servers via SSH or rsync daemon
-- Configuring rsync daemons for anonymous or authenticated access
-- Creating batch update files for deploying changes to multiple identical systems
-- Implementing complex file filtering with include/exclude rules
+- Mirroring directories (keeping source and destination in sync)
+- Syncing data over SSH between servers
+- Implementing incremental rotating backups with `--link-dest` or `--backup-dir`
+- Creating batch update files for bulk deployment to multiple identical systems
+- Setting up rsync daemons for anonymous or authenticated file distribution
+- Managing complex include/exclude filter rules for selective transfers
 - Moving files (using `--remove-source-files`)
-- Bandwidth-limited transfers (`--bwlimit`)
-- Transfers with time limits (`--stop-after`, `--stop-at`)
+- Performing dry runs to preview what changes rsync would make
 
 ## Core Concepts
 
 ### Transfer Modes
 
-Rsync supports three access modes:
+Rsync operates in three modes:
 
-**Local copy** — both source and destination are local paths:
+**Local copy** — both source and destination are on the same machine:
 
 ```bash
 rsync -av /src/dir/ /dest/dir/
 ```
 
-**Remote shell (SSH by default)** — uses a colon (`:`) separator after the host specification:
+**Remote shell (pull)** — pulling files from a remote host via SSH:
 
 ```bash
-# Pull from remote
-rsync -av user@host:/remote/src/ /local/dest/
-
-# Push to remote
-rsync -av /local/src/ user@host:/remote/dest/
+rsync -av user@remote:/src/dir/ /local/dest/
 ```
 
-**Rsync daemon** — uses double colon (`::`) or `rsync://` URL syntax:
+**Remote shell (push)** — pushing files to a remote host via SSH:
 
 ```bash
-# Pull from daemon
-rsync -av host::module/path /local/dest/
-rsync -av rsync://host/module/path /local/dest/
+rsync -av /local/src/ user@remote:/dest/dir/
+```
 
-# Push to daemon (requires read_only = no)
-rsync -av /local/src/ host::module/path
+**Rsync daemon (pull)** — connecting directly to an rsync daemon:
+
+```bash
+rsync -av user@host::module/path /local/dest/
+rsync -av rsync://user@host:873/module/path /local/dest/
+```
+
+**Rsync daemon (push)** — pushing to a daemon module:
+
+```bash
+rsync -av /local/src/ user@host::module/path
 ```
 
 ### The Trailing Slash Rule
 
-A trailing slash on the source changes behavior:
+A trailing slash on the source changes behavior significantly:
 
-- `rsync -av /src/foo /dest` — copies the directory `foo` into `/dest/foo`
+- `rsync -av /src/foo /dest` — copies the directory `foo` into `/dest`, creating `/dest/foo`
 - `rsync -av /src/foo/ /dest` — copies the *contents* of `foo` into `/dest`
-- `rsync -av /src/foo/ /dest/foo` — equivalent to the above
+- Both set the attributes of the containing directory on the destination
+
+For daemon connections, no trailing slash is needed to copy module contents:
+
+```bash
+rsync -av host::module /dest
+```
 
 ### Archive Mode (`-a`)
 
-The `-a` flag is shorthand for `-rlptgoD`:
+The `-a` (archive) flag is shorthand for `-rlptgoD`:
 
 - `-r` — recurse into directories
 - `-l` — copy symlinks as symlinks
 - `-p` — preserve permissions
 - `-t` — preserve modification times
 - `-g` — preserve group
-- `-o` — preserve owner (requires root)
-- `-D` — preserve devices and special files
+- `-o` — preserve owner (requires root on receiver)
+- `-D` — preserve devices and specials
 
-Note: `-a` does NOT include ACLs (`-A`), xattrs (`-X`), atimes (`-U`), crtimes (`-N`), or hardlinks (`-H`). Add these explicitly when needed.
+Note: `-a` does not include `-A` (ACLs), `-X` (xattrs), `-U` (atimes), `-N` (crtimes), or `-H` (hard links). Add these explicitly when needed: `rsync -aAXHN`.
 
-### Quick Check Algorithm
+### Delta-Transfer Algorithm
 
-By default, rsync skips files that match in both size and modification time. Alternatives:
+By default, rsync sends only the changed portions of files. This is controlled by the quick check algorithm, which compares file size and modification time. If both match, the file is skipped entirely. If they differ, rsync computes checksums on data blocks to identify exactly which portions need transferring.
 
-- `--checksum` (`-c`) — compares 128-bit checksums instead (slower, more I/O)
-- `--size-only` — skips files matching only in size
-- `--modify-window=NUM` — treats timestamps as equal if they differ by at most NUM seconds (useful for FAT filesystems: `--modify-window=1`)
+Use `--whole-file` (`-W`) to disable delta-transfer and send files whole (faster for local copies or high-bandwidth connections where disk I/O is the bottleneck).
+
+### Quick Check vs. Checksum
+
+- **Quick check** (default): compares size and modification time — fast
+- **Checksum** (`-c`): computes full-file checksums — thorough but slow, uses lots of disk I/O
+
+Always use `-t` (preserve times) or `-a` (archive mode) in your initial copy, otherwise rsync cannot effectively skip unchanged files on subsequent runs.
 
 ## Usage Examples
 
-### Basic local copy with archive mode and verbose output
+### Basic local copy
 
 ```bash
-rsync -av /source/dir/ /destination/dir/
+rsync -av /source/ /destination/
 ```
 
-### Remote sync over SSH with compression
+### Remote sync over SSH
 
 ```bash
 rsync -avz /local/data/ user@remote:/backup/data/
 ```
 
-### Incremental backup with rotating weekly history
+### Mirror with deletions (use `--dry-run` first!)
+
+```bash
+rsync -av --delete /source/ /mirror/
+```
+
+### Incremental rotating backup with hard links
 
 ```bash
 DAY=$(date +%A)
-rsync -a --delete --backup --backup-dir=/backup/$USER/$DAY \
-  /home/$USER/ /backup/$USER/current/
+rsync -a --link-dest=../current /source/ /backup/$DAY/
+# Rotate:
+mv /backup/current /backup/previous
+ln -sfn "$DAY" /backup/current
 ```
 
-### Mirror with hard-linked unchanged files (space-efficient snapshots)
+### 7-day rotating incremental backup (from official examples)
 
 ```bash
-rsync -av --link-dest=$PWD/prior_backup host:src_dir/ new_backup/
+#!/bin/sh
+BDIR=/home/$USER
+EXCLUDES=$HOME/cron/excludes
+BSERVER=backup-host
+export RSYNC_PASSWORD=XXXXXX
+
+BACKUPDIR=$(date +%A)
+OPTS="--force --ignore-errors --delete-excluded --exclude-from=$EXCLUDES \
+      --delete --backup --backup-dir=/$BACKUPDIR -a"
+
+# Clear last week's incremental directory
+mkdir -p $HOME/emptydir
+rsync --delete -a $HOME/emptydir/ $BSERVER::$USER/$BACKUPDIR/
+rmdir $HOME/emptydir
+
+# Actual transfer
+rsync $OPTS $BDIR $BSERVER::$USER/current
 ```
 
-### Dry run to preview changes before actual transfer
+### Dry run to preview changes
 
 ```bash
-rsync -ain /source/ /destination/
+rsync -ain /source/ /dest/
 ```
 
-### Exclude patterns with delete
+### Bandwidth-limited transfer
 
 ```bash
-rsync -av --delete \
-  --exclude='*.tmp' \
-  --exclude='.git/' \
-  --exclude='node_modules/' \
-  /src/ user@host:/dest/
+rsync -avz --bwlimit=1000 /source/ user@remote:/dest/
 ```
 
-### Bandwidth-limited transfer with progress
+### Progress display with partial file resume
 
 ```bash
-rsync -avP --bwlimit=1000 /large/files/ remote:/backup/
+rsync -aP /large/source/ /dest/
 ```
 
-### Transfer with time limit
+### Skip already-compressed files during compression
 
 ```bash
-rsync -aiv --stop-after=60 /src/ /dest/
-rsync -aiv --stop-at=23:59 /src/ /dest/
+rsync -avz --skip-compress=gz/jpg/mp[34]/zip/bz2 /src/ /dst/
 ```
 
 ## Advanced Topics
 
-**Command-Line Options**: Complete reference of all rsync options including delete modes, compression, checksums, filtering, and daemon options → See [Command-Line Options](reference/01-command-line-options.md)
+**Command-Line Options**: Complete reference of all rsync options including transfer rules, delete modes, compression, and checksum algorithms → See [Command-Line Options](reference/01-command-line-options.md)
 
-**Filter Rules**: Include/exclude patterns, merge files, per-directory filters, pattern matching with wildcards, and filter rule modifiers → See [Filter Rules](reference/02-filter-rules.md)
+**Filter Rules and Pattern Matching**: Include/exclude patterns, merge files, per-directory filters, modifiers, anchoring, and interaction with deletions → See [Filter Rules](reference/02-filter-rules.md)
 
-**Rsync Daemon (rsyncd.conf)**: Daemon configuration, modules, authentication, access control, logging, SSL/TLS setup, and config directives → See [Rsync Daemon Configuration](reference/03-rsync-daemon.md)
+**Rsync Daemon Configuration**: rsyncd.conf parameters, module setup, authentication, access control, logging, SSL/TLS proxy, and daemon launch methods → See [Daemon Configuration](reference/03-daemon-configuration.md)
 
-**Batch Mode and Advanced Workflows**: Batch updates for multiple hosts, batch file creation and application, advanced backup strategies, and transfer rules → See [Batch Mode and Advanced Workflows](reference/04-batch-and-advanced.md)
+**Batch Mode and Incremental Backups**: Write-batch/read-batch for bulk deployment, `--link-dest`, `--compare-dest`, `--copy-dest`, `--backup-dir`, and atomic update patterns → See [Batch Mode and Backups](reference/04-batch-and-backups.md)
+
+**Symbolic Links, Security, and Troubleshooting**: Symlink handling modes, multi-host security considerations, common error diagnostics, exit codes, and FAQ solutions → See [Security and Troubleshooting](reference/05-security-and-troubleshooting.md)

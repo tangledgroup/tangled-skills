@@ -1,147 +1,147 @@
 # Builtins Library
 
-The `asyncstdlib.builtins` library implements Python's built-in functions for (async) functions and (async) iterables. All functions are also available directly from the `asyncstdlib` namespace.
+The `asyncstdlib.builtins` module implements Python's built-in functions for async callables and async iterables. All functions accept `(async) iter T` arguments — meaning both sync and async iterables are accepted (async neutral).
 
 ## Iterator Reducing
 
 ### anext
 
-Retrieve the next item from an async iterator. Raises `StopAsyncIteration` if exhausted and no default is set. This function is not async neutral — the iterator must be an asynchronous iterator (supporting `__anext__`).
-
 ```python
-import asyncstdlib as a
-
-async for val in a.iter(range(5)):
-    first = await a.anext(val)       # get first item
-    second = await a.anext(val, -1)  # get next with default
+await anext(iterable: async iter T[, default: T]) -> T
 ```
 
-### all / any
-
-Return `True` if all elements are truthy (`all`), or `False` if none are truthy (`any`). Both accept (async) iterables.
+Retrieve the next item from an async iterator. Raises `StopAsyncIteration` if exhausted and no default is given. This function is **not** async neutral — the iterator must be a true async iterator (supporting `__anext__()`).
 
 ```python
-import asyncstdlib as a
-
-result = await a.all(a.iter([True, True, False]))  # False
-result = await a.any(a.iter([False, False, True]))  # True
+async_iter = a.iter([1, 2, 3])
+first = await a.anext(async_iter)  # 1
+last = await a.anext(empty_iter, "nope")  # "nope"
 ```
+
+### all
+
+```python
+await all(iterable: (async) iter T) -> bool
+```
+
+Return `True` if none of the elements of the async iterable are false. Short-circuits on first false value.
+
+### any
+
+```python
+await any(iterable: (async) iter T) -> bool
+```
+
+Return `True` if at least one element of the async iterable is true. Short-circuits on first true value.
 
 ### max / min
 
-Return the largest or smallest item from an (async) iterable. Support `key` (sync or async callable) and `default` arguments. The two-or-more-arguments variant is not supported — use the builtin `max()`/`min()` instead. Raises `ValueError` if iterable is empty and no default provided.
+```python
+await max(iterable: (async) iter T, *, key: (T) -> Any = None, default: T) -> T
+await min(iterable: (async) iter T, *, key: (T) -> Any = None, default: T) -> T
+```
+
+Return the largest/smallest item from an async iterable. The `key` argument may be a regular or async callable and defaults to identity. Raises `ValueError` if iterable is empty and no `default` is provided.
+
+The two-or-more-arguments variant (`max(a, b, c)`) is not supported — use the builtin instead.
 
 ```python
-import asyncstdlib as a
-
-largest = await a.max(a.iter(fetch_data()), key=len)
-smallest = await a.min(a.iter(fetch_data()), default=0)
+largest = await a.max(get_async_data(), key=lambda x: x.score)
+smallest = await a.min(get_async_data(), default=0)
 ```
 
 ### sum
 
-Sum of `start` (default 0) and all elements in the (async) iterable.
-
 ```python
-total = await a.sum(a.iter(fetch_numbers()), start=100)
+await sum(iterable: (async) iter T, start: T = 0) -> T
 ```
+
+Sum of `start` and all elements in the async iterable.
 
 ## Iterator Transforming
 
 ### iter
 
-Create an async iterator from any iterable. Accepts both sync and async iterables, always returning an async iterator. Supports sentinel form for (async) callables.
+```python
+async for :T in iter(iterable: (async) iter T)
+```
+
+Convert any iterable (sync or async) into an async iterator. Supports three protocols: `__aiter__()`, `__iter__()`, and sequence protocol via `__getitem__()`. When a sentinel is given, subject must be an `(async) callable` — produces values via `await subject()` until a value equals the sentinel.
 
 ```python
-import asyncstdlib as a
+async for item in a.iter(sync_list):
+    ...
 
-# From a sync iterable
-async_iter = a.iter([1, 2, 3])
-
-# From an async iterable
-async_iter = a.iter(async_generator())
-
-# Sentinel form — call until value equals sentinel
-async_iter = a.iter(async_callable, None)
+# Sentinel form: call until sentinel value
+async for line in a.iter(read_line_async, sentinel=""):
+    process(line)
 ```
 
 ### filter
 
-An async iterator of elements filtered by an (async) callable. Equivalent to `(element async for element in iterable if await func(element))`. Both function and iterable may be sync or async.
-
 ```python
-async def is_positive(x):
-    return x > 0
-
-async for val in a.filter(is_positive, a.iter(fetch_numbers())):
-    print(val)
+async for :T in filter(function: (T) -> (await) bool, iterable: (async) iter T)
 ```
+
+Async iterator of elements filtered by an `(async)` callable. Equivalent to `(element async for element in iterable if await func(element))`. Both function and iterable may be sync or async.
 
 ### zip
 
-Create an async iterator aggregating elements from each (async) iterable. Stops when the shortest iterable is exhausted. Supports `strict=True` to raise `ValueError` if iterables are not equal length. Multiple iterables may be mixed sync and async.
+```python
+async for :(T, ...) in zip(*iterables: (async) iter T, strict: bool = True)
+```
+
+Aggregate elements from multiple async iterables into tuples. Exhausted when the shortest iterable is exhausted. `strict=True` (default since 3.10.0) raises `ValueError` if iterables have unequal lengths.
 
 ```python
-import asyncstdlib as a
-
-# Basic zip
-async for name, val in a.zip(["a", "b"], fetch_items()):
-    print(f"{name} => {val}")
-
-# Strict mode — all iterables must be same length
-async for a_val, b_val in a.zip(stream_a, stream_b, strict=True):
-    ...
+async for name, score in a.zip(names_iter, scores_iter):
+    print(f"{name}: {score}")
 ```
 
 ### map
 
-An async iterator mapping an (async) function to items from (async) iterables. For `n` iterables, the function must take `n` positional arguments. Supports `strict=True`. Function may be sync or async; iterables may be mixed sync and async.
+```python
+async for :R in map(function: (T, ...) -> (await) R, iterable: (async) iter T, ..., /, strict: bool = True)
+```
+
+Apply an `(async)` function to items from one or more async iterables. Equivalent to `(await function(*args) async for args in zip(iterables))`. For `n` iterables, `function` must take `n` positional arguments. `strict=True` (default since 3.14.0) raises `ValueError` on unequal lengths.
 
 ```python
-import asyncstdlib as a
+async def fetch(url):
+    return await http.get(url)
 
-async def double(x):
-    return x * 2
-
-async for val in a.map(double, a.iter(fetch_numbers())):
-    print(val)
+results = await a.list(a.map(fetch, urls))
 ```
 
 ### enumerate
 
-An async iterator of `(index, element)` pairs from an (async) iterable. Count begins at `start` (default 0). Iterable may be sync or async.
-
 ```python
-import asyncstdlib as a
-
-async for idx, val in a.enumerate(fetch_items(), start=1):
-    print(f"{idx}: {val}")
+async for :(int, T) in enumerate(iterable: (async) iter T, start=0)
 ```
+
+Yield `(index, element)` pairs from an async iterable. Count begins at `start` and increments by 1.
 
 ## Standard Types
 
 ### list / dict / set / tuple
 
-Create standard collection types from (async) iterables. All return awaitable results.
-
 ```python
-import asyncstdlib as a
-
-items = await a.list(fetch_items())        # [1, 2, 3]
-mapping = await a.dict(fetch_pairs())      # {"a": 1, "b": 2}
-unique = await a.set(fetch_items())        # {1, 2, 3}
-frozen = await a.tuple(fetch_items())      # (1, 2, 3)
+await list(iterable: (async) iter T = ()) -> [T, ...]
+await dict(iterable: (async) iter (str, T) = ()) -> {str: T, ...}
+await set(iterable: (async) iter T = ()) -> {T, ...}
+await tuple(iterable: (async) iter T = ()) -> (T, ...)
 ```
+
+Collect an async iterable into the corresponding standard type. Equivalent to the matching list/dict/set/tuple comprehension over `async for`.
 
 ### sorted
 
-Sort items from an (async) iterable into a new list. Supports `key` (sync or async callable) and `reverse`. The actual sorting is synchronous — very large iterables may block the event loop. Guaranteed worst-case O(n log n). Added in version 3.9.0.
+```python
+await sorted(iterable: (async) iter T, *, key: (T) -> (await) Any = None, reverse: bool = False) -> [T, ...]
+```
+
+Sort items from an async iterable into a new list. The `key` may be an async callable. Actual sorting is synchronous — very large iterables may block the event loop. Worst-case O(n log n). Added in version 3.9.0.
 
 ```python
-import asyncstdlib as a
-
-async def get_priority(item):
-    return await fetch_priority(item)
-
-items = await a.sorted(fetch_items(), key=get_priority, reverse=True)
+items = await a.sorted(async_data(), key=lambda x: await get_priority(x))
 ```

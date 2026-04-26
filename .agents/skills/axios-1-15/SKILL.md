@@ -1,7 +1,7 @@
 ---
 name: axios-1-15
 description: A comprehensive toolkit for making HTTP requests using Axios 1.x, a promise-based HTTP client for browser and Node.js environments. Use when building applications that require REST API communication, file uploads/downloads, request/response interception, custom headers, authentication, form data handling, progress tracking, or advanced features like rate limiting and HTTP/2 support.
-version: "0.3.0"
+version: 0.3.0
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
@@ -19,162 +19,237 @@ external_references:
   - https://github.com/axios/axios
 ---
 
-# Axios 1.15
+# Axios 1.x
 
 ## Overview
 
-Axios is a promise-based HTTP client for the browser and Node.js. It provides a simple API for making HTTP requests with support for interceptors, automatic JSON transformation, request cancellation, progress capturing, and TypeScript definitions. It works in all modern browsers and Node.js environments as far back as v12.x, plus Bun and Deno.
+Axios is a promise-based HTTP client for the browser and Node.js. It provides a simple, consistent API for making HTTP requests across environments — using `XMLHttpRequest` in browsers, the native `http`/`https` modules in Node.js, and optionally the Fetch API. It supports interceptors, automatic JSON handling, form serialization, request cancellation, progress tracking, and TypeScript out of the box.
 
-Key features:
+Key characteristics:
 
-- Isomorphic — same API in browser and Node.js
-- Promise-based with async/await support
-- Request and response interceptors
-- Automatic JSON data transformation
-- Client-side protection against XSRF
-- Progress capturing for uploads and downloads (with speed rate, remaining time)
-- Request cancellation via AbortController
-- Automatic form serialization to JSON, FormData, and URL-encoded formats
-- HTML form posting as JSON or multipart/form-data
-- Bandwidth rate limiting (Node.js)
-- Experimental HTTP/2 support (Node.js, v1.13.0+)
-- Fetch adapter alongside xhr and http adapters
-- Full TypeScript support with built-in type definitions
+- **Isomorphic** — same API works in browser and Node.js
+- **Promise-based** — full support for `async/await` and `.then()` chains
+- **Interceptor system** — middleware-like hooks for request/response lifecycle
+- **Automatic serialization** — JSON, `multipart/form-data`, and `x-www-form-urlencoded`
+- **Progress capturing** — upload/download progress with speed and ETA (browser + Node.js)
+- **Rate limiting** — bandwidth capping in Node.js via `maxRate`
+- **Fetch adapter** — optional first-class Fetch API support (v1.7.0+)
+- **HTTP/2** — experimental support in Node.js (v1.13.0+)
 
 ## When to Use
 
-- Making REST API calls from browser or Node.js applications
-- Building HTTP client wrappers with shared configuration
-- Implementing authentication flows (Bearer tokens, HTTP Basic, API keys, cookie-based)
-- Handling file uploads and downloads with progress tracking
-- Adding retry logic, exponential backoff, or rate-limit handling via interceptors
-- Testing code that makes HTTP requests (with mock adapters)
-- Working with multipart/form-data or URL-encoded form submissions
-- Rate-limiting bandwidth for bulk operations in Node.js
+- Making REST API calls from frontend or backend JavaScript code
+- Building isomorphic/universal applications that share HTTP logic between browser and server
+- Needing request/response interceptors for auth tokens, logging, or error handling
+- Uploading files with progress tracking
+- Requiring automatic form data serialization (`FormData`, `URLSearchParams`)
+- Implementing retry logic, token refresh, or rate limiting
+- Working in environments that need the Fetch adapter (Cloudflare Workers, Deno, Tauri, SvelteKit)
 
 ## Core Concepts
 
-**Promise-based API**: Every axios request returns a Promise that resolves to a response object or rejects with an AxiosError. Use async/await or .then/.catch chains.
+### Making Requests
 
-**Response object shape**: Every successful request resolves to:
-
-```js
-{
-  data: {},          // Response body (auto-parsed as JSON when applicable)
-  status: 200,       // HTTP status code
-  statusText: "OK",  // HTTP status text
-  headers: {},       // Response headers (lower-cased keys, AxiosHeaders instance)
-  config: {},        // The request config used
-  request: {}        // Underlying request object (XMLHttpRequest or http.ClientRequest)
-}
-```
-
-**Config merging**: Config is merged with order of precedence: library defaults → instance defaults → per-request config. Per-request options always override.
-
-**Adapters**: Axios uses adapters to handle the actual HTTP transport. Default priority list is `['xhr', 'http', 'fetch']`. In browsers, `xhr` is used by default. In Node.js, `http` is used. The `fetch` adapter is available as an alternative in both environments.
-
-## Usage Examples
-
-### Basic GET request
+Every axios request returns a standard ES6 Promise. The recommended approach is `async/await`:
 
 ```js
 import axios from "axios";
 
-const { data } = await axios.get("https://jsonplaceholder.typicode.com/posts/1");
+const { data } = await axios.get("https://api.example.com/users/1");
 console.log(data);
 ```
 
-### POST with JSON body
+All common HTTP methods have convenience aliases:
+
+- `axios.get(url[, config])`
+- `axios.post(url[, data[, config]])`
+- `axios.put(url[, data[, config]])`
+- `axios.patch(url[, data[, config]])`
+- `axios.delete(url[, config])`
+- `axios.head(url[, config])`
+- `axios.options(url[, config])`
+- `axios.request(config)` — explicit method in config
+
+### Response Object
+
+Every resolved request returns a response with this shape:
 
 ```js
-const { data } = await axios.post(
-  "https://api.example.com/users",
-  { name: "John", email: "john@example.com" }
-);
-```
-
-### Query parameters
-
-```js
-const { data } = await axios.get("/api/search", {
-  params: { q: "axios", limit: 10 },
-});
-// → GET /api/search?q=axios&limit=10
-```
-
-### Error handling with type guard
-
-```js
-try {
-  const { data } = await axios.get("/api/resource");
-} catch (error) {
-  if (axios.isAxiosError(error)) {
-    console.error("HTTP error", error.response?.status, error.message);
-  } else {
-    throw error; // Non-axios error
-  }
+{
+  data: {},         // Response body (parsed JSON by default)
+  status: 200,      // HTTP status code
+  statusText: "OK", // HTTP status text
+  headers: {},      // Response headers (AxiosHeaders instance, lower-cased keys)
+  config: {},       // The full config used for this request
+  request: {}       // Underlying request object (XMLHttpRequest or http.ClientRequest)
 }
 ```
 
-### Creating a configured instance
+Destructure what you need:
+
+```js
+const { data, status, headers } = await axios.get("/api/users/1");
+```
+
+### Creating Instances
+
+`axios.create()` produces a pre-configured instance — the recommended pattern for any application beyond a single file:
 
 ```js
 const api = axios.create({
   baseURL: "https://api.example.com",
   timeout: 5000,
-  headers: { "X-Custom-Header": "value" },
+  headers: { "X-App-Version": "2.0.0" },
 });
 
-const { data } = await api.get("/users");
+const { data } = await api.get("/users/1");
 ```
 
-### Request interceptor for auth tokens
+Instances support isolated interceptors, per-service base URLs, and independent timeouts. Request-time config always overrides instance defaults.
+
+### Config Precedence
+
+Config is merged in this order (later values override earlier):
+
+1. Library defaults (`lib/defaults/index.js`)
+2. Instance defaults (`axios.create({ ... })` or `instance.defaults`)
+3. Request-time config (`api.get("/path", { ... })`)
+
+### Parallel Requests
+
+Use standard `Promise.all` for concurrent requests:
 
 ```js
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access_token");
-  if (token) {
-    config.headers.set("Authorization", `Bearer ${token}`);
-  }
-  return config;
+const [users, posts] = await Promise.all([
+  axios.get("/api/users"),
+  axios.get("/api/posts"),
+]);
+```
+
+Use `Promise.allSettled` to handle partial failures:
+
+```js
+const results = await Promise.allSettled([
+  axios.get("/api/users"),
+  axios.get("/api/posts"),
+]);
+```
+
+## Installation / Setup
+
+### Package Managers
+
+```bash
+npm install axios
+# or
+pnpm add axios
+# or
+yarn add axios
+# or
+bun add axios
+```
+
+### Deno
+
+```bash
+deno install npm:axios
+```
+
+### CDN
+
+Pin the version in production to avoid unexpected changes:
+
+```html
+<!-- jsDelivr -->
+<script src="https://cdn.jsdelivr.net/npm/axios@1.13.2/dist/axios.min.js"></script>
+
+<!-- unpkg -->
+<script src="https://unpkg.com/axios@1.13.2/dist/axios.min.js"></script>
+```
+
+### Importing
+
+ES modules (recommended):
+
+```js
+import axios from "axios";
+// Named exports are available:
+import axios, { isCancel, AxiosError, AxiosHeaders } from "axios";
+```
+
+CommonJS:
+
+```js
+const axios = require("axios");
+```
+
+For legacy bundlers that struggle with dual ESM/CJS packages:
+
+```js
+import { default as axios } from "axios";
+// or
+const axios = require("axios/dist/browser/axios.cjs"); // browser ES2017 bundle
+// const axios = require("axios/dist/node/axios.cjs");   // node ES2017 bundle
+```
+
+## Usage Examples
+
+### Basic GET with query parameters
+
+```js
+const { data } = await axios.get("/users", {
+  params: { page: 1, limit: 10 },
 });
 ```
 
-### Canceling a request
+### POST with JSON body
 
 ```js
-const controller = new AbortController();
+const { data } = await axios.post("/users", {
+  name: "Jane",
+  email: "jane@example.com",
+});
+```
 
-axios.get("/api/data", { signal: controller.signal })
-  .catch((error) => {
-    if (axios.isCancel(error)) {
-      console.log("Request was cancelled");
-    }
-  });
+### Custom timeout and headers
 
-controller.abort("User navigated away");
+```js
+const { data } = await axios.get("/slow-endpoint", {
+  timeout: 30000,
+  headers: { "Accept-Language": "en-US" },
+});
+```
+
+### Response validation override
+
+By default, only 2xx status codes resolve the promise. Override with `validateStatus`:
+
+```js
+const { data } = await axios.get("/api/resource", {
+  validateStatus: (status) => status < 500, // resolve for anything below 500
+});
+```
+
+### Stream response (Node.js)
+
+```js
+import fs from "fs";
+
+const { data } = await axios.get("https://example.com/image.jpg", {
+  responseType: "stream",
+});
+
+data.pipe(fs.createWriteStream("image.jpg"));
 ```
 
 ## Advanced Topics
 
-**Request Config**: Full reference of all configuration options → See [Request Config](reference/01-request-config.md)
+**Request Config**: All config options including `transformRequest`, `paramsSerializer`, proxy, and socket paths → See [Request Config](reference/01-request-config.md)
 
-**Interceptors**: Intercept and modify requests and responses → See [Interceptors](reference/02-interceptors.md)
+**Interceptors & Authentication**: Request/response interceptors, Bearer tokens, HTTP Basic auth, API keys, token refresh patterns → See [Interceptors & Authentication](reference/02-interceptors-authentication.md)
 
-**Error Handling**: AxiosError structure, error codes, and handling patterns → See [Error Handling](reference/03-error-handling.md)
+**Error Handling & Retry**: AxiosError types, error codes, cancellation with AbortController, retry strategies with exponential backoff → See [Error Handling & Retry](reference/03-error-handling-retry.md)
 
-**Authentication Patterns**: Bearer tokens, HTTP Basic, API keys, token refresh, cookies → See [Authentication](reference/04-authentication.md)
+**Forms, Files & Progress**: `multipart/form-data`, `x-www-form-urlencoded`, file uploads, progress capturing, rate limiting → See [Forms, Files & Progress](reference/04-forms-files-progress.md)
 
-**Retry and Recovery**: Retry strategies, exponential backoff, 429 handling → See [Retry and Error Recovery](reference/05-retry.md)
-
-**File Uploads and Forms**: File posting, HTML form processing, multipart/form-data → See [File Posting and Forms](reference/06-file-posting.md)
-
-**Headers API**: AxiosHeaders class, setting/removing headers, case preservation → See [Headers](reference/07-headers.md)
-
-**Adapters and Testing**: Built-in adapters, custom adapters, mocking strategies → See [Adapters and Testing](reference/08-adapters-testing.md)
-
-**Progress and Rate Limiting**: Upload/download progress events, bandwidth limiting → See [Progress and Rate Limiting](reference/09-progress-rate-limiting.md)
-
-**TypeScript Support**: Type definitions, module resolution settings, typed instances → See [TypeScript](reference/10-typescript.md)
-
-**Security Considerations**: Decompression bomb protection, socket path restrictions, provenance verification → See [Security](reference/11-security.md)
+**Adapters & Advanced Features**: Built-in adapters (xhr, http, fetch), custom adapters, Fetch adapter, HTTP/2, testing with MockAdapter, TypeScript support → See [Adapters & Advanced Features](reference/05-adapters-advanced.md)
