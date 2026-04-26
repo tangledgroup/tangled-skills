@@ -68,7 +68,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 40 | duckdb-1-5-2 | duckdb | 1.5.2 | analytics, olap, embedded-database, sql, data-science | High-performance analytical SQL database with support for nested types, vectorized execution, and seamless integration... |
 | 41 | esbuild-0-28-0 | esbuild | 0.28.0 | javascript, bundler, typescript, jsx, css | Complete toolkit for esbuild v0.28 JavaScript bundler providing CLI, JavaScript API, and Go API access for bundling,... |
 | 42 | gh-2-91-0 | gh | 2.91.0 | github, cli, devops, automation, ci-cd | GitHub CLI v2.91.0 for managing repositories, pull requests, issues, releases, workflows, codespaces, and more from the... |
-| 43 | git | git | 2.54.0 | git, version-control, conventional-commits, keep-a-changelog, semver | Complete Git toolkit covering version control workflows, Conventional Commits v1.0.0, Keep a Changelog message bodies,... |
+| 43 | git | git | 2.54.0 | git, version-control, conventional-commits, keep-a-changelog, semver | Complete Git 2.54.0 toolkit covering version control workflows, Conventional Commits v1.0.0, Keep a Changelog message... |
 | 44 | haproxy-3-3-0 | haproxy | 3.3.0 | load balancing, reverse proxy, SSL termination, high availability, HTTP proxy | Complete HAProxy 3.3.0 toolkit for load balancing, reverse proxying, |
 | 45 | htm-3-1-0 | htm | 3.1.0 | jsx-alternative, tagged-templates, preact, react, virtual-dom | A skill for using htm 3.1, a tagged template syntax library that provides JSX-like markup in plain JavaScript without... |
 | 46 | htmx-2-0-0 | htmx | 2.0.0 | htmx, html, ajax, web-development, frontend | A skill for building interactive web applications with htmx 2.x, a JavaScript library that allows accessing modern... |
