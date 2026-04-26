@@ -160,11 +160,16 @@ def update_readme(readme_path: pathlib.Path, table: str, total: int) -> None:
     pattern = r'(## Skills Table\n\n).*?(## Statistics\n\n' + r'- \*\*Total Skills\*\*: \d+)'
     replacement = rf'\g<1>{table}\n\n## Statistics\n\n{stats_line}'
 
+    matched = re.search(pattern, content, flags=re.DOTALL)
+    if not matched:
+        print("ERROR: Could not find Skills Table section to replace", file=sys.stderr)
+        sys.exit(1)
+
     new_content = re.sub(pattern, replacement, content, flags=re.DOTALL)
 
     if new_content == content:
-        print("ERROR: Could not find Skills Table section to replace", file=sys.stderr)
-        sys.exit(1)
+        print("README.md is already up to date")
+        return
 
     readme_path.write_text(new_content)
 
