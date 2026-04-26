@@ -1,0 +1,1047 @@
+======================================================================
+Skill Generator — pi + llama.cpp
+======================================================================
+
+Found 131 skill(s) with external_references.
+
+Generating 131 skill(s) (0 already done)
+Providers: ['llama.cpp s0', 'llama.cpp s1', 'llama.cpp s2', 'llama.cpp s3']
+Max concurrent: 3
+
+[0] Starting agent-coding-mini-rasbt via provider (acquiring...)
+  ref: https://github.com/rasbt/mini-coding-agent
+  ref: https://magazine.sebastianraschka.com/p/components-of-a-coding-agent
+[0] Using provider: llama.cpp s0
+[1] Starting agent-coding-wyattdave via provider (acquiring...)
+  ref: https://dev.to/wyattdave/how-to-create-your-own-ai-coding-agent-2h1o
+[2] Starting agent-nirzabari via provider (acquiring...)
+  ref: https://nirzabari.github.io/blog/2026-03-07-coding-agents
+[1] Using provider: llama.cpp s1
+[2] Using provider: llama.cpp s2
+[1] DONE   agent-coding-wyattdave (1,219 chars, 281s)
+[3] Starting agent-ralph-wiggum-fstandhartinger via provider (acquiring...)
+  ref: https://ralph-wiggum.ai/
+  ref: https://github.com/fstandhartinger/ralph-wiggum
+[3] Using provider: llama.cpp s3
+[2] DONE   agent-nirzabari (1,434 chars, 579s)
+[4] Starting agentmemory-0-8-10 via provider (acquiring...)
+  ref: https://github.com/rohitg00/agentmemory/tree/v0.8.10
+  ref: https://github.com/rohitg00/agentmemory/blob/v0.8.10/benchmark/COMPARISON.md
+  ref: https://github.com/rohitg00/agentmemory/blob/v0.8.10/benchmark/LONGMEMEVAL.md
+  ref: https://github.com/rohitg00/iii-engine
+  ref: https://www.npmjs.com/package/@agentmemory/agentmemory
+[4] Using provider: llama.cpp s1
+[0] DONE   agent-coding-mini-rasbt (1,336 chars, 590s)
+[5] Starting agentmemory-0-8-9 via provider (acquiring...)
+  ref: https://github.com/rohitg00/agentmemory/tree/v0.8.9
+  ref: https://arxiv.org/abs/2410.10813
+  ref: https://github.com/rohitg00/agentmemory/blob/v0.8.9/CHANGELOG.md
+  ref: https://iii.dev/docs
+[5] Using provider: llama.cpp s2
+[3] DONE   agent-ralph-wiggum-fstandhartinger (1,083 chars, 475s)
+[6] Starting aiohttp-3-13 via provider (acquiring...)
+  ref: https://docs.aiohttp.org/en/stable/
+  ref: https://github.com/aio-libs/aiohttp
+[6] Using provider: llama.cpp s0
+[5] DONE   agentmemory-0-8-9 (1,475 chars, 786s)
+[7] Starting aiohttp-cors-0-8-1 via provider (acquiring...)
+  ref: https://pypi.org/project/aiohttp-cors/
+  ref: https://github.com/aio-libs/aiohttp-cors
+  ref: https://aiohttp-cors.readthedocs.io/
+[7] Using provider: llama.cpp s3
+[4] DONE   agentmemory-0-8-10 (1,756 chars, 869s)
+[8] Starting aiohttp-jinja2-1-6 via provider (acquiring...)
+  ref: https://github.com/aio-libs/aiohttp_jinja2
+  ref: https://aiohttp-jinja2.readthedocs.io/
+[8] Using provider: llama.cpp s2
+[7] DONE   aiohttp-cors-0-8-1 (937 chars, 288s)
+[9] Starting aiohttp-security-0-5-0 via provider (acquiring...)
+  ref: https://github.com/aio-libs/aiohttp-security
+  ref: https://aiohttp-security.readthedocs.io/
+[9] Using provider: llama.cpp s1
+[8] DONE   aiohttp-jinja2-1-6 (922 chars, 310s)
+[10] Starting aiohttp-session-2-12 via provider (acquiring...)
+  ref: https://github.com/aio-libs/aiohttp-session
+  ref: https://aiohttp-session.readthedocs.io/
+[10] Using provider: llama.cpp s3
+[6] DONE   aiohttp-3-13 (1,138 chars, 1098s)
+[11] Starting aiohttp-sse-2-2-0 via provider (acquiring...)
+  ref: https://github.com/hallazzang/aiohttp-sse
+  ref: https://aiohttp-sse.readthedocs.io/
+[11] Using provider: llama.cpp s2
+[9] DONE   aiohttp-security-0-5-0 (994 chars, 509s)
+[12] Starting aioitertools-0-13 via provider (acquiring...)
+  ref: https://github.com/pythonicdave/aioitertools
+  ref: https://aioitertools.readthedocs.io/
+[12] Using provider: llama.cpp s0
+[10] DONE   aiohttp-session-2-12 (1,095 chars, 446s)
+[13] Starting aiorwlock-1-5-1 via provider (acquiring...)
+  ref: https://github.com/hmarr/aiorwlock
+  ref: https://aiorwlock.readthedocs.io/
+[13] Using provider: llama.cpp s1
+[11] DONE   aiohttp-sse-2-2-0 (866 chars, 384s)
+[14] Starting aiozmq-0-7-0 via provider (acquiring...)
+  ref: https://aiozmq.readthedocs.io/en/v0.7.0/
+  ref: https://github.com/aio-libs/aiozmq
+[14] Using provider: llama.cpp s3
+[13] DONE   aiorwlock-1-5-1 (955 chars, 448s)
+[15] Starting alpinejs-3-15 via provider (acquiring...)
+  ref: https://alpinejs.dev/
+  ref: https://github.com/alpinejs/alpine
+[15] Using provider: llama.cpp s2
+[12] DONE   aioitertools-0-13 (1,325 chars, 483s)
+[16] Starting argon2-25 via provider (acquiring...)
+  ref: https://argon-cffi.readthedocs.io/
+  ref: https://github.com/hynek/argon2_cffi
+[16] Using provider: llama.cpp s1
+[14] DONE   aiozmq-0-7-0 (1,134 chars, 663s)
+[17] Starting asyncstdlib-3-14 via provider (acquiring...)
+  ref: https://github.com/aio-libs/asyncstdlib
+  ref: https://asyncstdlib.readthedocs.io/
+[17] Using provider: llama.cpp s0
+[16] DONE   argon2-25 (1,440 chars, 645s)
+[18] Starting axios-1-15 via provider (acquiring...)
+  ref: https://axios-http.com/
+  ref: https://github.com/axios/axios
+[18] Using provider: llama.cpp s3
+[15] DONE   alpinejs-3-15 (1,705 chars, 1018s)
+[19] Starting bcrypt-5-0 via provider (acquiring...)
+  ref: https://bcrypt.readthedocs.io/
+  ref: https://github.com/pyca/bcrypt
+[19] Using provider: llama.cpp s1
+[17] FAILED asyncstdlib-3-14 (rc=1, 829s)
+      stderr: 502 status code (no body)
+
+[20] Starting boto3-1-42-89 via provider (acquiring...)
+  ref: https://github.com/boto/boto3/tree/1.42.89
+  ref: https://docs.aws.amazon.com/
+  ref: https://docs.aws.amazon.com/botocore/latest/reference/config.html
+  ref: https://docs.aws.amazon.com/sdkref/latest/guide/feature-overview.html
+  ref: https://github.com/boto/boto3/blob/develop/CHANGELOG.rst
+  ref: https://boto3.amazonaws.com/v1/documentation/api/latest/
+[20] Using provider: llama.cpp s2
+[18] FAILED axios-1-15 (rc=1, 429s)
+      stderr: 502 status code (no body)
+
+[21] Starting bun-1-3-12 via provider (acquiring...)
+  ref: https://bun.sh/docs
+  ref: https://github.com/oven-sh/bun
+[21] Using provider: llama.cpp s0
+[20] FAILED boto3-1-42-89 (rc=1, 20s)
+      stderr: 502 status code (no body)
+
+[22] Starting caddy-2-11-2 via provider (acquiring...)
+  ref: https://github.com/caddyserver/caddy/tree/v2.11.2
+  ref: https://caddy.community
+  ref: https://caddyserver.com/docs/
+  ref: https://caddyserver.com/docs/api-tutorial
+  ref: https://caddyserver.com/docs/caddyfile-tutorial
+  ref: https://github.com/caddyserver/website
+[22] Using provider: llama.cpp s3
+[21] FAILED bun-1-3-12 (rc=1, 20s)
+      stderr: 502 status code (no body)
+
+[23] Starting caveman-1-5-1 via provider (acquiring...)
+  ref: https://raw.githubusercontent.com/JuliusBrussee/caveman/refs/tags/v1.5.1/caveman/SKILL.md
+[23] Using provider: llama.cpp s2
+[22] FAILED caddy-2-11-2 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[24] Starting cffi-2-0-0 via provider (acquiring...)
+  ref: https://cffi.readthedocs.io/en/stable/
+  ref: https://py-free-threading.github.io/
+  ref: https://pypi.org/project/cffi/
+  ref: https://sourceware.org/libffi/
+  ref: https://github.com/python-cffi/cffi/tree/v2.0.0
+[24] Using provider: llama.cpp s0
+[23] FAILED caveman-1-5-1 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[25] Starting changelog-1-1 via provider (acquiring...)
+  ref: https://keepachangelog.com/en/1.1.0/
+  ref: https://semver.org/spec/v2.0.0.html
+[25] Using provider: llama.cpp s3
+[24] FAILED cffi-2-0-0 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[26] Starting chart-js-4-5-1 via provider (acquiring...)
+  ref: https://www.chartjs.org/docs/latest/
+  ref: https://discord.gg/HxEguTK6av
+  ref: https://github.com/chartjs/awesome
+  ref: https://stackoverflow.com/questions/tagged/chart.js
+  ref: https://github.com/chartjs/Chart.js
+[26] Using provider: llama.cpp s2
+[25] FAILED changelog-1-1 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[27] Starting chonkie-1-6-2 via provider (acquiring...)
+  ref: https://docs.chonkie.ai/common/welcome
+  ref: https://discord.gg/Q6zkP8w6ur
+  ref: https://docs.chonkie.ai
+  ref: https://github.com/chonkie-inc/chonkie
+  ref: https://github.com/chonkie-inc/chonkie/blob/main/BENCHMARKS.md
+  ref: https://github.com/chonkie-inc/chonkie/blob/v1.6.2/docs/oss/changelog.mdx
+  ref: https://github.com/chonkie-inc/chonkie/tree/v1.6.2
+  ref: https://github.com/chonkie-inc/chonkie/tree/v1.6.2/docs
+[27] Using provider: llama.cpp s0
+[19] FAILED bcrypt-5-0 (rc=1, 129s)
+      stderr: The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch()
+
+[28] Starting chonkie-1-6-4 via provider (acquiring...)
+  ref: https://github.com/chonkie-inc/chonkie/tree/v1.6.4/docs
+  ref: https://docs.chonkie.ai
+  ref: https://github.com/chonkie-inc/chonkie
+  ref: https://github.com/chonkie-inc/chonkie/releases
+  ref: https://huggingface.co/datasets/chonkie-ai/recipes
+  ref: https://pypi.org/project/chonkie/
+  ref: https://github.com/chonkie-inc/chonkie/tree/v1.6.4
+  ref: https://docs.chonkie.ai/common/open-source
+[28] Using provider: llama.cpp s3
+[26] FAILED chart-js-4-5-1 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[29] Starting coding-guidelines-0-1-0 via provider (acquiring...)
+  ref: https://github.com/forrestchang/andrej-karpathy-skills
+  ref: https://x.com/karpathy/status/2015883857489522876
+[29] Using provider: llama.cpp s1
+[27] FAILED chonkie-1-6-2 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[30] Starting crun-1-27 via provider (acquiring...)
+  ref: https://github.com/containers/crun
+  ref: https://github.com/containers/crun/blob/main/Documentation/crun.md
+[30] Using provider: llama.cpp s2
+[28] FAILED chonkie-1-6-4 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[31] Starting cryptography-46 via provider (acquiring...)
+  ref: https://cryptography.io/en/latest/
+  ref: https://github.com/pyca/cryptography
+[31] Using provider: llama.cpp s0
+[29] FAILED coding-guidelines-0-1-0 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[32] Starting curl-8-19-0 via provider (acquiring...)
+  ref: https://github.com/curl/curl/tree/curl-8_19_0/docs
+  ref: https://curl.se/
+  ref: https://curl.se/libcurl/
+  ref: https://github.com/curl/curl
+[32] Using provider: llama.cpp s3
+[30] FAILED crun-1-27 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[33] Starting cython-3-2-4 via provider (acquiring...)
+  ref: https://github.com/cython/cython/tree/3.2.4
+  ref: https://github.com/cython/cython/wiki
+  ref: https://groups.google.com/group/cython
+  ref: https://cython.readthedocs.io/en/latest/
+[33] Using provider: llama.cpp s1
+[31] FAILED cryptography-46 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[34] Starting d3-7-9-0 via provider (acquiring...)
+  ref: https://d3js.org/what-is-d3
+  ref: https://d3js.org/
+  ref: https://d3js.org/api
+  ref: https://d3js.org/getting-started
+  ref: https://github.com/d3
+  ref: https://observablehq.com/@d3/gallery
+[34] Using provider: llama.cpp s2
+[32] FAILED curl-8-19-0 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[35] Starting daisyui-5-5 via provider (acquiring...)
+  ref: https://daisyui.com/
+  ref: https://github.com/saadeghi/daisyui
+[35] Using provider: llama.cpp s0
+[33] FAILED cython-3-2-4 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[36] Starting dayjs-1-11 via provider (acquiring...)
+  ref: https://day.js.org/
+  ref: https://github.com/iamkun/dayjs
+[36] Using provider: llama.cpp s3
+[34] FAILED d3-7-9-0 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[37] Starting deno-2-7 via provider (acquiring...)
+  ref: https://docs.deno.com/
+  ref: https://github.com/denoland/deno
+[37] Using provider: llama.cpp s1
+[36] FAILED dayjs-1-11 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[38] Starting docker-docs-2026-04-16 via provider (acquiring...)
+  ref: https://docs.docker.com/
+  ref: https://docs.docker.com/build/concepts/dockerfile/
+  ref: https://docs.docker.com/compose/
+  ref: https://docs.docker.com/compose/compose-file/
+  ref: https://docs.docker.com/engine/api/
+  ref: https://docs.docker.com/engine/reference/builder/
+  ref: https://github.com/compose-spec/compose-spec
+  ref: https://github.com/docker/awesome-compose
+  ref: https://github.com/docker/buildx
+  ref: https://github.com/docker/compose
+  ref: https://github.com/docker/docs
+  ref: https://github.com/moby/buildkit/tree/master/frontend/dockerfile
+  ref: https://github.com/moby/moby
+[38] Using provider: llama.cpp s2
+[35] FAILED daisyui-5-5 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[39] Starting duckdb-1-5-2 via provider (acquiring...)
+  ref: https://duckdb.org/docs/current/
+  ref: https://duckdb.org/docs/current/clients/python/overview
+  ref: https://duckdb.org/docs/current/sql/introduction
+  ref: https://github.com/duckdb/duckdb
+  ref: https://github.com/duckdb/duckdb/tree/v1.5.2
+[39] Using provider: llama.cpp s3
+[37] FAILED deno-2-7 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[40] Starting esbuild-0-28 via provider (acquiring...)
+  ref: https://esbuild.github.io/
+  ref: https://github.com/evanw/esbuild
+[40] Using provider: llama.cpp s0
+[38] FAILED docker-docs-2026-04-16 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[41] Starting gh-2-91-0 via provider (acquiring...)
+  ref: https://cli.github.com/
+  ref: https://github.com/cli/cli
+  ref: https://github.com/cli/cli#installation
+  ref: https://github.com/cli/cli/releases
+  ref: https://github.com/topics/gh-extension
+  ref: https://cli.github.com/manual/
+  ref: https://github.com/cli/cli/releases/tag/v2.91.0
+[41] Using provider: llama.cpp s1
+[40] FAILED esbuild-0-28 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[42] Starting haproxy-3-3-0 via provider (acquiring...)
+  ref: https://github.com/haproxy/haproxy/tree/v3.3.0/doc
+  ref: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/configuration.txt
+  ref: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/intro.txt
+  ref: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/lua.txt
+  ref: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/management.txt
+  ref: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/peers.txt
+  ref: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/proxy-protocol.txt
+[42] Using provider: llama.cpp s2
+[41] FAILED gh-2-91-0 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[43] Starting htm-3-1 via provider (acquiring...)
+  ref: https://github.com/developit/htm
+[43] Using provider: llama.cpp s0
+[42] FAILED haproxy-3-3-0 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[44] Starting htmx-2 via provider (acquiring...)
+  ref: https://htmx.org/docs
+  ref: https://github.com/bigskysoftware/htmx
+[44] Using provider: llama.cpp s1
+[43] FAILED htm-3-1 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[45] Starting htmx-4 via provider (acquiring...)
+  ref: https://four.htmx.org/
+  ref: https://github.com/bigskysoftware/htmx
+[45] Using provider: llama.cpp s2
+[44] FAILED htmx-2 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[46] Starting jinja2-3-1-6 via provider (acquiring...)
+  ref: https://jinja.palletsprojects.com/
+  ref: https://github.com/pallets/jinja
+[46] Using provider: llama.cpp s0
+[39] DONE   duckdb-1-5-2 (1,168 chars, 1095s)
+[47] Starting jq-1-8-1 via provider (acquiring...)
+  ref: https://jqlang.org/
+  ref: https://github.com/jqlang/jq/releases/tag/jq-1.8.1
+  ref: https://play.jqlang.org
+  ref: https://stackoverflow.com/questions/tagged/jq
+  ref: https://web.libera.chat/#jq
+  ref: https://jqlang.org/manual/
+  ref: https://jqlang.org/tutorial/
+  ref: https://github.com/jqlang/jq
+[47] Using provider: llama.cpp s1
+[45] DONE   htmx-4 (1,586 chars, 1127s)
+[48] Starting jsonpath-rfc-9535 via provider (acquiring...)
+  ref: https://www.rfc-editor.org/rfc/rfc9535
+  ref: https://www.rfc-editor.org/rfc/rfc6901
+  ref: https://www.rfc-editor.org/rfc/rfc7493
+  ref: https://www.rfc-editor.org/rfc/rfc8259
+  ref: https://www.rfc-editor.org/rfc/rfc9485
+[48] Using provider: llama.cpp s3
+[46] DONE   jinja2-3-1-6 (1,348 chars, 1207s)
+[49] Starting lingua-py-2-2-0 via provider (acquiring...)
+  ref: https://github.com/pemistahl/lingua-py
+  ref: https://github.com/pemistahl/lingua-rs
+  ref: https://pypi.org/project/lingua-language-detector
+  ref: https://www.apache.org/licenses/LICENSE-2.0
+[49] Using provider: llama.cpp s2
+[49] DONE   lingua-py-2-2-0 (1,236 chars, 341s)
+[50] Starting llama-cpp-b8789 via provider (acquiring...)
+  ref: https://github.com/ggml-org/llama.cpp/tree/b8789
+  ref: https://github.com/ggml-org/llama.cpp/blob/b8789/docs/gguf.md
+  ref: https://github.com/ggml-org/llama.cpp/issues/9289
+  ref: https://github.com/ggml-org/llama.cpp/issues/9291
+  ref: https://github.com/orgs/ggml-org/packages/container/package/llama.cpp
+  ref: https://huggingface.co/models?search=ggml-org
+  ref: https://github.com/ggml-org/llama.cpp/tree/b8789/docs
+[50] Using provider: llama.cpp s0
+[48] DONE   jsonpath-rfc-9535 (1,668 chars, 763s)
+[51] Starting lodash-4-18 via provider (acquiring...)
+  ref: https://lodash.com/
+  ref: https://github.com/lodash/lodash
+[51] Using provider: llama.cpp s2
+[47] DONE   jq-1-8-1 (990 chars, 871s)
+[52] Starting logfire-4-32-1 via provider (acquiring...)
+  ref: https://github.com/pydantic/logfire/tree/v4.32.1/docs
+  ref: https://github.com/pydantic/logfire-js
+  ref: https://github.com/pydantic/logfire-mcp
+  ref: https://github.com/pydantic/logfire-rust
+  ref: https://github.com/pydantic/logfire/tree/v4.32.1
+  ref: https://opentelemetry.io/
+  ref: https://pydantic.dev/logfire/docs/
+[52] Using provider: llama.cpp s3
+[50] DONE   llama-cpp-b8789 (1,433 chars, 1173s)
+[53] Starting matplotlib-3-10-8 via provider (acquiring...)
+  ref: https://github.com/matplotlib/matplotlib/tree/v3.10.8/doc
+  ref: https://github.com/matplotlib/matplotlib/tree/v3.10.8
+  ref: https://matplotlib.org/3.10.8/api/index.html
+  ref: https://matplotlib.org/3.10.8/gallery/index.html
+  ref: https://matplotlib.org/3.10.8/users/index.html
+[53] Using provider: llama.cpp s1
+[52] DONE   logfire-4-32-1 (1,813 chars, 915s)
+[54] Starting mem0-1-0-11 via provider (acquiring...)
+  ref: https://github.com/mem0ai/mem0/tree/v1.0.11/docs
+  ref: https://app.mem0.ai
+  ref: https://arxiv.org/pdf/2504.19413.pdf
+  ref: https://docs.mem0.ai
+  ref: https://github.com/mem0ai/mem0
+  ref: https://github.com/mem0ai/mem0/blob/v1.0.11/MIGRATION_GUIDE_v1.0.md
+  ref: https://mem0.dev/DiG
+[54] Using provider: llama.cpp s0
+[51] DONE   lodash-4-18 (1,200 chars, 1361s)
+[55] Starting mempalace-3-3-0 via provider (acquiring...)
+  ref: https://github.com/MemPalace/mempalace/tree/v3.3.0
+  ref: https://github.com/MemPalace/mempalace
+  ref: https://github.com/MemPalace/mempalace/issues
+  ref: https://github.com/MemPalace/mempalace/tree/v3.3.0/benchmarks
+  ref: https://github.com/MemPalace/mempalace/tree/v3.3.0/docs
+  ref: https://raw.githubusercontent.com/lhl/agentic-memory/10ade6b92a1d54f896f56cd2be386ef54e288a0c/ANALYSIS-mempalace.md
+[55] Using provider: llama.cpp s3
+[54] DONE   mem0-1-0-11 (1,119 chars, 1217s)
+[56] Starting mermaid-11-14-0 via provider (acquiring...)
+  ref: https://mermaid.js.org/
+  ref: https://github.com/mermaid-js/mermaid/tree/mermaid%4011.14.0/docs
+  ref: https://github.com/mermaid-js/mermaid
+  ref: https://mermaid.live
+  ref: https://www.jsdelivr.com/package/npm/mermaid
+  ref: https://bundlephobia.com/package/mermaid
+[56] Using provider: llama.cpp s2
+[55] DONE   mempalace-3-3-0 (1,102 chars, 799s)
+[57] Starting networkx-3-6-1 via provider (acquiring...)
+  ref: https://networkx.org/documentation/stable/reference/index.html
+  ref: http://conference.scipy.org.s3-website-us-east-1.amazonaws.com/proceedings/scipy2008/paper_2/full_text.pdf
+  ref: https://discord.com/invite/vur45CbwMz
+  ref: https://github.com/networkx/networkx
+  ref: https://github.com/networkx/networkx/discussions
+  ref: https://groups.google.com/forum/#!forum/networkx-discuss
+  ref: https://networkx.org/documentation/stable/
+  ref: https://networkx.org/documentation/stable/reference/
+  ref: https://networkx.org/documentation/stable/tutorial.html
+  ref: https://github.com/networkx/networkx/tree/networkx-3.6.1
+  ref: https://networkx.org/en/
+[57] Using provider: llama.cpp s0
+[53] DONE   matplotlib-3-10-8 (1,738 chars, 1464s)
+[58] Starting networkxternal-0-3 via provider (acquiring...)
+  ref: https://github.com/ashvardanian/NetworkXternal
+  ref: https://docs.sqlalchemy.org/
+  ref: https://github.com/ashvardanian/NetworkXternal/blob/main/networkxternal/base_api.py
+  ref: https://networkx.github.io/documentation/stable/reference/classes/generated/networkx.Graph.html
+  ref: https://networkx.github.io/documentation/stable/reference/classes/multidigraph.html
+  ref: https://networkx.github.io/
+[58] Using provider: llama.cpp s3
+[57] DONE   networkx-3-6-1 (1,250 chars, 796s)
+[59] Starting nextjs-16-2-3 via provider (acquiring...)
+  ref: https://nextjs.org/docs
+  ref: https://github.com/vercel/next.js
+[59] Using provider: llama.cpp s1
+[58] DONE   networkxternal-0-3 (1,304 chars, 654s)
+[60] Starting nginx-1-30-0 via provider (acquiring...)
+  ref: https://nginx.org/en/docs/
+  ref: https://docs.nginx.com/nginx/admin-guide/
+  ref: https://nginx.org/en/docs/beginners_guide.html
+  ref: https://nginx.org/en/docs/control.html
+  ref: https://github.com/nginx/nginx/tree/stable-1.30
+[60] Using provider: llama.cpp s0
+[56] DONE   mermaid-11-14-0 (1,687 chars, 1330s)
+[61] Starting nltk-3-9-2 via provider (acquiring...)
+  ref: https://www.nltk.org/
+  ref: https://www.nltk.org/api/
+  ref: https://www.nltk.org/book/
+  ref: https://www.nltk.org/contribute.html
+  ref: https://www.nltk.org/data.html
+  ref: https://www.nltk.org/install.html
+  ref: https://www.nltk.org/news.html
+  ref: https://github.com/nltk/nltk/tree/v3.9.2
+[61] Using provider: llama.cpp s3
+[60] DONE   nginx-1-30-0 (1,366 chars, 781s)
+[62] Starting nodejs-24-14 via provider (acquiring...)
+  ref: https://nodejs.org/api/
+  ref: https://github.com/nodejs/node
+[62] Using provider: llama.cpp s2
+[59] DONE   nextjs-16-2-3 (1,646 chars, 1108s)
+[63] Starting nuitka-4-0-8 via provider (acquiring...)
+  ref: https://nuitka.net/doc/
+  ref: https://github.com/Nuitka/Nuitka
+[63] Using provider: llama.cpp s0
+[61] DONE   nltk-3-9-2 (1,143 chars, 1208s)
+[64] Starting numba-0-65-0 via provider (acquiring...)
+  ref: https://github.com/numba/numba/tree/0.65.0
+  ref: https://github.com/numba/numba
+  ref: https://gitter.im/numba/numba
+  ref: https://numba.discourse.group
+  ref: https://numba.pydata.org
+  ref: https://numba.readthedocs.io/en/stable/
+  ref: https://numba.readthedocs.io/en/stable/index.html
+[64] Using provider: llama.cpp s1
+[63] DONE   nuitka-4-0-8 (1,273 chars, 1017s)
+[65] Starting numeral-2 via provider (acquiring...)
+  ref: https://numeraljs.com/
+  ref: https://github.com/adamwdraper/Numeral-js
+[65] Using provider: llama.cpp s3
+[62] DONE   nodejs-24-14 (1,822 chars, 1694s)
+[66] Starting numkong-7-6-0 via provider (acquiring...)
+  ref: https://pypi.org/project/numkong/
+  ref: https://github.com/ashvardanian/NumWars
+  ref: https://ashvardanian.com/posts/numkong/
+  ref: https://github.com/ashvardanian/NumKong
+[66] Using provider: llama.cpp s0
+[65] DONE   numeral-2 (1,100 chars, 401s)
+[67] Starting numpy-2-4-4 via provider (acquiring...)
+  ref: https://numpy.org/
+  ref: https://data-apis.org/array-api/
+  ref: https://github.com/numpy/numpy
+  ref: https://numpy.org/doc/stable/numpy_2_0_migration_guide.html
+  ref: https://numpy.org/doc/stable/reference/random/index.html
+  ref: https://numpy.org/neps/nep-0050-new-type-promotion.html
+  ref: https://numpy.org/neps/nep-0052-public-naming.html
+  ref: https://numpy.org/doc/stable/
+  ref: https://github.com/numpy/numpy/tree/v2.4.4
+[67] Using provider: llama.cpp s2
+[64] DONE   numba-0-65-0 (1,378 chars, 1209s)
+[68] Starting oat-0-6-0 via provider (acquiring...)
+  ref: https://oat.ink
+  ref: https://github.com/knadh/oat
+[68] Using provider: llama.cpp s3
+[68] DONE   oat-0-6-0 (1,124 chars, 880s)
+[69] Starting obscura-0-1-0 via provider (acquiring...)
+  ref: https://github.com/h4ckf0r0day/obscura/tree/v0.1.0
+  ref: https://chromedevtools.github.io/devtools-protocol/
+  ref: https://github.com/h4ckf0r0day/obscura
+  ref: https://github.com/h4ckf0r0day/obscura/releases/tag/v0.1.0
+  ref: https://github.com/h4ckf0r0day/obscura/releases
+[69] Using provider: llama.cpp s1
+[67] DONE   numpy-2-4-4 (1,301 chars, 1380s)
+[70] Starting openai-2-31 via provider (acquiring...)
+  ref: https://platform.openai.com/docs/
+  ref: https://github.com/openai/openai-python
+[70] Using provider: llama.cpp s3
+[66] FAILED numkong-7-6-0 (rc=1, 1694s)
+      stderr: 503 status code (no body)
+
+[71] Starting opentelemetry-1-55-0 via provider (acquiring...)
+  ref: https://opentelemetry.io/
+  ref: https://github.com/open-telemetry/opentelemetry-collector
+  ref: https://github.com/open-telemetry/opentelemetry-proto
+  ref: https://github.com/open-telemetry/opentelemetry-specification
+  ref: https://github.com/open-telemetry/semantic-conventions
+  ref: https://opentelemetry.io/docs/
+  ref: https://www.w3.org/TR/baggage/
+  ref: https://www.w3.org/TR/trace-context/
+  ref: https://opentelemetry.io/docs/specs/otel/overview/
+[71] Using provider: llama.cpp s2
+[69] DONE   obscura-0-1-0 (1,140 chars, 624s)
+[72] Starting opentelemetry-collector-1-56-0 via provider (acquiring...)
+  ref: https://github.com/open-telemetry/opentelemetry-collector
+  ref: https://github.com/open-telemetry/opamp
+  ref: https://github.com/open-telemetry/opentelemetry-collector-contrib
+  ref: https://github.com/open-telemetry/opentelemetry-collector/tree/main/cmd/builder
+  ref: https://opentelemetry.io/docs/collector/
+  ref: https://opentelemetry.io/docs/collector/quick-start/
+[72] Using provider: llama.cpp s0
+[70] DONE   openai-2-31 (1,577 chars, 921s)
+[73] Starting opentelemetry-python-1-41-0 via provider (acquiring...)
+  ref: https://github.com/open-telemetry/opentelemetry-python/tree/v1.41.0
+  ref: https://github.com/open-telemetry/opentelemetry-python-contrib
+  ref: https://github.com/open-telemetry/opentelemetry-specification
+  ref: https://opentelemetry-python.readthedocs.io/
+  ref: https://opentelemetry.io/ecosystem/registry/?component=instrumentation&language=python
+  ref: https://opentelemetry.io/docs/languages/python/
+[73] Using provider: llama.cpp s1
+[71] DONE   opentelemetry-1-55-0 (1,531 chars, 819s)
+[74] Starting pacote-21-5 via provider (acquiring...)
+  ref: https://www.npmjs.com/package/pacote
+  ref: https://github.com/npm/pacote
+[74] Using provider: llama.cpp s3
+[74] DONE   pacote-21-5 (1,081 chars, 540s)
+[75] Starting paramiko-4-0-0 via provider (acquiring...)
+  ref: https://www.paramiko.org/
+  ref: https://docs.paramiko.org/
+  ref: https://github.com/paramiko/paramiko
+  ref: https://www.paramiko.org/faq.html
+  ref: https://www.paramiko.org/installing.html
+  ref: https://github.com/paramiko/paramiko/tree/4.0.0
+[75] Using provider: llama.cpp s2
+[72] DONE   opentelemetry-collector-1-56-0 (1,464 chars, 1316s)
+[76] Starting payloadcms-3-82-1 via provider (acquiring...)
+  ref: https://payloadcms.com/docs
+  ref: https://github.com/payloadcms/payload
+[76] Using provider: llama.cpp s3
+[73] DONE   opentelemetry-python-1-41-0 (1,347 chars, 1011s)
+[77] Starting payloadcms-blank-3-82-1 via provider (acquiring...)
+  ref: https://payloadcms.com/docs/richtext/lexical/overview
+  ref: https://payloadcms.com/docs/getting-started/requirements
+  ref: https://payloadcms.com/docs
+  ref: https://github.com/payloadcms/payload/tree/v3.82.1/templates/blank
+  ref: https://discord.com/invite/payload
+[77] Using provider: llama.cpp s0
+[77] DONE   payloadcms-blank-3-82-1 (1,506 chars, 744s)
+[78] Starting payloadcms-ecommerce-3-82-1 via provider (acquiring...)
+  ref: https://payloadcms.com/docs/ecommerce/plugin
+  ref: https://github.com/payloadcms/payload/tree/v3.82.1/templates/ecommerce
+[78] Using provider: llama.cpp s1
+[75] DONE   paramiko-4-0-0 (1,324 chars, 1299s)
+[79] Starting payloadcms-website-3-82-1 via provider (acquiring...)
+  ref: https://github.com/payloadcms/payload/tree/main/templates/website
+  ref: https://discord.com/invite/payload
+  ref: https://nextjs.org/docs
+  ref: https://payloadcms.com/docs/plugins/form-builder
+  ref: https://payloadcms.com/docs/plugins/nested-docs
+  ref: https://payloadcms.com/docs/plugins/redirects
+  ref: https://payloadcms.com/docs/plugins/search
+  ref: https://payloadcms.com/docs/plugins/seo
+  ref: https://payloadcms.com/docs/production/deployment
+  ref: https://payloadcms.com/docs/rich-text/overview
+  ref: https://payloadcms.com/docs
+[79] Using provider: llama.cpp s0
+[76] DONE   payloadcms-3-82-1 (2,047 chars, 1616s)
+[80] Starting pi-mono-0-66-1 via provider (acquiring...)
+  ref: https://www.npmjs.com/package/@mariozechner/pi-coding-agent
+  ref: https://pi.dev/
+  ref: https://github.com/badlogic/pi-skills
+  ref: https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent/examples/extensions/
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/tui.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/tree.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/themes.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/skills.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/settings.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/session.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/sdk.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/rpc.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/providers.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/prompt-templates.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/packages.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/models.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/keybindings.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/json.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/extensions.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/development.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/custom-provider.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/compaction.md
+  ref: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/README.md
+  ref: https://github.com/badlogic/pi-mono
+  ref: https://github.com/anthropics/skills
+  ref: https://discord.com/invite/3cU7Bz4UPx
+[80] Using provider: llama.cpp s2
+[79] DONE   payloadcms-website-3-82-1 (1,617 chars, 1173s)
+[81] Starting picocss-2-1 via provider (acquiring...)
+  ref: https://picocss.com/
+  ref: https://github.com/picocss/pico
+[81] Using provider: llama.cpp s3
+[78] DONE   payloadcms-ecommerce-3-82-1 (1,953 chars, 1986s)
+[82] Starting pinecone-router-7-5 via provider (acquiring...)
+  ref: https://github.com/rxmarcel/pinecone-router
+  ref: https://www.npmjs.com/package/pinecone-router
+[82] Using provider: llama.cpp s0
+[81] DONE   picocss-2-1 (1,318 chars, 960s)
+[83] Starting podman-5-8-1 via provider (acquiring...)
+  ref: https://docs.podman.io/
+  ref: https://github.com/containers/podman
+[83] Using provider: llama.cpp s1
+[80] DONE   pi-mono-0-66-1 (1,396 chars, 1653s)
+[84] Starting podman-compose-1-5-0 via provider (acquiring...)
+  ref: https://github.com/containers/podman-compose
+  ref: https://compose-spec.io
+[84] Using provider: llama.cpp s3
+[82] DONE   pinecone-router-7-5 (1,518 chars, 708s)
+[85] Starting podman-py-5-8-0 via provider (acquiring...)
+  ref: https://github.com/containers/podmanpy
+  ref: https://podmanpy.readthedocs.io/
+[85] Using provider: llama.cpp s2
+[84] DONE   podman-compose-1-5-0 (1,467 chars, 633s)
+[86] Starting pulp-3-3-0 via provider (acquiring...)
+  ref: https://coin-or.github.io/pulp/
+  ref: https://github.com/coin-or/pulp/tree/3.3.0/examples
+  ref: https://www.coin-or.org/
+  ref: https://github.com/coin-or/pulp/tree/3.3.0
+[86] Using provider: llama.cpp s0
+[83] DONE   podman-5-8-1 (1,549 chars, 1083s)
+[87] Starting python-scrypt via provider (acquiring...)
+  ref: https://datatracker.ietf.org/doc/html/rfc7914
+  ref: https://github.com/warner/python-scrypt
+[87] Using provider: llama.cpp s3
+[85] DONE   podman-py-5-8-0 (1,371 chars, 1038s)
+[88] Starting pywebview-6-2 via provider (acquiring...)
+  ref: https://pywebview.flowrl.com/
+  ref: https://github.com/r0x0r/pywebview
+[88] Using provider: llama.cpp s1
+[87] DONE   python-scrypt (902 chars, 347s)
+[89] Starting pyzmq-27-1-0 via provider (acquiring...)
+  ref: https://pyzmq.readthedocs.io/
+  ref: https://github.com/zeromq/pyzmq
+[89] Using provider: llama.cpp s2
+[86] DONE   pulp-3-3-0 (449 chars, 1372s)
+[90] Starting quickjs-2025-09-13 via provider (acquiring...)
+  ref: https://bellard.org/quickjs/
+  ref: https://tc39.github.io/ecma262/2023
+  ref: https://test262.fyi
+  ref: https://bellard.org/quickjs/quickjs.html
+  ref: https://github.com/bellard/quickjs
+  ref: https://bellard.org/quickjs/Changelog
+[90] Using provider: llama.cpp s3
+[90] DONE   quickjs-2025-09-13 (1,218 chars, 592s)
+[91] Starting qwen3-embedding via provider (acquiring...)
+  ref: https://huggingface.co/Qwen/Qwen3-Embedding-0.6B
+  ref: https://arxiv.org/abs/2506.05176
+  ref: https://qwenlm.github.io/blog/qwen3-embedding/
+  ref: https://huggingface.co/Qwen/Qwen3-Embedding-4B
+  ref: https://huggingface.co/Qwen/Qwen3-Embedding-8B
+[91] Using provider: llama.cpp s0
+[89] DONE   pyzmq-27-1-0 (1,891 chars, 1319s)
+[92] Starting qwen3-reranker via provider (acquiring...)
+  ref: https://huggingface.co/Qwen/Qwen3-Reranker-0.6B
+  ref: https://arxiv.org/abs/2506.05176
+  ref: https://github.com/QwenLM/Qwen3-Embedding
+  ref: https://huggingface.co/Qwen/Qwen3-Reranker-0.6B),
+  ref: https://huggingface.co/Qwen/Qwen3-Reranker-4B),
+  ref: https://qwenlm.github.io/blog/qwen3-embedding/
+  ref: https://huggingface.co/Qwen/Qwen3-Reranker-4B
+  ref: https://huggingface.co/Qwen/Qwen3-Reranker-8B
+[92] Using provider: llama.cpp s3
+[88] DONE   pywebview-6-2 (1,550 chars, 1521s)
+[93] Starting qwen3-vl-embedding via provider (acquiring...)
+  ref: https://huggingface.co/Qwen/Qwen3-VL-Embedding-2B
+  ref: https://arxiv.org/abs/2601.04720
+  ref: https://github.com/QwenLM/Qwen3-VL-Embedding
+  ref: https://qwen.ai/blog?id=qwen3-vl-embedding
+  ref: https://huggingface.co/Qwen/Qwen3-VL-Embedding-8B
+[93] Using provider: llama.cpp s2
+[91] FAILED qwen3-embedding (rc=1, 277s)
+      stderr: 503 Loading model
+
+[94] Starting qwen3-vl-reranker via provider (acquiring...)
+  ref: https://huggingface.co/Qwen/Qwen3-VL-Reranker-2B
+  ref: https://arxiv.org/abs/2601.04720
+  ref: https://github.com/QwenLM/Qwen3-VL-Embedding
+  ref: https://huggingface.co/spaces/TIGER-Lab/MMEB-Leaderboard
+  ref: https://huggingface.co/spaces/mteb/leaderboard
+  ref: https://qwenlm.github.io/blog/qwen3-embedding/
+  ref: https://huggingface.co/Qwen/Qwen3-VL-Reranker-8B
+[94] Using provider: llama.cpp s1
+[92] FAILED qwen3-reranker (rc=1, 589s)
+      stderr: 503 status code (no body)
+
+[95] Starting redis-om-python-1-1 via provider (acquiring...)
+  ref: https://redis-om.readthedocs.io/
+  ref: https://github.com/redis/redis-om-python
+[95] Using provider: llama.cpp s0
+[93] DONE   qwen3-vl-embedding (1,316 chars, 691s)
+[96] Starting redis-py-7-4 via provider (acquiring...)
+  ref: https://redis.readthedocs.io/en/latest
+  ref: https://github.com/redis/redis-py
+[96] Using provider: llama.cpp s3
+[94] DONE   qwen3-vl-reranker (894 chars, 903s)
+[97] Starting rqlite-9-4 via provider (acquiring...)
+  ref: https://rqlite.io/docs/
+  ref: https://github.com/rqlite/rqlite
+[97] Using provider: llama.cpp s2
+[95] FAILED redis-om-python-1-1 (rc=1, 881s)
+      stderr: 503 status code (no body)
+
+[98] Starting rsync-3-4-1 via provider (acquiring...)
+  ref: https://rsync.samba.org/
+  ref: https://download.samba.org/pub/rsync/rsync.1
+  ref: https://download.samba.org/pub/rsync/rsyncd.conf.5
+  ref: https://rsync.samba.org/FAQ.html
+  ref: https://rsync.samba.org/bug-tracking.html
+  ref: https://rsync.samba.org/examples.html
+  ref: https://github.com/rsyncproject/rsync
+[98] Using provider: llama.cpp s1
+[96] DONE   redis-py-7-4 (1,388 chars, 1557s)
+[99] Starting ruff-0-4-10 via provider (acquiring...)
+  ref: https://docs.astral.sh/ruff
+  ref: https://github.com/astral-sh/ruff
+[99] Using provider: llama.cpp s0
+[97] DONE   rqlite-9-4 (1,496 chars, 1466s)
+[100] Starting rustfs-1-0-0-alpha-93 via provider (acquiring...)
+  ref: https://rustfs.com/
+  ref: https://github.com/rustfs/rustfs
+[100] Using provider: llama.cpp s3
+[98] FAILED rsync-3-4-1 (rc=1, 1147s)
+      stderr: 503 status code (no body)
+
+[101] Starting scikit-learn-1-8-0 via provider (acquiring...)
+  ref: https://scikit-learn.org/stable/index.html
+  ref: https://github.com/scikit-learn/scikit-learn
+  ref: https://scikit-learn.org/stable/
+  ref: https://scikit-learn.org/stable/auto_examples/release_highlights/plot_release_highlights_1_8_0.html
+  ref: https://scikit-learn.org/stable/modules/classes.html
+  ref: https://scikit-learn.org/stable/whats_new/v1.8.html
+[101] Using provider: llama.cpp s2
+[99] DONE   ruff-0-4-10 (1,252 chars, 1062s)
+[102] Starting scipy-1-17-1 via provider (acquiring...)
+  ref: https://scipy.org/
+  ref: https://discuss.scientific-python.org/c/contributor/scipy
+  ref: https://docs.scipy.org/doc/scipy/
+  ref: https://docs.scipy.org/doc/scipy/reference/
+  ref: https://docs.scipy.org/doc/scipy/tutorial/
+  ref: https://github.com/scipy/scipy
+  ref: https://github.com/scipy/scipy/issues
+  ref: https://stackoverflow.com/questions/tagged/scipy
+  ref: https://github.com/scipy/scipy/tree/v1.17.1/doc
+[102] Using provider: llama.cpp s1
+[100] DONE   rustfs-1-0-0-alpha-93 (1,656 chars, 1022s)
+[103] Starting semver-2-0 via provider (acquiring...)
+  ref: https://semver.org/spec/v2.0.0.html
+[103] Using provider: llama.cpp s0
+[103] DONE   semver-2-0 (991 chars, 239s)
+[104] Starting sentence-transformers-5-4-1 via provider (acquiring...)
+  ref: https://github.com/huggingface/sentence-transformers/tree/v5.4.1
+  ref: https://arxiv.org/abs/1908.10084
+  ref: https://arxiv.org/abs/2004.09813
+  ref: https://huggingface.co/spaces/mteb/leaderboard
+  ref: https://www.sbert.net/
+  ref: https://www.sbert.net/index.html
+  ref: https://huggingface.co/sentence-transformers
+[104] Using provider: llama.cpp s3
+[101] DONE   scikit-learn-1-8-0 (1,274 chars, 1273s)
+[105] Starting solid-meta-0-29 via provider (acquiring...)
+  ref: https://github.com/solidjs/solid/tree/main/packages/dom
+  ref: https://www.npmjs.com/package/@solidjs/meta
+[105] Using provider: llama.cpp s0
+[105] DONE   solid-meta-0-29 (628 chars, 479s)
+[106] Starting solid-router-0-16 via provider (acquiring...)
+  ref: https://docs.solidjs.com/solid-router/
+  ref: https://github.com/solidjs/solid/tree/main/packages/router
+[106] Using provider: llama.cpp s2
+[104] DONE   sentence-transformers-5-4-1 (1,384 chars, 783s)
+[107] Starting solid-start-1-3 via provider (acquiring...)
+  ref: https://start.solidjs.com/
+  ref: https://github.com/solidjs/solid-start
+[107] Using provider: llama.cpp s0
+[102] DONE   scipy-1-17-1 (1,410 chars, 1198s)
+[108] Starting solidjs-1-19 via provider (acquiring...)
+  ref: https://www.solidjs.com/docs
+  ref: https://github.com/solidjs/solid
+[108] Using provider: llama.cpp s3
+[106] DONE   solid-router-0-16 (1,421 chars, 635s)
+[109] Starting spacy-3-8-14 via provider (acquiring...)
+  ref: https://github.com/explosion/spaCy/tree/release-v3.8.14
+  ref: https://course.spacy.io
+  ref: https://github.com/explosion/projects
+  ref: https://github.com/explosion/spaCy
+  ref: https://github.com/explosion/spacy-vscode
+  ref: https://spacy.io/api
+  ref: https://spacy.io/models
+  ref: https://spacy.io/usage
+  ref: https://spacy.io/usage#changelog
+  ref: https://spacy.io/
+[109] Using provider: llama.cpp s1
+[108] DONE   solidjs-1-19 (1,777 chars, 850s)
+[110] Starting spec-kit-0-6-1 via provider (acquiring...)
+  ref: https://github.com/github/spec-kit
+[110] Using provider: llama.cpp s2
+[107] DONE   solid-start-1-3 (1,243 chars, 1397s)
+[111] Starting sqlalchemy-2-0 via provider (acquiring...)
+  ref: https://docs.sqlalchemy.org/
+  ref: https://github.com/sqlalchemy/sqlalchemy
+[111] Using provider: llama.cpp s3
+[109] DONE   spacy-3-8-14 (1,637 chars, 1287s)
+[112] Starting sqlite-3-53 via provider (acquiring...)
+  ref: https://www.sqlite.org/docs.html
+[112] Using provider: llama.cpp s0
+[110] DONE   spec-kit-0-6-1 (1,383 chars, 812s)
+[113] Starting stanza-1-11-1 via provider (acquiring...)
+  ref: https://github.com/stanfordnlp/stanza/tree/v1.11.1
+  ref: https://arxiv.org/abs/2003.07082
+  ref: https://arxiv.org/abs/2007.14640
+  ref: https://stanfordnlp.github.io/CoreNLP/
+  ref: https://universaldependencies.org/
+  ref: https://stanfordnlp.github.io/stanza/
+  ref: https://huggingface.co/stanfordnlp/models
+[113] Using provider: llama.cpp s1
+[112] FAILED sqlite-3-53 (rc=1, 599s)
+      stderr: 503 status code (no body)
+
+[114] Starting stringzilla-4-6 via provider (acquiring...)
+  ref: https://pypi.org/project/stringzilla/
+  ref: https://github.com/ashvardanian/StringZilla
+  ref: https://docs.rs/stringzilla
+  ref: https://crates.io/crates/stringzilla
+  ref: https://ashvardanian.com/posts/stringzilla/
+[114] Using provider: llama.cpp s2
+[113] DONE   stanza-1-11-1 (1,540 chars, 778s)
+[115] Starting tailwindcss-4-2 via provider (acquiring...)
+  ref: https://tailwindcss.com/docs
+  ref: https://github.com/tailwindlabs/tailwindcss
+[115] Using provider: llama.cpp s0
+[111] DONE   sqlalchemy-2-0 (1,308 chars, 1272s)
+[116] Starting tailwindcss-browser-4-2 via provider (acquiring...)
+  ref: https://www.npmjs.com/package/@tailwindcss/browser
+  ref: https://github.com/tailwindlabs/tailwindcss
+[116] Using provider: llama.cpp s1
+[116] DONE   tailwindcss-browser-4-2 (1,003 chars, 518s)
+[117] Starting tea-0-14-0 via provider (acquiring...)
+  ref: https://gitea.com/gitea/tea
+  ref: https://code.gitea.io/sdk/gitea
+  ref: https://dl.gitea.com/tea/
+  ref: https://hub.docker.com/r/gitea/tea
+  ref: https://pkg.go.dev/code.gitea.io/tea
+  ref: https://gitea.com/gitea/tea/src/branch/main/docs
+[117] Using provider: llama.cpp s3
+[114] DONE   stringzilla-4-6 (1,136 chars, 919s)
+[118] Starting textblob-0-20-0 via provider (acquiring...)
+  ref: https://github.com/sloria/TextBlob/tree/0.20.0
+  ref: http://www.nltk.org/
+  ref: https://github.com/clips/pattern
+  ref: https://github.com/sloria/TextBlob
+  ref: https://pypi.org/project/textblob/
+  ref: https://textblob.readthedocs.io/en/latest/changelog.html
+  ref: https://textblob.readthedocs.io/
+[118] Using provider: llama.cpp s1
+[115] DONE   tailwindcss-4-2 (1,898 chars, 1220s)
+[119] Starting tinycc-0-9-27 via provider (acquiring...)
+  ref: https://www.bellard.org/tcc/
+  ref: https://www.bellard.org/tcc/tcc-doc.html
+  ref: https://github.com/TinyCC/tinycc/tree/release_0_9_27
+[119] Using provider: llama.cpp s2
+[118] DONE   textblob-0-20-0 (1,636 chars, 760s)
+[120] Starting tinypy-1-1 via provider (acquiring...)
+  ref: http://www.tinypy.org/
+  ref: http://www.philhassey.com/blog/category/tinypy/
+  ref: http://www.tinypy.org/community.html
+  ref: https://github.com/philhassey/tinypy/blob/wiki/Index.md
+  ref: https://github.com/philhassey/tinypy/tree/1.1
+[120] Using provider: llama.cpp s0
+[117] DONE   tea-0-14-0 (1,029 chars, 790s)
+[121] Starting tokenizers-0-22-3 via provider (acquiring...)
+  ref: https://github.com/huggingface/tokenizers/tree/v0.22.2
+  ref: https://github.com/huggingface/tokenizers
+  ref: https://github.com/huggingface/tokenizers/releases/tag/v0.22.2
+  ref: https://huggingface.co/docs/transformers/tokenizer_summary
+  ref: https://pypi.org/project/tokenizers/
+  ref: https://huggingface.co/docs/tokenizers
+[121] Using provider: llama.cpp s1
+[119] DONE   tinycc-0-9-27 (1,077 chars, 642s)
+[122] Starting transformers-5-5-4 via provider (acquiring...)
+  ref: https://github.com/huggingface/transformers/tree/v5.5.4/docs
+  ref: https://huggingface.co/docs/transformers/en/index
+[122] Using provider: llama.cpp s3
+[121] FAILED tokenizers-0-22-3 (rc=1, 740s)
+      stderr: 503 status code (no body)
+
+[123] Starting ty-0-0-29 via provider (acquiring...)
+  ref: https://docs.astral.sh/ty/
+  ref: https://github.com/astral-sh/ty
+[123] Using provider: llama.cpp s2
+[120] DONE   tinypy-1-1 (1,424 chars, 1112s)
+[124] Starting upx-5-1-1 via provider (acquiring...)
+  ref: https://upx.github.io
+  ref: https://github.com/upx/upx
+[124] Using provider: llama.cpp s1
+[122] DONE   transformers-5-5-4 (1,369 chars, 827s)
+[125] Starting usearch-2-24 via provider (acquiring...)
+  ref: https://github.com/unum-cloud/usearch
+[125] Using provider: llama.cpp s0
+[123] DONE   ty-0-0-29 (1,087 chars, 811s)
+[126] Starting usearch-2-25-1 via provider (acquiring...)
+  ref: https://github.com/unum-cloud/usearch
+  ref: https://docs.rs/usearch/latest/usearch/
+  ref: https://github.com/ashvardanian/numkong
+  ref: https://unum-cloud.github.io/USearch/
+  ref: https://unum-cloud.github.io/USearch/cpp
+  ref: https://unum-cloud.github.io/USearch/python
+  ref: https://www.unum.cloud/blog/2023-11-07-scaling-vector-search-with-intel
+  ref: https://github.com/unum-cloud/USearch/tree/main/docs
+[126] Using provider: llama.cpp s3
+[124] DONE   upx-5-1-1 (1,046 chars, 665s)
+[127] Starting uv-0-11-6 via provider (acquiring...)
+  ref: https://docs.astral.sh/uv/
+  ref: https://github.com/astral-sh/uv
+[127] Using provider: llama.cpp s2
+[125] DONE   usearch-2-24 (1,465 chars, 876s)
+[128] Starting yq-4 via provider (acquiring...)
+  ref: https://mikefarah.gitbook.io/yq/
+  ref: https://github.com/mikefarah/yq/discussions
+  ref: https://mikefarah.gitbook.io/yq/llms-full.txt
+  ref: https://mikefarah.gitbook.io/yq/sitemap.md
+  ref: https://github.com/mikefarah/yq
+[128] Using provider: llama.cpp s1
+[126] DONE   usearch-2-25-1 (1,534 chars, 975s)
+[129] Starting zeromq-wiki-3-2 via provider (acquiring...)
+  ref: http://wiki.zeromq.org
+  ref: https://github.com/zeromq
+[129] Using provider: llama.cpp s0
+[127] DONE   uv-0-11-6 (1,392 chars, 1073s)
+[130] Starting zeromq-zguide-3-2 via provider (acquiring...)
+  ref: https://zguide.zeromq.org/
+  ref: https://github.com/zeromq
+[130] Using provider: llama.cpp s3
+[128] DONE   yq-4 (1,017 chars, 1185s)
+[129] DONE   zeromq-wiki-3-2 (1,446 chars, 1148s)
+[130] DONE   zeromq-zguide-3-2 (1,201 chars, 972s)
+
+======================================================================
+Complete: 97 succeeded, 34 failed out of 131
+Output   : /home/mtasic/projects-t/tangled-skills/generated_skills.json
+======================================================================
+
+Failed skills:
+  - asyncstdlib-3-14: 502 status code (no body)
+  - axios-1-15: 502 status code (no body)
+  - boto3-1-42-89: 502 status code (no body)
+  - bun-1-3-12: 502 status code (no body)
+  - caddy-2-11-2: 503 status code (no body)
+  - caveman-1-5-1: 503 status code (no body)
+  - cffi-2-0-0: 503 status code (no body)
+  - changelog-1-1: 503 status code (no body)
+  - bcrypt-5-0: The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch()
+  - chart-js-4-5-1: 503 status code (no body)
+  - chonkie-1-6-2: 503 status code (no body)
+  - chonkie-1-6-4: 503 status code (no body)
+  - coding-guidelines-0-1-0: 503 status code (no body)
+  - crun-1-27: 503 status code (no body)
+  - cryptography-46: 503 status code (no body)
+  - curl-8-19-0: 503 status code (no body)
+  - cython-3-2-4: 503 status code (no body)
+  - d3-7-9-0: 503 status code (no body)
+  - dayjs-1-11: 503 status code (no body)
+  - daisyui-5-5: 503 status code (no body)
+  - deno-2-7: 503 status code (no body)
+  - docker-docs-2026-04-16: 503 status code (no body)
+  - esbuild-0-28: 503 status code (no body)
+  - gh-2-91-0: 503 status code (no body)
+  - haproxy-3-3-0: 503 status code (no body)
+  - htm-3-1: 503 status code (no body)
+  - htmx-2: 503 status code (no body)
+  - numkong-7-6-0: 503 status code (no body)
+  - qwen3-embedding: 503 Loading model
+  - qwen3-reranker: 503 status code (no body)
+  - redis-om-python-1-1: 503 status code (no body)
+  - rsync-3-4-1: 503 status code (no body)
+  - sqlite-3-53: 503 status code (no body)
+  - tokenizers-0-22-3: 503 status code (no body)

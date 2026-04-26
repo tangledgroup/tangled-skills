@@ -1,0 +1,374 @@
+======================================================================
+Skill Generator — pi + llama.cpp
+======================================================================
+
+Resuming — 97 skill(s) already in generated_skills.json
+
+Found 34 skill(s) to generate (34 need regeneration)
+Providers: ['llama.cpp s0', 'llama.cpp s1', 'llama.cpp s2', 'llama.cpp s3']
+Max concurrent: 3
+Retry: exponential backoff 5s → 900s cap, then reset
+
+[1] [REGEN] Preserved header, cleaned body/refs for axios-1-15
+[1] Starting [REGEN] axios-1-15 via provider (acquiring...)
+  ref: https://axios-http.com/
+  ref: https://github.com/axios/axios
+[0] [REGEN] Preserved header, cleaned body/refs for asyncstdlib-3-14
+[0] Starting [REGEN] asyncstdlib-3-14 via provider (acquiring...)
+  ref: https://github.com/maxfischer2781/asyncstdlib
+  ref: https://asyncstdlib.readthedocs.io/
+[1] Using provider: llama.cpp s0
+[1] Attempt 1 for axios-1-15 (provider: llama.cpp s0)
+[0] Using provider: llama.cpp s1
+[0] Attempt 1 for asyncstdlib-3-14 (provider: llama.cpp s1)
+[2] [REGEN] Preserved header, cleaned body/refs for bcrypt-5-0
+[2] Starting [REGEN] bcrypt-5-0 via provider (acquiring...)
+  ref: https://bcrypt.readthedocs.io/
+  ref: https://github.com/pyca/bcrypt
+[2] Using provider: llama.cpp s2
+[2] Attempt 1 for bcrypt-5-0 (provider: llama.cpp s2)
+[2] SUCCESS on attempt 1 (287s, total 287s)
+[2] DONE   bcrypt-5-0 (954 chars, 287s total)
+[3] [REGEN] Preserved header, cleaned body/refs for boto3-1-42-89
+[3] Starting [REGEN] boto3-1-42-89 via provider (acquiring...)
+  ref: https://github.com/boto/boto3/tree/1.42.89
+  ref: https://docs.aws.amazon.com/
+  ref: https://docs.aws.amazon.com/botocore/latest/reference/config.html
+  ref: https://docs.aws.amazon.com/sdkref/latest/guide/feature-overview.html
+  ref: https://github.com/boto/boto3/blob/develop/CHANGELOG.rst
+  ref: https://boto3.amazonaws.com/v1/documentation/api/latest/
+[3] Using provider: llama.cpp s3
+[3] Attempt 1 for boto3-1-42-89 (provider: llama.cpp s3)
+[0] SUCCESS on attempt 1 (741s, total 741s)
+[0] DONE   asyncstdlib-3-14 (1,340 chars, 741s total)
+[4] [REGEN] Preserved header, cleaned body/refs for bun-1-3-12
+[4] Starting [REGEN] bun-1-3-12 via provider (acquiring...)
+  ref: https://bun.sh/docs
+  ref: https://github.com/oven-sh/bun
+[4] Using provider: llama.cpp s2
+[4] Attempt 1 for bun-1-3-12 (provider: llama.cpp s2)
+[1] SUCCESS on attempt 1 (986s, total 986s)
+[1] DONE   axios-1-15 (1,365 chars, 986s total)
+[5] [REGEN] Preserved header, cleaned body/refs for caddy-2-11-2
+[5] Starting [REGEN] caddy-2-11-2 via provider (acquiring...)
+  ref: https://github.com/caddyserver/caddy/tree/v2.11.2
+  ref: https://caddy.community
+  ref: https://caddyserver.com/docs/
+  ref: https://caddyserver.com/docs/api-tutorial
+  ref: https://caddyserver.com/docs/caddyfile-tutorial
+  ref: https://github.com/caddyserver/website
+[5] Using provider: llama.cpp s1
+[5] Attempt 1 for caddy-2-11-2 (provider: llama.cpp s1)
+[3] SUCCESS on attempt 1 (1117s, total 1117s)
+[3] DONE   boto3-1-42-89 (1,035 chars, 1117s total)
+[6] [REGEN] Preserved header, cleaned body/refs for caveman-1-5-1
+[6] Starting [REGEN] caveman-1-5-1 via provider (acquiring...)
+  ref: https://raw.githubusercontent.com/JuliusBrussee/caveman/refs/tags/v1.5.1/caveman/SKILL.md
+[6] Using provider: llama.cpp s0
+[6] Attempt 1 for caveman-1-5-1 (provider: llama.cpp s0)
+[6] SUCCESS on attempt 1 (234s, total 234s)
+[6] DONE   caveman-1-5-1 (899 chars, 234s total)
+[7] [REGEN] Preserved header, cleaned body/refs for cffi-2-0-0
+[7] Starting [REGEN] cffi-2-0-0 via provider (acquiring...)
+  ref: https://cffi.readthedocs.io/en/stable/
+  ref: https://py-free-threading.github.io/
+  ref: https://pypi.org/project/cffi/
+  ref: https://sourceware.org/libffi/
+  ref: https://github.com/python-cffi/cffi/tree/v2.0.0
+[7] Using provider: llama.cpp s3
+[7] Attempt 1 for cffi-2-0-0 (provider: llama.cpp s3)
+[4] SUCCESS on attempt 1 (1185s, total 1185s)
+[4] DONE   bun-1-3-12 (1,599 chars, 1185s total)
+[8] [REGEN] Preserved header, cleaned body/refs for changelog-1-1
+[8] Starting [REGEN] changelog-1-1 via provider (acquiring...)
+  ref: https://keepachangelog.com/en/1.1.0/
+  ref: https://semver.org/spec/v2.0.0.html
+[8] Using provider: llama.cpp s0
+[8] Attempt 1 for changelog-1-1 (provider: llama.cpp s0)
+[8] SUCCESS on attempt 1 (292s, total 292s)
+[8] DONE   changelog-1-1 (1,014 chars, 292s total)
+[9] [REGEN] Preserved header, cleaned body/refs for chart-js-4-5-1
+[9] Starting [REGEN] chart-js-4-5-1 via provider (acquiring...)
+  ref: https://www.chartjs.org/docs/latest/
+  ref: https://discord.gg/HxEguTK6av
+  ref: https://github.com/chartjs/awesome
+  ref: https://stackoverflow.com/questions/tagged/chart.js
+  ref: https://github.com/chartjs/Chart.js
+[9] Using provider: llama.cpp s2
+[9] Attempt 1 for chart-js-4-5-1 (provider: llama.cpp s2)
+[5] SUCCESS on attempt 1 (1386s, total 1386s)
+[5] DONE   caddy-2-11-2 (1,520 chars, 1386s total)
+[10] [REGEN] Preserved header, cleaned body/refs for chonkie-1-6-2
+[10] Starting [REGEN] chonkie-1-6-2 via provider (acquiring...)
+  ref: https://docs.chonkie.ai/common/welcome
+  ref: https://discord.gg/Q6zkP8w6ur
+  ref: https://docs.chonkie.ai
+  ref: https://github.com/chonkie-inc/chonkie
+  ref: https://github.com/chonkie-inc/chonkie/blob/main/BENCHMARKS.md
+  ref: https://github.com/chonkie-inc/chonkie/blob/v1.6.2/docs/oss/changelog.mdx
+  ref: https://github.com/chonkie-inc/chonkie/tree/v1.6.2
+  ref: https://github.com/chonkie-inc/chonkie/tree/v1.6.2/docs
+[10] Using provider: llama.cpp s0
+[10] Attempt 1 for chonkie-1-6-2 (provider: llama.cpp s0)
+[7] SUCCESS on attempt 1 (1425s, total 1425s)
+[7] DONE   cffi-2-0-0 (1,336 chars, 1425s total)
+[11] [REGEN] Preserved header, cleaned body/refs for chonkie-1-6-4
+[11] Starting [REGEN] chonkie-1-6-4 via provider (acquiring...)
+  ref: https://github.com/chonkie-inc/chonkie/tree/v1.6.4/docs
+  ref: https://docs.chonkie.ai
+  ref: https://github.com/chonkie-inc/chonkie
+  ref: https://github.com/chonkie-inc/chonkie/releases
+  ref: https://huggingface.co/datasets/chonkie-ai/recipes
+  ref: https://pypi.org/project/chonkie/
+  ref: https://github.com/chonkie-inc/chonkie/tree/v1.6.4
+  ref: https://docs.chonkie.ai/common/open-source
+[11] Using provider: llama.cpp s1
+[11] Attempt 1 for chonkie-1-6-4 (provider: llama.cpp s1)
+[9] SUCCESS on attempt 1 (1130s, total 1130s)
+[9] DONE   chart-js-4-5-1 (1,532 chars, 1130s total)
+[12] [REGEN] Preserved header, cleaned body/refs for coding-guidelines-0-1-0
+[12] Starting [REGEN] coding-guidelines-0-1-0 via provider (acquiring...)
+  ref: https://github.com/forrestchang/andrej-karpathy-skills
+  ref: https://x.com/karpathy/status/2015883857489522876
+[12] Using provider: llama.cpp s3
+[12] Attempt 1 for coding-guidelines-0-1-0 (provider: llama.cpp s3)
+[10] SUCCESS on attempt 1 (1104s, total 1104s)
+[10] DONE   chonkie-1-6-2 (1,216 chars, 1104s total)
+[13] [REGEN] Preserved header, cleaned body/refs for crun-1-27
+[13] Starting [REGEN] crun-1-27 via provider (acquiring...)
+  ref: https://github.com/containers/crun
+  ref: https://github.com/containers/crun/blob/main/Documentation/crun.md
+[13] Using provider: llama.cpp s2
+[13] Attempt 1 for crun-1-27 (provider: llama.cpp s2)
+[12] SUCCESS on attempt 1 (309s, total 309s)
+[12] DONE   coding-guidelines-0-1-0 (986 chars, 309s total)
+[14] [REGEN] Preserved header, cleaned body/refs for cryptography-46
+[14] Starting [REGEN] cryptography-46 via provider (acquiring...)
+  ref: https://cryptography.io/en/latest/
+  ref: https://github.com/pyca/cryptography
+[14] Using provider: llama.cpp s0
+[14] Attempt 1 for cryptography-46 (provider: llama.cpp s0)
+[13] SUCCESS on attempt 1 (507s, total 507s)
+[13] DONE   crun-1-27 (1,128 chars, 507s total)
+[15] [REGEN] Preserved header, cleaned body/refs for curl-8-19-0
+[15] Starting [REGEN] curl-8-19-0 via provider (acquiring...)
+  ref: https://github.com/curl/curl/tree/curl-8_19_0/docs
+  ref: https://curl.se/
+  ref: https://curl.se/libcurl/
+  ref: https://github.com/curl/curl
+[15] Using provider: llama.cpp s3
+[15] Attempt 1 for curl-8-19-0 (provider: llama.cpp s3)
+[11] SUCCESS on attempt 1 (1212s, total 1212s)
+[11] DONE   chonkie-1-6-4 (1,216 chars, 1212s total)
+[16] [REGEN] Preserved header, cleaned body/refs for cython-3-2-4
+[16] Starting [REGEN] cython-3-2-4 via provider (acquiring...)
+  ref: https://github.com/cython/cython/tree/3.2.4
+  ref: https://github.com/cython/cython/wiki
+  ref: https://groups.google.com/group/cython
+  ref: https://cython.readthedocs.io/en/latest/
+[16] Using provider: llama.cpp s2
+[16] Attempt 1 for cython-3-2-4 (provider: llama.cpp s2)
+[15] SUCCESS on attempt 1 (865s, total 865s)
+[15] DONE   curl-8-19-0 (1,351 chars, 865s total)
+[17] [REGEN] Preserved header, cleaned body/refs for d3-7-9-0
+[17] Starting [REGEN] d3-7-9-0 via provider (acquiring...)
+  ref: https://d3js.org/what-is-d3
+  ref: https://d3js.org/
+  ref: https://d3js.org/api
+  ref: https://d3js.org/getting-started
+  ref: https://github.com/d3
+  ref: https://observablehq.com/@d3/gallery
+[17] Using provider: llama.cpp s1
+[17] Attempt 1 for d3-7-9-0 (provider: llama.cpp s1)
+[14] SUCCESS on attempt 1 (1234s, total 1234s)
+[14] DONE   cryptography-46 (1,556 chars, 1234s total)
+[18] [REGEN] Preserved header, cleaned body/refs for daisyui-5-5
+[18] Starting [REGEN] daisyui-5-5 via provider (acquiring...)
+  ref: https://daisyui.com/
+  ref: https://github.com/saadeghi/daisyui
+[18] Using provider: llama.cpp s3
+[18] Attempt 1 for daisyui-5-5 (provider: llama.cpp s3)
+[16] SUCCESS on attempt 1 (1329s, total 1329s)
+[16] DONE   cython-3-2-4 (1,355 chars, 1329s total)
+[19] [REGEN] Preserved header, cleaned body/refs for dayjs-1-11
+[19] Starting [REGEN] dayjs-1-11 via provider (acquiring...)
+  ref: https://day.js.org/
+  ref: https://github.com/iamkun/dayjs
+[19] Using provider: llama.cpp s0
+[19] Attempt 1 for dayjs-1-11 (provider: llama.cpp s0)
+[18] SUCCESS on attempt 1 (1149s, total 1149s)
+[18] DONE   daisyui-5-5 (1,563 chars, 1149s total)
+[20] [REGEN] Preserved header, cleaned body/refs for deno-2-7
+[20] Starting [REGEN] deno-2-7 via provider (acquiring...)
+  ref: https://docs.deno.com/
+  ref: https://github.com/denoland/deno
+[20] Using provider: llama.cpp s2
+[20] Attempt 1 for deno-2-7 (provider: llama.cpp s2)
+[17] SUCCESS on attempt 1 (1466s, total 1466s)
+[17] DONE   d3-7-9-0 (1,615 chars, 1466s total)
+[21] [REGEN] Preserved header, cleaned body/refs for docker-docs-2026-04-16
+[21] Starting [REGEN] docker-docs-2026-04-16 via provider (acquiring...)
+  ref: https://docs.docker.com/
+  ref: https://docs.docker.com/build/concepts/dockerfile/
+  ref: https://docs.docker.com/compose/
+  ref: https://docs.docker.com/compose/compose-file/
+  ref: https://docs.docker.com/engine/api/
+  ref: https://docs.docker.com/engine/reference/builder/
+  ref: https://github.com/compose-spec/compose-spec
+  ref: https://github.com/docker/awesome-compose
+  ref: https://github.com/docker/buildx
+  ref: https://github.com/docker/compose
+  ref: https://github.com/docker/docs
+  ref: https://github.com/moby/buildkit/tree/master/frontend/dockerfile
+  ref: https://github.com/moby/moby
+[21] Using provider: llama.cpp s3
+[21] Attempt 1 for docker-docs-2026-04-16 (provider: llama.cpp s3)
+[19] FAILED attempt 1 for dayjs-1-11 (rc=1, 908s)
+      stderr: 503 status code (no body)
+
+[19] Sleeping 5s before retry...
+[19] Attempt 2 for dayjs-1-11 (provider: llama.cpp s0)
+[19] FAILED attempt 2 for dayjs-1-11 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[19] Sleeping 10s before retry...
+[19] Attempt 3 for dayjs-1-11 (provider: llama.cpp s0)
+[19] FAILED attempt 3 for dayjs-1-11 (rc=1, 20s)
+      stderr: 503 status code (no body)
+
+[19] Sleeping 20s before retry...
+[19] Attempt 4 for dayjs-1-11 (provider: llama.cpp s0)
+[20] SUCCESS on attempt 1 (1404s, total 1404s)
+[20] DONE   deno-2-7 (1,730 chars, 1404s total)
+[22] [REGEN] Preserved header, cleaned body/refs for esbuild-0-28
+[22] Starting [REGEN] esbuild-0-28 via provider (acquiring...)
+  ref: https://esbuild.github.io/
+  ref: https://github.com/evanw/esbuild
+[22] Using provider: llama.cpp s1
+[22] Attempt 1 for esbuild-0-28 (provider: llama.cpp s1)
+[19] SUCCESS on attempt 4 (1089s, total 2037s)
+[19] DONE   dayjs-1-11 (1,316 chars, 2037s total)
+[23] [REGEN] Preserved header, cleaned body/refs for gh-2-91-0
+[23] Starting [REGEN] gh-2-91-0 via provider (acquiring...)
+  ref: https://cli.github.com/
+  ref: https://github.com/cli/cli
+  ref: https://github.com/cli/cli#installation
+  ref: https://github.com/cli/cli/releases
+  ref: https://github.com/topics/gh-extension
+  ref: https://cli.github.com/manual/
+  ref: https://github.com/cli/cli/releases/tag/v2.91.0
+[23] Using provider: llama.cpp s2
+[23] Attempt 1 for gh-2-91-0 (provider: llama.cpp s2)
+[21] SUCCESS on attempt 1 (1729s, total 1729s)
+[21] DONE   docker-docs-2026-04-16 (1,472 chars, 1729s total)
+[24] [REGEN] Preserved header, cleaned body/refs for haproxy-3-3-0
+[24] Starting [REGEN] haproxy-3-3-0 via provider (acquiring...)
+  ref: https://github.com/haproxy/haproxy/tree/v3.3.0/doc
+  ref: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/configuration.txt
+  ref: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/intro.txt
+  ref: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/lua.txt
+  ref: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/management.txt
+  ref: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/peers.txt
+  ref: https://github.com/haproxy/haproxy/blob/v3.3.0/doc/proxy-protocol.txt
+[24] Using provider: llama.cpp s0
+[24] Attempt 1 for haproxy-3-3-0 (provider: llama.cpp s0)
+[22] SUCCESS on attempt 1 (829s, total 829s)
+[22] DONE   esbuild-0-28 (1,366 chars, 829s total)
+[25] [REGEN] Preserved header, cleaned body/refs for htm-3-1
+[25] Starting [REGEN] htm-3-1 via provider (acquiring...)
+  ref: https://github.com/developit/htm
+[25] Using provider: llama.cpp s3
+[25] Attempt 1 for htm-3-1 (provider: llama.cpp s3)
+[23] SUCCESS on attempt 1 (996s, total 996s)
+[23] DONE   gh-2-91-0 (1,273 chars, 996s total)
+[26] [REGEN] Preserved header, cleaned body/refs for htmx-2
+[26] Starting [REGEN] htmx-2 via provider (acquiring...)
+  ref: https://htmx.org/docs
+  ref: https://github.com/bigskysoftware/htmx
+[26] Using provider: llama.cpp s1
+[26] Attempt 1 for htmx-2 (provider: llama.cpp s1)
+[25] SUCCESS on attempt 1 (508s, total 508s)
+[25] DONE   htm-3-1 (1,186 chars, 508s total)
+[27] [REGEN] Preserved header, cleaned body/refs for numkong-7-6-0
+[27] Starting [REGEN] numkong-7-6-0 via provider (acquiring...)
+  ref: https://pypi.org/project/numkong/
+  ref: https://github.com/ashvardanian/NumWars
+  ref: https://ashvardanian.com/posts/numkong/
+  ref: https://github.com/ashvardanian/NumKong
+[27] Using provider: llama.cpp s2
+[27] Attempt 1 for numkong-7-6-0 (provider: llama.cpp s2)
+[26] SUCCESS on attempt 1 (951s, total 951s)
+[26] DONE   htmx-2 (1,526 chars, 951s total)
+[28] [REGEN] Preserved header, cleaned body/refs for qwen3-embedding
+[28] Starting [REGEN] qwen3-embedding via provider (acquiring...)
+  ref: https://huggingface.co/Qwen/Qwen3-Embedding-0.6B
+  ref: https://arxiv.org/abs/2506.05176
+  ref: https://qwenlm.github.io/blog/qwen3-embedding/
+  ref: https://huggingface.co/Qwen/Qwen3-Embedding-4B
+  ref: https://huggingface.co/Qwen/Qwen3-Embedding-8B
+[28] Using provider: llama.cpp s3
+[28] Attempt 1 for qwen3-embedding (provider: llama.cpp s3)
+[24] SUCCESS on attempt 1 (1777s, total 1777s)
+[24] DONE   haproxy-3-3-0 (1,661 chars, 1777s total)
+[29] [REGEN] Preserved header, cleaned body/refs for qwen3-reranker
+[29] Starting [REGEN] qwen3-reranker via provider (acquiring...)
+  ref: https://huggingface.co/Qwen/Qwen3-Reranker-0.6B
+  ref: https://arxiv.org/abs/2506.05176
+  ref: https://github.com/QwenLM/Qwen3-Embedding
+  ref: https://huggingface.co/Qwen/Qwen3-Reranker-0.6B),
+  ref: https://huggingface.co/Qwen/Qwen3-Reranker-4B),
+  ref: https://qwenlm.github.io/blog/qwen3-embedding/
+  ref: https://huggingface.co/Qwen/Qwen3-Reranker-4B
+  ref: https://huggingface.co/Qwen/Qwen3-Reranker-8B
+[29] Using provider: llama.cpp s1
+[29] Attempt 1 for qwen3-reranker (provider: llama.cpp s1)
+[28] SUCCESS on attempt 1 (635s, total 635s)
+[28] DONE   qwen3-embedding (1,249 chars, 635s total)
+[30] [REGEN] Preserved header, cleaned body/refs for redis-om-python-1-1
+[30] Starting [REGEN] redis-om-python-1-1 via provider (acquiring...)
+  ref: https://redis.github.io/redis-om-python/
+  ref: https://github.com/redis/redis-om-python
+[30] Using provider: llama.cpp s0
+[30] Attempt 1 for redis-om-python-1-1 (provider: llama.cpp s0)
+[27] SUCCESS on attempt 1 (1831s, total 1831s)
+[27] DONE   numkong-7-6-0 (1,516 chars, 1831s total)
+[31] [REGEN] Preserved header, cleaned body/refs for rsync-3-4-1
+[31] Starting [REGEN] rsync-3-4-1 via provider (acquiring...)
+  ref: https://rsync.samba.org/
+  ref: https://download.samba.org/pub/rsync/rsync.1
+  ref: https://download.samba.org/pub/rsync/rsyncd.conf.5
+  ref: https://rsync.samba.org/FAQ.html
+  ref: https://rsync.samba.org/examples.html
+  ref: https://github.com/rsyncproject/rsync
+[31] Using provider: llama.cpp s3
+[31] Attempt 1 for rsync-3-4-1 (provider: llama.cpp s3)
+[29] SUCCESS on attempt 1 (793s, total 793s)
+[29] DONE   qwen3-reranker (1,336 chars, 793s total)
+[32] [REGEN] Preserved header, cleaned body/refs for sqlite-3-53
+[32] Starting [REGEN] sqlite-3-53 via provider (acquiring...)
+  ref: https://www.sqlite.org/docs.html
+[32] Using provider: llama.cpp s2
+[32] Attempt 1 for sqlite-3-53 (provider: llama.cpp s2)
+[30] SUCCESS on attempt 1 (812s, total 812s)
+[30] DONE   redis-om-python-1-1 (1,306 chars, 812s total)
+[33] [REGEN] Preserved header, cleaned body/refs for tokenizers-0-22-3
+[33] Starting [REGEN] tokenizers-0-22-3 via provider (acquiring...)
+  ref: https://github.com/huggingface/tokenizers/tree/v0.22.2
+  ref: https://github.com/huggingface/tokenizers
+  ref: https://github.com/huggingface/tokenizers/releases/tag/v0.22.2
+  ref: https://huggingface.co/docs/transformers/tokenizer_summary
+  ref: https://pypi.org/project/tokenizers/
+  ref: https://huggingface.co/docs/tokenizers
+[33] Using provider: llama.cpp s1
+[33] Attempt 1 for tokenizers-0-22-3 (provider: llama.cpp s1)
+[32] SUCCESS on attempt 1 (1227s, total 1227s)
+[32] DONE   sqlite-3-53 (2,074 chars, 1227s total)
+[33] SUCCESS on attempt 1 (802s, total 802s)
+[33] DONE   tokenizers-0-22-3 (1,386 chars, 802s total)
+[31] SUCCESS on attempt 1 (1464s, total 1464s)
+[31] DONE   rsync-3-4-1 (1,228 chars, 1464s total)
+
+======================================================================
+Complete: 34 succeeded, 0 failed out of 34
+Output   : /home/mtasic/projects-t/tangled-skills/generated_skills.json
+======================================================================
