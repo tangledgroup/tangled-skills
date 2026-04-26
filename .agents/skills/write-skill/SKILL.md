@@ -1,7 +1,7 @@
 ---
 name: write-skill
 description: Generate fine-grained agent skills from user requirements, creating complete spec-compliant markdown files that work across pi, opencode, claude, and codex platforms. Use when creating new skills or converting existing documentation into skill format.
-version: "0.7.1"
+version: "0.7.2"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
@@ -287,11 +287,11 @@ Key concepts, terminology, and fundamental ideas related to the topic.
 
 The following sections are **optional** — include only when applicable:
 
-**`## Installation / Setup`** — Include when the tool/library requires installation, configuration, or environment setup steps. Skip for conceptual, guideline, or meta-skills that have no install process.
+`## Installation / Setup` — Include when the tool/library requires installation, configuration, or environment setup steps. Skip for conceptual, guideline, or meta-skills that have no install process.
 
-**`## Usage Examples`** — Include when practical code examples are relevant. Provide copy-pasteable code blocks with language tags. Skip for conceptual, guideline, or meta-skills where code examples don't apply.
+`## Usage Examples` — Include when practical code examples are relevant. Provide copy-pasteable code blocks with language tags. Skip for conceptual, guideline, or meta-skills where code examples don't apply.
 
-**`## Advanced Topics`** — Include **only** when the skill has companion reference files in `reference/`. Use this section as a navigation hub linking to them:
+`## Advanced Topics` — Include **only** when the skill has companion reference files in `reference/`. Use this section as a navigation hub linking to them:
 
 ```markdown
 ## Advanced Topics
