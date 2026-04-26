@@ -153,10 +153,10 @@ print(params.parallelism) # 4
 
 ## Advanced Topics
 
-**Argon2 Algorithm Details**: Three variants, memory-hard design, RFC 9106 standardization → See [Argon2 Algorithm](reference/01-argon2-algorithm.md)
+**Argon2 Algorithm Details**: Three variants, memory-hard design, RFC 9106 standardization → [Argon2 Algorithm](reference/01-argon2-algorithm.md)
 
-**Parameter Selection Guide**: How to choose time_cost, memory_cost, parallelism, and hash_len for your environment → See [Choosing Parameters](reference/02-choosing-parameters.md)
+**Parameter Selection Guide**: How to choose time_cost, memory_cost, parallelism, and hash_len for your environment → [Choosing Parameters](reference/02-choosing-parameters.md)
 
-**API Reference**: Complete documentation of PasswordHasher, low-level API, exceptions, profiles, and utilities → See [API Reference](reference/03-api-reference.md)
+**API Reference**: Complete documentation of PasswordHasher, low-level API, exceptions, profiles, and utilities → [API Reference](reference/03-api-reference.md)
 
-**CLI and Installation**: Benchmark tool usage, installation options (vendored vs system Argon2), SSE2 override → See [CLI and Installation](reference/04-cli-installation.md)
+**CLI and Installation**: Benchmark tool usage, installation options (vendored vs system Argon2), SSE2 override → [CLI and Installation](reference/04-cli-installation.md)

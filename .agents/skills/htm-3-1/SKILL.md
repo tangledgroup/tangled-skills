@@ -213,8 +213,8 @@ html`<div class=foo id=bar>`;   // Same as class="foo" id="bar"
 
 ## Advanced Topics
 
-**Syntax Reference**: Complete syntax rules, attribute handling, and edge cases → See [Syntax Reference](reference/01-syntax-reference.md)
+**Syntax Reference**: Complete syntax rules, attribute handling, and edge cases → [Syntax Reference](reference/01-syntax-reference.md)
 
-**Build-Time Compilation**: Using babel-plugin-htm to compile htm to 0 bytes at build time → See [Build-Time Compilation](reference/02-build-time-compilation.md)
+**Build-Time Compilation**: Using babel-plugin-htm to compile htm to 0 bytes at build time → [Build-Time Compilation](reference/02-build-time-compilation.md)
 
-**Custom Renderers and Patterns**: Binding htm to non-Virtual-DOM targets, SSR patterns, and advanced integration techniques → See [Custom Renderers and Patterns](reference/03-custom-renderers-and-patterns.md)
+**Custom Renderers and Patterns**: Binding htm to non-Virtual-DOM targets, SSR patterns, and advanced integration techniques → [Custom Renderers and Patterns](reference/03-custom-renderers-and-patterns.md)

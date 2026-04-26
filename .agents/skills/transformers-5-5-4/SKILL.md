@@ -220,14 +220,14 @@ trainer.push_to_hub()
 
 ## Advanced Topics
 
-**Models and AutoClasses**: Loading strategies, sharded checkpoints, Big Model Inference, device mapping, data types → See [Models](reference/01-models.md)
+**Models and AutoClasses**: Loading strategies, sharded checkpoints, Big Model Inference, device mapping, data types → [Models](reference/01-models.md)
 
-**Tokenizers and Preprocessors**: Fast tokenizers, encoding/decoding, batch processing, special tokens, chat templates, image/video processors → See [Tokenizers](reference/02-tokenizers.md)
+**Tokenizers and Preprocessors**: Fast tokenizers, encoding/decoding, batch processing, special tokens, chat templates, image/video processors → [Tokenizers](reference/02-tokenizers.md)
 
-**Text Generation**: The generate API, decoding strategies (greedy, sampling, beam search), streaming, watermarking, generation configuration → See [Text Generation](reference/03-text-generation.md)
+**Text Generation**: The generate API, decoding strategies (greedy, sampling, beam search), streaming, watermarking, generation configuration → [Text Generation](reference/03-text-generation.md)
 
-**Training and Fine-tuning**: Trainer API, TrainingArguments, data collators, callbacks, distributed training, PEFT → See [Training](reference/04-training.md)
+**Training and Fine-tuning**: Trainer API, TrainingArguments, data collators, callbacks, distributed training, PEFT → [Training](reference/04-training.md)
 
-**Inference Optimization**: Quantization (bitsandbytes, GPTQ, AWQ, GGUF), attention backends, KV caching, torch.compile, continuous batching, tensor parallelism → See [Optimization](reference/05-optimization.md)
+**Inference Optimization**: Quantization (bitsandbytes, GPTQ, AWQ, GGUF), attention backends, KV caching, torch.compile, continuous batching, tensor parallelism → [Optimization](reference/05-optimization.md)
 
-**Pipeline API**: Task-specific pipelines, batching, FP16 inference, custom pipelines, streaming → See [Pipelines](reference/06-pipelines.md)
+**Pipeline API**: Task-specific pipelines, batching, FP16 inference, custom pipelines, streaming → [Pipelines](reference/06-pipelines.md)

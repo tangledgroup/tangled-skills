@@ -239,22 +239,22 @@ except APIStatusError as e:
 
 ## Advanced Topics
 
-**Responses API**: The primary text generation interface with structured output → See [Responses API](reference/01-responses-api.md)
+**Responses API**: The primary text generation interface with structured output → [Responses API](reference/01-responses-api.md)
 
-**Chat Completions**: Legacy API with function calling, vision, and tool use → See [Chat Completions](reference/02-chat-completions.md)
+**Chat Completions**: Legacy API with function calling, vision, and tool use → [Chat Completions](reference/02-chat-completions.md)
 
-**Audio**: Transcription, translation, and speech synthesis → See [Audio](reference/03-audio.md)
+**Audio**: Transcription, translation, and speech synthesis → [Audio](reference/03-audio.md)
 
-**Embeddings and Images**: Vector embeddings and image generation/editing → See [Embeddings and Images](reference/04-embeddings-images.md)
+**Embeddings and Images**: Vector embeddings and image generation/editing → [Embeddings and Images](reference/04-embeddings-images.md)
 
-**Assistants API**: Threads, runs, tools, and file search for automated agents → See [Assistants API](reference/05-assistants-api.md)
+**Assistants API**: Threads, runs, tools, and file search for automated agents → [Assistants API](reference/05-assistants-api.md)
 
-**Fine-Tuning**: Custom model training with supervised, DPO, and reinforcement methods → See [Fine-Tuning](reference/06-fine-tuning.md)
+**Fine-Tuning**: Custom model training with supervised, DPO, and reinforcement methods → [Fine-Tuning](reference/06-fine-tuning.md)
 
-**Realtime API**: Low-latency conversational WebSocket interface → See [Realtime API](reference/07-realtime-api.md)
+**Realtime API**: Low-latency conversational WebSocket interface → [Realtime API](reference/07-realtime-api.md)
 
-**Batch Processing and Files**: Bulk request processing and file management → See [Batch and Files](reference/08-batch-files.md)
+**Batch Processing and Files**: Bulk request processing and file management → [Batch and Files](reference/08-batch-files.md)
 
-**Vector Stores**: Managed document storage for assistant file search → See [Vector Stores](reference/09-vector-stores.md)
+**Vector Stores**: Managed document storage for assistant file search → [Vector Stores](reference/09-vector-stores.md)
 
-**Other APIs**: Moderations, models, evaluations, skills, videos, containers, webhooks → See [Other APIs](reference/10-other-apis.md)
+**Other APIs**: Moderations, models, evaluations, skills, videos, containers, webhooks → [Other APIs](reference/10-other-apis.md)

@@ -120,12 +120,12 @@ Qwen3VLEmbedder(
 
 ## Advanced Topics
 
-**Architecture and Training**: Model design, dual-tower architecture, multi-stage training paradigm → See [Architecture](reference/01-architecture.md)
+**Architecture and Training**: Model design, dual-tower architecture, multi-stage training paradigm → [Architecture](reference/01-architecture.md)
 
-**Input Modalities and Format**: Detailed specification for text, image, video, and mixed-modal inputs with examples → See [Input Modalities](reference/02-input-modalities.md)
+**Input Modalities and Format**: Detailed specification for text, image, video, and mixed-modal inputs with examples → [Input Modalities](reference/02-input-modalities.md)
 
-**Usage Patterns and Examples**: Classification, QA, retrieval, RAG pipelines across text, image, and video tasks → See [Usage Patterns](reference/03-usage-patterns.md)
+**Usage Patterns and Examples**: Classification, QA, retrieval, RAG pipelines across text, image, and video tasks → [Usage Patterns](reference/03-usage-patterns.md)
 
-**Benchmark Performance**: MMEB-V2 and MMTEB evaluation results with comparative analysis → See [Benchmarks](reference/04-benchmarks.md)
+**Benchmark Performance**: MMEB-V2 and MMTEB evaluation results with comparative analysis → [Benchmarks](reference/04-benchmarks.md)
 
-**Reranking Integration**: Two-stage retrieval with Qwen3-VL-Reranker for precision refinement → See [Reranking](reference/05-reranking.md)
+**Reranking Integration**: Two-stage retrieval with Qwen3-VL-Reranker for precision refinement → [Reranking](reference/05-reranking.md)

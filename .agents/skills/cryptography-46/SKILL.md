@@ -105,26 +105,26 @@ private_key.public_key().verify(signature, b"message")
 
 ## Advanced Topics
 
-**Fernet (Symmetric Encryption)**: High-level recipe for authenticated symmetric encryption with key rotation → See [Fernet](reference/01-fernet.md)
+**Fernet (Symmetric Encryption)**: High-level recipe for authenticated symmetric encryption with key rotation → [Fernet](reference/01-fernet.md)
 
-**Authenticated Encryption (AEAD)**: ChaCha20-Poly1305, AES-GCM, AES-CCM, and other AEAD constructions → See [AEAD](reference/02-aead.md)
+**Authenticated Encryption (AEAD)**: ChaCha20-Poly1305, AES-GCM, AES-CCM, and other AEAD constructions → [AEAD](reference/02-aead.md)
 
-**Asymmetric Cryptography**: RSA, EC, Ed25519, X25519, ML-DSA, ML-KEM, Diffie-Hellman, DSA, and key serialization → See [Asymmetric](reference/03-asymmetric.md)
+**Asymmetric Cryptography**: RSA, EC, Ed25519, X25519, ML-DSA, ML-KEM, Diffie-Hellman, DSA, and key serialization → [Asymmetric](reference/03-asymmetric.md)
 
-**Hashing**: SHA-2, SHA-3, BLAKE2, SHAKE (XOF), and the Hash/XOFHash APIs → See [Hashing](reference/04-hashing.md)
+**Hashing**: SHA-2, SHA-3, BLAKE2, SHAKE (XOF), and the Hash/XOFHash APIs → [Hashing](reference/04-hashing.md)
 
-**Key Derivation Functions**: Argon2id/d/i, PBKDF2-HMAC, scrypt, HKDF, and KDF interfaces → See [KDFs](reference/05-kdf.md)
+**Key Derivation Functions**: Argon2id/d/i, PBKDF2-HMAC, scrypt, HKDF, and KDF interfaces → [KDFs](reference/05-kdf.md)
 
-**Message Authentication Codes**: HMAC, CMAC, Poly1305 for integrity verification → See [MACs](reference/06-mac.md)
+**Message Authentication Codes**: HMAC, CMAC, Poly1305 for integrity verification → [MACs](reference/06-mac.md)
 
-**X.509 Certificates**: Creating CSRs, self-signed certificates, CA hierarchies, certificate verification, OCSP, and extensions → See [X.509](reference/07-x509.md)
+**X.509 Certificates**: Creating CSRs, self-signed certificates, CA hierarchies, certificate verification, OCSP, and extensions → [X.509](reference/07-x509.md)
 
-**Symmetric Encryption (Cipher API)**: Low-level Cipher class with AES, ChaCha20, SM4 and modes CBC, CTR, GCM, CFB, OFB, CCM → See [Symmetric](reference/08-symmetric.md)
+**Symmetric Encryption (Cipher API)**: Low-level Cipher class with AES, ChaCha20, SM4 and modes CBC, CTR, GCM, CFB, OFB, CCM → [Symmetric](reference/08-symmetric.md)
 
-**Two-Factor Authentication**: HOTP (RFC 4226) and TOTP (RFC 6238) for one-time passwords → See [2FA](reference/09-twofactor.md)
+**Two-Factor Authentication**: HOTP (RFC 4226) and TOTP (RFC 6238) for one-time passwords → [2FA](reference/09-twofactor.md)
 
-**HPKE**: Hybrid Public Key Encryption (RFC 9180) with post-quantum KEM support → See [HPKE](reference/10-hpke.md)
+**HPKE**: Hybrid Public Key Encryption (RFC 9180) with post-quantum KEM support → [HPKE](reference/10-hpke.md)
 
-**Key Wrapping**: AES key wrap (RFC 3394) and padded key wrap (RFC 5649) → See [KeyWrap](reference/11-keywrap.md)
+**Key Wrapping**: AES key wrap (RFC 3394) and padded key wrap (RFC 5649) → [KeyWrap](reference/11-keywrap.md)
 
-**Utilities**: Random number generation, constant-time comparison, exceptions, padding, and decrepit algorithms → See [Utilities](reference/12-utilities.md)
+**Utilities**: Random number generation, constant-time comparison, exceptions, padding, and decrepit algorithms → [Utilities](reference/12-utilities.md)

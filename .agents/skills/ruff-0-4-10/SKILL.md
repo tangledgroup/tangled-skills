@@ -232,10 +232,10 @@ jobs:
 
 ## Advanced Topics
 
-**Linter Deep Dive**: Rule selection, fix safety, error suppression mechanisms → See [The Ruff Linter](reference/01-the-ruff-linter.md)
+**Linter Deep Dive**: Rule selection, fix safety, error suppression mechanisms → [The Ruff Linter](reference/01-the-ruff-linter.md)
 
-**Formatter Deep Dive**: Black compatibility, configuration options, docstring formatting, f-string handling, format suppression → See [The Ruff Formatter](reference/02-the-ruff-formatter.md)
+**Formatter Deep Dive**: Black compatibility, configuration options, docstring formatting, f-string handling, format suppression → [The Ruff Formatter](reference/02-the-ruff-formatter.md)
 
-**Configuration Reference**: File discovery, hierarchical config, CLI flags, per-file-ignores, plugin settings → See [Configuring Ruff](reference/03-configuring-ruff.md)
+**Configuration Reference**: File discovery, hierarchical config, CLI flags, per-file-ignores, plugin settings → [Configuring Ruff](reference/03-configuring-ruff.md)
 
-**Rules and Settings**: Rule categories, key settings, preview mode, versioning policy → See [Rules and Settings](reference/04-rules-and-settings.md)
+**Rules and Settings**: Rule categories, key settings, preview mode, versioning policy → [Rules and Settings](reference/04-rules-and-settings.md)

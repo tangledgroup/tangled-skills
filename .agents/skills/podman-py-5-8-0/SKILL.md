@@ -131,16 +131,16 @@ with PodmanClient() as client:
 
 ## Advanced Topics
 
-**Container Operations**: Lifecycle management, exec, logs, stats, file transfer → See [Container Operations](reference/01-container-operations.md)
+**Container Operations**: Lifecycle management, exec, logs, stats, file transfer → [Container Operations](reference/01-container-operations.md)
 
-**Image Management**: Build, pull, push, save, load, tag, prune → See [Image Management](reference/02-image-management.md)
+**Image Management**: Build, pull, push, save, load, tag, prune → [Image Management](reference/02-image-management.md)
 
-**Networks and Volumes**: Network creation, container connectivity, volume lifecycle → See [Networks and Volumes](reference/03-networks-volumes.md)
+**Networks and Volumes**: Network creation, container connectivity, volume lifecycle → [Networks and Volumes](reference/03-networks-volumes.md)
 
-**Pods**: Pod lifecycle, stats, multi-container grouping → See [Pods](reference/04-pods.md)
+**Pods**: Pod lifecycle, stats, multi-container grouping → [Pods](reference/04-pods.md)
 
-**Manifests, Secrets, Quadlets**: Multi-arch manifests, secret management, systemd quadlet integration → See [Manifests, Secrets, and Quadlets](reference/05-manifests-secrets-quadlets.md)
+**Manifests, Secrets, Quadlets**: Multi-arch manifests, secret management, systemd quadlet integration → [Manifests, Secrets, and Quadlets](reference/05-manifests-secrets-quadlets.md)
 
-**Configuration and Events**: PodmanConfig, service connections, event streaming → See [Configuration and Events](reference/06-configuration-events.md)
+**Configuration and Events**: PodmanConfig, service connections, event streaming → [Configuration and Events](reference/06-configuration-events.md)
 
-**Error Handling**: Exception hierarchy, error classification → See [Error Handling](reference/07-error-handling.md)
+**Error Handling**: Exception hierarchy, error classification → [Error Handling](reference/07-error-handling.md)

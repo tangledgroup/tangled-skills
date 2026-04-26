@@ -169,20 +169,20 @@ svg.selectAll("circle")
 
 ## Advanced Topics
 
-**Selections and Data Joins**: The enter/update/exit pattern, joining data to elements, local variables, event handling → See [Selections and Data Joins](reference/01-selections-and-data-joins.md)
+**Selections and Data Joins**: The enter/update/exit pattern, joining data to elements, local variables, event handling → [Selections and Data Joins](reference/01-selections-and-data-joins.md)
 
-**Scales and Axes**: Linear, time, ordinal, band, point, log, pow, sequential, diverging, quantile, quantize, threshold scales and axis generation → See [Scales and Axes](reference/02-scales-and-axes.md)
+**Scales and Axes**: Linear, time, ordinal, band, point, log, pow, sequential, diverging, quantile, quantize, threshold scales and axis generation → [Scales and Axes](reference/02-scales-and-axes.md)
 
-**Shapes and Paths**: Line, area, arc, pie, stack, link, symbol generators, curves, radial variants, and the path API → See [Shapes and Paths](reference/03-shapes-and-paths.md)
+**Shapes and Paths**: Line, area, arc, pie, stack, link, symbol generators, curves, radial variants, and the path API → [Shapes and Paths](reference/03-shapes-and-paths.md)
 
-**Geographic Maps**: Projections (azimuthal, conic, cylindrical), GeoJSON paths, spherical shapes, streams, and geographic math → See [Geographic Maps](reference/04-geographic-maps.md)
+**Geographic Maps**: Projections (azimuthal, conic, cylindrical), GeoJSON paths, spherical shapes, streams, and geographic math → [Geographic Maps](reference/04-geographic-maps.md)
 
-**Force Simulations**: Force-directed layouts with center, collide, link, many-body, and position forces → See [Force Simulations](reference/05-force-simulations.md)
+**Force Simulations**: Force-directed layouts with center, collide, link, many-body, and position forces → [Force Simulations](reference/05-force-simulations.md)
 
-**Hierarchy Layouts**: Tree, cluster, partition, pack, treemap layouts and the stratify operator → See [Hierarchy Layouts](reference/06-hierarchy-layouts.md)
+**Hierarchy Layouts**: Tree, cluster, partition, pack, treemap layouts and the stratify operator → [Hierarchy Layouts](reference/06-hierarchy-layouts.md)
 
-**Transitions and Animation**: Transition selection, modification, timing, control flow, easing functions, and timers → See [Transitions and Animation](reference/07-transitions-and-animation.md)
+**Transitions and Animation**: Transition selection, modification, timing, control flow, easing functions, and timers → [Transitions and Animation](reference/07-transitions-and-animation.md)
 
-**Interactions**: Zoom, drag, brush behaviors, and custom event dispatch → See [Interactions](reference/08-interactions.md)
+**Interactions**: Zoom, drag, brush behaviors, and custom event dispatch → [Interactions](reference/08-interactions.md)
 
-**Data Utilities**: Array operations, grouping, statistics, sorting, CSV/TSV parsing, fetch, formatting, random, time, and color → See [Data Utilities](reference/09-data-utilities.md)
+**Data Utilities**: Array operations, grouping, statistics, sorting, CSV/TSV parsing, fetch, formatting, random, time, and color → [Data Utilities](reference/09-data-utilities.md)

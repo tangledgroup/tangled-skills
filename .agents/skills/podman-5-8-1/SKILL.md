@@ -131,22 +131,22 @@ podman kube down app.yaml
 
 ## Advanced Topics
 
-**Rootless Containers**: Detailed setup, user namespace configuration, volume semantics, and known limitations → See [Rootless Containers](reference/01-rootless-containers.md)
+**Rootless Containers**: Detailed setup, user namespace configuration, volume semantics, and known limitations → [Rootless Containers](reference/01-rootless-containers.md)
 
-**Pods and Pod Management**: Creating pods, shared namespaces, lifecycle management, pod stats → See [Pod Management](reference/02-pod-management.md)
+**Pods and Pod Management**: Creating pods, shared namespaces, lifecycle management, pod stats → [Pod Management](reference/02-pod-management.md)
 
-**Networking with Netavark and Pasta**: Bridge networks, pasta rootless networking, DNS, subnet pools, network options → See [Networking](reference/03-networking.md)
+**Networking with Netavark and Pasta**: Bridge networks, pasta rootless networking, DNS, subnet pools, network options → [Networking](reference/03-networking.md)
 
-**Quadlet and Systemd Integration**: Declarative container management via systemd unit files, `.container`, `.pod`, `.volume` units, service generation → See [Quadlet and Systemd](reference/04-quadlet-systemd.md)
+**Quadlet and Systemd Integration**: Declarative container management via systemd unit files, `.container`, `.pod`, `.volume` units, service generation → [Quadlet and Systemd](reference/04-quadlet-systemd.md)
 
-**Remote Client and podman machine**: Managing containers over SSH, Mac/Windows VM backends, connection configuration, libkrun/applehv providers → See [Remote Client and Machine](reference/05-remote-client-machine.md)
+**Remote Client and podman machine**: Managing containers over SSH, Mac/Windows VM backends, connection configuration, libkrun/applehv providers → [Remote Client and Machine](reference/05-remote-client-machine.md)
 
-**Kubernetes Integration**: `kube play`, `kube generate`, `kube down`, bidirectional YAML conversion, CDI device support → See [Kubernetes Integration](reference/06-kubernetes-integration.md)
+**Kubernetes Integration**: `kube play`, `kube generate`, `kube down`, bidirectional YAML conversion, CDI device support → [Kubernetes Integration](reference/06-kubernetes-integration.md)
 
-**Container Image Management**: Building, pulling, pushing, tagging, importing, OCI artifacts, trust policies → See [Image Management](reference/07-image-management.md)
+**Container Image Management**: Building, pulling, pushing, tagging, importing, OCI artifacts, trust policies → [Image Management](reference/07-image-management.md)
 
-**Volumes and Storage**: Named volumes, bind mounts, volume plugins, storage drivers (overlay, VFS), SQLite backend → See [Volumes and Storage](reference/08-volumes-storage.md)
+**Volumes and Storage**: Named volumes, bind mounts, volume plugins, storage drivers (overlay, VFS), SQLite backend → [Volumes and Storage](reference/08-volumes-storage.md)
 
-**REST API and Docker Compatibility**: Libpod API, Docker-compatible API endpoints, healthchecks, service socket → See [REST API](reference/09-rest-api.md)
+**REST API and Docker Compatibility**: Libpod API, Docker-compatible API endpoints, healthchecks, service socket → [REST API](reference/09-rest-api.md)
 
-**Command Reference**: Summary of all major Podman command groups — container, image, pod, network, volume, system, machine, quadlet, kube, artifact → See [Command Reference](reference/10-command-reference.md)
+**Command Reference**: Summary of all major Podman command groups — container, image, pod, network, volume, system, machine, quadlet, kube, artifact → [Command Reference](reference/10-command-reference.md)

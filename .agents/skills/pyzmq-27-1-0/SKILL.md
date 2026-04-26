@@ -175,14 +175,14 @@ asyncio.run(worker())
 
 ## Advanced Topics
 
-**Socket Types and Messaging Patterns**: Complete reference of all ZeroMQ socket types (REQ, REP, PUB, SUB, PUSH, PULL, DEALER, ROUTER, PAIR, STREAM, XPUB, XSUB, SURVEYOR, RESPONDENT) with pairing rules and flow semantics → See [Socket Types and Messaging Patterns](reference/01-socket-types.md)
+**Socket Types and Messaging Patterns**: Complete reference of all ZeroMQ socket types (REQ, REP, PUB, SUB, PUSH, PULL, DEALER, ROUTER, PAIR, STREAM, XPUB, XSUB, SURVEYOR, RESPONDENT) with pairing rules and flow semantics → [Socket Types and Messaging Patterns](reference/01-socket-types.md)
 
-**AsyncIO and Event Loop Integration**: Native asyncio support via `zmq.asyncio`, Tornado ZMQStream callbacks, gevent compatibility via `zmq.green`, and Poller usage → See [AsyncIO and Event Loop Integration](reference/02-asyncio-and-eventloops.md)
+**AsyncIO and Event Loop Integration**: Native asyncio support via `zmq.asyncio`, Tornado ZMQStream callbacks, gevent compatibility via `zmq.green`, and Poller usage → [AsyncIO and Event Loop Integration](reference/02-asyncio-and-eventloops.md)
 
-**Security and Authentication**: ZAP authenticator with NULL, PLAIN, CURVE, and GSSAPI security levels; certificate management; allow/deny policies; `zmq.auth.thread` and `zmq.auth.asyncio` → See [Security and Authentication](reference/03-security-and-auth.md)
+**Security and Authentication**: ZAP authenticator with NULL, PLAIN, CURVE, and GSSAPI security levels; certificate management; allow/deny policies; `zmq.auth.thread` and `zmq.auth.asyncio` → [Security and Authentication](reference/03-security-and-auth.md)
 
-**Serialization and Message Handling**: Built-in JSON/pickle helpers, multipart messages, custom serialization with `send_serialized`/`recv_serialized`, zero-copy NumPy array transfer, MessageTracker for non-copying sends → See [Serialization and Message Handling](reference/04-serialization.md)
+**Serialization and Message Handling**: Built-in JSON/pickle helpers, multipart messages, custom serialization with `send_serialized`/`recv_serialized`, zero-copy NumPy array transfer, MessageTracker for non-copying sends → [Serialization and Message Handling](reference/04-serialization.md)
 
-**Devices, Proxies, and Extensions**: Background devices (`ThreadDevice`, `ProcessDevice`), proxy functions (`zmq.proxy`, `zmq.proxy_steerable`), steerable proxies with PAUSE/RESUME/TERMINATE control, logging handlers, SSH tunneling, decorators → See [Devices, Proxies, and Extensions](reference/05-devices-and-extensions.md)
+**Devices, Proxies, and Extensions**: Background devices (`ThreadDevice`, `ProcessDevice`), proxy functions (`zmq.proxy`, `zmq.proxy_steerable`), steerable proxies with PAUSE/RESUME/TERMINATE control, logging handlers, SSH tunneling, decorators → [Devices, Proxies, and Extensions](reference/05-devices-and-extensions.md)
 
-**Draft APIs and Advanced Configuration**: DRAFT socket types (CLIENT/SERVER, RADIO/DISH), building with draft support, context shadowing, `bind_to_random_port`, socket monitoring → See [Draft APIs and Advanced Configuration](reference/06-draft-and-advanced.md)
+**Draft APIs and Advanced Configuration**: DRAFT socket types (CLIENT/SERVER, RADIO/DISH), building with draft support, context shadowing, `bind_to_random_port`, socket monitoring → [Draft APIs and Advanced Configuration](reference/06-draft-and-advanced.md)

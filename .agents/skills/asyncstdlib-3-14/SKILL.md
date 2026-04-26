@@ -103,16 +103,16 @@ async def managed_resource():
 
 ## Advanced Topics
 
-**Builtins Library**: Async versions of `zip`, `map`, `filter`, `sum`, `all`, `any`, `list`, `dict`, `sorted` and more → See [Builtins Library](reference/01-builtins.md)
+**Builtins Library**: Async versions of `zip`, `map`, `filter`, `sum`, `all`, `any`, `list`, `dict`, `sorted` and more → [Builtins Library](reference/01-builtins.md)
 
-**Functools Library**: Async `reduce`, `lru_cache`, `cached_property`, and `cache` for async callables → See [Functools Library](reference/02-functools.md)
+**Functools Library**: Async `reduce`, `lru_cache`, `cached_property`, and `cache` for async callables → [Functools Library](reference/02-functools.md)
 
-**Contextlib Library**: Async `contextmanager`, `closing`, `ExitStack`, `nullcontext`, and `ContextDecorator` → See [Contextlib Library](reference/03-contextlib.md)
+**Contextlib Library**: Async `contextmanager`, `closing`, `ExitStack`, `nullcontext`, and `ContextDecorator` → [Contextlib Library](reference/03-contextlib.md)
 
-**Itertools Library**: Async `chain`, `cycle`, `accumulate`, `groupby`, `tee`, `islice`, `starmap`, `compress`, `dropwhile`, `takewhile`, and more → See [Itertools Library](reference/04-itertools.md)
+**Itertools Library**: Async `chain`, `cycle`, `accumulate`, `groupby`, `tee`, `islice`, `starmap`, `compress`, `dropwhile`, `takewhile`, and more → [Itertools Library](reference/04-itertools.md)
 
-**Heapq Library**: Async `merge`, `nlargest`, `nsmallest` for async iterables with async key functions → See [Heapq Library](reference/05-heapq.md)
+**Heapq Library**: Async `merge`, `nlargest`, `nsmallest` for async iterables with async key functions → [Heapq Library](reference/05-heapq.md)
 
-**Asynctools Library**: Core utilities `scoped_iter`, `borrow`, `sync`, `any_iter`, `await_each`, `apply` → See [Asynctools Library](reference/06-asynctools.md)
+**Asynctools Library**: Core utilities `scoped_iter`, `borrow`, `sync`, `any_iter`, `await_each`, `apply` → [Asynctools Library](reference/06-asynctools.md)
 
-**Iterator Scoping Guide**: Understanding cleanup semantics, ownership, and safe iterator lifetime management → See [Iterator Scoping Guide](reference/07-iter-scope.md)
+**Iterator Scoping Guide**: Understanding cleanup semantics, ownership, and safe iterator lifetime management → [Iterator Scoping Guide](reference/07-iter-scope.md)

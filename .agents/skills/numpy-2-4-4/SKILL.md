@@ -171,18 +171,18 @@ choice = rng.choice([10, 20, 30], size=3, replace=False)
 
 ## Advanced Topics
 
-**Array Fundamentals**: Deep dive into ndarray creation, indexing patterns, views vs copies, structured arrays, and memory layout → See [Array Fundamentals](reference/01-array-fundamentals.md)
+**Array Fundamentals**: Deep dive into ndarray creation, indexing patterns, views vs copies, structured arrays, and memory layout → [Array Fundamentals](reference/01-array-fundamentals.md)
 
-**Data Types and Type Promotion**: Complete dtype hierarchy, structured dtypes, NEP 50 type promotion rules, casting modes, and NumPy 2.0 changes → See [Data Types and Type Promotion](reference/02-data-types.md)
+**Data Types and Type Promotion**: Complete dtype hierarchy, structured dtypes, NEP 50 type promotion rules, casting modes, and NumPy 2.0 changes → [Data Types and Type Promotion](reference/02-data-types.md)
 
-**Universal Functions and Broadcasting**: Ufunc internals, generalized ufuncs, output buffers, where masks, broadcasting rules with examples → See [Universal Functions and Broadcasting](reference/03-ufuncs-and-broadcasting.md)
+**Universal Functions and Broadcasting**: Ufunc internals, generalized ufuncs, output buffers, where masks, broadcasting rules with examples → [Universal Functions and Broadcasting](reference/03-ufuncs-and-broadcasting.md)
 
-**Linear Algebra and Fourier Transforms**: BLAS/LAPACK-backed routines, matrix decompositions, eigenvalue problems, norm computation, DFT operations → See [Linear Algebra and Fourier Transforms](reference/04-linear-algebra.md)
+**Linear Algebra and Fourier Transforms**: BLAS/LAPACK-backed routines, matrix decompositions, eigenvalue problems, norm computation, DFT operations → [Linear Algebra and Fourier Transforms](reference/04-linear-algebra.md)
 
-**Random Number Generation**: Generator API, bit generators (PCG64, MT19937), seeding strategies, parallel generation, distribution methods → See [Random Number Generation](reference/05-random.md)
+**Random Number Generation**: Generator API, bit generators (PCG64, MT19937), seeding strategies, parallel generation, distribution methods → [Random Number Generation](reference/05-random.md)
 
-**I/O and Memory Mapping**: Binary formats (.npy/.npz), text file I/O, memory-mapped arrays, string formatting → See [I/O and Memory Mapping](reference/06-io.md)
+**I/O and Memory Mapping**: Binary formats (.npy/.npz), text file I/O, memory-mapped arrays, string formatting → [I/O and Memory Mapping](reference/06-io.md)
 
-**Array API Standard and Interoperability**: Array API 2024.12 compliance, `__array_namespace_info__`, entry points, duck array protocols → See [Array API Standard and Interoperability](reference/07-array-api.md)
+**Array API Standard and Interoperability**: Array API 2024.12 compliance, `__array_namespace_info__`, entry points, duck array protocols → [Array API Standard and Interoperability](reference/07-array-api.md)
 
-**NumPy 2.x Migration Guide**: NEP 50 type promotion changes, NEP 52 namespace cleanup, C-API changes, default integer on Windows, Ruff NPY201 rule → See [NumPy 2.x Migration Guide](reference/08-migration.md)
+**NumPy 2.x Migration Guide**: NEP 50 type promotion changes, NEP 52 namespace cleanup, C-API changes, default integer on Windows, Ruff NPY201 rule → [NumPy 2.x Migration Guide](reference/08-migration.md)

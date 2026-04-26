@@ -243,14 +243,14 @@ hidden = nx.subgraph_view(G, filter_node=hide_nodes({1, 2}))
 
 ## Advanced Topics
 
-**Graph Classes and Views**: Four graph types, graph views, core views, filters → See [Graph Classes and Views](reference/01-graph-classes.md)
+**Graph Classes and Views**: Four graph types, graph views, core views, filters → [Graph Classes and Views](reference/01-graph-classes.md)
 
-**Algorithms Reference**: 70+ algorithm modules covering centrality, community detection, shortest paths, flow, isomorphism, and more → See [Algorithms Reference](reference/02-algorithms.md)
+**Algorithms Reference**: 70+ algorithm modules covering centrality, community detection, shortest paths, flow, isomorphism, and more → [Algorithms Reference](reference/02-algorithms.md)
 
-**Graph Generators**: Classic graphs, random graphs, lattices, expanders, trees, social networks → See [Graph Generators](reference/03-generators.md)
+**Graph Generators**: Classic graphs, random graphs, lattices, expanders, trees, social networks → [Graph Generators](reference/03-generators.md)
 
-**Linear Algebra**: Adjacency, Laplacian, modularity, and Bethe Hessian matrices; spectrum analysis → See [Linear Algebra](reference/04-linear-algebra.md)
+**Linear Algebra**: Adjacency, Laplacian, modularity, and Bethe Hessian matrices; spectrum analysis → [Linear Algebra](reference/04-linear-algebra.md)
 
-**Reading, Writing, and Converting**: File formats (GraphML, GEXF, GML, JSON, DOT, edge list), NumPy/SciPy/Pandas conversion → See [I/O and Conversion](reference/05-io-conversion.md)
+**Reading, Writing, and Converting**: File formats (GraphML, GEXF, GML, JSON, DOT, edge list), NumPy/SciPy/Pandas conversion → [I/O and Conversion](reference/05-io-conversion.md)
 
-**Backends and Configuration**: Backend dispatch system, nx-parallel, nx-cugraph, nx-arangodb, configuration options → See [Backends and Configuration](reference/06-backends-config.md)
+**Backends and Configuration**: Backend dispatch system, nx-parallel, nx-cugraph, nx-arangodb, configuration options → [Backends and Configuration](reference/06-backends-config.md)

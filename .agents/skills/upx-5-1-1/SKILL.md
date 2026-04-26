@@ -153,17 +153,13 @@ upx -9 bzImage
 ## Advanced Topics
 
 **Supported Executable Formats**: Complete list of all supported formats with
-architecture details and format-specific options →
-See [Supported Formats](reference/01-supported-formats.md)
+architecture details and format-specific options → [Supported Formats](reference/01-supported-formats.md)
 
 **Command-Line Reference**: All options, compression tuning, overlay handling,
-and environment variable configuration →
-See [Command-Line Reference](reference/02-command-line-reference.md)
+and environment variable configuration → [Command-Line Reference](reference/02-command-line-reference.md)
 
 **Linux-Specific Details**: ELF decompression modes, SELinux compatibility,
-kernel support, and shared library considerations →
-See [Linux Platform Guide](reference/03-linux-platform.md)
+kernel support, and shared library considerations → [Linux Platform Guide](reference/03-linux-platform.md)
 
 **Windows PE Details**: Resource compression, icon handling, relocation
-stripping, DLL support, and Wine compatibility →
-See [Windows PE Guide](reference/04-windows-pe.md)
+stripping, DLL support, and Wine compatibility → [Windows PE Guide](reference/04-windows-pe.md)

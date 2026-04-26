@@ -198,24 +198,24 @@ print(add.ctypes(4.0, 5.0))  # prints 9.0
 
 ## Advanced Topics
 
-**JIT Compilation Details**: `@jit` decorator options, signatures, lazy vs eager compilation, caching → See [JIT Compilation](reference/01-jit-compilation.md)
+**JIT Compilation Details**: `@jit` decorator options, signatures, lazy vs eager compilation, caching → [JIT Compilation](reference/01-jit-compilation.md)
 
-**Vectorize and Guvectorize**: Creating NumPy ufuncs and generalized ufuncs with multiple targets (cpu, parallel, cuda) → See [Universal Functions](reference/02-universal-functions.md)
+**Vectorize and Guvectorize**: Creating NumPy ufuncs and generalized ufuncs with multiple targets (cpu, parallel, cuda) → [Universal Functions](reference/02-universal-functions.md)
 
-**jitclass**: Compiling Python classes with typed fields, type inference from annotations, dunder methods → See [JIT Classes](reference/03-jit-classes.md)
+**jitclass**: Compiling Python classes with typed fields, type inference from annotations, dunder methods → [JIT Classes](reference/03-jit-classes.md)
 
-**Parallel Execution**: `parallel=True`, `prange`, supported operations, reduction patterns, threading layers (tbb, omp, workqueue) → See [Parallel Execution](reference/04-parallel-execution.md)
+**Parallel Execution**: `parallel=True`, `prange`, supported operations, reduction patterns, threading layers (tbb, omp, workqueue) → [Parallel Execution](reference/04-parallel-execution.md)
 
-**Stencil Operations**: Kernel definition, neighborhood specification, border handling, standard indexing → See [Stencil Operations](reference/05-stencil-operations.md)
+**Stencil Operations**: Kernel definition, neighborhood specification, border handling, standard indexing → [Stencil Operations](reference/05-stencil-operations.md)
 
-**C Interoperability**: `@cfunc` callbacks, `carray`, C structures via CFFI and `Record.make_c_struct` → See [C Interoperability](reference/06-c-interoperability.md)
+**C Interoperability**: `@cfunc` callbacks, `carray`, C structures via CFFI and `Record.make_c_struct` → [C Interoperability](reference/06-c-interoperability.md)
 
-**Ahead-of-Time Compilation**: `numba.pycc` module, extension module generation, signature syntax → See [AOT Compilation](reference/07-aot-compilation.md)
+**Ahead-of-Time Compilation**: `numba.pycc` module, extension module generation, signature syntax → [AOT Compilation](reference/07-aot-compilation.md)
 
-**Types and Signatures**: Numba type system, numeric types, array layouts, function types, first-class functions → See [Types and Signatures](reference/08-types-and-signatures.md)
+**Types and Signatures**: Numba type system, numeric types, array layouts, function types, first-class functions → [Types and Signatures](reference/08-types-and-signatures.md)
 
-**Performance Tuning**: nopython mode, fastmath, SIMD vectorization, Intel SVML, parallel optimization tips → See [Performance Tips](reference/09-performance-tips.md)
+**Performance Tuning**: nopython mode, fastmath, SIMD vectorization, Intel SVML, parallel optimization tips → [Performance Tips](reference/09-performance-tips.md)
 
-**Supported Features**: Python language support, built-in types, standard library modules, NumPy features, deviations from Python semantics → See [Supported Features](reference/10-supported-features.md)
+**Supported Features**: Python language support, built-in types, standard library modules, NumPy features, deviations from Python semantics → [Supported Features](reference/10-supported-features.md)
 
-**Environment Variables and Debugging**: Configuration via `.numba_config.yaml`, JIT flags, debugging tools, GDB integration → See [Configuration and Debugging](reference/11-configuration-debugging.md)
+**Environment Variables and Debugging**: Configuration via `.numba_config.yaml`, JIT flags, debugging tools, GDB integration → [Configuration and Debugging](reference/11-configuration-debugging.md)

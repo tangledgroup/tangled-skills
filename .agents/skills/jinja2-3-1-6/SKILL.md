@@ -114,12 +114,12 @@ Define reusable template fragments:
 
 ## Advanced Topics
 
-**Template Designer Documentation**: Variables, filters, tests, control structures, template inheritance, and the complete template language reference → See [Template Designer Documentation](reference/01-template-designer-docs.md)
+**Template Designer Documentation**: Variables, filters, tests, control structures, template inheritance, and the complete template language reference → [Template Designer Documentation](reference/01-template-designer-docs.md)
 
-**Python API Reference**: Environment, Template, loaders, autoescaping, undefined types, context, bytecode cache, async support, custom filters/tests, and low-level API → See [Python API Reference](reference/02-python-api.md)
+**Python API Reference**: Environment, Template, loaders, autoescaping, undefined types, context, bytecode cache, async support, custom filters/tests, and low-level API → [Python API Reference](reference/02-python-api.md)
 
-**Sandboxed Environments**: Rendering untrusted templates safely with attribute/method interception, operator intercepting, and immutable sandboxed environments → See [Sandboxed Environments](reference/03-sandbox.md)
+**Sandboxed Environments**: Rendering untrusted templates safely with attribute/method interception, operator intercepting, and immutable sandboxed environments → [Sandboxed Environments](reference/03-sandbox.md)
 
-**Extensions**: Built-in extensions (i18n, loop controls, do statement, debug), writing custom extensions, and the extension API → See [Extensions](reference/04-extensions.md)
+**Extensions**: Built-in extensions (i18n, loop controls, do statement, debug), writing custom extensions, and the extension API → [Extensions](reference/04-extensions.md)
 
-**Native Types and Advanced Topics**: NativeEnvironment for rendering to Python types instead of strings, ahead-of-time compilation, policies, meta API, and integration patterns → See [Native Types and Advanced Topics](reference/05-native-types-advanced.md)
+**Native Types and Advanced Topics**: NativeEnvironment for rendering to Python types instead of strings, ahead-of-time compilation, policies, meta API, and integration patterns → [Native Types and Advanced Topics](reference/05-native-types-advanced.md)

@@ -448,14 +448,14 @@ export async function generateStaticParams() {
 
 ## Advanced Topics
 
-**Collections and Data Model**: Complete reference for Pages, Posts, Media, Categories, and Users collections including field definitions, access control, hooks, and versioning configuration → See [Collections and Data Model](reference/01-collections-and-data-model.md)
+**Collections and Data Model**: Complete reference for Pages, Posts, Media, Categories, and Users collections including field definitions, access control, hooks, and versioning configuration → [Collections and Data Model](reference/01-collections-and-data-model.md)
 
-**Layout Builder and Blocks**: Block-based page composition with Hero types, Content columns, Archive filtering, Form embedding, and the RenderBlocks dispatcher pattern → See [Layout Builder and Blocks](reference/02-layout-builder-and-blocks.md)
+**Layout Builder and Blocks**: Block-based page composition with Hero types, Content columns, Archive filtering, Form embedding, and the RenderBlocks dispatcher pattern → [Layout Builder and Blocks](reference/02-layout-builder-and-blocks.md)
 
-**Plugins Configuration**: Detailed setup for SEO, Search, Redirects, Form Builder, and Nested Docs plugins including field overrides, sync hooks, and generate functions → See [Plugins Configuration](reference/03-plugins-configuration.md)
+**Plugins Configuration**: Detailed setup for SEO, Search, Redirects, Form Builder, and Nested Docs plugins including field overrides, sync hooks, and generate functions → [Plugins Configuration](reference/03-plugins-configuration.md)
 
-**Frontend Architecture**: Next.js App Router patterns including draft mode integration, React cache for queries, static params generation, metadata API, sitemaps, and the frontend layout structure → See [Frontend Architecture](reference/04-frontend-architecture.md)
+**Frontend Architecture**: Next.js App Router patterns including draft mode integration, React cache for queries, static params generation, metadata API, sitemaps, and the frontend layout structure → [Frontend Architecture](reference/04-frontend-architecture.md)
 
-**Draft Preview and Live Preview**: Draft preview URL generation, preview endpoint routing, live preview with SSR breakpoints, autosave configuration, and scheduled publishing → See [Draft Preview and Live Preview](reference/05-draft-preview-and-live-preview.md)
+**Draft Preview and Live Preview**: Draft preview URL generation, preview endpoint routing, live preview with SSR breakpoints, autosave configuration, and scheduled publishing → [Draft Preview and Live Preview](reference/05-draft-preview-and-live-preview.md)
 
-**Deployment and Production**: Vercel deployment with Postgres adapter, self-hosting patterns, Docker multi-stage builds, cache strategies, cron configuration for scheduled jobs, and migration management → See [Deployment and Production](reference/06-deployment-and-production.md)
+**Deployment and Production**: Vercel deployment with Postgres adapter, self-hosting patterns, Docker multi-stage builds, cache strategies, cron configuration for scheduled jobs, and migration management → [Deployment and Production](reference/06-deployment-and-production.md)

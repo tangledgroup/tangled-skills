@@ -72,8 +72,8 @@ pip install msgpack-python>=0.4.0
 
 ## Advanced Topics
 
-**Core API (Transport/Protocol)**: Low-level ZeroMQ transport and protocol classes for custom connection handling → See [Core API](reference/01-core-api.md)
+**Core API (Transport/Protocol)**: Low-level ZeroMQ transport and protocol classes for custom connection handling → [Core API](reference/01-core-api.md)
 
-**Streams API**: High-level stream-oriented interface with `read()`/`write()` and socket event monitoring → See [Streams API](reference/02-streams-api.md)
+**Streams API**: High-level stream-oriented interface with `read()`/`write()` and socket event monitoring → [Streams API](reference/02-streams-api.md)
 
-**RPC Framework**: Remote procedure calls with request-reply, push-pull, and pub-sub patterns including exception translation, signature validation, and custom value translators → See [RPC Framework](reference/03-rpc-framework.md)
+**RPC Framework**: Remote procedure calls with request-reply, push-pull, and pub-sub patterns including exception translation, signature validation, and custom value translators → [RPC Framework](reference/03-rpc-framework.md)

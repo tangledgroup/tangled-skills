@@ -131,12 +131,12 @@ By default, ty uses the lower bound of `project.requires-python` from `pyproject
 
 ## Advanced Topics
 
-**Type System**: Intersection types, redeclarations, gradual guarantee, fixpoint iteration → See [Type System](reference/01-type-system.md)
+**Type System**: Intersection types, redeclarations, gradual guarantee, fixpoint iteration → [Type System](reference/01-type-system.md)
 
-**Configuration**: Rules, overrides, environment settings, exclusions → See [Configuration](reference/02-configuration.md)
+**Configuration**: Rules, overrides, environment settings, exclusions → [Configuration](reference/02-configuration.md)
 
-**CLI Reference**: Commands, options, exit codes, environment variables → See [CLI Reference](reference/03-cli-reference.md)
+**CLI Reference**: Commands, options, exit codes, environment variables → [CLI Reference](reference/03-cli-reference.md)
 
-**Editor Integration**: VS Code, Neovim, Zed, PyCharm, Emacs, LSP features → See [Editor Integration](reference/04-editor-integration.md)
+**Editor Integration**: VS Code, Neovim, Zed, PyCharm, Emacs, LSP features → [Editor Integration](reference/04-editor-integration.md)
 
-**Suppression and FAQ**: Suppression comments, typing questions, common issues → See [Suppression and FAQ](reference/05-suppression-and-faq.md)
+**Suppression and FAQ**: Suppression comments, typing questions, common issues → [Suppression and FAQ](reference/05-suppression-and-faq.md)

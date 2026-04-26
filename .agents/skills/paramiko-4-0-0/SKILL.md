@@ -225,14 +225,14 @@ client.close()
 
 ## Advanced Topics
 
-**SSH Server Implementation**: Building an in-Python sshd with custom authentication and channel handling → See [SSH Server](reference/01-ssh-server.md)
+**SSH Server Implementation**: Building an in-Python sshd with custom authentication and channel handling → [SSH Server](reference/01-ssh-server.md)
 
-**Transport and Channels**: Low-level Transport API, channel types, port forwarding, keepalive, X11 forwarding → See [Transport & Channels](reference/02-transport-channels.md)
+**Transport and Channels**: Low-level Transport API, channel types, port forwarding, keepalive, X11 forwarding → [Transport & Channels](reference/02-transport-channels.md)
 
-**Keys and Authentication**: Key types (RSA, DSA, ECDSA, Ed25519), key generation, loading, certificates, host keys, SSH agent, AuthStrategy → See [Keys & Authentication](reference/03-keys-authentication.md)
+**Keys and Authentication**: Key types (RSA, DSA, ECDSA, Ed25519), key generation, loading, certificates, host keys, SSH agent, AuthStrategy → [Keys & Authentication](reference/03-keys-authentication.md)
 
-**SFTP Operations**: SFTPClient file operations, SFTPFile streaming, server-side SFTPServer → See [SFTP Operations](reference/04-sftp-operations.md)
+**SFTP Operations**: SFTPClient file operations, SFTPFile streaming, server-side SFTPServer → [SFTP Operations](reference/04-sftp-operations.md)
 
-**Configuration and Proxy**: SSHConfig parser for ssh_config files, ProxyCommand support, expansion tokens → See [Configuration & Proxy](reference/05-config-proxy.md)
+**Configuration and Proxy**: SSHConfig parser for ssh_config files, ProxyCommand support, expansion tokens → [Configuration & Proxy](reference/05-config-proxy.md)
 
-**Exceptions**: Complete exception hierarchy for error handling → See [Exceptions](reference/06-exceptions.md)
+**Exceptions**: Complete exception hierarchy for error handling → [Exceptions](reference/06-exceptions.md)

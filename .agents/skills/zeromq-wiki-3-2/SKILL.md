@@ -73,16 +73,16 @@ ZeroMQ is not a neutral carrier — it imposes its own framing on transport prot
 
 ## Advanced Topics
 
-**Socket Types and Patterns**: Complete reference for REQ, REP, DEALER, ROUTER, PUB, SUB, PUSH, PULL, PAIR, XPUB, XSUB → See [Socket Types and Patterns](reference/01-socket-types-and-patterns.md)
+**Socket Types and Patterns**: Complete reference for REQ, REP, DEALER, ROUTER, PUB, SUB, PUSH, PULL, PAIR, XPUB, XSUB → [Socket Types and Patterns](reference/01-socket-types-and-patterns.md)
 
-**Messaging Architecture**: Internal architecture of libzmq including concurrency model, object trees, reaper thread, message scheduling, and pipes → See [Internal Architecture](reference/02-internal-architecture.md)
+**Messaging Architecture**: Internal architecture of libzmq including concurrency model, object trees, reaper thread, message scheduling, and pipes → [Internal Architecture](reference/02-internal-architecture.md)
 
-**ZMTP Protocol**: ZeroMQ Message Transport Protocol (ZMTP 3.0) specification, framing, security mechanisms, and version negotiation → See [ZMTP Protocol](reference/03-zmtp-protocol.md)
+**ZMTP Protocol**: ZeroMQ Message Transport Protocol (ZMTP 3.0) specification, framing, security mechanisms, and version negotiation → [ZMTP Protocol](reference/03-zmtp-protocol.md)
 
-**Security and CURVE**: CURVE encryption/authentication, ZAP authentication protocol, GSSAPI support, and libcurve reference implementation → See [Security and CURVE](reference/04-security-and-curve.md)
+**Security and CURVE**: CURVE encryption/authentication, ZAP authentication protocol, GSSAPI support, and libcurve reference implementation → [Security and CURVE](reference/04-security-and-curve.md)
 
-**Reliable Messaging Patterns**: Lazy Pirate, Simple Pirate, Paranoid Pirate, Majordomo, Titanic, Binary Star, and Freelance patterns for production reliability → See [Reliable Messaging Patterns](reference/05-reliable-messaging-patterns.md)
+**Reliable Messaging Patterns**: Lazy Pirate, Simple Pirate, Paranoid Pirate, Majordomo, Titanic, Binary Star, and Freelance patterns for production reliability → [Reliable Messaging Patterns](reference/05-reliable-messaging-patterns.md)
 
-**Advanced Pub-Sub and Architecture**: Espresso tracing, Suicidal Snail detection, Clone pattern for state distribution, FileMQ, and distributed computing frameworks → See [Advanced Pub-Sub and Architecture](reference/06-advanced-pubsub-and-architecture.md)
+**Advanced Pub-Sub and Architecture**: Espresso tracing, Suicidal Snail detection, Clone pattern for state distribution, FileMQ, and distributed computing frameworks → [Advanced Pub-Sub and Architecture](reference/06-advanced-pubsub-and-architecture.md)
 
-**Ecosystem and Bindings**: CZMQ high-level C binding, language bindings (pyzmq, jzmq, rbzmq, etc.), Zyre P2P framework, and community projects → See [Ecosystem and Bindings](reference/07-ecosystem-and-bindings.md)
+**Ecosystem and Bindings**: CZMQ high-level C binding, language bindings (pyzmq, jzmq, rbzmq, etc.), Zyre P2P framework, and community projects → [Ecosystem and Bindings](reference/07-ecosystem-and-bindings.md)

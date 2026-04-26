@@ -68,8 +68,8 @@ Six levels from professional-tight to extreme compression:
 
 ## Advanced Topics
 
-**Compression Rules**: What to drop, what to keep, pattern templates, synonym replacements → See [Compression Rules](reference/01-compression-rules.md)
+**Compression Rules**: What to drop, what to keep, pattern templates, synonym replacements → [Compression Rules](reference/01-compression-rules.md)
 
-**Intensity Level Reference**: Detailed behavior per level with examples for each mode → See [Intensity Levels](reference/02-intensity-levels.md)
+**Intensity Level Reference**: Detailed behavior per level with examples for each mode → [Intensity Levels](reference/02-intensity-levels.md)
 
-**Auto-Clarity and Boundaries**: Safety overrides, deactivation triggers, code handling, persistence behavior → See [Auto-Clarity and Boundaries](reference/03-auto-clarity-boundaries.md)
+**Auto-Clarity and Boundaries**: Safety overrides, deactivation triggers, code handling, persistence behavior → [Auto-Clarity and Boundaries](reference/03-auto-clarity-boundaries.md)

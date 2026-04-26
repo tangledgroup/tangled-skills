@@ -208,16 +208,16 @@ DaisyUI class names fall into these categories (for reference only, not used in 
 
 ## Advanced Topics
 
-**Actions Components**: Button, Dropdown, FAB/Speed Dial, Modal, Swap, Theme Controller → See [Actions Components](reference/01-actions-components.md)
+**Actions Components**: Button, Dropdown, FAB/Speed Dial, Modal, Swap, Theme Controller → [Actions Components](reference/01-actions-components.md)
 
-**Data Display Components**: Accordion, Avatar, Badge, Card, Carousel, Chat, Collapse, Countdown, Diff, Hover 3D, Hover Gallery, Kbd, List, Stat, Status, Table, Text Rotate, Timeline → See [Data Display Components](reference/02-data-display-components.md)
+**Data Display Components**: Accordion, Avatar, Badge, Card, Carousel, Chat, Collapse, Countdown, Diff, Hover 3D, Hover Gallery, Kbd, List, Stat, Status, Table, Text Rotate, Timeline → [Data Display Components](reference/02-data-display-components.md)
 
-**Navigation Components**: Breadcrumbs, Dock, Link, Menu, Navbar, Pagination, Steps, Tab → See [Navigation Components](reference/03-navigation-components.md)
+**Navigation Components**: Breadcrumbs, Dock, Link, Menu, Navbar, Pagination, Steps, Tab → [Navigation Components](reference/03-navigation-components.md)
 
-**Feedback Components**: Alert, Loading, Progress, Radial Progress, Skeleton, Toast, Tooltip → See [Feedback Components](reference/04-feedback-components.md)
+**Feedback Components**: Alert, Loading, Progress, Radial Progress, Skeleton, Toast, Tooltip → [Feedback Components](reference/04-feedback-components.md)
 
-**Data Input Components**: Calendar, Checkbox, Fieldset, File Input, Filter, Label, Radio, Range, Rating, Select, Input, Textarea, Toggle, Validator → See [Data Input Components](reference/05-data-input-components.md)
+**Data Input Components**: Calendar, Checkbox, Fieldset, File Input, Filter, Label, Radio, Range, Rating, Select, Input, Textarea, Toggle, Validator → [Data Input Components](reference/05-data-input-components.md)
 
-**Layout Components**: Divider, Drawer, Footer, Hero, Indicator, Join, Mask, Stack → See [Layout Components](reference/06-layout-components.md)
+**Layout Components**: Divider, Drawer, Footer, Hero, Indicator, Join, Mask, Stack → [Layout Components](reference/06-layout-components.md)
 
-**Mockup Components**: Browser, Code, Phone, Window → See [Mockup Components](reference/07-mockup-components.md)
+**Mockup Components**: Browser, Code, Phone, Window → [Mockup Components](reference/07-mockup-components.md)

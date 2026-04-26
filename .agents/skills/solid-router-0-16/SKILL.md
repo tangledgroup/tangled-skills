@@ -197,12 +197,12 @@ render(() => <Router>{routes}</Router>, document.getElementById("app"));
 
 ## Advanced Topics
 
-**Routing Modes**: History, Hash, Static (SSR), and Memory routers with configuration options → See [Routing Modes](reference/01-routing-modes.md)
+**Routing Modes**: History, Hash, Static (SSR), and Memory routers with configuration options → [Routing Modes](reference/01-routing-modes.md)
 
-**Route Patterns**: Dynamic parameters, optional segments, wildcards, multiple paths, match filters, and nested routes → See [Route Patterns](reference/02-route-patterns.md)
+**Route Patterns**: Dynamic parameters, optional segments, wildcards, multiple paths, match filters, and nested routes → [Route Patterns](reference/02-route-patterns.md)
 
-**Data APIs**: `query`, `createAsync`, `createAsyncStore`, `action`, `useAction`, `useSubmission`, response helpers (`redirect`, `reload`, `json`) → See [Data APIs](reference/03-data-apis.md)
+**Data APIs**: `query`, `createAsync`, `createAsyncStore`, `action`, `useAction`, `useSubmission`, response helpers (`redirect`, `reload`, `json`) → [Data APIs](reference/03-data-apis.md)
 
-**Components Reference**: `<Router>`, `<A>`, `<Navigate>`, `<Route>` props and behavior → See [Components Reference](reference/04-components-reference.md)
+**Components Reference**: `<Router>`, `<A>`, `<Navigate>`, `<Route>` props and behavior → [Components Reference](reference/04-components-reference.md)
 
-**Router Primitives**: `useParams`, `useNavigate`, `useLocation`, `useSearchParams`, `useIsRouting`, `useMatch`, `useCurrentMatches`, `usePreloadRoute`, `useBeforeLeave` → See [Router Primitives](reference/05-router-primitives.md)
+**Router Primitives**: `useParams`, `useNavigate`, `useLocation`, `useSearchParams`, `useIsRouting`, `useMatch`, `useCurrentMatches`, `usePreloadRoute`, `useBeforeLeave` → [Router Primitives](reference/05-router-primitives.md)

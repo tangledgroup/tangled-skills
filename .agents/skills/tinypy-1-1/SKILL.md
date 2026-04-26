@@ -204,14 +204,14 @@ void init_mymodule(TP) {
 
 ## Advanced Topics
 
-**C API Reference**: Complete reference for all C functions, macros, and data structures → See [C API Reference](reference/01-c-api-reference.md)
+**C API Reference**: Complete reference for all C functions, macros, and data structures → [C API Reference](reference/01-c-api-reference.md)
 
-**Bytecode and VM Internals**: Instructions, frames, registers, and execution model → See [Bytecode and VM Internals](reference/02-bytecode-and-vm-internals.md)
+**Bytecode and VM Internals**: Instructions, frames, registers, and execution model → [Bytecode and VM Internals](reference/02-bytecode-and-vm-internals.md)
 
-**Garbage Collection**: Incremental mark-and-sweep implementation details → See [Garbage Collection](reference/03-garbage-collection.md)
+**Garbage Collection**: Incremental mark-and-sweep implementation details → [Garbage Collection](reference/03-garbage-collection.md)
 
-**Compiler Pipeline**: Tokenizer, TDOP parser, and bytecode encoder → See [Compiler Pipeline](reference/04-compiler-pipeline.md)
+**Compiler Pipeline**: Tokenizer, TDOP parser, and bytecode encoder → [Compiler Pipeline](reference/04-compiler-pipeline.md)
 
-**Built-in Functions**: All tinypy builtins with descriptions → See [Built-in Functions](reference/05-built-in-functions.md)
+**Built-in Functions**: All tinypy builtins with descriptions → [Built-in Functions](reference/05-built-in-functions.md)
 
-**Python Subset Reference**: What Python features are supported and what is not → See [Python Subset Reference](reference/06-python-subset-reference.md)
+**Python Subset Reference**: What Python features are supported and what is not → [Python Subset Reference](reference/06-python-subset-reference.md)

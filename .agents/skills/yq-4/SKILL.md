@@ -144,8 +144,8 @@ yq '(.[] | select(.name == "sally") | .fruit) = "mango"' file.yaml
 
 ## Advanced Topics
 
-**Operators Reference**: Complete guide to all yq operators — assign, add, merge, select, delete, string ops, etc. → See [Operators Reference](reference/01-operators.md)
+**Operators Reference**: Complete guide to all yq operators — assign, add, merge, select, delete, string ops, etc. → [Operators Reference](reference/01-operators.md)
 
-**Multi-format Support**: Working with JSON, XML, CSV/TSV, Properties, HCL, TOML, Lua, Base64, and INI formats → See [Multi-format Support](reference/02-multi-format.md)
+**Multi-format Support**: Working with JSON, XML, CSV/TSV, Properties, HCL, TOML, Lua, Base64, and INI formats → [Multi-format Support](reference/02-multi-format.md)
 
-**Advanced Patterns**: Recipes for complex transformations — merging files, reduce, variables, environment integration, front matter, split output, and troubleshooting → See [Advanced Patterns](reference/03-advanced-patterns.md)
+**Advanced Patterns**: Recipes for complex transformations — merging files, reduce, variables, environment integration, front matter, split output, and troubleshooting → [Advanced Patterns](reference/03-advanced-patterns.md)

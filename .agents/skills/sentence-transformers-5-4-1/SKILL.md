@@ -84,10 +84,10 @@ similarities = model.similarity(embeddings, embeddings)
 
 ## Advanced Topics
 
-**Model Types and Architecture**: Deep dive into SentenceTransformer, CrossEncoder, and SparseEncoder internals → See [Model Types](reference/01-model-types.md)
+**Model Types and Architecture**: Deep dive into SentenceTransformer, CrossEncoder, and SparseEncoder internals → [Model Types](reference/01-model-types.md)
 
-**Training Guide**: Loss functions, training arguments, evaluators, datasets, and fine-tuning workflows → See [Training Guide](reference/02-training-guide.md)
+**Training Guide**: Loss functions, training arguments, evaluators, datasets, and fine-tuning workflows → [Training Guide](reference/02-training-guide.md)
 
-**Applications and Utilities**: Semantic search, paraphrase mining, clustering, quantization, and retrieval helpers → See [Applications](reference/03-applications.md)
+**Applications and Utilities**: Semantic search, paraphrase mining, clustering, quantization, and retrieval helpers → [Applications](reference/03-applications.md)
 
-**Modules Reference**: Pooling strategies, Router for asymmetric models, Normalize, Dense, WeightedLayerPooling, and multimodal support → See [Modules Reference](reference/04-modules-reference.md)
+**Modules Reference**: Pooling strategies, Router for asymmetric models, Normalize, Dense, WeightedLayerPooling, and multimodal support → [Modules Reference](reference/04-modules-reference.md)

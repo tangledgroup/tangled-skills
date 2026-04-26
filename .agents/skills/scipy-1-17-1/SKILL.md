@@ -117,24 +117,24 @@ x = linalg.solve(A, b)
 
 ## Advanced Topics
 
-**Optimization**: Local and global minimization, root finding, least-squares, linear programming → See [Optimization](reference/01-optimize.md)
+**Optimization**: Local and global minimization, root finding, least-squares, linear programming → [Optimization](reference/01-optimize.md)
 
-**Integration & ODEs**: Numerical quadrature, multiple integration, initial value problems, boundary value problems → See [Integration](reference/02-integrate.md)
+**Integration & ODEs**: Numerical quadrature, multiple integration, initial value problems, boundary value problems → [Integration](reference/02-integrate.md)
 
-**Interpolation**: 1D splines, N-D grid interpolation, scattered data, radial basis functions → See [Interpolation](reference/03-interpolate.md)
+**Interpolation**: 1D splines, N-D grid interpolation, scattered data, radial basis functions → [Interpolation](reference/03-interpolate.md)
 
-**Statistics**: Probability distributions, hypothesis tests, descriptive statistics, QMC sampling, KDE → See [Statistics](reference/04-stats.md)
+**Statistics**: Probability distributions, hypothesis tests, descriptive statistics, QMC sampling, KDE → [Statistics](reference/04-stats.md)
 
-**Linear Algebra**: Matrix factorizations, eigenvalue problems, BLAS/LAPACK access → See [Linear Algebra](reference/05-linalg.md)
+**Linear Algebra**: Matrix factorizations, eigenvalue problems, BLAS/LAPACK access → [Linear Algebra](reference/05-linalg.md)
 
-**Signal Processing**: Filter design, filtering, spectral analysis, B-splines → See [Signal Processing](reference/06-signal.md)
+**Signal Processing**: Filter design, filtering, spectral analysis, B-splines → [Signal Processing](reference/06-signal.md)
 
-**Fourier Transforms**: FFT, DCT, DST, Hankel transform → See [Fourier Transforms](reference/07-fft.md)
+**Fourier Transforms**: FFT, DCT, DST, Hankel transform → [Fourier Transforms](reference/07-fft.md)
 
-**Sparse Arrays**: Sparse formats, sparse linear algebra, compressed sparse graphs → See [Sparse Arrays](reference/08-sparse.md)
+**Sparse Arrays**: Sparse formats, sparse linear algebra, compressed sparse graphs → [Sparse Arrays](reference/08-sparse.md)
 
-**Spatial Data Structures**: Delaunay triangulation, Voronoi diagrams, k-D trees, rotations → See [Spatial](reference/09-spatial.md)
+**Spatial Data Structures**: Delaunay triangulation, Voronoi diagrams, k-D trees, rotations → [Spatial](reference/09-spatial.md)
 
-**Special Functions**: Bessel, gamma, elliptic, hypergeometric, and more → See [Special Functions](reference/10-special.md)
+**Special Functions**: Bessel, gamma, elliptic, hypergeometric, and more → [Special Functions](reference/10-special.md)
 
-**Additional Subpackages**: FFTPack (legacy), Image Processing (ndimage), File I/O (io), Clustering, Constants, Differentiation, ODR, Datasets → See [Additional Modules](reference/11-additional-modules.md)
+**Additional Subpackages**: FFTPack (legacy), Image Processing (ndimage), File I/O (io), Clustering, Constants, Differentiation, ODR, Datasets → [Additional Modules](reference/11-additional-modules.md)

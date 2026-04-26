@@ -188,10 +188,10 @@ asyncio.run(process())
 
 ## Advanced Topics
 
-**All Chunkers**: Detailed guide to all 12 chunking strategies including Token, Fast, Sentence, Recursive, Semantic, Late, Code, Neural, Slumber, Table, and TeraflopAI → See [Chunkers](reference/01-chunkers.md)
+**All Chunkers**: Detailed guide to all 12 chunking strategies including Token, Fast, Sentence, Recursive, Semantic, Late, Code, Neural, Slumber, Table, and TeraflopAI → [Chunkers](reference/01-chunkers.md)
 
-**Refineries and Pipeline API**: OverlapRefinery, EmbeddingsRefinery, CHOMP architecture, pipeline methods, validation rules, and best practices → See [Refineries and Pipeline](reference/02-refineries-and-pipeline.md)
+**Refineries and Pipeline API**: OverlapRefinery, EmbeddingsRefinery, CHOMP architecture, pipeline methods, validation rules, and best practices → [Refineries and Pipeline](reference/02-refineries-and-pipeline.md)
 
-**Integrations**: Embedding providers (9+), LLM Genies (5+), Vector database handshakes (9+), Porters, Tokenizers, Chefs, Fetchers → See [Integrations](reference/03-integrations.md)
+**Integrations**: Embedding providers (9+), LLM Genies (5+), Vector database handshakes (9+), Porters, Tokenizers, Chefs, Fetchers → [Integrations](reference/03-integrations.md)
 
-**API Server and JavaScript SDK**: Self-hosted REST API with `chonkie serve`, Docker deployment, pipeline persistence, and the @chonkiejs JavaScript packages → See [API Server and JavaScript](reference/04-api-server-and-js.md)
+**API Server and JavaScript SDK**: Self-hosted REST API with `chonkie serve`, Docker deployment, pipeline persistence, and the @chonkiejs JavaScript packages → [API Server and JavaScript](reference/04-api-server-and-js.md)

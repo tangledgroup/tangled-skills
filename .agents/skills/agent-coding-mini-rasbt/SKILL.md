@@ -154,8 +154,8 @@ python mini_coding_agent.py \
 
 ## Advanced Topics
 
-**Six Components Deep Dive**: Architecture breakdown of workspace context, prompt shape, tools, context reduction, memory, and delegation → See [Six Components](reference/01-six-components.md)
+**Six Components Deep Dive**: Architecture breakdown of workspace context, prompt shape, tools, context reduction, memory, and delegation → [Six Components](reference/01-six-components.md)
 
-**Tool Reference**: Complete reference for all seven built-in tools with schemas, validation rules, and examples → See [Tool Reference](reference/02-tool-reference.md)
+**Tool Reference**: Complete reference for all seven built-in tools with schemas, validation rules, and examples → [Tool Reference](reference/02-tool-reference.md)
 
-**Session and Memory System**: Transcript persistence, working memory distillation, session resumption, and the FakeModelClient testing pattern → See [Session and Memory](reference/03-session-and-memory.md)
+**Session and Memory System**: Transcript persistence, working memory distillation, session resumption, and the FakeModelClient testing pattern → [Session and Memory](reference/03-session-and-memory.md)

@@ -73,16 +73,16 @@ Key projects in the ZeroMQ ecosystem:
 
 ## Advanced Topics
 
-**Basics**: Hello World, task distribution, context lifecycle, version reporting → See [Basics](reference/01-basics.md)
+**Basics**: Hello World, task distribution, context lifecycle, version reporting → [Basics](reference/01-basics.md)
 
-**Sockets and Patterns**: Socket API, messaging patterns, multipart messages, proxies, polling, multithreading → See [Sockets and Patterns](reference/02-sockets-and-patterns.md)
+**Sockets and Patterns**: Socket API, messaging patterns, multipart messages, proxies, polling, multithreading → [Sockets and Patterns](reference/02-sockets-and-patterns.md)
 
-**Advanced Request-Reply**: Reply envelopes, ROUTER identities, load balancing, async client/server → See [Advanced Request-Reply](reference/03-advanced-request-reply.md)
+**Advanced Request-Reply**: Reply envelopes, ROUTER identities, load balancing, async client/server → [Advanced Request-Reply](reference/03-advanced-request-reply.md)
 
-**Reliable Messaging**: Pirate patterns, heartbeating, Majordomo protocol, Binary Star failover → See [Reliable Messaging](reference/04-reliable-messaging.md)
+**Reliable Messaging**: Pirate patterns, heartbeating, Majordomo protocol, Binary Star failover → [Reliable Messaging](reference/04-reliable-messaging.md)
 
-**Advanced Pub-Sub**: Espresso tracing, last-value caching, slow subscriber detection, Clone pattern → See [Advanced Pub-Sub](reference/05-advanced-pub-sub.md)
+**Advanced Pub-Sub**: Espresso tracing, last-value caching, slow subscriber detection, Clone pattern → [Advanced Pub-Sub](reference/05-advanced-pub-sub.md)
 
-**Architecture and Protocols**: MOPED design process, unprotocols, serialization, FileMQ, SASL auth → See [Architecture and Protocols](reference/06-architecture-and-protocols.md)
+**Architecture and Protocols**: MOPED design process, unprotocols, serialization, FileMQ, SASL auth → [Architecture and Protocols](reference/06-architecture-and-protocols.md)
 
-**Distributed Computing**: Discovery, presence, peer-to-peer Harmony pattern, Zyre framework → See [Distributed Computing](reference/07-distributed-computing.md)
+**Distributed Computing**: Discovery, presence, peer-to-peer Harmony pattern, Zyre framework → [Distributed Computing](reference/07-distributed-computing.md)

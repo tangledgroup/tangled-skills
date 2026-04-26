@@ -166,14 +166,14 @@ RUSTFS_IDENTITY_OPENID_ROLES_CLAIM="roles"
 
 ## Advanced Topics
 
-**Architecture and Design**: Decentralized P2P design, consistency model, erasure coding principles → See [Architecture and Design](reference/01-architecture-and-design.md)
+**Architecture and Design**: Decentralized P2P design, consistency model, erasure coding principles → [Architecture and Design](reference/01-architecture-and-design.md)
 
-**Deployment Modes**: SNSD, SNMD, MNMD configurations, hardware checklists, filesystem requirements → See [Deployment Modes](reference/02-deployment-modes.md)
+**Deployment Modes**: SNSD, SNMD, MNMD configurations, hardware checklists, filesystem requirements → [Deployment Modes](reference/02-deployment-modes.md)
 
-**S3 Compatibility and API**: Full S3 API support, SDKs, versioning states, usage limits → See [S3 Compatibility and API](reference/03-s3-compatibility-and-api.md)
+**S3 Compatibility and API**: Full S3 API support, SDKs, versioning states, usage limits → [S3 Compatibility and API](reference/03-s3-compatibility-and-api.md)
 
-**Security and Encryption**: TLS configuration, server-side encryption (SSE-S3, SSE-C), KMS integration, IAM policies, WORM object locking → See [Security and Encryption](reference/04-security-and-encryption.md)
+**Security and Encryption**: TLS configuration, server-side encryption (SSE-S3, SSE-C), KMS integration, IAM policies, WORM object locking → [Security and Encryption](reference/04-security-and-encryption.md)
 
-**Data Protection and Replication**: Erasure coding details, self-healing processes, cross-region replication, lifecycle management → See [Data Protection and Replication](reference/05-data-protection-and-replication.md)
+**Data Protection and Replication**: Erasure coding details, self-healing processes, cross-region replication, lifecycle management → [Data Protection and Replication](reference/05-data-protection-and-replication.md)
 
-**Solutions and Integrations**: Data lake architecture, AI/ML storage, HDFS replacement, SQL Server integration, cold archiving, observability stack → See [Solutions and Integrations](reference/06-solutions-and-integrations.md)
+**Solutions and Integrations**: Data lake architecture, AI/ML storage, HDFS replacement, SQL Server integration, cold archiving, observability stack → [Solutions and Integrations](reference/06-solutions-and-integrations.md)

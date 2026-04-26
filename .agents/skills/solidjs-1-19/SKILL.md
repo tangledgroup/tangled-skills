@@ -185,18 +185,18 @@ function App() {
 
 ## Advanced Topics
 
-**Reactivity Deep Dive**: Signals, subscribers, tracking scopes, and the reactive graph → See [Reactivity Fundamentals](reference/01-reactivity-fundamentals.md)
+**Reactivity Deep Dive**: Signals, subscribers, tracking scopes, and the reactive graph → [Reactivity Fundamentals](reference/01-reactivity-fundamentals.md)
 
-**Signals and Memos**: Creating reactive state, derived values, performance optimization → See [Signals and Memos](reference/02-signals-and-memos.md)
+**Signals and Memos**: Creating reactive state, derived values, performance optimization → [Signals and Memos](reference/02-signals-and-memos.md)
 
-**Stores**: Complex nested state, path syntax, produce/reconcile/unwrap utilities → See [Stores](reference/03-stores.md)
+**Stores**: Complex nested state, path syntax, produce/reconcile/unwrap utilities → [Stores](reference/03-stores.md)
 
-**Components and JSX**: Component patterns, props, event handling, class-style components → See [Components and JSX](reference/04-components-and-jsx.md)
+**Components and JSX**: Component patterns, props, event handling, class-style components → [Components and JSX](reference/04-components-and-jsx.md)
 
-**Control Flow**: Show, Switch/Match, For, Index conditional and list rendering → See [Control Flow](reference/05-control-flow.md)
+**Control Flow**: Show, Switch/Match, For, Index conditional and list rendering → [Control Flow](reference/05-control-flow.md)
 
-**Context and Refs**: Cross-component data sharing, DOM element access → See [Context and Refs](reference/06-context-and-refs.md)
+**Context and Refs**: Cross-component data sharing, DOM element access → [Context and Refs](reference/06-context-and-refs.md)
 
-**Lifecycle and Utilities**: onMount, onCleanup, batch, untrack, createRoot → See [Lifecycle and Utilities](reference/07-lifecycle-and-utilities.md)
+**Lifecycle and Utilities**: onMount, onCleanup, batch, untrack, createRoot → [Lifecycle and Utilities](reference/07-lifecycle-and-utilities.md)
 
-**Advanced Reactivity**: Fine-grained updates, secondary primitives, render effects → See [Advanced Reactivity](reference/08-advanced-reactivity.md)
+**Advanced Reactivity**: Fine-grained updates, secondary primitives, render effects → [Advanced Reactivity](reference/08-advanced-reactivity.md)

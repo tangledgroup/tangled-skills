@@ -173,20 +173,20 @@ bun test --concurrent       # parallel execution
 
 ## Advanced Topics
 
-**Runtime & Core**: File execution, watch mode, bunfig.toml configuration, REPL, debugger → See [Runtime & Core](reference/01-runtime-core.md)
+**Runtime & Core**: File execution, watch mode, bunfig.toml configuration, REPL, debugger → [Runtime & Core](reference/01-runtime-core.md)
 
-**HTTP Server & Networking**: `Bun.serve` routing, WebSockets, TLS, TCP/UDP sockets, DNS resolution → See [HTTP & Networking](reference/02-http-networking.md)
+**HTTP Server & Networking**: `Bun.serve` routing, WebSockets, TLS, TCP/UDP sockets, DNS resolution → [HTTP & Networking](reference/02-http-networking.md)
 
-**Package Manager**: Install, add, remove, update, bunx, workspaces, catalogs, overrides, lockfiles, publishing → See [Package Manager](reference/03-package-manager.md)
+**Package Manager**: Install, add, remove, update, bunx, workspaces, catalogs, overrides, lockfiles, publishing → [Package Manager](reference/03-package-manager.md)
 
-**Bundler**: `bun build` CLI and JS API, entrypoints, targets, formats, plugins, loaders, full-stack HTML imports → See [Bundler](reference/04-bundler.md)
+**Bundler**: `bun build` CLI and JS API, entrypoints, targets, formats, plugins, loaders, full-stack HTML imports → [Bundler](reference/04-bundler.md)
 
-**Test Runner**: Jest-compatible API, lifecycle hooks, snapshots, mocking, coverage, CI/CD integration → See [Test Runner](reference/05-test-runner.md)
+**Test Runner**: Jest-compatible API, lifecycle hooks, snapshots, mocking, coverage, CI/CD integration → [Test Runner](reference/05-test-runner.md)
 
-**Data & Storage**: SQLite (`bun:sqlite`), Redis client, file I/O (`Bun.file`, `Bun.write`), streams, binary data, S3 → See [Data & Storage](reference/06-data-storage.md)
+**Data & Storage**: SQLite (`bun:sqlite`), Redis client, file I/O (`Bun.file`, `Bun.write`), streams, binary data, S3 → [Data & Storage](reference/06-data-storage.md)
 
-**Process & System**: Shell scripting (`$` template literal), child processes (`Bun.spawn`), workers, environment variables, cron → See [Process & System](reference/07-process-system.md)
+**Process & System**: Shell scripting (`$` template literal), child processes (`Bun.spawn`), workers, environment variables, cron → [Process & System](reference/07-process-system.md)
 
-**Interop & Utilities**: FFI (`bun:ffi`), Node-API modules, C compiler, transpiler API, hashing, glob, semver, TOML/YAML/JSON5 → See [Interop & Utilities](reference/08-interop-utilities.md)
+**Interop & Utilities**: FFI (`bun:ffi`), Node-API modules, C compiler, transpiler API, hashing, glob, semver, TOML/YAML/JSON5 → [Interop & Utilities](reference/08-interop-utilities.md)
 
-**Node.js Compatibility**: Built-in module support status, globals, migration guidance → See [Node.js Compatibility](reference/09-nodejs-compat.md)
+**Node.js Compatibility**: Built-in module support status, globals, migration guidance → [Node.js Compatibility](reference/09-nodejs-compat.md)

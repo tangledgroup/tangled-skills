@@ -64,8 +64,8 @@ SQL backends share a common `BaseSQL` parent that handles SQLAlchemy session man
 
 ## Advanced Topics
 
-**Core API Reference**: BaseAPI methods, Node/Edge dataclasses, GraphDegree → See [Core API Reference](reference/01-core-api-reference.md)
-**SQL Backends**: SQLAlchemy ORM mapping, SQLite pragmas, PostgreSQL optimizations, MySQL tuning → See [SQL Backends](reference/02-sql-backends.md)
-**MongoDB Backend**: PyMongo integration, aggregation pipelines, bulk operations → See [MongoDB Backend](reference/03-mongodb-backend.md)
-**Neo4J Backend**: Cypher queries, Bolt protocol, labels and constraints, CSV import → See [Neo4J Backend](reference/04-neo4j-backend.md)
-**Usage Examples**: Common patterns for each backend, data loading, querying → See [Usage Examples](reference/05-usage-examples.md)
+**Core API Reference**: BaseAPI methods, Node/Edge dataclasses, GraphDegree → [Core API Reference](reference/01-core-api-reference.md)
+**SQL Backends**: SQLAlchemy ORM mapping, SQLite pragmas, PostgreSQL optimizations, MySQL tuning → [SQL Backends](reference/02-sql-backends.md)
+**MongoDB Backend**: PyMongo integration, aggregation pipelines, bulk operations → [MongoDB Backend](reference/03-mongodb-backend.md)
+**Neo4J Backend**: Cypher queries, Bolt protocol, labels and constraints, CSV import → [Neo4J Backend](reference/04-neo4j-backend.md)
+**Usage Examples**: Common patterns for each backend, data loading, querying → [Usage Examples](reference/05-usage-examples.md)

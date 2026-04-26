@@ -232,16 +232,16 @@ export async function getPosts() {
 
 ## Advanced Topics
 
-**Collections and Fields**: Deep dive into all field types, validation, relationships, joins, blocks, arrays, and rich text configuration → See [Collections and Fields](reference/01-collections-and-fields.md)
+**Collections and Fields**: Deep dive into all field types, validation, relationships, joins, blocks, arrays, and rich text configuration → [Collections and Fields](reference/01-collections-and-fields.md)
 
-**Access Control and Authentication**: Role-based permissions, custom auth strategies, API keys, JWT configuration, and field-level access → See [Access Control and Authentication](reference/02-access-control-and-auth.md)
+**Access Control and Authentication**: Role-based permissions, custom auth strategies, API keys, JWT configuration, and field-level access → [Access Control and Authentication](reference/02-access-control-and-auth.md)
 
-**Hooks and Lifecycle**: Document hooks, field hooks, before/after operation patterns, and integration with external services → See [Hooks and Lifecycle](reference/03-hooks-and-lifecycle.md)
+**Hooks and Lifecycle**: Document hooks, field hooks, before/after operation patterns, and integration with external services → [Hooks and Lifecycle](reference/03-hooks-and-lifecycle.md)
 
-**Local API and Queries**: The `Where` query system, depth/population, select/projection, pagination, sorting, joins, and transactions → See [Local API and Queries](reference/04-local-api-and-queries.md)
+**Local API and Queries**: The `Where` query system, depth/population, select/projection, pagination, sorting, joins, and transactions → [Local API and Queries](reference/04-local-api-and-queries.md)
 
-**Versions, Drafts, and Localization**: Document versioning, autosave drafts, scheduled publishing, multi-language content, and fallback locales → See [Versions Drafts and Localization](reference/05-versions-drafts-and-localization.md)
+**Versions, Drafts, and Localization**: Document versioning, autosave drafts, scheduled publishing, multi-language content, and fallback locales → [Versions Drafts and Localization](reference/05-versions-drafts-and-localization.md)
 
-**Admin Panel Customization**: Custom React components, views, tabs, live preview, dashboard widgets, and theme configuration → See [Admin Panel Customization](reference/06-admin-panel-customization.md)
+**Admin Panel Customization**: Custom React components, views, tabs, live preview, dashboard widgets, and theme configuration → [Admin Panel Customization](reference/06-admin-panel-customization.md)
 
-**Database Adapters and Plugins**: MongoDB, Postgres, SQLite, Drizzle ORM adapter patterns, storage adapters, and official plugins → See [Database Adapters and Plugins](reference/07-database-adapters-and-plugins.md)
+**Database Adapters and Plugins**: MongoDB, Postgres, SQLite, Drizzle ORM adapter patterns, storage adapters, and official plugins → [Database Adapters and Plugins](reference/07-database-adapters-and-plugins.md)

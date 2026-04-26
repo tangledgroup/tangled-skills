@@ -88,20 +88,20 @@ htmx.config.defaultSwapStyle = 'outerHTML';
 
 ## Advanced Topics
 
-**Core Attributes**: AJAX attributes (`hx-get`, `hx-post`, etc.), triggers, targets, and swap strategies → See [Core Attributes](reference/01-core-attributes.md)
+**Core Attributes**: AJAX attributes (`hx-get`, `hx-post`, etc.), triggers, targets, and swap strategies → [Core Attributes](reference/01-core-attributes.md)
 
-**Boosting and History**: Progressive enhancement with `hx-boost`, browser history management, URL pushing → See [Boosting and History](reference/02-boosting-and-history.md)
+**Boosting and History**: Progressive enhancement with `hx-boost`, browser history management, URL pushing → [Boosting and History](reference/02-boosting-and-history.md)
 
-**Out-of-Band Swaps and Selectors**: Piggybacking DOM updates, selecting response content, OOB swap strategies → See [Out-of-Band Swaps](reference/03-out-of-band-swaps.md)
+**Out-of-Band Swaps and Selectors**: Piggybacking DOM updates, selecting response content, OOB swap strategies → [Out-of-Band Swaps](reference/03-out-of-band-swaps.md)
 
-**WebSockets and SSE**: Real-time communication via extensions, `hx-ws` and `hx-sse` attributes → See [WebSockets and SSE](reference/04-websockets-and-sse.md)
+**WebSockets and SSE**: Real-time communication via extensions, `hx-ws` and `hx-sse` attributes → [WebSockets and SSE](reference/04-websockets-and-sse.md)
 
-**Extensions**: Core and community extensions, installation patterns, custom extension API → See [Extensions](reference/05-extensions.md)
+**Extensions**: Core and community extensions, installation patterns, custom extension API → [Extensions](reference/05-extensions.md)
 
-**Events and Scripting**: htmx event lifecycle, `hx-on:` attributes, integrating 3rd-party libraries → See [Events and Scripting](reference/06-events-and-scripting.md)
+**Events and Scripting**: htmx event lifecycle, `hx-on:` attributes, integrating 3rd-party libraries → [Events and Scripting](reference/06-events-and-scripting.md)
 
-**HTTP Headers and Request/Response**: HX-* request/response headers, response handling configuration, status code behavior → See [HTTP Headers](reference/07-http-headers.md)
+**HTTP Headers and Request/Response**: HX-* request/response headers, response handling configuration, status code behavior → [HTTP Headers](reference/07-http-headers.md)
 
-**Validation, Security, and Configuration**: HTML5 validation integration, XSS prevention, CSP, CSRF, config options → See [Validation and Security](reference/08-validation-and-security.md)
+**Validation, Security, and Configuration**: HTML5 validation integration, XSS prevention, CSP, CSRF, config options → [Validation and Security](reference/08-validation-and-security.md)
 
-**1.x to 2.x Migration**: Breaking changes, extension separation, `hx-on` format changes, module builds → See [Migration Guide](reference/09-migration-guide.md)
+**1.x to 2.x Migration**: Breaking changes, extension separation, `hx-on` format changes, module builds → [Migration Guide](reference/09-migration-guide.md)

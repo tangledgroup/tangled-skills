@@ -59,8 +59,8 @@ These guidelines are effective when you observe:
 
 ## Advanced Topics
 
-**The Four Principles**: Detailed guidance for each principle with rules and tests → See [The Four Principles](reference/01-four-principles.md)
+**The Four Principles**: Detailed guidance for each principle with rules and tests → [The Four Principles](reference/01-four-principles.md)
 
-**Code Examples**: Real-world examples showing what LLMs commonly do wrong and how to fix it → See [Code Examples](reference/02-code-examples.md)
+**Code Examples**: Real-world examples showing what LLMs commonly do wrong and how to fix it → [Code Examples](reference/02-code-examples.md)
 
-**Anti-Patterns & Key Insights**: Summary of common anti-patterns, the timing problem, and why "good" patterns become bad when applied too early → See [Anti-Patterns and Key Insights](reference/03-anti-patterns.md)
+**Anti-Patterns & Key Insights**: Summary of common anti-patterns, the timing problem, and why "good" patterns become bad when applied too early → [Anti-Patterns and Key Insights](reference/03-anti-patterns.md)

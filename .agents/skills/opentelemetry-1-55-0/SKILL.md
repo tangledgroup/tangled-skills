@@ -73,16 +73,16 @@ Required plugins like OTLP Exporters and TraceContext Propagators are included a
 
 ## Advanced Topics
 
-**Tracing API & SDK**: TracerProvider, Tracer, Span creation, sampling strategies, span processors, ID generation → See [Tracing](reference/01-tracing.md)
+**Tracing API & SDK**: TracerProvider, Tracer, Span creation, sampling strategies, span processors, ID generation → [Tracing](reference/01-tracing.md)
 
-**Metrics API & SDK**: MeterProvider, instruments (Counter, Histogram, Gauge, UpDownCounter), Views, aggregations, exemplars, temporality → See [Metrics](reference/02-metrics.md)
+**Metrics API & SDK**: MeterProvider, instruments (Counter, Histogram, Gauge, UpDownCounter), Views, aggregations, exemplars, temporality → [Metrics](reference/02-metrics.md)
 
-**Logs API & Data Model**: LoggerProvider, LogRecord fields, severity mapping, events format → See [Logs](reference/03-logs.md)
+**Logs API & Data Model**: LoggerProvider, LogRecord fields, severity mapping, events format → [Logs](reference/03-logs.md)
 
-**Context Propagation**: Context API, TextMapPropagator, W3C TraceContext headers, Baggage propagation → See [Context and Propagation](reference/04-context-propagation.md)
+**Context Propagation**: Context API, TextMapPropagator, W3C TraceContext headers, Baggage propagation → [Context and Propagation](reference/04-context-propagation.md)
 
-**OTLP Protocol & Exporter**: Configuration options, environment variables, retry behavior, endpoint URLs → See [OTLP Protocol](reference/05-otlp-protocol.md)
+**OTLP Protocol & Exporter**: Configuration options, environment variables, retry behavior, endpoint URLs → [OTLP Protocol](reference/05-otlp-protocol.md)
 
-**Resources & Semantic Conventions**: Resource data model with entities, merging rules, attribute conventions → See [Resources and Semantic Conventions](reference/06-resources-semantic-conventions.md)
+**Resources & Semantic Conventions**: Resource data model with entities, merging rules, attribute conventions → [Resources and Semantic Conventions](reference/06-resources-semantic-conventions.md)
 
-**Versioning & Stability**: Signal lifecycle (Development → Stable → Deprecated → Removed), API/SDK stability guarantees → See [Versioning and Stability](reference/07-versioning-stability.md)
+**Versioning & Stability**: Signal lifecycle (Development → Stable → Deprecated → Removed), API/SDK stability guarantees → [Versioning and Stability](reference/07-versioning-stability.md)

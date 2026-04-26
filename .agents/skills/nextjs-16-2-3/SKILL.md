@@ -89,18 +89,18 @@ Add scripts to `package.json`:
 
 ## Advanced Topics
 
-**App Router Fundamentals**: Layouts, pages, navigation, and project structure → See [App Router Fundamentals](reference/01-app-router-fundamentals.md)
+**App Router Fundamentals**: Layouts, pages, navigation, and project structure → [App Router Fundamentals](reference/01-app-router-fundamentals.md)
 
-**Server and Client Components**: React Server Components, Client Components, data fetching, and streaming → See [Server and Client Components](reference/02-server-and-client-components.md)
+**Server and Client Components**: React Server Components, Client Components, data fetching, and streaming → [Server and Client Components](reference/02-server-and-client-components.md)
 
-**Routing**: Dynamic routes, parallel routes, intercepting routes, route groups, and proxy → See [Routing](reference/03-routing.md)
+**Routing**: Dynamic routes, parallel routes, intercepting routes, route groups, and proxy → [Routing](reference/03-routing.md)
 
-**Data Caching and Revalidation**: Cache Components, `use cache`, `cacheLife`, `cacheTag`, and revalidation strategies → See [Data Caching and Revalidation](reference/04-data-caching-and-revalidation.md)
+**Data Caching and Revalidation**: Cache Components, `use cache`, `cacheLife`, `cacheTag`, and revalidation strategies → [Data Caching and Revalidation](reference/04-data-caching-and-revalidation.md)
 
-**API and Backend**: Route Handlers, Server Actions, environment variables, and proxy configuration → See [API and Backend](reference/05-api-and-backend.md)
+**API and Backend**: Route Handlers, Server Actions, environment variables, and proxy configuration → [API and Backend](reference/05-api-and-backend.md)
 
-**Metadata and SEO**: Static and dynamic metadata, OG images, sitemaps, and robots → See [Metadata and SEO](reference/06-metadata-and-seo.md)
+**Metadata and SEO**: Static and dynamic metadata, OG images, sitemaps, and robots → [Metadata and SEO](reference/06-metadata-and-seo.md)
 
-**Styling and Assets**: CSS, Tailwind CSS, Image optimization, and Font loading → See [Styling and Assets](reference/07-styling-and-assets.md)
+**Styling and Assets**: CSS, Tailwind CSS, Image optimization, and Font loading → [Styling and Assets](reference/07-styling-and-assets.md)
 
-**Deployment**: Node.js servers, Docker, static export, adapters, and platform deployment → See [Deployment](reference/08-deployment.md)
+**Deployment**: Node.js servers, Docker, static export, adapters, and platform deployment → [Deployment](reference/08-deployment.md)

@@ -230,14 +230,14 @@ print("Status:", LpStatus[prob.status])
 
 ## Advanced Topics
 
-**Variables and Expressions**: LpVariable categories, bounds, `LpVariable.dicts()`, `LpVariable.matrix()`, `LpAffineExpression`, `lpSum()`, `lpDot()` → See [Variables and Expressions](reference/01-variables-and-expressions.md)
+**Variables and Expressions**: LpVariable categories, bounds, `LpVariable.dicts()`, `LpVariable.matrix()`, `LpAffineExpression`, `lpSum()`, `lpDot()` → [Variables and Expressions](reference/01-variables-and-expressions.md)
 
-**Constraints**: LpConstraint, constraint senses, named constraints, dual values (shadow prices), reduced costs → See [Constraints](reference/02-constraints.md)
+**Constraints**: LpConstraint, constraint senses, named constraints, dual values (shadow prices), reduced costs → [Constraints](reference/02-constraints.md)
 
-**Solvers**: COIN_CMD (CBC), GLPK_CMD, CPLEX_CMD, GUROBI, HiGHS, MOSEK, SCIP, COPT, XPRESS, CHOCO, solver configuration, environment variables, `listSolvers()`, `getSolver()` → See [Solvers](reference/03-solvers.md)
+**Solvers**: COIN_CMD (CBC), GLPK_CMD, CPLEX_CMD, GUROBI, HiGHS, MOSEK, SCIP, COPT, XPRESS, CHOCO, solver configuration, environment variables, `listSolvers()`, `getSolver()` → [Solvers](reference/03-solvers.md)
 
-**Model Export and Import**: writeLP(), writeMPS(), toJson()/fromJson(), to_dict()/from_dict(), JSON vs MPS trade-offs → See [Model Export and Import](reference/04-model-export-import.md)
+**Model Export and Import**: writeLP(), writeMPS(), toJson()/fromJson(), to_dict()/from_dict(), JSON vs MPS trade-offs → [Model Export and Import](reference/04-model-export-import.md)
 
-**Utility Functions**: makeDict, splitDict, allcombinations, allpermutations, value(), roundSolution() → See [Utility Functions](reference/05-utility-functions.md)
+**Utility Functions**: makeDict, splitDict, allcombinations, allpermutations, value(), roundSolution() → [Utility Functions](reference/05-utility-functions.md)
 
-**Case Studies**: Blending, transportation, set partitioning (wedding seating), cutting stock with column generation, two-stage stochastic programming, Sudoku, production planning, generation scheduling → See [Case Studies](reference/06-case-studies.md)
+**Case Studies**: Blending, transportation, set partitioning (wedding seating), cutting stock with column generation, two-stage stochastic programming, Sudoku, production planning, generation scheduling → [Case Studies](reference/06-case-studies.md)

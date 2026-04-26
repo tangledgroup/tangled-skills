@@ -110,12 +110,12 @@ crun update --memory=536870912 my-container
 
 ## Advanced Topics
 
-**CLI Reference**: Complete command options for create, run, exec, checkpoint, restore, and more → See [CLI Reference](reference/01-cli-reference.md)
+**CLI Reference**: Complete command options for create, run, exec, checkpoint, restore, and more → [CLI Reference](reference/01-cli-reference.md)
 
-**Cgroup Configuration**: cgroup v2 support, automatic v1-to-v2 conversion formulas, memory/CPU/blkio/pids controllers → See [Cgroup Configuration](reference/02-cgroup-configuration.md)
+**Cgroup Configuration**: cgroup v2 support, automatic v1-to-v2 conversion formulas, memory/CPU/blkio/pids controllers → [Cgroup Configuration](reference/02-cgroup-configuration.md)
 
-**OCI Extensions**: crun-specific annotations for seccomp, SELinux, systemd integration, mount options, idmapped mounts, and handlers → See [OCI Extensions](reference/03-oci-extensions.md)
+**OCI Extensions**: crun-specific annotations for seccomp, SELinux, systemd integration, mount options, idmapped mounts, and handlers → [OCI Extensions](reference/03-oci-extensions.md)
 
-**Checkpoint and Restore**: CRIU integration for live migration with pre-dump, TCP handling, and cgroup management modes → See [Checkpoint and Restore](reference/04-checkpoint-restore.md)
+**Checkpoint and Restore**: CRIU integration for live migration with pre-dump, TCP handling, and cgroup management modes → [Checkpoint and Restore](reference/04-checkpoint-restore.md)
 
-**WebAssembly / WASI**: Running wasm workloads natively with wasmedge, wasmer, wasmtime, and wamr runtimes → See [WebAssembly Support](reference/05-webassembly-support.md)
+**WebAssembly / WASI**: Running wasm workloads natively with wasmedge, wasmer, wasmtime, and wamr runtimes → [WebAssembly Support](reference/05-webassembly-support.md)

@@ -179,20 +179,20 @@ var result = _.mergeWith(
 
 ## Advanced Topics
 
-**Array Methods**: Filtering, sorting, slicing, flattening, set operations → See [Array Methods](reference/01-array-methods.md)
+**Array Methods**: Filtering, sorting, slicing, flattening, set operations → [Array Methods](reference/01-array-methods.md)
 
-**Collection Methods**: Iteration, grouping, partitioning, reduction → See [Collection Methods](reference/02-collection-methods.md)
+**Collection Methods**: Iteration, grouping, partitioning, reduction → [Collection Methods](reference/02-collection-methods.md)
 
-**Function Methods**: Currying, debouncing, throttling, partial application → See [Function Methods](reference/03-function-methods.md)
+**Function Methods**: Currying, debouncing, throttling, partial application → [Function Methods](reference/03-function-methods.md)
 
-**Object Methods**: Property access, merging, picking, transforming → See [Object Methods](reference/04-object-methods.md)
+**Object Methods**: Property access, merging, picking, transforming → [Object Methods](reference/04-object-methods.md)
 
-**String Methods**: Formatting, escaping, case conversion, templating → See [String Methods](reference/05-string-methods.md)
+**String Methods**: Formatting, escaping, case conversion, templating → [String Methods](reference/05-string-methods.md)
 
-**Lang Methods**: Type checking, equality comparison, cloning → See [Lang Methods](reference/06-lang-methods.md)
+**Lang Methods**: Type checking, equality comparison, cloning → [Lang Methods](reference/06-lang-methods.md)
 
-**Math Methods**: Aggregation, clamping, random numbers → See [Math Methods](reference/07-math-methods.md)
+**Math Methods**: Aggregation, clamping, random numbers → [Math Methods](reference/07-math-methods.md)
 
-**Util Methods**: Identity functions, iteration helpers, mixins → See [Util Methods](reference/08-util-methods.md)
+**Util Methods**: Identity functions, iteration helpers, mixins → [Util Methods](reference/08-util-methods.md)
 
-**Chaining and FP**: Lazy evaluation chains, lodash/fp functional style → See [Chaining and FP](reference/09-chaining-fp.md)
+**Chaining and FP**: Lazy evaluation chains, lodash/fp functional style → [Chaining and FP](reference/09-chaining-fp.md)

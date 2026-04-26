@@ -153,18 +153,18 @@ print(synsets[0].lemmas()[0].name())
 
 ## Advanced Topics
 
-**Tokenization & Stemming**: Tokenizers (Treebank, Tweet, Punkt, Regex), stemmers (Porter, Snowball, Lancaster, RSLP), lemmatization → See [Tokenization & Stemming](reference/01-tokenization-stemming.md)
+**Tokenization & Stemming**: Tokenizers (Treebank, Tweet, Punkt, Regex), stemmers (Porter, Snowball, Lancaster, RSLP), lemmatization → [Tokenization & Stemming](reference/01-tokenization-stemming.md)
 
-**POS Tagging & Chunking**: Sequential taggers, PerceptronTagger, BrillTagger, HMM taggers, named entity chunking, regexp chunking → See [POS Tagging & Chunking](reference/02-pos-tagging-chunking.md)
+**POS Tagging & Chunking**: Sequential taggers, PerceptronTagger, BrillTagger, HMM taggers, named entity chunking, regexp chunking → [POS Tagging & Chunking](reference/02-pos-tagging-chunking.md)
 
-**Parsing & Trees**: CFG grammars, chart parsing (top-down, bottom-up, Earley), CCG parsing, dependency graphs, tree operations → See [Parsing & Trees](reference/03-parsing-trees.md)
+**Parsing & Trees**: CFG grammars, chart parsing (top-down, bottom-up, Earley), CCG parsing, dependency graphs, tree operations → [Parsing & Trees](reference/03-parsing-trees.md)
 
-**WordNet & Semantics**: Synset navigation, lexical relations, similarity metrics, semantic logic, DRT, resolution provers → See [WordNet & Semantics](reference/04-wordnet-semantics.md)
+**WordNet & Semantics**: Synset navigation, lexical relations, similarity metrics, semantic logic, DRT, resolution provers → [WordNet & Semantics](reference/04-wordnet-semantics.md)
 
-**Corpora & Data**: Corpus readers (plaintext, tagged, parsed, WordNet, SentiWordNet), data download, available corpora → See [Corpora & Data](reference/05-corpora-data.md)
+**Corpora & Data**: Corpus readers (plaintext, tagged, parsed, WordNet, SentiWordNet), data download, available corpora → [Corpora & Data](reference/05-corpora-data.md)
 
-**Classification & Sentiment**: Naive Bayes, Maximum Entropy, decision trees, scikit-learn wrapper, VADER, SentiWordNet, text categorization → See [Classification & Sentiment](reference/06-classification-sentiment.md)
+**Classification & Sentiment**: Naive Bayes, Maximum Entropy, decision trees, scikit-learn wrapper, VADER, SentiWordNet, text categorization → [Classification & Sentiment](reference/06-classification-sentiment.md)
 
-**Metrics & Evaluation**: BLEU, METEOR, chrF, GLEU, RIBES, edit distance, confusion matrices, inter-annotator agreement (kappa, alpha) → See [Metrics & Evaluation](reference/07-metrics-evaluation.md)
+**Metrics & Evaluation**: BLEU, METEOR, chrF, GLEU, RIBES, edit distance, confusion matrices, inter-annotator agreement (kappa, alpha) → [Metrics & Evaluation](reference/07-metrics-evaluation.md)
 
-**Translation & Language Models**: IBM Models 1–5, phrase-based translation, n-gram language models with smoothing (Kneser-Ney, Laplace, Witten-Bell) → See [Translation & Language Models](reference/08-translation-language-models.md)
+**Translation & Language Models**: IBM Models 1–5, phrase-based translation, n-gram language models with smoothing (Kneser-Ney, Laplace, Witten-Bell) → [Translation & Language Models](reference/08-translation-language-models.md)

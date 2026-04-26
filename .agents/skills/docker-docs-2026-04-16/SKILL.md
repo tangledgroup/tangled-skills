@@ -77,18 +77,18 @@ Docker is a platform for building, shipping, and running containerized applicati
 
 ## Advanced Topics
 
-**Dockerfile Reference**: Complete instruction reference including FROM, RUN, COPY, ADD, CMD, ENTRYPOINT, ENV, ARG, EXPOSE, VOLUME, USER, WORKDIR, ONBUILD, STOPSIGNAL, HEALTHCHECK, SHELL, parser directives, BuildKit mount syntax, and here-documents → See [Dockerfile Reference](reference/01-dockerfile-reference.md)
+**Dockerfile Reference**: Complete instruction reference including FROM, RUN, COPY, ADD, CMD, ENTRYPOINT, ENV, ARG, EXPOSE, VOLUME, USER, WORKDIR, ONBUILD, STOPSIGNAL, HEALTHCHECK, SHELL, parser directives, BuildKit mount syntax, and here-documents → [Dockerfile Reference](reference/01-dockerfile-reference.md)
 
-**Compose File Reference**: Services attributes (image, build, command, depends_on, ports, volumes, environment, networks, deploy, healthcheck, secrets, configs), top-level elements (networks, volumes, configs, secrets, profiles, include, extend), interpolation, merge rules → See [Compose File Reference](reference/02-compose-file-reference.md)
+**Compose File Reference**: Services attributes (image, build, command, depends_on, ports, volumes, environment, networks, deploy, healthcheck, secrets, configs), top-level elements (networks, volumes, configs, secrets, profiles, include, extend), interpolation, merge rules → [Compose File Reference](reference/02-compose-file-reference.md)
 
-**Docker Compose CLI**: Commands for managing multi-container applications including up/down/build/logs/exec/ps/pull/push/run/start/stop/restart/fkill/kill/events/top/wait/version, with profiles, project names, and environment file support → See [Docker Compose CLI](reference/03-compose-cli.md)
+**Docker Compose CLI**: Commands for managing multi-container applications including up/down/build/logs/exec/ps/pull/push/run/start/stop/restart/fkill/kill/events/top/wait/version, with profiles, project names, and environment file support → [Docker Compose CLI](reference/03-compose-cli.md)
 
-**Docker Engine & CLI Reference**: Core Docker commands (container, image, volume, network, buildx, compose, context, system, swarm), daemon configuration, storage drivers, logging drivers, proxy configuration → See [Docker Engine and CLI](reference/04-engine-cli-reference.md)
+**Docker Engine & CLI Reference**: Core Docker commands (container, image, volume, network, buildx, compose, context, system, swarm), daemon configuration, storage drivers, logging drivers, proxy configuration → [Docker Engine and CLI](reference/04-engine-cli-reference.md)
 
-**Networking & Storage**: Network drivers (bridge, host, overlay, macvlan, ipvlan, none), port publishing, iptables/nftables integration, volumes vs bind mounts vs tmpfs, storage drivers (overlay2, btrfs, zfs, vfs) → See [Networking and Storage](reference/05-networking-storage.md)
+**Networking & Storage**: Network drivers (bridge, host, overlay, macvlan, ipvlan, none), port publishing, iptables/nftables integration, volumes vs bind mounts vs tmpfs, storage drivers (overlay2, btrfs, zfs, vfs) → [Networking and Storage](reference/05-networking-storage.md)
 
-**BuildKit & Buildx**: Multi-platform builds, cache backends (registry, local, gha, s3), build provenance and attestations, GitHub Actions integration, LLB frontend, build checks, export targets → See [BuildKit and Buildx](reference/06-buildkit-buildx.md)
+**BuildKit & Buildx**: Multi-platform builds, cache backends (registry, local, gha, s3), build provenance and attestations, GitHub Actions integration, LLB frontend, build checks, export targets → [BuildKit and Buildx](reference/06-buildkit-buildx.md)
 
-**Swarm & Orchestration**: Swarm mode for container orchestration with service discovery, load balancing, rolling updates, secrets management, and distributed logging → See [Swarm Orchestration](reference/07-swarm-orchestration.md)
+**Swarm & Orchestration**: Swarm mode for container orchestration with service discovery, load balancing, rolling updates, secrets management, and distributed logging → [Swarm Orchestration](reference/07-swarm-orchestration.md)
 
-**Docker APIs**: Engine API (RESTful, versions v1.24–v1.54), Docker Hub API, Registry API (OCI Distribution spec), Extensions SDK for Docker Desktop plugins → See [Docker APIs](reference/08-docker-apis.md)
+**Docker APIs**: Engine API (RESTful, versions v1.24–v1.54), Docker Hub API, Registry API (OCI Distribution spec), Extensions SDK for Docker Desktop plugins → [Docker APIs](reference/08-docker-apis.md)

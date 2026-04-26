@@ -205,12 +205,12 @@ int main()
 
 ## Advanced Topics
 
-**Command-Line Reference**: All TCC options including preprocessor, compilation flags, linker options, debugger options, and target-specific flags → See [Command-Line Reference](reference/01-command-line-reference.md)
+**Command-Line Reference**: All TCC options including preprocessor, compilation flags, linker options, debugger options, and target-specific flags → [Command-Line Reference](reference/01-command-line-reference.md)
 
-**C Language Support**: ANSI C, ISO C99 extensions, GNU C extensions, inline assembly, and TCC-specific features → See [C Language Support](reference/02-c-language-support.md)
+**C Language Support**: ANSI C, ISO C99 extensions, GNU C extensions, inline assembly, and TCC-specific features → [C Language Support](reference/02-c-language-support.md)
 
-**Assembler and Linker**: Built-in gas-like assembler, ELF/PE output formats, GNU linker script support → See [Assembler and Linker](reference/03-assembler-linker.md)
+**Assembler and Linker**: Built-in gas-like assembler, ELF/PE output formats, GNU linker script support → [Assembler and Linker](reference/03-assembler-linker.md)
 
-**libtcc API Reference**: Complete API for dynamic code generation including context management, compilation, linking, symbol resolution, and output types → See [libtcc API Reference](reference/04-libtcc-api.md)
+**libtcc API Reference**: Complete API for dynamic code generation including context management, compilation, linking, symbol resolution, and output types → [libtcc API Reference](reference/04-libtcc-api.md)
 
-**Memory and Bounds Checking**: Using `-b` flag to catch buffer overflows, out-of-bounds access, use-after-free, and double-free at runtime → See [Memory and Bounds Checking](reference/05-memory-bounds-checking.md)
+**Memory and Bounds Checking**: Using `-b` flag to catch buffer overflows, out-of-bounds access, use-after-free, and double-free at runtime → [Memory and Bounds Checking](reference/05-memory-bounds-checking.md)

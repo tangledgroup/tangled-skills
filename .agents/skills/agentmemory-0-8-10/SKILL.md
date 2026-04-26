@@ -133,16 +133,16 @@ Create `~/.agentmemory/.env`:
 
 ## Advanced Topics
 
-**Memory Pipeline and Hooks**: The observation lifecycle from capture to retrieval → See [Memory Pipeline](reference/01-memory-pipeline.md)
+**Memory Pipeline and Hooks**: The observation lifecycle from capture to retrieval → [Memory Pipeline](reference/01-memory-pipeline.md)
 
-**Hybrid Search Architecture**: Triple-stream retrieval with BM25, vector, and knowledge graph → See [Hybrid Search](reference/02-hybrid-search.md)
+**Hybrid Search Architecture**: Triple-stream retrieval with BM25, vector, and knowledge graph → [Hybrid Search](reference/02-hybrid-search.md)
 
-**MCP Tools Reference**: All 43 tools organized by category → See [MCP Tools](reference/03-mcp-tools.md)
+**MCP Tools Reference**: All 43 tools organized by category → [MCP Tools](reference/03-mcp-tools.md)
 
-**REST API Endpoints**: 109 endpoints for programmatic access → See [REST API](reference/04-rest-api.md)
+**REST API Endpoints**: 109 endpoints for programmatic access → [REST API](reference/04-rest-api.md)
 
-**Configuration and Providers**: LLM providers, embedding providers, environment variables → See [Configuration](reference/05-configuration.md)
+**Configuration and Providers**: LLM providers, embedding providers, environment variables → [Configuration](reference/05-configuration.md)
 
-**Multi-Agent Coordination**: Leases, signals, routines, checkpoints, mesh sync → See [Multi-Agent](reference/06-multi-agent.md)
+**Multi-Agent Coordination**: Leases, signals, routines, checkpoints, mesh sync → [Multi-Agent](reference/06-multi-agent.md)
 
-**Benchmarks and Comparison**: LongMemEval results vs competitors → See [Benchmarks](reference/07-benchmarks.md)
+**Benchmarks and Comparison**: LongMemEval results vs competitors → [Benchmarks](reference/07-benchmarks.md)

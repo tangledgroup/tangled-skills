@@ -246,12 +246,12 @@ webview.start(ssl=True, user_agent='MyApp/1.0')
 
 ## Advanced Topics
 
-**Full API Reference**: `create_window`, `start`, `Window` methods, events → See [API Reference](reference/01-api-reference.md)
+**Full API Reference**: `create_window`, `start`, `Window` methods, events → [API Reference](reference/01-api-reference.md)
 
-**JavaScript↔Python Bridge**: JS API, expose, shared state, evaluate_js, run_js → See [JavaScript-Python Bridge](reference/02-javascript-python-bridge.md)
+**JavaScript↔Python Bridge**: JS API, expose, shared state, evaluate_js, run_js → [JavaScript-Python Bridge](reference/02-javascript-python-bridge.md)
 
-**DOM Support**: Element manipulation, traversal, events from Python → See [DOM Support](reference/03-dom-support.md)
+**DOM Support**: Element manipulation, traversal, events from Python → [DOM Support](reference/03-dom-support.md)
 
-**Platforms and Renderers**: Web engines per platform, installation, dependencies → See [Platforms and Renderers](reference/04-platforms-and-renderers.md)
+**Platforms and Renderers**: Web engines per platform, installation, dependencies → [Platforms and Renderers](reference/04-platforms-and-renderers.md)
 
-**Advanced Topics**: Freezing/bundling, security, debugging, HTTP server, menus, file dialogs → See [Advanced Topics](reference/05-advanced-topics.md)
+**Advanced Topics**: Freezing/bundling, security, debugging, HTTP server, menus, file dialogs → [Advanced Topics](reference/05-advanced-topics.md)

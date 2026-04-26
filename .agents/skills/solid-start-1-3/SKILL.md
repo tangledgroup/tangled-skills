@@ -189,14 +189,14 @@ export default defineConfig({
 
 ## Advanced Topics
 
-**Routing**: File-based routing, nested layouts, dynamic routes, catch-all, route groups → See [Routing](reference/01-routing.md)
+**Routing**: File-based routing, nested layouts, dynamic routes, catch-all, route groups → [Routing](reference/01-routing.md)
 
-**Data Fetching & Mutation**: Server functions, queries, actions, single-flight mutations, form handling → See [Data Fetching & Mutation](reference/02-data-fetching-and-mutation.md)
+**Data Fetching & Mutation**: Server functions, queries, actions, single-flight mutations, form handling → [Data Fetching & Mutation](reference/02-data-fetching-and-mutation.md)
 
-**Server-Side Rendering**: SSR modes (sync/async/stream), entry points, createHandler, streaming HTML → See [Server-Side Rendering](reference/03-server-side-rendering.md)
+**Server-Side Rendering**: SSR modes (sync/async/stream), entry points, createHandler, streaming HTML → [Server-Side Rendering](reference/03-server-side-rendering.md)
 
-**Middleware & Sessions**: Request lifecycle hooks, locals, session management, authentication → See [Middleware & Sessions](reference/04-middleware-and-sessions.md)
+**Middleware & Sessions**: Request lifecycle hooks, locals, session management, authentication → [Middleware & Sessions](reference/04-middleware-and-sessions.md)
 
-**Configuration & Deployment**: defineConfig, Vite/Nitro options, serialization modes, prerendering, deployment presets → See [Configuration & Deployment](reference/05-configuration-and-deployment.md)
+**Configuration & Deployment**: defineConfig, Vite/Nitro options, serialization modes, prerendering, deployment presets → [Configuration & Deployment](reference/05-configuration-and-deployment.md)
 
-**Advanced Topics**: Security (CSP/CORS/CSRF), WebSockets, clientOnly components, static assets, CSS styling → See [Advanced Topics](reference/06-advanced-topics.md)
+**Advanced Topics**: Security (CSP/CORS/CSRF), WebSockets, clientOnly components, static assets, CSS styling → [Advanced Topics](reference/06-advanced-topics.md)

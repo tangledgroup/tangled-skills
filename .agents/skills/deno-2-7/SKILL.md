@@ -81,7 +81,7 @@ Verify installation:
 deno --version
 ```
 
-Additional installation options include package managers (Homebrew, Chocolatey, npm), binary downloads from GitHub releases, and APT/YUM repositories. See [Installation](reference/01-installation.md) for details.
+Additional installation options include package managers (Homebrew, Chocolatey, npm), binary downloads from GitHub releases, and APT/YUM repositories → [Installation](reference/01-installation.md) for details.
 
 ## Usage Examples
 
@@ -139,24 +139,24 @@ import chalk from "chalk";
 
 ## Advanced Topics
 
-**Permissions and Security**: Granular permission flags, deny rules, configuration file permissions → See [Security](reference/02-security.md)
+**Permissions and Security**: Granular permission flags, deny rules, configuration file permissions → [Security](reference/02-security.md)
 
-**Node.js and npm Compatibility**: Importing npm packages, CommonJS support, `node:` built-ins, `node_modules` management → See [Node Compatibility](reference/03-node-compatibility.md)
+**Node.js and npm Compatibility**: Importing npm packages, CommonJS support, `node:` built-ins, `node_modules` management → [Node Compatibility](reference/03-node-compatibility.md)
 
-**Configuration (deno.json)**: Tasks, imports, lint/fmt settings, lockfile, TypeScript options, publish config → See [Configuration](reference/04-configuration.md)
+**Configuration (deno.json)**: Tasks, imports, lint/fmt settings, lockfile, TypeScript options, publish config → [Configuration](reference/04-configuration.md)
 
-**Testing and Benchmarking**: Built-in test runner, hooks, coverage, snapshot testing, BDD → See [Testing](reference/05-testing.md)
+**Testing and Benchmarking**: Built-in test runner, hooks, coverage, snapshot testing, BDD → [Testing](reference/05-testing.md)
 
-**HTTP Server and Web Development**: `Deno.serve`, HTTP/2, HTTPS, WebSockets, file serving → See [HTTP Server](reference/06-http-server.md)
+**HTTP Server and Web Development**: `Deno.serve`, HTTP/2, HTTPS, WebSockets, file serving → [HTTP Server](reference/06-http-server.md)
 
-**Workspaces and Monorepos**: Multi-package management, path patterns, publishing → See [Workspaces](reference/07-workspaces.md)
+**Workspaces and Monorepos**: Multi-package management, path patterns, publishing → [Workspaces](reference/07-workspaces.md)
 
-**FFI (Foreign Function Interface)**: Calling native C/Rust libraries, type mapping, callbacks → See [FFI](reference/08-ffi.md)
+**FFI (Foreign Function Interface)**: Calling native C/Rust libraries, type mapping, callbacks → [FFI](reference/08-ffi.md)
 
-**CLI Reference**: Complete subcommand reference for `deno run`, `test`, `lint`, `fmt`, `compile`, `publish`, etc. → See [CLI Reference](reference/09-cli-reference.md)
+**CLI Reference**: Complete subcommand reference for `deno run`, `test`, `lint`, `fmt`, `compile`, `publish`, etc. → [CLI Reference](reference/09-cli-reference.md)
 
-**Standard Library (@std)**: Overview of all `@std` packages on JSR → See [Standard Library](reference/10-standard-library.md)
+**Standard Library (@std)**: Overview of all `@std` packages on JSR → [Standard Library](reference/10-standard-library.md)
 
-**Deployment**: Deno Deploy platform, `deno deploy` CLI, Deno KV database → See [Deployment](reference/11-deployment.md)
+**Deployment**: Deno Deploy platform, `deno deploy` CLI, Deno KV database → [Deployment](reference/11-deployment.md)
 
-**Debugging and Profiling**: Chrome DevTools integration, CPU profiling, inspect flags → See [Debugging](reference/12-debugging.md)
+**Debugging and Profiling**: Chrome DevTools integration, CPU profiling, inspect flags → [Debugging](reference/12-debugging.md)

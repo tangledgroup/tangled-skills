@@ -160,12 +160,12 @@ frontend http-in
 
 ## Advanced Topics
 
-**Configuration Reference**: Complete reference for all configuration keywords in global, defaults, frontend, backend, listen, peers, resolvers, and cache sections → See [Configuration Reference](reference/01-configuration-reference.md)
+**Configuration Reference**: Complete reference for all configuration keywords in global, defaults, frontend, backend, listen, peers, resolvers, and cache sections → [Configuration Reference](reference/01-configuration-reference.md)
 
-**ACLs and Sample Fetching**: Access control lists, sample fetch functions, converters, conditions, and content switching patterns → See [ACLs and Sample Fetching](reference/02-acls-and-samples.md)
+**ACLs and Sample Fetching**: Access control lists, sample fetch functions, converters, conditions, and content switching patterns → [ACLs and Sample Fetching](reference/02-acls-and-samples.md)
 
-**Management and Runtime CLI**: Starting, stopping, reloading, Unix socket commands, statistics, server state management, and seamless upgrades → See [Management and Runtime CLI](reference/03-management-and-runtime.md)
+**Management and Runtime CLI**: Starting, stopping, reloading, Unix socket commands, statistics, server state management, and seamless upgrades → [Management and Runtime CLI](reference/03-management-and-runtime.md)
 
-**Lua Scripting**: Lua integration architecture, sample fetches, converters, actions, services, tasks, sockets, and non-blocking design patterns → See [Lua Scripting](reference/04-lua-scripting.md)
+**Lua Scripting**: Lua integration architecture, sample fetches, converters, actions, services, tasks, sockets, and non-blocking design patterns → [Lua Scripting](reference/04-lua-scripting.md)
 
-**PROXY Protocol and Peers**: PROXY protocol v1/v2 specification, TLV types, stick-table replication protocol between HAProxy nodes → See [PROXY Protocol and Peers](reference/05-proxy-protocol-and-peers.md)
+**PROXY Protocol and Peers**: PROXY protocol v1/v2 specification, TLV types, stick-table replication protocol between HAProxy nodes → [PROXY Protocol and Peers](reference/05-proxy-protocol-and-peers.md)

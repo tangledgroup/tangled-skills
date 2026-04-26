@@ -192,14 +192,14 @@ print(f"Explained variance ratio: {pca.explained_variance_ratio_}")
 
 ## Advanced Topics
 
-**Supervised Learning**: Linear models, SVMs, nearest neighbors, Gaussian processes, decision trees, ensemble methods (random forests, gradient boosting, bagging, stacking) → See [Supervised Learning](reference/01-supervised-learning.md)
+**Supervised Learning**: Linear models, SVMs, nearest neighbors, Gaussian processes, decision trees, ensemble methods (random forests, gradient boosting, bagging, stacking) → [Supervised Learning](reference/01-supervised-learning.md)
 
-**Unsupervised Learning**: Clustering algorithms, Gaussian mixture models, manifold learning (MDS, t-SNE), decomposition (PCA, ICA, NMF), covariance estimation, outlier detection → See [Unsupervised Learning](reference/02-unsupervised-learning.md)
+**Unsupervised Learning**: Clustering algorithms, Gaussian mixture models, manifold learning (MDS, t-SNE), decomposition (PCA, ICA, NMF), covariance estimation, outlier detection → [Unsupervised Learning](reference/02-unsupervised-learning.md)
 
-**Preprocessing and Feature Engineering**: Scaling, encoding, imputation, polynomial/spline features, feature selection, missing value handling → See [Preprocessing and Features](reference/03-preprocessing-features.md)
+**Preprocessing and Feature Engineering**: Scaling, encoding, imputation, polynomial/spline features, feature selection, missing value handling → [Preprocessing and Features](reference/03-preprocessing-features.md)
 
-**Model Selection and Evaluation**: Cross-validation strategies, hyperparameter tuning, metrics (classification, regression, clustering), scoring functions → See [Model Selection and Metrics](reference/04-model-selection-metrics.md)
+**Model Selection and Evaluation**: Cross-validation strategies, hyperparameter tuning, metrics (classification, regression, clustering), scoring functions → [Model Selection and Metrics](reference/04-model-selection-metrics.md)
 
-**Pipelines and Compositors**: Pipeline API, ColumnTransformer, FeatureUnion, FrozenEstimator, metadata routing → See [Pipelines and Compositors](reference/05-pipelines-compositors.md)
+**Pipelines and Compositors**: Pipeline API, ColumnTransformer, FeatureUnion, FrozenEstimator, metadata routing → [Pipelines and Compositors](reference/05-pipelines-compositors.md)
 
-**Version 1.8 Highlights**: Free-threaded CPython 3.14 support, ClassicalMDS, temperature scaling, gap safe screening in linear models, Array API expansion, API changes and deprecations → See [Version 1.8 New Features](reference/06-version-1-8-highlights.md)
+**Version 1.8 Highlights**: Free-threaded CPython 3.14 support, ClassicalMDS, temperature scaling, gap safe screening in linear models, Array API expansion, API changes and deprecations → [Version 1.8 New Features](reference/06-version-1-8-highlights.md)

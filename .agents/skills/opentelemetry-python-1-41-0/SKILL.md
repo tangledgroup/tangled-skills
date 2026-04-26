@@ -126,14 +126,14 @@ counter.add(1, {"method": "GET", "path": "/api"})
 
 ## Advanced Topics
 
-**Tracing API and SDK**: Spans, TracerProvider, SpanProcessor, sampling strategies, span limits, and context management → See [Tracing](reference/01-tracing.md)
+**Tracing API and SDK**: Spans, TracerProvider, SpanProcessor, sampling strategies, span limits, and context management → [Tracing](reference/01-tracing.md)
 
-**Metrics API and SDK**: Instruments (Counter, Histogram, Gauge, UpDownCounter), MetricReader architecture, views, aggregation, and exemplars → See [Metrics](reference/02-metrics.md)
+**Metrics API and SDK**: Instruments (Counter, Histogram, Gauge, UpDownCounter), MetricReader architecture, views, aggregation, and exemplars → [Metrics](reference/02-metrics.md)
 
-**Logs API and SDK**: LoggerProvider, LogRecord, SeverityNumber, LoggingHandler bridge to stdlib logging, and log export → See [Logs](reference/03-logs.md)
+**Logs API and SDK**: LoggerProvider, LogRecord, SeverityNumber, LoggingHandler bridge to stdlib logging, and log export → [Logs](reference/03-logs.md)
 
-**Context Propagation**: W3C TraceContext, Baggage, TextMapPropagator, inject/extract patterns for cross-service tracing → See [Context Propagation](reference/04-context-propagation.md)
+**Context Propagation**: W3C TraceContext, Baggage, TextMapPropagator, inject/extract patterns for cross-service tracing → [Context Propagation](reference/04-context-propagation.md)
 
-**Exporters and Configuration**: OTLP (gRPC/HTTP), BatchSpanProcessor, SpanLimits, environment variables, Resource detection, and the SDK configurator → See [Exporters and Configuration](reference/05-exporters-configuration.md)
+**Exporters and Configuration**: OTLP (gRPC/HTTP), BatchSpanProcessor, SpanLimits, environment variables, Resource detection, and the SDK configurator → [Exporters and Configuration](reference/05-exporters-configuration.md)
 
-**Auto-Instrumentation**: The `opentelemetry-instrument` CLI, supported frameworks (Flask, Django, FastAPI, SQLAlchemy, Redis, HTTPX, gRPC, Celery, and 40+ more), and instrumentation best practices → See [Auto-Instrumentation](reference/06-auto-instrumentation.md)
+**Auto-Instrumentation**: The `opentelemetry-instrument` CLI, supported frameworks (Flask, Django, FastAPI, SQLAlchemy, Redis, HTTPX, gRPC, Celery, and 40+ more), and instrumentation best practices → [Auto-Instrumentation](reference/06-auto-instrumentation.md)

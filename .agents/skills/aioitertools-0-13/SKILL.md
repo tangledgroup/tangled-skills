@@ -152,8 +152,8 @@ async for key, group in groupby(items(), key=category_key):
 
 ## Advanced Topics
 
-**Builtins Reference**: Async versions of `all`, `any`, `enumerate`, `iter`, `list`, `map`, `max`, `min`, `next`, `set`, `sum`, `tuple`, `zip` → See [Builtins](reference/01-builtins.md)
+**Builtins Reference**: Async versions of `all`, `any`, `enumerate`, `iter`, `list`, `map`, `max`, `min`, `next`, `set`, `sum`, `tuple`, `zip` → [Builtins](reference/01-builtins.md)
 
-**Itertools Reference**: Full itertools module emulation — `accumulate`, `batched`, `chain`, `combinations`, `compress`, `count`, `cycle`, `dropwhile`, `filterfalse`, `groupby`, `islice`, `permutations`, `product`, `repeat`, `starmap`, `takewhile`, `tee`, `zip_longest` → See [Itertools](reference/02-itertools.md)
+**Itertools Reference**: Full itertools module emulation — `accumulate`, `batched`, `chain`, `combinations`, `compress`, `count`, `cycle`, `dropwhile`, `filterfalse`, `groupby`, `islice`, `permutations`, `product`, `repeat`, `starmap`, `takewhile`, `tee`, `zip_longest` → [Itertools](reference/02-itertools.md)
 
-**More Iterables & Asyncio**: Extended utilities — `take`, `chunked`, `before_and_after`, `as_completed`, `as_generated`, `gather`, `gather_iter` → See [More Iterables & Asyncio](reference/03-more-itertools-and-asyncio.md)
+**More Iterables & Asyncio**: Extended utilities — `take`, `chunked`, `before_and_after`, `as_completed`, `as_generated`, `gather`, `gather_iter` → [More Iterables & Asyncio](reference/03-more-itertools-and-asyncio.md)

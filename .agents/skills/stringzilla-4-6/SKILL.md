@@ -131,12 +131,12 @@ export LD_LIBRARY_PATH="$PWD/build_shared:$LD_LIBRARY_PATH"
 
 ## Advanced Topics
 
-**Python API**: `Str`, `Strs`, `File` classes, hashing, SHA-256, similarity scores, fingerprints → See [Python API](reference/01-python-api.md)
+**Python API**: `Str`, `Strs`, `File` classes, hashing, SHA-256, similarity scores, fingerprints → [Python API](reference/01-python-api.md)
 
-**C/C++ API**: C99 interface, C++11 classes, compilation flags, LibC mapping → See [C/C++ API](reference/02-c-cpp-api.md)
+**C/C++ API**: C99 interface, C++11 classes, compilation flags, LibC mapping → [C/C++ API](reference/02-c-cpp-api.md)
 
-**Rust API**: Crate usage, `StringZilla` extension trait, hash integration with `std::collections` → See [Rust API](reference/03-rust-api.md)
+**Rust API**: Crate usage, `StringZilla` extension trait, hash integration with `std::collections` → [Rust API](reference/03-rust-api.md)
 
-**Other Bindings**: JavaScript (Node.js), Swift, Go bindings with examples → See [Other Bindings](reference/04-other-bindings.md)
+**Other Bindings**: JavaScript (Node.js), Swift, Go bindings with examples → [Other Bindings](reference/04-other-bindings.md)
 
-**Algorithms & Design**: Search algorithms, Levenshtein diagonal approach, hashing internals, sorting strategy, Unicode case-folding → See [Algorithms & Design](reference/05-algorithms.md)
+**Algorithms & Design**: Search algorithms, Levenshtein diagonal approach, hashing internals, sorting strategy, Unicode case-folding → [Algorithms & Design](reference/05-algorithms.md)

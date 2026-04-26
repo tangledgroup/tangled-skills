@@ -78,22 +78,22 @@ Every table in SQLite has a special column called "rowid" (also accessible as "o
 
 ## Advanced Topics
 
-**SQL Language Reference**: Core SQL syntax, data types, expressions, operators, and all statement types → See [SQL Language Reference](reference/01-sql-language.md)
+**SQL Language Reference**: Core SQL syntax, data types, expressions, operators, and all statement types → [SQL Language Reference](reference/01-sql-language.md)
 
-**Built-in Functions**: Scalar functions, aggregate functions, date/time functions, math functions, window functions, and JSON/JSONB functions → See [Built-in Functions](reference/02-functions.md)
+**Built-in Functions**: Scalar functions, aggregate functions, date/time functions, math functions, window functions, and JSON/JSONB functions → [Built-in Functions](reference/02-functions.md)
 
-**C/C++ API**: Database connections, prepared statements, binding parameters, result extraction, error handling, and configuration → See [C/C++ API](reference/03-c-api.md)
+**C/C++ API**: Database connections, prepared statements, binding parameters, result extraction, error handling, and configuration → [C/C++ API](reference/03-c-api.md)
 
-**Transactions and Concurrency**: WAL mode, isolation levels, locking, savepoints, and multi-threaded usage → See [Transactions and Concurrency](reference/04-transactions-concurrency.md)
+**Transactions and Concurrency**: WAL mode, isolation levels, locking, savepoints, and multi-threaded usage → [Transactions and Concurrency](reference/04-transactions-concurrency.md)
 
-**FTS5 Full-Text Search**: Virtual table module for full-text indexing with tokenizers, prefix queries, BM25 ranking, and auxiliary functions → See [FTS5 Full-Text Search](reference/05-fts5.md)
+**FTS5 Full-Text Search**: Virtual table module for full-text indexing with tokenizers, prefix queries, BM25 ranking, and auxiliary functions → [FTS5 Full-Text Search](reference/05-fts5.md)
 
-**R-Tree Spatial Indexing**: Multi-dimensional range queries for geospatial and time-domain data with custom geometry callbacks → See [R-Tree Module](reference/06-rtree.md)
+**R-Tree Spatial Indexing**: Multi-dimensional range queries for geospatial and time-domain data with custom geometry callbacks → [R-Tree Module](reference/06-rtree.md)
 
-**Virtual Tables and Extensions**: Virtual table mechanism, table-valued functions, loadable extensions, CSV, DBSTAT, generate_series, CARRAY, Spellfix1, Zipfile, Percentile → See [Virtual Tables and Extensions](reference/07-virtual-tables-extensions.md)
+**Virtual Tables and Extensions**: Virtual table mechanism, table-valued functions, loadable extensions, CSV, DBSTAT, generate_series, CARRAY, Spellfix1, Zipfile, Percentile → [Virtual Tables and Extensions](reference/07-virtual-tables-extensions.md)
 
-**Sessions Extension**: Change capture, changesets and patchsets, conflict resolution, and database synchronization → See [Sessions Extension](reference/08-sessions.md)
+**Sessions Extension**: Change capture, changesets and patchsets, conflict resolution, and database synchronization → [Sessions Extension](reference/08-sessions.md)
 
-**Command-Line Interface**: Dot-commands, output formats, importing/exporting data, schema inspection, and scripting → See [Command-Line Interface](reference/09-cli.md)
+**Command-Line Interface**: Dot-commands, output formats, importing/exporting data, schema inspection, and scripting → [Command-Line Interface](reference/09-cli.md)
 
-**Performance and Limits**: Pragmas, compile-time options, implementation limits, memory-mapped I/O, partial indexes, and optimization → See [Performance and Limits](reference/10-performance-limits.md)
+**Performance and Limits**: Pragmas, compile-time options, implementation limits, memory-mapped I/O, partial indexes, and optimization → [Performance and Limits](reference/10-performance-limits.md)

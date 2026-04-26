@@ -120,13 +120,13 @@ print_stuck_specs_summary
 
 ## Advanced Topics
 
-**Manual Setup**: Directory structure, script downloads, constitution authoring → See [Manual Setup](reference/01-manual-setup.md)
+**Manual Setup**: Directory structure, script downloads, constitution authoring → [Manual Setup](reference/01-manual-setup.md)
 
-**Constitution Reference**: The single source of truth for agent behavior, with template and optional sections → See [Constitution Reference](reference/02-constitution-reference.md)
+**Constitution Reference**: The single source of truth for agent behavior, with template and optional sections → [Constitution Reference](reference/02-constitution-reference.md)
 
-**Loop Internals**: How ralph-loop.sh works — prompt generation, iteration cycle, completion detection, logging → See [Loop Internals](reference/03-loop-internals.md)
+**Loop Internals**: How ralph-loop.sh works — prompt generation, iteration cycle, completion detection, logging → [Loop Internals](reference/03-loop-internals.md)
 
-**Optional Features**: Telegram notifications, GitHub Issues integration, completion logs, audio alerts → See [Optional Features](reference/04-optional-features.md)
+**Optional Features**: Telegram notifications, GitHub Issues integration, completion logs, audio alerts → [Optional Features](reference/04-optional-features.md)
 
 ## Credits
 

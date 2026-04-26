@@ -129,16 +129,16 @@ The global `dayjs` function is available after loading. Day.js works in all mode
 
 ## Advanced Topics
 
-**Parsing**: Creating Day.js instances from strings, timestamps, Date objects, and more → See [Parsing](reference/01-parsing.md)
+**Parsing**: Creating Day.js instances from strings, timestamps, Date objects, and more → [Parsing](reference/01-parsing.md)
 
-**Get and Set**: Reading and writing individual date components with overloaded getters/setters → See [Get and Set](reference/02-get-set.md)
+**Get and Set**: Reading and writing individual date components with overloaded getters/setters → [Get and Set](reference/02-get-set.md)
 
-**Manipulation**: Adding, subtracting, start-of/end-of operations, and UTC conversion → See [Manipulation](reference/03-manipulation.md)
+**Manipulation**: Adding, subtracting, start-of/end-of operations, and UTC conversion → [Manipulation](reference/03-manipulation.md)
 
-**Display**: Formatting, relative time, calendar time, differences, and serialization → See [Display](reference/04-display.md)
+**Display**: Formatting, relative time, calendar time, differences, and serialization → [Display](reference/04-display.md)
 
-**Query**: Comparison methods for checking temporal relationships → See [Query](reference/05-query.md)
+**Query**: Comparison methods for checking temporal relationships → [Query](reference/05-query.md)
 
-**Internationalization (i18n)**: Loading locales, switching languages, and customization → See [Internationalization](reference/06-i18n.md)
+**Internationalization (i18n)**: Loading locales, switching languages, and customization → [Internationalization](reference/06-i18n.md)
 
-**Plugins**: Extending Day.js with 30+ official plugins including Duration, UTC, Timezone, and more → See [Plugins](reference/07-plugins.md)
+**Plugins**: Extending Day.js with 30+ official plugins including Duration, UTC, Timezone, and more → [Plugins](reference/07-plugins.md)

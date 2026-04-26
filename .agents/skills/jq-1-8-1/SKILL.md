@@ -112,12 +112,12 @@ jq -e '.status == "ok"' result.json && echo "passed" || echo "failed"
 
 ## Advanced Topics
 
-**CLI Options and Invocation**: Command-line flags, input/output modes, color configuration → See [CLI Reference](reference/01-cli-reference.md)
+**CLI Options and Invocation**: Command-line flags, input/output modes, color configuration → [CLI Reference](reference/01-cli-reference.md)
 
-**Basic Filters and Navigation**: Object/array access, iteration, comma, pipe, recursive descent → See [Filters and Navigation](reference/02-filters-navigation.md)
+**Basic Filters and Navigation**: Object/array access, iteration, comma, pipe, recursive descent → [Filters and Navigation](reference/02-filters-navigation.md)
 
-**Built-in Functions**: Type conversion, math, string operations, array/object functions, dates, regex → See [Built-in Functions](reference/03-built-in-functions.md)
+**Built-in Functions**: Type conversion, math, string operations, array/object functions, dates, regex → [Built-in Functions](reference/03-built-in-functions.md)
 
-**Advanced Features**: Variable binding, destructuring, function definition, reduce, foreach, generators → See [Advanced Features](reference/04-advanced-features.md)
+**Advanced Features**: Variable binding, destructuring, function definition, reduce, foreach, generators → [Advanced Features](reference/04-advanced-features.md)
 
-**Modules and I/O**: Module system, import/include, input/inputs, streaming parser, assignment operators → See [Modules and I/O](reference/05-modules-io.md)
+**Modules and I/O**: Module system, import/include, input/inputs, streaming parser, assignment operators → [Modules and I/O](reference/05-modules-io.md)

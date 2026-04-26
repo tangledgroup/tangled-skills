@@ -168,16 +168,16 @@ document.addEventListener('pinecone:fetch-error', (e) => console.error(e.detail)
 
 ## Advanced Topics
 
-**Route Matching & Parameters**: Named params, optional segments, wildcards, rest params, file extensions, and accessing `$params` → See [Route Matching](reference/01-route-matching.md)
+**Route Matching & Parameters**: Named params, optional segments, wildcards, rest params, file extensions, and accessing `$params` → [Route Matching](reference/01-route-matching.md)
 
-**Templates Deep Dive**: Inline templates, external templates, `.target`, `.preload`, `.interpolate` modifiers, embedded scripts with `x-run`, multiple root elements → See [Templates](reference/02-templates.md)
+**Templates Deep Dive**: Inline templates, external templates, `.target`, `.preload`, `.interpolate` modifiers, embedded scripts with `x-run`, multiple root elements → [Templates](reference/02-templates.md)
 
-**Handlers**: Route handlers, global handlers, async handlers with AbortController, data passing between handlers, handler chaining → See [Handlers](reference/03-handlers.md)
+**Handlers**: Route handlers, global handlers, async handlers with AbortController, data passing between handlers, handler chaining → [Handlers](reference/03-handlers.md)
 
-**Navigation History**: The `$history` magic helper, back/forward navigation, history entries, duplicate and redirect handling → See [Navigation History](reference/04-navigation-history.md)
+**Navigation History**: The `$history` magic helper, back/forward navigation, history entries, duplicate and redirect handling → [Navigation History](reference/04-navigation-history.md)
 
-**Configuration & Settings**: `basePath`, `hash` routing, `targetID`, `handleClicks`, `globalHandlers`, `preload`, `fetchOptions`, `pushState` → See [Settings](reference/05-settings.md)
+**Configuration & Settings**: `basePath`, `hash` routing, `targetID`, `handleClicks`, `globalHandlers`, `preload`, `fetchOptions`, `pushState` → [Settings](reference/05-settings.md)
 
-**Programmatic API**: Adding and removing routes with JavaScript, `PineconeRouter.add()`, `PineconeRouter.remove()`, `PineconeRouter.match()`, named routes → See [Programmatic API](reference/06-programmatic-api.md)
+**Programmatic API**: Adding and removing routes with JavaScript, `PineconeRouter.add()`, `PineconeRouter.remove()`, `PineconeRouter.match()`, named routes → [Programmatic API](reference/06-programmatic-api.md)
 
-**TypeScript Reference**: Full type definitions for `Handler`, `HandlerContext`, `Context`, `Route`, `Settings`, `NavigationHistory`, and Alpine magic helpers → See [TypeScript Types](reference/07-typescript-types.md)
+**TypeScript Reference**: Full type definitions for `Handler`, `HandlerContext`, `Context`, `Route`, `Settings`, `NavigationHistory`, and Alpine magic helpers → [TypeScript Types](reference/07-typescript-types.md)

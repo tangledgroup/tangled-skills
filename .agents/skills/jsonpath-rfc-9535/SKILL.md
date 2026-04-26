@@ -167,10 +167,10 @@ $[?value(@..color) == "red"]   → items where the unique descendant "color" is 
 
 ## Advanced Topics
 
-**Selectors**: Full semantics for all five selector types with syntax rules and examples → See [Selectors](reference/01-selectors.md)
+**Selectors**: Full semantics for all five selector types with syntax rules and examples → [Selectors](reference/01-selectors.md)
 
-**Function Extensions**: Type system, well-typedness rules, and all five built-in functions → See [Function Extensions](reference/02-function-extensions.md)
+**Function Extensions**: Type system, well-typedness rules, and all five built-in functions → [Function Extensions](reference/02-function-extensions.md)
 
-**Segments and Paths**: Child/descendant segment semantics, normalized paths, null handling → See [Segments and Paths](reference/03-segments-and-paths.md)
+**Segments and Paths**: Child/descendant segment semantics, normalized paths, null handling → [Segments and Paths](reference/03-segments-and-paths.md)
 
-**Comparison with JSON Pointer**: JSON Pointer (RFC 6901), XPath comparison, I-JSON constraints, I-Regexp → See [Comparison with JSON Pointer](reference/04-comparison-with-json-pointer.md)
+**Comparison with JSON Pointer**: JSON Pointer (RFC 6901), XPath comparison, I-JSON constraints, I-Regexp → [Comparison with JSON Pointer](reference/04-comparison-with-json-pointer.md)

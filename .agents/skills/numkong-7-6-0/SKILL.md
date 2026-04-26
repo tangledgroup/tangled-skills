@@ -122,7 +122,7 @@ See [include/README.md](https://github.com/ashvardanian/NumKong/blob/main/includ
 cargo add numkong
 ```
 
-Supports Linux, macOS, Windows. See [rust/README.md](https://github.com/ashvardanian/NumKong/blob/main/rust/README.md).
+Supports Linux, macOS, Windows → [rust/README.md](https://github.com/ashvardanian/NumKong/blob/main/rust/README.md).
 
 ### JavaScript
 
@@ -130,7 +130,7 @@ Supports Linux, macOS, Windows. See [rust/README.md](https://github.com/ashvarda
 npm install numkong
 ```
 
-Supports Node.js, Bun, Deno, and browsers. See [javascript/README.md](https://github.com/ashvardanian/NumKong/blob/main/javascript/README.md).
+Supports Node.js, Bun, Deno, and browsers → [javascript/README.md](https://github.com/ashvardanian/NumKong/blob/main/javascript/README.md).
 
 ### Swift / Go
 
@@ -266,14 +266,14 @@ view = nk.from_pointer(addr, (3, 4), 'float32', owner=t)
 
 ## Advanced Topics
 
-**Numeric Types and Precision**: Float64 through packed binary, widening rules, compensated summation, mini-floats → See [Numeric Types](reference/01-numeric-types.md)
+**Numeric Types and Precision**: Float64 through packed binary, widening rules, compensated summation, mini-floats → [Numeric Types](reference/01-numeric-types.md)
 
-**Vector Operations (Dot, Spatial, Set)**: Single-pair dot products, distances, and binary similarity → See [Vector Operations](reference/02-vector-operations.md)
+**Vector Operations (Dot, Spatial, Set)**: Single-pair dot products, distances, and binary similarity → [Vector Operations](reference/02-vector-operations.md)
 
-**Matrix Operations (Packed & Symmetric)**: GEMM-like packed reuse, SYRK-like symmetric kernels, MaxSim → See [Matrix Operations](reference/03-matrix-operations.md)
+**Matrix Operations (Packed & Symmetric)**: GEMM-like packed reuse, SYRK-like symmetric kernels, MaxSim → [Matrix Operations](reference/03-matrix-operations.md)
 
-**Specialized Metrics**: Probability divergences, geospatial, curved-space, mesh alignment, sparse → See [Specialized Metrics](reference/04-specialized-metrics.md)
+**Specialized Metrics**: Probability divergences, geospatial, curved-space, mesh alignment, sparse → [Specialized Metrics](reference/04-specialized-metrics.md)
 
-**Python SDK Deep Dive**: Tensor objects, buffer protocol, ml_dtypes interop, memory layout rules → See [Python SDK](reference/05-python-sdk.md)
+**Python SDK Deep Dive**: Tensor objects, buffer protocol, ml_dtypes interop, memory layout rules → [Python SDK](reference/05-python-sdk.md)
 
-**Performance and Architecture**: ISA dispatch, SIMD backends, AMX/SME tile kernels, Ozaki F64 scheme → See [Performance & Architecture](reference/06-performance-architecture.md)
+**Performance and Architecture**: ISA dispatch, SIMD backends, AMX/SME tile kernels, Ozaki F64 scheme → [Performance & Architecture](reference/06-performance-architecture.md)

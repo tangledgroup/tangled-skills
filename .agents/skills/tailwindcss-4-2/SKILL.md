@@ -245,8 +245,8 @@ Then use `font-display`, `bg-avocado-500`, and `shadow-float` as utility classes
 
 ## Advanced Topics
 
-**Functions and Directives**: Complete reference for `@theme`, `@layer`, `@utility`, `@variant`, `@custom-variant`, `@apply`, `@source` → See [Functions and Directives](reference/01-functions-and-directives.md)
+**Functions and Directives**: Complete reference for `@theme`, `@layer`, `@utility`, `@variant`, `@custom-variant`, `@apply`, `@source` → [Functions and Directives](reference/01-functions-and-directives.md)
 
-**Utility Reference**: Full listing of all utility categories — spacing, layout, typography, colors, backgrounds, borders, effects, filters, transforms, transitions, animations, interactivity, SVG, and accessibility → See [Utility Reference](reference/02-utility-reference.md)
+**Utility Reference**: Full listing of all utility categories — spacing, layout, typography, colors, backgrounds, borders, effects, filters, transforms, transitions, animations, interactivity, SVG, and accessibility → [Utility Reference](reference/02-utility-reference.md)
 
-**Migration from v3 to v4**: Breaking changes, config migration, PostCSS to Vite plugin, CLI package rename, color palette updates → See [Upgrade Guide](reference/03-upgrade-guide.md)
+**Migration from v3 to v4**: Breaking changes, config migration, PostCSS to Vite plugin, CLI package rename, color palette updates → [Upgrade Guide](reference/03-upgrade-guide.md)

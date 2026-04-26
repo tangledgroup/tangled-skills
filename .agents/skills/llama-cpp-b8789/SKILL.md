@@ -234,14 +234,14 @@ llama-server -m text-model.gguf --mmproj mmproj.gguf
 
 ## Advanced Topics
 
-**Building and Backends**: CUDA, Metal, HIP, Vulkan, SYCL, CANN, ZenDNN, KleidiAI, OpenVINO build configurations and runtime tuning → See [Building and Backends](reference/01-building-backends.md)
+**Building and Backends**: CUDA, Metal, HIP, Vulkan, SYCL, CANN, ZenDNN, KleidiAI, OpenVINO build configurations and runtime tuning → [Building and Backends](reference/01-building-backends.md)
 
-**Model Quantization**: Quantization formats (Q4_K_M, Q8_0, IQ2_XS, etc.), importance matrices, quality vs size tradeoffs, perplexity measurement → See [Model Quantization](reference/02-model-quantization.md)
+**Model Quantization**: Quantization formats (Q4_K_M, Q8_0, IQ2_XS, etc.), importance matrices, quality vs size tradeoffs, perplexity measurement → [Model Quantization](reference/02-model-quantization.md)
 
-**Server API Reference**: OpenAI-compatible endpoints (`/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`), router mode, multimodal, function calling, streaming → See [Server API Reference](reference/03-server-api-reference.md)
+**Server API Reference**: OpenAI-compatible endpoints (`/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`), router mode, multimodal, function calling, streaming → [Server API Reference](reference/03-server-api-reference.md)
 
-**Multimodal and Speculative Decoding**: Vision/audio models, libmtmd integration, draft model decoding, n-gram speculation, performance tuning → See [Multimodal and Speculative Decoding](reference/04-multimodal-speculative.md)
+**Multimodal and Speculative Decoding**: Vision/audio models, libmtmd integration, draft model decoding, n-gram speculation, performance tuning → [Multimodal and Speculative Decoding](reference/04-multimodal-speculative.md)
 
-**Grammar-Constrained Generation**: GBNF grammar format, JSON schema to grammar conversion, structured output patterns, LLGuidance integration → See [Grammar-Constrained Generation](reference/05-grammar-constrained-generation.md)
+**Grammar-Constrained Generation**: GBNF grammar format, JSON schema to grammar conversion, structured output patterns, LLGuidance integration → [Grammar-Constrained Generation](reference/05-grammar-constrained-generation.md)
 
-**libllama C API**: Core data structures (`llama_model`, `llama_context`), context management, batch decoding, sampler chains, LoRA adapters, KV cache → See [libllama C API](reference/06-libllama-api.md)
+**libllama C API**: Core data structures (`llama_model`, `llama_context`), context management, batch decoding, sampler chains, LoRA adapters, KV cache → [libllama C API](reference/06-libllama-api.md)

@@ -171,14 +171,14 @@ Available waiters can be listed via `client.waiter_names`.
 
 ## Advanced Topics
 
-**Credentials and Authentication**: Credential chain, profiles, IAM roles, SSO, web identity, and environment variables → See [Credentials and Authentication](reference/01-credentials-authentication.md)
+**Credentials and Authentication**: Credential chain, profiles, IAM roles, SSO, web identity, and environment variables → [Credentials and Authentication](reference/01-credentials-authentication.md)
 
-**Configuration and Client Options**: Config objects, retry modes, proxies, timeouts, dual-stack, FIPS endpoints, and client context parameters → See [Configuration and Client Options](reference/02-configuration-options.md)
+**Configuration and Client Options**: Config objects, retry modes, proxies, timeouts, dual-stack, FIPS endpoints, and client context parameters → [Configuration and Client Options](reference/02-configuration-options.md)
 
-**S3 Operations**: Managed transfers, multipart uploads, presigned URLs, transfer configuration, S3 control, and S3 Express → See [S3 Operations](reference/03-s3-operations.md)
+**S3 Operations**: Managed transfers, multipart uploads, presigned URLs, transfer configuration, S3 control, and S3 Express → [S3 Operations](reference/03-s3-operations.md)
 
-**Error Handling and Retries**: Botocore exceptions, service exceptions, retry modes (legacy/standard/adaptive), and error parsing → See [Error Handling and Retries](reference/04-error-handling-retries.md)
+**Error Handling and Retries**: Botocore exceptions, service exceptions, retry modes (legacy/standard/adaptive), and error parsing → [Error Handling and Retries](reference/04-error-handling-retries.md)
 
-**Common Service Patterns**: EC2 instance management, Lambda deployment, DynamoDB operations, SQS messaging, CloudWatch monitoring, and IAM administration → See [Common Service Patterns](reference/05-common-service-patterns.md)
+**Common Service Patterns**: EC2 instance management, Lambda deployment, DynamoDB operations, SQS messaging, CloudWatch monitoring, and IAM administration → [Common Service Patterns](reference/05-common-service-patterns.md)
 
-**Advanced Patterns**: Async clients, custom events, extensibility hooks, STS assume role, and cross-account access → See [Advanced Patterns](reference/06-advanced-patterns.md)
+**Advanced Patterns**: Async clients, custom events, extensibility hooks, STS assume role, and cross-account access → [Advanced Patterns](reference/06-advanced-patterns.md)

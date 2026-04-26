@@ -143,8 +143,8 @@ Then add component-specific CSS and JS as needed.
 
 ## Advanced Topics
 
-**All Components**: Typography, accordion, alert, avatar, badge, breadcrumb, button, card, dialog, dropdown, form elements, meter, pagination, progress, spinner, skeleton, sidebar, switch, table, tabs, tooltip, toast, grid → See [Components Reference](reference/01-components.md)
+**All Components**: Typography, accordion, alert, avatar, badge, breadcrumb, button, card, dialog, dropdown, form elements, meter, pagination, progress, spinner, skeleton, sidebar, switch, table, tabs, tooltip, toast, grid → [Components Reference](reference/01-components.md)
 
-**CSS Variables and Theming**: Complete variable reference, dark mode setup, custom themes → See [Theming Reference](reference/02-theming.md)
+**CSS Variables and Theming**: Complete variable reference, dark mode setup, custom themes → [Theming Reference](reference/02-theming.md)
 
-**JavaScript API and Extensions**: Toast API, WebComponent details, third-party extensions → See [JS API and Extensions](reference/03-js-api-extensions.md)
+**JavaScript API and Extensions**: Toast API, WebComponent details, third-party extensions → [JS API and Extensions](reference/03-js-api-extensions.md)

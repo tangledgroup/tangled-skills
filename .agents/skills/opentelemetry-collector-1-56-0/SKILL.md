@@ -324,8 +324,7 @@ lifecycle, data flow, and fan-out semantics → See
 [Architecture and Pipelines](reference/01-architecture-and-pipelines.md)
 
 **Configuration Reference**: Complete configuration guide covering TLS/mTLS,
-environment variables, proxy support, authentication, and config providers →
-See [Configuration Reference](reference/02-configuration-reference.md)
+environment variables, proxy support, authentication, and config providers → [Configuration Reference](reference/02-configuration-reference.md)
 
 **Deployment Patterns**: Agent, gateway, agent-to-gateway, and multi-backend
 deployment strategies with trade-offs → See

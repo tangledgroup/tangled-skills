@@ -187,16 +187,16 @@ lib.library_function(lib.my_callback)
 
 ## Advanced Topics
 
-**ABI vs API Mode**: Detailed comparison of the two operational modes, when to choose each, and the `...` ellipsis syntax → See [ABI vs API Mode](reference/01-abi-vs-api-mode.md)
+**ABI vs API Mode**: Detailed comparison of the two operational modes, when to choose each, and the `...` ellipsis syntax → [ABI vs API Mode](reference/01-abi-vs-api-mode.md)
 
-**Working with Pointers, Structs, and Arrays**: Memory allocation with `ffi.new()`, casting, buffer access, pointer arithmetic, struct field access, array slicing, and FILE* handling → See [Pointers, Structs & Arrays](reference/02-pointers-structs-arrays.md)
+**Working with Pointers, Structs, and Arrays**: Memory allocation with `ffi.new()`, casting, buffer access, pointer arithmetic, struct field access, array slicing, and FILE* handling → [Pointers, Structs & Arrays](reference/02-pointers-structs-arrays.md)
 
-**Callbacks and extern "Python"**: New-style callbacks with `extern "Python"` / `@ffi.def_extern()`, old-style `ffi.callback()`, void* userdata patterns, error handling with `onerror`, and Windows calling conventions → See [Callbacks](reference/03-callbacks.md)
+**Callbacks and extern "Python"**: New-style callbacks with `extern "Python"` / `@ffi.def_extern()`, old-style `ffi.callback()`, void* userdata patterns, error handling with `onerror`, and Windows calling conventions → [Callbacks](reference/03-callbacks.md)
 
-**Preparing and Distributing Modules**: `cdef()` syntax details, `set_source()` parameters, `dlopen()`, setuptools integration, combining interfaces with `include()`, and cdef limitations → See [Module Preparation](reference/04-module-preparation.md)
+**Preparing and Distributing Modules**: `cdef()` syntax details, `set_source()` parameters, `dlopen()`, setuptools integration, combining interfaces with `include()`, and cdef limitations → [Module Preparation](reference/04-module-preparation.md)
 
-**Embedding Python in C Applications**: Creating shared libraries from Python code, `embedding_api()`, `embedding_init_code()`, multithreading, multiple DLLs, testing, and troubleshooting → See [Embedding](reference/05-embedding.md)
+**Embedding Python in C Applications**: Creating shared libraries from Python code, `embedding_api()`, `embedding_init_code()`, multithreading, multiple DLLs, testing, and troubleshooting → [Embedding](reference/05-embedding.md)
 
-**FFI API Reference**: Complete reference for `ffi.new()`, `ffi.cast()`, `ffi.string()`, `ffi.buffer()`, `ffi.from_buffer()`, `ffi.gc()`, `ffi.sizeof()`, `ffi.typeof()`, `ffi.addressof()`, `ffi.new_allocator()`, `ffi.release()`, `ffi.init_once()`, type conversions, and thread safety → See [FFI API Reference](reference/06-ffi-api-reference.md)
+**FFI API Reference**: Complete reference for `ffi.new()`, `ffi.cast()`, `ffi.string()`, `ffi.buffer()`, `ffi.from_buffer()`, `ffi.gc()`, `ffi.sizeof()`, `ffi.typeof()`, `ffi.addressof()`, `ffi.new_allocator()`, `ffi.release()`, `ffi.init_once()`, type conversions, and thread safety → [FFI API Reference](reference/06-ffi-api-reference.md)
 
-**v2.0.0 Changes**: Free-threaded CPython support, Python 3.14 compatibility, dropped 3.8 support, and migration notes → See [What's New in 2.0.0](reference/07-whats-new-2-0-0.md)
+**v2.0.0 Changes**: Free-threaded CPython support, Python 3.14 compatibility, dropped 3.8 support, and migration notes → [What's New in 2.0.0](reference/07-whats-new-2-0-0.md)

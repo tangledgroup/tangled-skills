@@ -70,18 +70,18 @@ Caddy's native configuration is a JSON document, but the Caddyfile config adapte
 
 ## Advanced Topics
 
-**Caddyfile Reference**: Structure, blocks, directives, matchers, placeholders, snippets, and named routes → See [Caddyfile Reference](reference/01-caddyfile-reference.md)
+**Caddyfile Reference**: Structure, blocks, directives, matchers, placeholders, snippets, and named routes → [Caddyfile Reference](reference/01-caddyfile-reference.md)
 
-**Global Options**: Server-wide settings for admin API, logging, TLS, storage, metrics, PKI, and more → See [Global Options](reference/02-global-options.md)
+**Global Options**: Server-wide settings for admin API, logging, TLS, storage, metrics, PKI, and more → [Global Options](reference/02-global-options.md)
 
-**Directives**: Complete reference of all standard Caddyfile directives with syntax and examples → See [Directives Reference](reference/03-directives-reference.md)
+**Directives**: Complete reference of all standard Caddyfile directives with syntax and examples → [Directives Reference](reference/03-directives-reference.md)
 
-**Request Matchers**: Path, method, header, query, remote IP, protocol, and expression matchers → See [Request Matchers](reference/04-request-matchers.md)
+**Request Matchers**: Path, method, header, query, remote IP, protocol, and expression matchers → [Request Matchers](reference/04-request-matchers.md)
 
-**Command Line**: CLI subcommands for running, reloading, adapting, validating, and managing Caddy → See [Command Line Reference](reference/05-command-line.md)
+**Command Line**: CLI subcommands for running, reloading, adapting, validating, and managing Caddy → [Command Line Reference](reference/05-command-line.md)
 
-**Admin API**: RESTful endpoints for dynamic configuration with zero-downtime reloads → See [Admin API Reference](reference/06-admin-api.md)
+**Admin API**: RESTful endpoints for dynamic configuration with zero-downtime reloads → [Admin API Reference](reference/06-admin-api.md)
 
-**Automatic HTTPS**: Certificate management, ACME challenges, local CA, wildcard certs, ECH, on-demand TLS → See [Automatic HTTPS](reference/07-automatic-https.md)
+**Automatic HTTPS**: Certificate management, ACME challenges, local CA, wildcard certs, ECH, on-demand TLS → [Automatic HTTPS](reference/07-automatic-https.md)
 
-**Architecture and Operations**: Module lifecycle, config management, logging, metrics, service deployment → See [Architecture and Operations](reference/08-architecture-operations.md)
+**Architecture and Operations**: Module lifecycle, config management, logging, metrics, service deployment → [Architecture and Operations](reference/08-architecture-operations.md)

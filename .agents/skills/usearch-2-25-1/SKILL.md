@@ -145,16 +145,16 @@ let results = index.search(&vec, 10).unwrap();
 
 ## Advanced Topics
 
-**Python SDK**: Full API reference with batch operations, clustering, serialization, and JIT metrics → See [Python SDK](reference/01-python-sdk.md)
+**Python SDK**: Full API reference with batch operations, clustering, serialization, and JIT metrics → [Python SDK](reference/01-python-sdk.md)
 
-**C++ SDK**: Header-only interface, multi-threading executors, error handling, low-level templates → See [C++ SDK](reference/02-cpp-sdk.md)
+**C++ SDK**: Header-only interface, multi-threading executors, error handling, low-level templates → [C++ SDK](reference/02-cpp-sdk.md)
 
-**Rust SDK**: Native bindings with custom metrics, filtering predicates, and quantization types → See [Rust SDK](reference/03-rust-sdk.md)
+**Rust SDK**: Native bindings with custom metrics, filtering predicates, and quantization types → [Rust SDK](reference/03-rust-sdk.md)
 
-**Distance Metrics**: Built-in metrics, user-defined metrics via Numba/Cppyy/PeachPy, binary and geospatial metrics → See [Distance Metrics](reference/04-distance-metrics.md)
+**Distance Metrics**: Built-in metrics, user-defined metrics via Numba/Cppyy/PeachPy, binary and geospatial metrics → [Distance Metrics](reference/04-distance-metrics.md)
 
-**Quantization and Memory**: dtype options, NumKong interop, uint40_t keys, disk serving with memory mapping → See [Quantization and Memory](reference/05-quantization-memory.md)
+**Quantization and Memory**: dtype options, NumKong interop, uint40_t keys, disk serving with memory mapping → [Quantization and Memory](reference/05-quantization-memory.md)
 
-**Clustering and Joins**: KNN clustering, sub-clustering, semantic joins via stable marriage algorithm → See [Clustering and Joins](reference/06-clustering-joins.md)
+**Clustering and Joins**: KNN clustering, sub-clustering, semantic joins via stable marriage algorithm → [Clustering and Joins](reference/06-clustering-joins.md)
 
-**Integrations and File Format**: Database integrations (ClickHouse, DuckDB, ScyllaDB), file format specification → See [Integrations and File Format](reference/07-integrations-format.md)
+**Integrations and File Format**: Database integrations (ClickHouse, DuckDB, ScyllaDB), file format specification → [Integrations and File Format](reference/07-integrations-format.md)

@@ -141,12 +141,12 @@ podman-compose exec db psql -U postgres
 
 ## Advanced Topics
 
-**Compose Specification**: Top-level elements, service configuration, networks, volumes, configs, and secrets → See [Compose Specification](reference/01-compose-specification.md)
+**Compose Specification**: Top-level elements, service configuration, networks, volumes, configs, and secrets → [Compose Specification](reference/01-compose-specification.md)
 
-**Podman Compose Commands**: Complete reference of all supported CLI commands with flags and options → See [Commands Reference](reference/02-commands-reference.md)
+**Podman Compose Commands**: Complete reference of all supported CLI commands with flags and options → [Commands Reference](reference/02-commands-reference.md)
 
-**Service Configuration**: Detailed service-level settings including build, deploy, environment, ports, volumes, healthchecks, and dependencies → See [Service Configuration](reference/03-service-configuration.md)
+**Service Configuration**: Detailed service-level settings including build, deploy, environment, ports, volumes, healthchecks, and dependencies → [Service Configuration](reference/03-service-configuration.md)
 
-**Environment and Variables**: Variable interpolation, env_file handling, dotenv integration, and override files → See [Environment and Variables](reference/04-environment-and-variables.md)
+**Environment and Variables**: Variable interpolation, env_file handling, dotenv integration, and override files → [Environment and Variables](reference/04-environment-and-variables.md)
 
-**Advanced Patterns**: Profiles, extends, fragments, multi-compose merge, systemd generation, and migration from docker-compose → See [Advanced Patterns](reference/05-advanced-patterns.md)
+**Advanced Patterns**: Profiles, extends, fragments, multi-compose merge, systemd generation, and migration from docker-compose → [Advanced Patterns](reference/05-advanced-patterns.md)

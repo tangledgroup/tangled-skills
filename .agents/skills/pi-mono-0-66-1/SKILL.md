@@ -54,16 +54,16 @@ Install via npm: `npm install -g @mariozechner/pi-coding-agent`. Authenticate wi
 
 ## Advanced Topics
 
-**Architecture & Monorepo Structure**: Package layout, build system, path resolution → See [Architecture](reference/01-architecture.md)
+**Architecture & Monorepo Structure**: Package layout, build system, path resolution → [Architecture](reference/01-architecture.md)
 
-**Extensions System**: Tool registration, event hooks, custom UI, state management, rendering → See [Extensions](reference/02-extensions.md)
+**Extensions System**: Tool registration, event hooks, custom UI, state management, rendering → [Extensions](reference/02-extensions.md)
 
-**Session Management**: JSONL format, tree structure, branching, compaction, fork/clone → See [Sessions](reference/03-sessions.md)
+**Session Management**: JSONL format, tree structure, branching, compaction, fork/clone → [Sessions](reference/03-sessions.md)
 
-**Providers & Models**: Built-in providers, custom models.json, OAuth, API types, compat flags → See [Providers](reference/04-providers.md)
+**Providers & Models**: Built-in providers, custom models.json, OAuth, API types, compat flags → [Providers](reference/04-providers.md)
 
-**TUI Components**: Component interface, built-in components, theming, overlays, patterns → See [TUI](reference/05-tui.md)
+**TUI Components**: Component interface, built-in components, theming, overlays, patterns → [TUI](reference/05-tui.md)
 
-**SDK & RPC**: Programmatic embedding, AgentSession, RPC protocol, event streaming → See [SDK and RPC](reference/06-sdk-rpc.md)
+**SDK & RPC**: Programmatic embedding, AgentSession, RPC protocol, event streaming → [SDK and RPC](reference/06-sdk-rpc.md)
 
-**Settings, Keybindings & Packages**: Configuration files, resource loading, package management → See [Configuration](reference/07-configuration.md)
+**Settings, Keybindings & Packages**: Configuration files, resource loading, package management → [Configuration](reference/07-configuration.md)

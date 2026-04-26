@@ -179,28 +179,28 @@ source .venv/bin/activate
 
 ## Advanced Topics
 
-**Project Structure and Files**: pyproject.toml, lockfiles, virtual environments → See [Projects](reference/01-projects.md)
+**Project Structure and Files**: pyproject.toml, lockfiles, virtual environments → [Projects](reference/01-projects.md)
 
-**Managing Dependencies**: Adding, removing, platform-specific deps, extras, dependency groups → See [Dependencies](reference/02-dependencies.md)
+**Managing Dependencies**: Adding, removing, platform-specific deps, extras, dependency groups → [Dependencies](reference/02-dependencies.md)
 
-**Locking and Syncing**: Lockfile management, upgrades, export formats, partial installations → See [Locking and Syncing](reference/03-locking-syncing.md)
+**Locking and Syncing**: Lockfile management, upgrades, export formats, partial installations → [Locking and Syncing](reference/03-locking-syncing.md)
 
-**Running Commands**: uv run, additional dependencies per invocation, scripts, signal handling → See [Running Commands](reference/04-running-commands.md)
+**Running Commands**: uv run, additional dependencies per invocation, scripts, signal handling → [Running Commands](reference/04-running-commands.md)
 
-**Workspaces**: Multi-package monorepos, shared lockfiles, workspace sources → See [Workspaces](reference/05-workspaces.md)
+**Workspaces**: Multi-package monorepos, shared lockfiles, workspace sources → [Workspaces](reference/05-workspaces.md)
 
-**Tools Interface**: uvx, tool install/upgrade, tool environments, per-invocation deps → See [Tools](reference/06-tools.md)
+**Tools Interface**: uvx, tool install/upgrade, tool environments, per-invocation deps → [Tools](reference/06-tools.md)
 
-**Python Version Management**: Managed vs system Python, .python-version files, installation → See [Python Versions](reference/07-python-versions.md)
+**Python Version Management**: Managed vs system Python, .python-version files, installation → [Python Versions](reference/07-python-versions.md)
 
-**Configuration Files**: pyproject.toml, uv.toml, environment variables, dotenv support → See [Configuration](reference/08-configuration.md)
+**Configuration Files**: pyproject.toml, uv.toml, environment variables, dotenv support → [Configuration](reference/08-configuration.md)
 
-**Package Indexes**: Private indexes, authentication, index strategies, pinning → See [Package Indexes](reference/09-indexes.md)
+**Package Indexes**: Private indexes, authentication, index strategies, pinning → [Package Indexes](reference/09-indexes.md)
 
-**Caching**: Cache semantics, clearing, CI caching, dynamic metadata → See [Caching](reference/10-caching.md)
+**Caching**: Cache semantics, clearing, CI caching, dynamic metadata → [Caching](reference/10-caching.md)
 
-**The pip Interface**: uv pip install/compile/sync, environments, compatibility → See [pip Interface](reference/11-pip-interface.md)
+**The pip Interface**: uv pip install/compile/sync, environments, compatibility → [pip Interface](reference/11-pip-interface.md)
 
-**Building and Publishing**: uv build, uv publish, distribution formats → See [Build and Publish](reference/12-build-publish.md)
+**Building and Publishing**: uv build, uv publish, distribution formats → [Build and Publish](reference/12-build-publish.md)
 
-**CLI Reference**: Command summary, common options, flags → See [CLI Reference](reference/13-cli-reference.md)
+**CLI Reference**: Command summary, common options, flags → [CLI Reference](reference/13-cli-reference.md)

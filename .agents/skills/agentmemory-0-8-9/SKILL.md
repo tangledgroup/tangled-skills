@@ -173,14 +173,14 @@ Add to your agent's MCP config (most agents):
 
 ## Advanced Topics
 
-**Memory Pipeline and Architecture**: Deep dive into the capture-compress-index-retrieve pipeline, iii-engine primitives, and system architecture → See [Memory Pipeline & Architecture](reference/01-memory-pipeline.md)
+**Memory Pipeline and Architecture**: Deep dive into the capture-compress-index-retrieve pipeline, iii-engine primitives, and system architecture → [Memory Pipeline & Architecture](reference/01-memory-pipeline.md)
 
-**MCP Tools Reference**: All 43 MCP tools with parameters, behavior, and usage patterns → See [MCP Tools Reference](reference/02-mcp-tools.md)
+**MCP Tools Reference**: All 43 MCP tools with parameters, behavior, and usage patterns → [MCP Tools Reference](reference/02-mcp-tools.md)
 
-**REST API Reference**: 109 REST endpoints for programmatic memory access → See [REST API Reference](reference/03-rest-api.md)
+**REST API Reference**: 109 REST endpoints for programmatic memory access → [REST API Reference](reference/03-rest-api.md)
 
-**Configuration and Embedding Providers**: LLM providers, embedding backends, environment variables, and search tuning → See [Configuration & Providers](reference/04-configuration.md)
+**Configuration and Embedding Providers**: LLM providers, embedding backends, environment variables, and search tuning → [Configuration & Providers](reference/04-configuration.md)
 
-**Multi-Agent Coordination**: Leases, signals, actions, routines, checkpoints, mesh sync, sentinels, and team memory → See [Multi-Agent Coordination](reference/05-multi-agent.md)
+**Multi-Agent Coordination**: Leases, signals, actions, routines, checkpoints, mesh sync, sentinels, and team memory → [Multi-Agent Coordination](reference/05-multi-agent.md)
 
-**Memory Governance**: Auto-forgetting, retention scoring, decay curves, consolidation pipeline, and citation provenance → See [Memory Governance](reference/06-governance.md)
+**Memory Governance**: Auto-forgetting, retention scoring, decay curves, consolidation pipeline, and citation provenance → [Memory Governance](reference/06-governance.md)

@@ -176,16 +176,16 @@ npx esbuild --bundle app.css --outfile=dist/bundle.css
 
 ## Advanced Topics
 
-**CLI Reference**: Flags, forms, and command-line usage patterns → See [CLI Reference](reference/01-cli-reference.md)
+**CLI Reference**: Flags, forms, and command-line usage patterns → [CLI Reference](reference/01-cli-reference.md)
 
-**JavaScript API**: Async/sync APIs, build context, watch/serve/rebuild modes → See [JavaScript API](reference/02-javascript-api.md)
+**JavaScript API**: Async/sync APIs, build context, watch/serve/rebuild modes → [JavaScript API](reference/02-javascript-api.md)
 
-**Go API**: Package structure, BuildOptions, TransformOptions, and incremental builds → See [Go API](reference/03-go-api.md)
+**Go API**: Package structure, BuildOptions, TransformOptions, and incremental builds → [Go API](reference/03-go-api.md)
 
-**Build Options Reference**: Complete documentation of all build and transform options organized by category → See [Build Options](reference/04-build-options.md)
+**Build Options Reference**: Complete documentation of all build and transform options organized by category → [Build Options](reference/04-build-options.md)
 
-**Content Types and Loaders**: JavaScript, TypeScript, JSX, JSON, CSS, text, binary, base64, data URL, external file, empty file → See [Content Types](reference/05-content-types.md)
+**Content Types and Loaders**: JavaScript, TypeScript, JSX, JSON, CSS, text, binary, base64, data URL, external file, empty file → [Content Types](reference/05-content-types.md)
 
-**Plugin System**: onResolve, onLoad, onStart, onEnd, onDispose callbacks with namespaces and filters → See [Plugin System](reference/06-plugin-system.md)
+**Plugin System**: onResolve, onLoad, onStart, onEnd, onDispose callbacks with namespaces and filters → [Plugin System](reference/06-plugin-system.md)
 
-**Incremental Builds and Live Reload**: Watch mode, serve mode, rebuild API, live reload via SSE, CSS hot-reload → See [Incremental Builds](reference/07-incremental-builds.md)
+**Incremental Builds and Live Reload**: Watch mode, serve mode, rebuild API, live reload via SSE, CSS hot-reload → [Incremental Builds](reference/07-incremental-builds.md)

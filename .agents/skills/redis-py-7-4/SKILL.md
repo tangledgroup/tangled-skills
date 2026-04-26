@@ -69,26 +69,26 @@ Key capabilities:
 
 ## Advanced Topics
 
-**Connecting to Redis**: Connection methods, URL schemes, SSL/TLS, credential providers, connection pools → See [Connecting to Redis](reference/01-connecting-to-redis.md)
+**Connecting to Redis**: Connection methods, URL schemes, SSL/TLS, credential providers, connection pools → [Connecting to Redis](reference/01-connecting-to-redis.md)
 
-**Async Support**: Asyncio client patterns, async pipelines, pub/sub, and connection lifecycle → See [Async Support](reference/02-async-support.md)
+**Async Support**: Asyncio client patterns, async pipelines, pub/sub, and connection lifecycle → [Async Support](reference/02-async-support.md)
 
-**Cluster Mode**: Redis Cluster client, target nodes, cluster pipelines, and multi-key commands → See [Cluster Mode](reference/03-cluster-mode.md)
+**Cluster Mode**: Redis Cluster client, target nodes, cluster pipelines, and multi-key commands → [Cluster Mode](reference/03-cluster-mode.md)
 
-**Pipelines and Transactions**: Command batching, WATCH/MULTI/EXEC patterns, and the transaction helper → See [Pipelines and Transactions](reference/04-pipelines-and-transactions.md)
+**Pipelines and Transactions**: Command batching, WATCH/MULTI/EXEC patterns, and the transaction helper → [Pipelines and Transactions](reference/04-pipelines-and-transactions.md)
 
-**Pub/Sub and Streams**: Channel subscription, pattern matching, stream operations, and consumer groups → See [Pub/Sub and Streams](reference/05-pubsub-and-streams.md)
+**Pub/Sub and Streams**: Channel subscription, pattern matching, stream operations, and consumer groups → [Pub/Sub and Streams](reference/05-pubsub-and-streams.md)
 
-**Lua Scripting**: Script registration, EVAL/EVALSHA, pipeline integration, and cluster limitations → See [Lua Scripting](reference/06-lua-scripting.md)
+**Lua Scripting**: Script registration, EVAL/EVALSHA, pipeline integration, and cluster limitations → [Lua Scripting](reference/06-lua-scripting.md)
 
-**Distributed Locking**: The `Lock` class, acquire/release patterns, extension, and ownership checks → See [Distributed Locking](reference/07-distributed-locking.md)
+**Distributed Locking**: The `Lock` class, acquire/release patterns, extension, and ownership checks → [Distributed Locking](reference/07-distributed-locking.md)
 
-**Retry and Backoff**: Retry strategies, backoff algorithms, cluster retry behavior → See [Retry and Backoff](reference/08-retry-and-backoff.md)
+**Retry and Backoff**: Retry strategies, backoff algorithms, cluster retry behavior → [Retry and Backoff](reference/08-retry-and-backoff.md)
 
-**RESP3 Features**: Push notifications, client-side caching, response unification → See [RESP3 Features](reference/09-resp3-features.md)
+**RESP3 Features**: Push notifications, client-side caching, response unification → [RESP3 Features](reference/09-resp3-features.md)
 
-**OpenTelemetry Integration**: Native metrics collection, OTelConfig, metric groups → See [OpenTelemetry Integration](reference/10-opentelemetry.md)
+**OpenTelemetry Integration**: Native metrics collection, OTelConfig, metric groups → [OpenTelemetry Integration](reference/10-opentelemetry.md)
 
-**Redis Modules**: Bloom/Cuckoo filters, JSON, Search, TimeSeries commands → See [Redis Modules](reference/11-redis-modules.md)
+**Redis Modules**: Bloom/Cuckoo filters, JSON, Search, TimeSeries commands → [Redis Modules](reference/11-redis-modules.md)
 
-**Exceptions**: Error types, cluster-specific errors, and handling patterns → See [Exceptions](reference/12-exceptions.md)
+**Exceptions**: Error types, cluster-specific errors, and handling patterns → [Exceptions](reference/12-exceptions.md)

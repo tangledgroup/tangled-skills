@@ -203,10 +203,10 @@ tokenizer = Tokenizer.from_pretrained("bert-base-uncased")
 
 ## Advanced Topics
 
-**Tokenization Pipeline**: Normalization, pre-tokenization, model, and post-processing in detail with the BERT-from-scratch example → See [Tokenization Pipeline](reference/01-pipeline.md)
+**Tokenization Pipeline**: Normalization, pre-tokenization, model, and post-processing in detail with the BERT-from-scratch example → [Tokenization Pipeline](reference/01-pipeline.md)
 
-**Models Reference**: BPE, WordPiece, Unigram, and WordLevel — parameters, behavior, and training algorithms → See [Models Reference](reference/02-models.md)
+**Models Reference**: BPE, WordPiece, Unigram, and WordLevel — parameters, behavior, and training algorithms → [Models Reference](reference/02-models.md)
 
-**Components Reference**: Normalizers, pre-tokenizers, post-processors, decoders, trainers, and added tokens → See [Components Reference](reference/03-components.md)
+**Components Reference**: Normalizers, pre-tokenizers, post-processors, decoders, trainers, and added tokens → [Components Reference](reference/03-components.md)
 
-**API Reference**: Tokenizer class methods, Encoding object attributes, input types, padding/truncation, batch operations, and the visualizer tool → See [API Reference](reference/04-api-reference.md)
+**API Reference**: Tokenizer class methods, Encoding object attributes, input types, padding/truncation, batch operations, and the visualizer tool → [API Reference](reference/04-api-reference.md)

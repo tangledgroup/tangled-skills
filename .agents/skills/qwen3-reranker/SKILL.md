@@ -140,13 +140,13 @@ Requires `transformers>=4.51.0` (earlier versions raise `KeyError: 'qwen3'`).
 
 ## Advanced Topics
 
-**Architecture and Training**: Cross-encoder design, LoRA fine-tuning, training pipeline details → See [Architecture and Training](reference/01-architecture-and-training.md)
+**Architecture and Training**: Cross-encoder design, LoRA fine-tuning, training pipeline details → [Architecture and Training](reference/01-architecture-and-training.md)
 
-**Benchmark Results**: MTEB-R, CMTEB-R, MMTEB-R, MLDR, MTEB-Code, FollowIR scores with comparisons → See [Benchmark Results](reference/02-benchmark-results.md)
+**Benchmark Results**: MTEB-R, CMTEB-R, MMTEB-R, MLDR, MTEB-Code, FollowIR scores with comparisons → [Benchmark Results](reference/02-benchmark-results.md)
 
-**vLLM Deployment**: High-throughput serving with vLLM, prefix caching, tensor parallelism → See [vLLM Deployment](reference/03-vllm-deployment.md)
+**vLLM Deployment**: High-throughput serving with vLLM, prefix caching, tensor parallelism → [vLLM Deployment](reference/03-vllm-deployment.md)
 
-**Multilingual Support**: 100+ supported languages, cross-lingual retrieval, code search capabilities → See [Multilingual Support](reference/04-multilingual-support.md)
+**Multilingual Support**: 100+ supported languages, cross-lingual retrieval, code search capabilities → [Multilingual Support](reference/04-multilingual-support.md)
 
 ## Best Practices
 

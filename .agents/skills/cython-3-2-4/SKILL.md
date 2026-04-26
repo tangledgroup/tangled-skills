@@ -158,16 +158,16 @@ def compute_angle(double x, double y):
 
 ## Advanced Topics
 
-**Language Basics**: Data types, `cdef`/`cpdef`, structs, unions, enums, pointers, ctuples → See [Language Basics](reference/01-language-basics.md)
+**Language Basics**: Data types, `cdef`/`cpdef`, structs, unions, enums, pointers, ctuples → [Language Basics](reference/01-language-basics.md)
 
-**Typed Memoryviews**: Efficient NumPy array access without GIL, slicing, strides, C/Fortran contiguity → See [Typed Memoryviews](reference/02-memoryviews.md)
+**Typed Memoryviews**: Efficient NumPy array access without GIL, slicing, strides, C/Fortran contiguity → [Typed Memoryviews](reference/02-memoryviews.md)
 
-**External C/C++ Code**: Wrapping C libraries, `cdef extern from`, header files, verbatim C, public/API declarations → See [External C/C++ Code](reference/03-external-c-code.md)
+**External C/C++ Code**: Wrapping C libraries, `cdef extern from`, header files, verbatim C, public/API declarations → [External C/C++ Code](reference/03-external-c-code.md)
 
-**C++ Support**: `cppclass`, templates, STL containers, operator overloading, exception handling → See [Using C++ in Cython](reference/04-cpp-support.md)
+**C++ Support**: `cppclass`, templates, STL containers, operator overloading, exception handling → [Using C++ in Cython](reference/04-cpp-support.md)
 
-**Fused Types**: Generic programming with type specializations, indexing, memoryview fused types → See [Fused Types](reference/05-fused-types.md)
+**Fused Types**: Generic programming with type specializations, indexing, memoryview fused types → [Fused Types](reference/05-fused-types.md)
 
-**Parallelism and GIL**: `prange`, OpenMP schedules, releasing the GIL, `nogil` functions, thread-local buffers → See [Parallelism and GIL](reference/06-parallelism-gil.md)
+**Parallelism and GIL**: `prange`, OpenMP schedules, releasing the GIL, `nogil` functions, thread-local buffers → [Parallelism and GIL](reference/06-parallelism-gil.md)
 
-**Compilation and Directives**: setup.py patterns, distutils comments, compiler directives, annotations, shared utility modules → See [Compilation and Directives](reference/07-compilation-directives.md)
+**Compilation and Directives**: setup.py patterns, distutils comments, compiler directives, annotations, shared utility modules → [Compilation and Directives](reference/07-compilation-directives.md)

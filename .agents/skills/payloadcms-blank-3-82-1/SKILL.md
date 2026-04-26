@@ -148,10 +148,10 @@ The compose file runs Payload in a Node 20 Alpine container with hot-reload volu
 
 ## Advanced Topics
 
-**Project Structure**: File tree, route groups, and directory conventions → See [Project Structure](reference/01-project-structure.md)
+**Project Structure**: File tree, route groups, and directory conventions → [Project Structure](reference/01-project-structure.md)
 
-**Collections and Fields**: Users and Media collections, field types, access control, and upload configuration → See [Collections and Fields](reference/02-collections-and-fields.md)
+**Collections and Fields**: Users and Media collections, field types, access control, and upload configuration → [Collections and Fields](reference/02-collections-and-fields.md)
 
-**Configuration Files**: payload.config.ts, next.config.ts, tsconfig.json, and environment setup → See [Configuration Files](reference/03-configuration-files.md)
+**Configuration Files**: payload.config.ts, next.config.ts, tsconfig.json, and environment setup → [Configuration Files](reference/03-configuration-files.md)
 
-**Database and Deployment**: MongoDB adapter, Docker production builds, docker-compose patterns, and deployment considerations → See [Database and Deployment](reference/04-database-and-deployment.md)
+**Database and Deployment**: MongoDB adapter, Docker production builds, docker-compose patterns, and deployment considerations → [Database and Deployment](reference/04-database-and-deployment.md)

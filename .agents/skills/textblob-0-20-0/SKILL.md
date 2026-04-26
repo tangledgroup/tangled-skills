@@ -133,10 +133,10 @@ blob.ngrams(n=3)
 
 ## Advanced Topics
 
-**Sentiment Analyzers**: Two built-in analyzers — PatternAnalyzer (default, lexicon-based) and NaiveBayesAnalyzer (ML-based, trained on movie reviews) → See [Sentiment Analysis](reference/01-sentiment-analysis.md)
+**Sentiment Analyzers**: Two built-in analyzers — PatternAnalyzer (default, lexicon-based) and NaiveBayesAnalyzer (ML-based, trained on movie reviews) → [Sentiment Analysis](reference/01-sentiment-analysis.md)
 
-**Text Classification**: Naive Bayes, Decision Tree, MaxEnt, and Positive Naive Bayes classifiers with CSV/JSON/TSV data loading → See [Classifiers](reference/02-classifiers.md)
+**Text Classification**: Naive Bayes, Decision Tree, MaxEnt, and Positive Naive Bayes classifiers with CSV/JSON/TSV data loading → [Classifiers](reference/02-classifiers.md)
 
-**Custom Models**: Override tokenizers, POS taggers, noun phrase extractors, parsers, and sentiment analyzers via the Blobber factory or constructor parameters → See [Advanced Usage](reference/03-advanced-usage.md)
+**Custom Models**: Override tokenizers, POS taggers, noun phrase extractors, parsers, and sentiment analyzers via the Blobber factory or constructor parameters → [Advanced Usage](reference/03-advanced-usage.md)
 
-**API Reference**: Complete reference for TextBlob, Word, WordList, Sentence, Blobber, and all model classes → See [API Reference](reference/04-api-reference.md)
+**API Reference**: Complete reference for TextBlob, Word, WordList, Sentence, Blobber, and all model classes → [API Reference](reference/04-api-reference.md)

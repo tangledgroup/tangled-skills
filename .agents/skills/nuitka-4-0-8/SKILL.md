@@ -169,14 +169,14 @@ python -m nuitka --follow-imports --lto=yes --pgo program.py
 
 ## Advanced Topics
 
-**Requirements and System Setup**: C compilers, Python versions, operating systems, and architectures → See [Requirements](reference/01-requirements.md)
+**Requirements and System Setup**: C compilers, Python versions, operating systems, and architectures → [Requirements](reference/01-requirements.md)
 
-**Compilation Options Reference**: Python flags, project options in code, data files, tweaks, and compilation reports → See [Compilation Options](reference/02-compilation-options.md)
+**Compilation Options Reference**: Python flags, project options in code, data files, tweaks, and compilation reports → [Compilation Options](reference/02-compilation-options.md)
 
-**Deployment Modes and Use Cases**: Standalone distribution, onefile mode, extension modules, package compilation, Setuptools wheels, and multidist → See [Deployment Modes](reference/03-deployment-modes.md)
+**Deployment Modes and Use Cases**: Standalone distribution, onefile mode, extension modules, package compilation, Setuptools wheels, and multidist → [Deployment Modes](reference/03-deployment-modes.md)
 
-**Common Issues and Solutions**: Deployment mode helpers, fork bombs, missing data files, dynamic sys.path, virus scanners, and debugging tips → See [Common Issues](reference/04-common-issues.md)
+**Common Issues and Solutions**: Deployment mode helpers, fork bombs, missing data files, dynamic sys.path, virus scanners, and debugging tips → [Common Issues](reference/04-common-issues.md)
 
-**Nuitka Package Configuration**: YAML-based package configuration for data files, DLLs, implicit imports, anti-bloat, and compatibility hacks → See [Package Configuration](reference/05-package-configuration.md)
+**Nuitka Package Configuration**: YAML-based package configuration for data files, DLLs, implicit imports, anti-bloat, and compatibility hacks → [Package Configuration](reference/05-package-configuration.md)
 
-**Performance Guide**: Benchmark expectations, LTO and PGO results, optimization tips, and compiler selection → See [Performance](reference/06-performance.md)
+**Performance Guide**: Benchmark expectations, LTO and PGO results, optimization tips, and compiler selection → [Performance](reference/06-performance.md)

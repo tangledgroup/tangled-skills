@@ -124,21 +124,21 @@ if (isMainThread) {
 
 ## Advanced Topics
 
-**Core Modules Reference**: Complete API reference for fs, http, https, net, tls, dns, dgram, os, path, url, util, crypto, buffer, stream, events, process, child_process, worker_threads, cluster, timers, console, readline, zlib, assert, v8, perf_hooks, test, sqlite, webcrypto, webstreams → See [Core Modules API Reference](reference/01-core-modules-api.md)
+**Core Modules Reference**: Complete API reference for fs, http, https, net, tls, dns, dgram, os, path, url, util, crypto, buffer, stream, events, process, child_process, worker_threads, cluster, timers, console, readline, zlib, assert, v8, perf_hooks, test, sqlite, webcrypto, webstreams → [Core Modules API Reference](reference/01-core-modules-api.md)
 
-**Async Programming Patterns**: Callbacks, Promises, async/await, EventEmitter, async iterators, AbortController integration, process.nextTick vs setImmediate, util.promisify/callbackify, microtask queue → See [Async Programming Patterns](reference/02-async-programming.md)
+**Async Programming Patterns**: Callbacks, Promises, async/await, EventEmitter, async iterators, AbortController integration, process.nextTick vs setImmediate, util.promisify/callbackify, microtask queue → [Async Programming Patterns](reference/02-async-programming.md)
 
-**Streams and I/O**: Readable/Writable/Duplex/Transform streams, piping, backpressure, async iteration, object mode, web streams interop, zlib compression streams, readline, string_decoder → See [Streams and I/O](reference/03-streams-and-io.md)
+**Streams and I/O**: Readable/Writable/Duplex/Transform streams, piping, backpressure, async iteration, object mode, web streams interop, zlib compression streams, readline, string_decoder → [Streams and I/O](reference/03-streams-and-io.md)
 
-**Networking and HTTP**: http/http2/https servers and clients, net TCP sockets, dgram UDP, tls TLS/SSL, dns resolution, URL parsing, fetch API, EventSource (SSE), headers, keep-alive, proxy support → See [Networking and HTTP](reference/04-networking-and-http.md)
+**Networking and HTTP**: http/http2/https servers and clients, net TCP sockets, dgram UDP, tls TLS/SSL, dns resolution, URL parsing, fetch API, EventSource (SSE), headers, keep-alive, proxy support → [Networking and HTTP](reference/04-networking-and-http.md)
 
-**Modules and Project Structure**: CommonJS vs ESM, package.json fields, node_modules resolution, node: prefix, built-in module list, TypeScript support, import attributes, JSON modules, Wasm modules, top-level await, loaders → See [Modules and Project Structure](reference/05-modules-and-structure.md)
+**Modules and Project Structure**: CommonJS vs ESM, package.json fields, node_modules resolution, node: prefix, built-in module list, TypeScript support, import attributes, JSON modules, Wasm modules, top-level await, loaders → [Modules and Project Structure](reference/05-modules-and-structure.md)
 
-**Testing and Debugging**: Built-in test runner (node:test), describe/test/suite APIs, mocking, snapshots, coverage, reporters, watch mode, assert module, inspector protocol, console, diagnostics_channel, trace events, v8 heap snapshots → See [Testing and Debugging](reference/06-testing-and-debugging.md)
+**Testing and Debugging**: Built-in test runner (node:test), describe/test/suite APIs, mocking, snapshots, coverage, reporters, watch mode, assert module, inspector protocol, console, diagnostics_channel, trace events, v8 heap snapshots → [Testing and Debugging](reference/06-testing-and-debugging.md)
 
-**Process and System APIs**: process object, signals, environment variables, child_process (spawn/fork/exec/execFile), cluster for multi-process, worker_threads for parallelism, os information, tty, permissions, hrtime, memory usage, CPU profiling → See [Process and System APIs](reference/07-process-and-system.md)
+**Process and System APIs**: process object, signals, environment variables, child_process (spawn/fork/exec/execFile), cluster for multi-process, worker_threads for parallelism, os information, tty, permissions, hrtime, memory usage, CPU profiling → [Process and System APIs](reference/07-process-and-system.md)
 
-**Cryptography and Security**: node:crypto (hashing, HMAC, cipher/decipher, sign/verify, key generation, Diffie-Hellman, ECDH, X.509), webcrypto (Web Crypto API), tls configuration, OpenSSL security levels, permission model → See [Cryptography and Security](reference/08-crypto-and-security.md)
+**Cryptography and Security**: node:crypto (hashing, HMAC, cipher/decipher, sign/verify, key generation, Diffie-Hellman, ECDH, X.509), webcrypto (Web Crypto API), tls configuration, OpenSSL security levels, permission model → [Cryptography and Security](reference/08-crypto-and-security.md)
 
 ## Command-Line Options
 

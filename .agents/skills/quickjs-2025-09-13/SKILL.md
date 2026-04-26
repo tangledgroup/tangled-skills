@@ -58,10 +58,10 @@ Key characteristics:
 
 ## Advanced Topics
 
-**C API Reference**: Runtime/Context creation, JSValue handling, C functions, exceptions, script evaluation, classes, modules → See [C API Reference](reference/01-c-api-reference.md)
+**C API Reference**: Runtime/Context creation, JSValue handling, C functions, exceptions, script evaluation, classes, modules → [C API Reference](reference/01-c-api-reference.md)
 
-**Standard Library**: Global objects, `std` module (file I/O, environment, HTTP), `os` module (low-level file access, signals, workers) → See [Standard Library](reference/02-standard-library.md)
+**Standard Library**: Global objects, `std` module (file I/O, environment, HTTP), `os` module (low-level file access, signals, workers) → [Standard Library](reference/02-standard-library.md)
 
-**Internals and Architecture**: Bytecode format, executable generation with qjsc, strings, objects, atoms, numbers, garbage collection, RegExp engine, Unicode library, BigInt representation → See [Internals and Architecture](reference/03-internals-and-architecture.md)
+**Internals and Architecture**: Bytecode format, executable generation with qjsc, strings, objects, atoms, numbers, garbage collection, RegExp engine, Unicode library, BigInt representation → [Internals and Architecture](reference/03-internals-and-architecture.md)
 
-**ES2023 Support and Modules**: Language feature coverage, module resolution, unsupported features → See [ES2023 Support and Modules](reference/04-es2023-support.md)
+**ES2023 Support and Modules**: Language feature coverage, module resolution, unsupported features → [ES2023 Support and Modules](reference/04-es2023-support.md)

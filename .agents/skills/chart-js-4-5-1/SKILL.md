@@ -173,12 +173,12 @@ new Chart(ctx, {
 
 ## Advanced Topics
 
-**Chart Types**: Line, bar, doughnut, pie, radar, polar area, bubble, scatter, and area charts with dataset-specific options → See [Chart Types](reference/01-chart-types.md)
+**Chart Types**: Line, bar, doughnut, pie, radar, polar area, bubble, scatter, and area charts with dataset-specific options → [Chart Types](reference/01-chart-types.md)
 
-**Configuration System**: Options resolution, global defaults, scriptable/indexable options, per-dataset overrides, and element-level configuration → See [Configuration System](reference/02-configuration-system.md)
+**Configuration System**: Options resolution, global defaults, scriptable/indexable options, per-dataset overrides, and element-level configuration → [Configuration System](reference/02-configuration-system.md)
 
-**Axes and Scales**: Cartesian axes (category, linear, logarithmic, time, time series), radial axes, tick configuration, grid lines, and scale customization → See [Axes and Scales](reference/03-axes-and-scales.md)
+**Axes and Scales**: Cartesian axes (category, linear, logarithmic, time, time series), radial axes, tick configuration, grid lines, and scale customization → [Axes and Scales](reference/03-axes-and-scales.md)
 
-**Plugins and Customization**: Built-in plugins (Legend, Tooltip, Title, SubTitle, Filler, Decimation), custom plugin lifecycle hooks, external tooltips, and HTML legends → See [Plugins and Customization](reference/04-plugins-and-customization.md)
+**Plugins and Customization**: Built-in plugins (Legend, Tooltip, Title, SubTitle, Filler, Decimation), custom plugin lifecycle hooks, external tooltips, and HTML legends → [Plugins and Customization](reference/04-plugins-and-customization.md)
 
-**Performance and Integration**: Data parsing control, decimation algorithms, normalized data, web worker rendering, bundler tree-shaking, framework integrations, and responsive design patterns → See [Performance and Integration](reference/05-performance-and-integration.md)
+**Performance and Integration**: Data parsing control, decimation algorithms, normalized data, web worker rendering, bundler tree-shaking, framework integrations, and responsive design patterns → [Performance and Integration](reference/05-performance-and-integration.md)

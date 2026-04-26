@@ -185,14 +185,14 @@ async with async_session() as session:
 
 ## Advanced Topics
 
-**Core Tutorial**: Engine, connections, metadata, and SQL expression language fundamentals → See [Core Tutorial](reference/01-core-tutorial.md)
+**Core Tutorial**: Engine, connections, metadata, and SQL expression language fundamentals → [Core Tutorial](reference/01-core-tutorial.md)
 
-**ORM Mapping and Session**: Declarative mappings, relationships, unit of work, identity map, cascades → See [ORM Mapping and Session](reference/02-orm-mapping-session.md)
+**ORM Mapping and Session**: Declarative mappings, relationships, unit of work, identity map, cascades → [ORM Mapping and Session](reference/02-orm-mapping-session.md)
 
-**SQL Expression Language**: SELECT constructs, WHERE clauses, JOINs, subqueries, CTEs, functions, aggregations → See [SQL Expression Language](reference/03-sql-expression-language.md)
+**SQL Expression Language**: SELECT constructs, WHERE clauses, JOINs, subqueries, CTEs, functions, aggregations → [SQL Expression Language](reference/03-sql-expression-language.md)
 
-**AsyncIO Support**: AsyncEngine, AsyncSession, async drivers, concurrency patterns → See [AsyncIO Support](reference/04-asyncio-support.md)
+**AsyncIO Support**: AsyncEngine, AsyncSession, async drivers, concurrency patterns → [AsyncIO Support](reference/04-asyncio-support.md)
 
-**Dialects and Drivers**: Database-specific configurations for PostgreSQL, MySQL, SQLite, Oracle, MSSQL, and external dialects → See [Dialects and Drivers](reference/05-dialects-drivers.md)
+**Dialects and Drivers**: Database-specific configurations for PostgreSQL, MySQL, SQLite, Oracle, MSSQL, and external dialects → [Dialects and Drivers](reference/05-dialects-drivers.md)
 
-**Advanced ORM Patterns**: Hybrid attributes, association proxy, events, custom types, column properties → See [Advanced ORM Patterns](reference/06-advanced-orm-patterns.md)
+**Advanced ORM Patterns**: Hybrid attributes, association proxy, events, custom types, column properties → [Advanced ORM Patterns](reference/06-advanced-orm-patterns.md)

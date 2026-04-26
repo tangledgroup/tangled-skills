@@ -175,22 +175,22 @@ for name, ax in axs.items():
 
 ## Advanced Topics
 
-**Figures and Backends**: Output backends (Agg, QtAgg, GTK4Agg, SVG, PDF, PS), interactive vs non-interactive, backend selection, Jupyter integration → See [Figures and Backends](reference/01-figures-and-backends.md)
+**Figures and Backends**: Output backends (Agg, QtAgg, GTK4Agg, SVG, PDF, PS), interactive vs non-interactive, backend selection, Jupyter integration → [Figures and Backends](reference/01-figures-and-backends.md)
 
-**Axes, Subplots, and Layouts**: GridSpec, subplot_mosaic, constrained layout, tight_layout, twin axes, shared axes, inset axes, colorbar placement → See [Axes and Layouts](reference/02-axes-and-layouts.md)
+**Axes, Subplots, and Layouts**: GridSpec, subplot_mosaic, constrained layout, tight_layout, twin axes, shared axes, inset axes, colorbar placement → [Axes and Layouts](reference/02-axes-and-layouts.md)
 
-**Plot Types Reference**: Complete catalog of plotting methods — line, scatter, bar, histogram, contour, imshow, pcolormesh, pie, boxplot, violin, quiver, streamplot, hexbin, ECDF, stairs → See [Plot Types](reference/03-plot-types.md)
+**Plot Types Reference**: Complete catalog of plotting methods — line, scatter, bar, histogram, contour, imshow, pcolormesh, pie, boxplot, violin, quiver, streamplot, hexbin, ECDF, stairs → [Plot Types](reference/03-plot-types.md)
 
-**Colors and Colormaps**: Color specification formats (RGB, hex, named, xkcd, Tableau), colormaps (sequential, diverging, qualitative, cyclic), normalization, alpha blending, custom colorbars → See [Colors and Colormaps](reference/04-colors-and-colormaps.md)
+**Colors and Colormaps**: Color specification formats (RGB, hex, named, xkcd, Tableau), colormaps (sequential, diverging, qualitative, cyclic), normalization, alpha blending, custom colorbars → [Colors and Colormaps](reference/04-colors-and-colormaps.md)
 
-**Text, Annotations, and Math**: Text placement, annotations with arrows, mathematical expressions (LaTeX-like syntax), font management, text properties, mathtext rendering → See [Text and Annotations](reference/05-text-and-annotations.md)
+**Text, Annotations, and Math**: Text placement, annotations with arrows, mathematical expressions (LaTeX-like syntax), font management, text properties, mathtext rendering → [Text and Annotations](reference/05-text-and-annotations.md)
 
-**Customization and rcParams**: Runtime rc settings, style sheets (built-in and custom), matplotlibrc configuration, rc_context for temporary changes, cycler for property cycles → See [Customization](reference/06-customization.md)
+**Customization and rcParams**: Runtime rc settings, style sheets (built-in and custom), matplotlibrc configuration, rc_context for temporary changes, cycler for property cycles → [Customization](reference/06-customization.md)
 
-**Transformations**: Data coordinates, display coordinates, axes coordinates, blended transforms, compound transforms, offsetbox annotations → See [Transformations](reference/07-transformations.md)
+**Transformations**: Data coordinates, display coordinates, axes coordinates, blended transforms, compound transforms, offsetbox annotations → [Transformations](reference/07-transformations.md)
 
-**Animations**: FuncAnimation, ArtistAnimation, blitting for performance, saving to MP4/GIF via PillowWriter and FFMpegWriter → See [Animations](reference/08-animations.md)
+**Animations**: FuncAnimation, ArtistAnimation, blitting for performance, saving to MP4/GIF via PillowWriter and FFMpegWriter → [Animations](reference/08-animations.md)
 
-**3D Plotting**: mplot3d toolkit, 3D line/scatter/surface/wireframe plots, volumetric data (voxels), tri-surface, contour3D → See [3D Plotting](reference/09-3d-plotting.md)
+**3D Plotting**: mplot3d toolkit, 3D line/scatter/surface/wireframe plots, volumetric data (voxels), tri-surface, contour3D → [3D Plotting](reference/09-3d-plotting.md)
 
-**API Reference Summary**: pyplot module functions, Axes methods, Artist base class, Figure methods, Axis locators and formatters, patches, collections → See [API Reference](reference/10-api-reference.md)
+**API Reference Summary**: pyplot module functions, Axes methods, Artist base class, Figure methods, Axis locators and formatters, patches, collections → [API Reference](reference/10-api-reference.md)

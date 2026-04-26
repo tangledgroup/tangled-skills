@@ -158,14 +158,14 @@ print(doc.lang)  # 'fr'
 
 ## Advanced Topics
 
-**Pipeline and Processors**: Detailed processor configuration, custom processor variants, pretagged documents → See [Pipeline and Processors](reference/01-pipeline-and-processors.md)
+**Pipeline and Processors**: Detailed processor configuration, custom processor variants, pretagged documents → [Pipeline and Processors](reference/01-pipeline-and-processors.md)
 
-**Data Objects and Annotations**: Document, Sentence, Token, Word, Span, ParseTree — properties and methods → See [Data Objects and Annotations](reference/02-data-objects.md)
+**Data Objects and Annotations**: Document, Sentence, Token, Word, Span, ParseTree — properties and methods → [Data Objects and Annotations](reference/02-data-objects.md)
 
-**Processor Reference**: Complete reference for each processor with options and examples → See [Processor Reference](reference/03-processor-reference.md)
+**Processor Reference**: Complete reference for each processor with options and examples → [Processor Reference](reference/03-processor-reference.md)
 
-**Models and Downloads**: Available models, languages, packages, manual download → See [Models and Downloads](reference/04-models-and-downloads.md)
+**Models and Downloads**: Available models, languages, packages, manual download → [Models and Downloads](reference/04-models-and-downloads.md)
 
-**Training Custom Models**: Training your own Stanza models on annotated data → See [Training Custom Models](reference/05-training.md)
+**Training Custom Models**: Training your own Stanza models on annotated data → [Training Custom Models](reference/05-training.md)
 
-**CoreNLP Client**: Python wrapper for Stanford CoreNLP Java server, Semgrex, Ssurgeon → See [CoreNLP Client](reference/06-corenlp-client.md)
+**CoreNLP Client**: Python wrapper for Stanford CoreNLP Java server, Semgrex, Ssurgeon → [CoreNLP Client](reference/06-corenlp-client.md)

@@ -163,10 +163,10 @@ result = duckdb.sql("SELECT * FROM 's3://bucket/data/year=2024/*.parquet'")
 
 ## Advanced Topics
 
-**Python API Reference**: Connection management, execution methods, result handling, DB-API 2.0 compliance → See [Python Client API](reference/01-python-api.md)
+**Python API Reference**: Connection management, execution methods, result handling, DB-API 2.0 compliance → [Python Client API](reference/01-python-api.md)
 
-**SQL Dialect and Query Syntax**: DuckDB's SQL extensions, data types, expressions, functions, window functions, QUALIFY, PIVOT, and query patterns → See [SQL Reference](reference/02-sql-reference.md)
+**SQL Dialect and Query Syntax**: DuckDB's SQL extensions, data types, expressions, functions, window functions, QUALIFY, PIVOT, and query patterns → [SQL Reference](reference/02-sql-reference.md)
 
-**Data Import and File Formats**: Reading/writing CSV, Parquet, JSON, Excel; cloud storage access (S3, GCS, HTTP); auto-detection; partitioned data → See [Data Import and Export](reference/03-data-import-export.md)
+**Data Import and File Formats**: Reading/writing CSV, Parquet, JSON, Excel; cloud storage access (S3, GCS, HTTP); auto-detection; partitioned data → [Data Import and Export](reference/03-data-import-export.md)
 
-**Extensions and Configuration**: Core extensions (httpfs, spatial, full-text search, iceberg, delta), extension installation, pragmas, secrets manager → See [Extensions and Configuration](reference/04-extensions-config.md)
+**Extensions and Configuration**: Core extensions (httpfs, spatial, full-text search, iceberg, delta), extension installation, pragmas, secrets manager → [Extensions and Configuration](reference/04-extensions-config.md)

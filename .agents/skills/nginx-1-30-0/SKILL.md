@@ -132,16 +132,16 @@ server {
 
 ## Advanced Topics
 
-**Configuration Syntax and Core Module**: Directives, contexts, measurement units, worker tuning → See [Configuration Syntax](reference/01-config-syntax.md)
+**Configuration Syntax and Core Module**: Directives, contexts, measurement units, worker tuning → [Configuration Syntax](reference/01-config-syntax.md)
 
-**HTTP Proxy and Upstream**: proxy_pass, caching, buffering, timeouts, upstream load balancing methods → See [HTTP Proxy and Upstream](reference/02-http-proxy-upstream.md)
+**HTTP Proxy and Upstream**: proxy_pass, caching, buffering, timeouts, upstream load balancing methods → [HTTP Proxy and Upstream](reference/02-http-proxy-upstream.md)
 
-**SSL/TLS and HTTP/3**: Certificate configuration, protocols, ciphers, OCSP stapling, QUIC/HTTP/3 setup → See [SSL/TLS and HTTP/3](reference/03-ssl-tls.md)
+**SSL/TLS and HTTP/3**: Certificate configuration, protocols, ciphers, OCSP stapling, QUIC/HTTP/3 setup → [SSL/TLS and HTTP/3](reference/03-ssl-tls.md)
 
-**Access Control and Rate Limiting**: IP-based allow/deny, basic auth, JWT auth, limit_req, limit_conn → See [Access Control and Rate Limiting](reference/04-access-control.md)
+**Access Control and Rate Limiting**: IP-based allow/deny, basic auth, JWT auth, limit_req, limit_conn → [Access Control and Rate Limiting](reference/04-access-control.md)
 
-**Rewrite, Map, and Logging**: URI rewriting, return codes, map variables, log_format, access_log → See [Rewrite, Map, and Logging](reference/05-rewrite-map-logging.md)
+**Rewrite, Map, and Logging**: URI rewriting, return codes, map variables, log_format, access_log → [Rewrite, Map, and Logging](reference/05-rewrite-map-logging.md)
 
-**Stream Module (TCP/UDP)**: TCP/UDP proxying, stream upstreams, DNS proxying → See [Stream Module](reference/06-stream-module.md)
+**Stream Module (TCP/UDP)**: TCP/UDP proxying, stream upstreams, DNS proxying → [Stream Module](reference/06-stream-module.md)
 
-**Process Control and Signals**: Starting, stopping, reloading, log rotation, in-place upgrades → See [Process Control](reference/07-process-control.md)
+**Process Control and Signals**: Starting, stopping, reloading, log rotation, in-place upgrades → [Process Control](reference/07-process-control.md)

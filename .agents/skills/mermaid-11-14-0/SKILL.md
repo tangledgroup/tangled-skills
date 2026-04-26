@@ -200,28 +200,28 @@ gantt
 
 ## Advanced Topics
 
-**Flowcharts and Graphs**: Nodes, edges, subgraphs, shapes, styling, animations → See [Flowcharts](reference/01-flowcharts.md)
+**Flowcharts and Graphs**: Nodes, edges, subgraphs, shapes, styling, animations → [Flowcharts](reference/01-flowcharts.md)
 
-**Sequence Diagrams**: Participants, messages, activations, loops, notes, half-arrows → See [Sequence Diagrams](reference/02-sequence-diagrams.md)
+**Sequence Diagrams**: Participants, messages, activations, loops, notes, half-arrows → [Sequence Diagrams](reference/02-sequence-diagrams.md)
 
-**Gantt Charts**: Tasks, milestones, vertical markers, exclusions, date formats → See [Gantt Charts](reference/03-gantt-charts.md)
+**Gantt Charts**: Tasks, milestones, vertical markers, exclusions, date formats → [Gantt Charts](reference/03-gantt-charts.md)
 
-**Class and State Diagrams**: UML class structures, state machines, composite states → See [Class and State Diagrams](reference/04-class-state-diagrams.md)
+**Class and State Diagrams**: UML class structures, state machines, composite states → [Class and State Diagrams](reference/04-class-state-diagrams.md)
 
-**Pie, Git Graph, and Journey Diagrams**: Proportional charts, git history, user workflows → See [Pie, Git Graph, Journey](reference/05-pie-git-journey.md)
+**Pie, Git Graph, and Journey Diagrams**: Proportional charts, git history, user workflows → [Pie, Git Graph, Journey](reference/05-pie-git-journey.md)
 
-**C4 and Architecture Diagrams**: System context, containers, cloud architecture → See [C4 and Architecture](reference/06-c4-architecture.md)
+**C4 and Architecture Diagrams**: System context, containers, cloud architecture → [C4 and Architecture](reference/06-c4-architecture.md)
 
-**Block, Mindmap, and Kanban Diagrams**: Layout-controlled blocks, hierarchical maps, workflow boards → See [Block, Mindmap, Kanban](reference/07-block-mindmap-kanban.md)
+**Block, Mindmap, and Kanban Diagrams**: Layout-controlled blocks, hierarchical maps, workflow boards → [Block, Mindmap, Kanban](reference/07-block-mindmap-kanban.md)
 
-**Timeline, Quadrant, and Radar Charts**: Chronological timelines, 2-axis plotting, multi-variable comparison → See [Timeline, Quadrant, Radar](reference/08-timeline-quadrant-radar.md)
+**Timeline, Quadrant, and Radar Charts**: Chronological timelines, 2-axis plotting, multi-variable comparison → [Timeline, Quadrant, Radar](reference/08-timeline-quadrant-radar.md)
 
-**ER, Requirement, and Sankey Diagrams**: Entity models, requirements tracking, flow visualization → See [ER, Requirement, Sankey](reference/09-er-requirement-sankey.md)
+**ER, Requirement, and Sankey Diagrams**: Entity models, requirements tracking, flow visualization → [ER, Requirement, Sankey](reference/09-er-requirement-sankey.md)
 
-**Venn, Treemap, Tree View, Wardley Maps**: Set overlap, hierarchical trees, strategic maps → See [Venn, Treemap, Tree, Wardley](reference/10-venn-treemap-tree-wardley.md)
+**Venn, Treemap, Tree View, Wardley Maps**: Set overlap, hierarchical trees, strategic maps → [Venn, Treemap, Tree, Wardley](reference/10-venn-treemap-tree-wardley.md)
 
-**Packet, Ishikawa, Event Modeling, XY Charts**: Network packets, fishbone analysis, domain events, data charts → See [Packet, Ishikawa, Event, XY](reference/11-packet-ishikawa-event-xy.md)
+**Packet, Ishikawa, Event Modeling, XY Charts**: Network packets, fishbone analysis, domain events, data charts → [Packet, Ishikawa, Event, XY](reference/11-packet-ishikawa-event-xy.md)
 
-**ZenUML Sequence Diagrams**: Alternative sequence diagram syntax with annotators → See [ZenUML](reference/12-zenuml.md)
+**ZenUML Sequence Diagrams**: Alternative sequence diagram syntax with annotators → [ZenUML](reference/12-zenuml.md)
 
-**Configuration and Theming**: Frontmatter, directives, themes, theme variables, security levels → See [Configuration and Theming](reference/13-configuration-theming.md)
+**Configuration and Theming**: Frontmatter, directives, themes, theme variables, security levels → [Configuration and Theming](reference/13-configuration-theming.md)

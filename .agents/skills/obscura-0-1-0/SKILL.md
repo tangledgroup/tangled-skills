@@ -187,10 +187,10 @@ JSON output includes per-result timing and overall statistics:
 
 ## Advanced Topics
 
-**CDP Server Architecture**: Domains, protocol implementation, WebSocket handling → See [CDP Server](reference/01-cdp-server.md)
+**CDP Server Architecture**: Domains, protocol implementation, WebSocket handling → [CDP Server](reference/01-cdp-server.md)
 
-**Puppeteer and Playwright Integration**: Connecting via CDP, form submission, page automation → See [Automation Integration](reference/02-puppeteer-playwright.md)
+**Puppeteer and Playwright Integration**: Connecting via CDP, form submission, page automation → [Automation Integration](reference/02-puppeteer-playwright.md)
 
-**Stealth Mode**: Anti-fingerprinting, tracker blocking, TLS spoofing → See [Stealth Mode](reference/03-stealth-mode.md)
+**Stealth Mode**: Anti-fingerprinting, tracker blocking, TLS spoofing → [Stealth Mode](reference/03-stealth-mode.md)
 
-**Internal Architecture**: Crate structure, V8 runtime, DOM tree, HTTP client → See [Architecture Deep Dive](reference/04-architecture.md)
+**Internal Architecture**: Crate structure, V8 runtime, DOM tree, HTTP client → [Architecture Deep Dive](reference/04-architecture.md)

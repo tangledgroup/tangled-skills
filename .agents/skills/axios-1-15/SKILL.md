@@ -244,12 +244,12 @@ data.pipe(fs.createWriteStream("image.jpg"));
 
 ## Advanced Topics
 
-**Request Config**: All config options including `transformRequest`, `paramsSerializer`, proxy, and socket paths → See [Request Config](reference/01-request-config.md)
+**Request Config**: All config options including `transformRequest`, `paramsSerializer`, proxy, and socket paths → [Request Config](reference/01-request-config.md)
 
-**Interceptors & Authentication**: Request/response interceptors, Bearer tokens, HTTP Basic auth, API keys, token refresh patterns → See [Interceptors & Authentication](reference/02-interceptors-authentication.md)
+**Interceptors & Authentication**: Request/response interceptors, Bearer tokens, HTTP Basic auth, API keys, token refresh patterns → [Interceptors & Authentication](reference/02-interceptors-authentication.md)
 
-**Error Handling & Retry**: AxiosError types, error codes, cancellation with AbortController, retry strategies with exponential backoff → See [Error Handling & Retry](reference/03-error-handling-retry.md)
+**Error Handling & Retry**: AxiosError types, error codes, cancellation with AbortController, retry strategies with exponential backoff → [Error Handling & Retry](reference/03-error-handling-retry.md)
 
-**Forms, Files & Progress**: `multipart/form-data`, `x-www-form-urlencoded`, file uploads, progress capturing, rate limiting → See [Forms, Files & Progress](reference/04-forms-files-progress.md)
+**Forms, Files & Progress**: `multipart/form-data`, `x-www-form-urlencoded`, file uploads, progress capturing, rate limiting → [Forms, Files & Progress](reference/04-forms-files-progress.md)
 
-**Adapters & Advanced Features**: Built-in adapters (xhr, http, fetch), custom adapters, Fetch adapter, HTTP/2, testing with MockAdapter, TypeScript support → See [Adapters & Advanced Features](reference/05-adapters-advanced.md)
+**Adapters & Advanced Features**: Built-in adapters (xhr, http, fetch), custom adapters, Fetch adapter, HTTP/2, testing with MockAdapter, TypeScript support → [Adapters & Advanced Features](reference/05-adapters-advanced.md)

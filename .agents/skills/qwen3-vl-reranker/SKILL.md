@@ -55,8 +55,8 @@ Both models support over 30 languages and are instruction-aware, allowing task-s
 
 ## Advanced Topics
 
-**Architecture and Model Details**: LoRA configs, dual-tower vs single-tower design, training paradigm → See [Architecture](reference/01-architecture.md)
+**Architecture and Model Details**: LoRA configs, dual-tower vs single-tower design, training paradigm → [Architecture](reference/01-architecture.md)
 
-**Usage Patterns**: Sentence Transformers API, raw Transformers usage, vLLM deployment, input format specification → See [Usage](reference/02-usage.md)
+**Usage Patterns**: Sentence Transformers API, raw Transformers usage, vLLM deployment, input format specification → [Usage](reference/02-usage.md)
 
-**Benchmarks and Performance**: MMEB-v2, MMTEB, JinaVDR, ViDoRe v3 results with comparison models → See [Benchmarks](reference/03-benchmarks.md)
+**Benchmarks and Performance**: MMEB-v2, MMTEB, JinaVDR, ViDoRe v3 results with comparison models → [Benchmarks](reference/03-benchmarks.md)

@@ -208,14 +208,14 @@ def chat_with_memories(message: str, user_id: str = "default_user") -> str:
 
 ## Advanced Topics
 
-**Memory Operations**: Add, search, update, and delete workflows with Platform vs OSS differences → See [Memory Operations](reference/01-memory-operations.md)
+**Memory Operations**: Add, search, update, and delete workflows with Platform vs OSS differences → [Memory Operations](reference/01-memory-operations.md)
 
-**Configuration & Components**: LLM providers (18+), vector databases (24+), embedders (10+), rerankers (5+) with full setup guides → See [Configuration and Components](reference/02-configuration-components.md)
+**Configuration & Components**: LLM providers (18+), vector databases (24+), embedders (10+), rerankers (5+) with full setup guides → [Configuration and Components](reference/02-configuration-components.md)
 
-**Platform Features**: Graph memory, entity scoping, async clients, multimodal support, webhooks, custom categories, advanced retrieval → See [Platform Features](reference/03-platform-features.md)
+**Platform Features**: Graph memory, entity scoping, async clients, multimodal support, webhooks, custom categories, advanced retrieval → [Platform Features](reference/03-platform-features.md)
 
-**Open Source Features**: Self-hosted graph memory (Neo4j, Memgraph), REST API server, async memory, metadata filtering, OpenAI compatibility → See [Open Source Features](reference/04-open-source-features.md)
+**Open Source Features**: Self-hosted graph memory (Neo4j, Memgraph), REST API server, async memory, metadata filtering, OpenAI compatibility → [Open Source Features](reference/04-open-source-features.md)
 
-**API Reference**: REST endpoints for the managed Platform (`/v1/` paths) and OSS server (`/memories` paths) → See [API Reference](reference/05-api-reference.md)
+**API Reference**: REST endpoints for the managed Platform (`/v1/` paths) and OSS server (`/memories` paths) → [API Reference](reference/05-api-reference.md)
 
-**Integrations & Migration**: LangChain, CrewAI, LlamaIndex, AutoGen, Vercel AI SDK, MCP, and v0→v1 migration guide → See [Integrations and Migration](reference/06-integrations-migration.md)
+**Integrations & Migration**: LangChain, CrewAI, LlamaIndex, AutoGen, Vercel AI SDK, MCP, and v0→v1 migration guide → [Integrations and Migration](reference/06-integrations-migration.md)

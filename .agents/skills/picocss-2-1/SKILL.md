@@ -100,18 +100,18 @@ The `<meta name="color-scheme" content="light dark">` tag is essential for prope
 
 ## Advanced Topics
 
-**Class-less version**: Zero-class semantic styling with automatic containers → See [Class-less Version](reference/01-classless-version.md)
+**Class-less version**: Zero-class semantic styling with automatic containers → [Class-less Version](reference/01-classless-version.md)
 
-**CSS variables**: Over 130 customizable design tokens for colors, spacing, typography, and component styling → See [CSS Variables](reference/02-css-variables.md)
+**CSS variables**: Over 130 customizable design tokens for colors, spacing, typography, and component styling → [CSS Variables](reference/02-css-variables.md)
 
-**Sass customization**: Compile custom builds with modular settings, themes, and breakpoints → See [Sass Customization](reference/03-sass-customization.md)
+**Sass customization**: Compile custom builds with modular settings, themes, and breakpoints → [Sass Customization](reference/03-sass-customization.md)
 
-**Layout system**: Containers, grid, landmarks, sections, and responsive spacing → See [Layout System](reference/04-layout-system.md)
+**Layout system**: Containers, grid, landmarks, sections, and responsive spacing → [Layout System](reference/04-layout-system.md)
 
-**Content elements**: Typography, links, buttons, tables, code blocks, and embedded media → See [Content Elements](reference/05-content-elements.md)
+**Content elements**: Typography, links, buttons, tables, code blocks, and embedded media → [Content Elements](reference/05-content-elements.md)
 
-**Forms**: Inputs, textareas, selects, checkboxes, radios, switches, and ranges with validation styling → See [Forms](reference/06-forms.md)
+**Forms**: Inputs, textareas, selects, checkboxes, radios, switches, and ranges with validation styling → [Forms](reference/06-forms.md)
 
-**Components**: Cards, modals, accordions, dropdowns, tooltips, progress bars, nav, loading states, and groups → See [Components](reference/07-components.md)
+**Components**: Cards, modals, accordions, dropdowns, tooltips, progress bars, nav, loading states, and groups → [Components](reference/07-components.md)
 
-**Color schemes and themes**: Light/dark modes, `data-theme` attribute, and 20 precompiled color themes → See [Color Schemes and Themes](reference/08-color-schemes-themes.md)
+**Color schemes and themes**: Light/dark modes, `data-theme` attribute, and 20 precompiled color themes → [Color Schemes and Themes](reference/08-color-schemes-themes.md)

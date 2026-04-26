@@ -360,8 +360,8 @@ class MyAppTestCase(AioHTTPTestCase):
 
 ## Advanced Topics
 
-**Client API**: Session configuration, connectors, SSL/proxy support, tracing, cookie management → See [Client Reference](reference/01-client-reference.md)
+**Client API**: Session configuration, connectors, SSL/proxy support, tracing, cookie management → [Client Reference](reference/01-client-reference.md)
 
-**Server API**: Application runners, middlewares, signals, graceful shutdown, nested applications, deployment patterns → See [Server Reference](reference/02-server-reference.md)
+**Server API**: Application runners, middlewares, signals, graceful shutdown, nested applications, deployment patterns → [Server Reference](reference/02-server-reference.md)
 
-**Streaming and Multipart**: StreamReader API, multipart reader/writer, file streaming → See [Streaming and Multipart](reference/03-streaming-multipart.md)
+**Streaming and Multipart**: StreamReader API, multipart reader/writer, file streaming → [Streaming and Multipart](reference/03-streaming-multipart.md)

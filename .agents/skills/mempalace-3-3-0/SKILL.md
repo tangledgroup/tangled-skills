@@ -75,16 +75,16 @@ mempalace status
 
 ## Advanced Topics
 
-**Palace Architecture**: Wings, rooms, halls, tunnels, closets, drawers — the spatial metaphor explained → See [Palace Architecture](reference/01-palace-architecture.md)
+**Palace Architecture**: Wings, rooms, halls, tunnels, closets, drawers — the spatial metaphor explained → [Palace Architecture](reference/01-palace-architecture.md)
 
-**Mining and Ingestion**: Project mining, conversation mining, mega-file splitting, entity detection → See [Mining and Ingestion](reference/02-mining-and-ingestion.md)
+**Mining and Ingestion**: Project mining, conversation mining, mega-file splitting, entity detection → [Mining and Ingestion](reference/02-mining-and-ingestion.md)
 
-**Search and Retrieval**: Hybrid BM25 + vector search, closet-first retrieval, memory layers → See [Search and Retrieval](reference/03-search-and-retrieval.md)
+**Search and Retrieval**: Hybrid BM25 + vector search, closet-first retrieval, memory layers → [Search and Retrieval](reference/03-search-and-retrieval.md)
 
-**Knowledge Graph**: Temporal triples, entity management, timeline queries → See [Knowledge Graph](reference/04-knowledge-graph.md)
+**Knowledge Graph**: Temporal triples, entity management, timeline queries → [Knowledge Graph](reference/04-knowledge-graph.md)
 
-**MCP Server and Integration**: 29+ tools, Claude Code plugin, Gemini CLI hooks, local model support → See [MCP Server and Integration](reference/05-mcp-and-integration.md)
+**MCP Server and Integration**: 29+ tools, Claude Code plugin, Gemini CLI hooks, local model support → [MCP Server and Integration](reference/05-mcp-and-integration.md)
 
-**AAAK Dialect**: The experimental compression format, emotion codes, flags → See [AAAK Dialect](reference/06-aaak-dialect.md)
+**AAAK Dialect**: The experimental compression format, emotion codes, flags → [AAAK Dialect](reference/06-aaak-dialect.md)
 
-**Benchmarks**: LongMemEval, ConvoMem, LoCoMo results and methodology → See [Benchmarks](reference/07-benchmarks.md)
+**Benchmarks**: LongMemEval, ConvoMem, LoCoMo results and methodology → [Benchmarks](reference/07-benchmarks.md)

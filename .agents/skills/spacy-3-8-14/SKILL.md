@@ -237,14 +237,14 @@ for token in doc:
 
 ## Advanced Topics
 
-**Pipeline Components**: Complete reference of all built-in components — Tokenizer, Tagger, DependencyParser, EntityRecognizer, Lemmatizer, TextCategorizer, EntityLinker, and more → See [Pipeline Components](reference/01-pipeline-components.md)
+**Pipeline Components**: Complete reference of all built-in components — Tokenizer, Tagger, DependencyParser, EntityRecognizer, Lemmatizer, TextCategorizer, EntityLinker, and more → [Pipeline Components](reference/01-pipeline-components.md)
 
-**Linguistic Features**: Deep dive into POS tagging, morphology, lemmatization, dependency parsing, named entities, entity linking, tokenization, sentence segmentation, vectors and similarity → See [Linguistic Features](reference/02-linguistic-features.md)
+**Linguistic Features**: Deep dive into POS tagging, morphology, lemmatization, dependency parsing, named entities, entity linking, tokenization, sentence segmentation, vectors and similarity → [Linguistic Features](reference/02-linguistic-features.md)
 
-**Rule-based Matching**: Matcher, PhraseMatcher, DependencyMatcher, EntityRuler, SpanRuler — pattern-based extraction without training → See [Rule-based Matching](reference/03-rule-based-matching.md)
+**Rule-based Matching**: Matcher, PhraseMatcher, DependencyMatcher, EntityRuler, SpanRuler — pattern-based extraction without training → [Rule-based Matching](reference/03-rule-based-matching.md)
 
-**Training and Configuration**: Config system, `spacy train`, data formats (JSONL, spaCy binary), evaluation with Scorer, custom training functions, project workflows → See [Training and Configuration](reference/04-training-and-config.md)
+**Training and Configuration**: Config system, `spacy train`, data formats (JSONL, spaCy binary), evaluation with Scorer, custom training functions, project workflows → [Training and Configuration](reference/04-training-and-config.md)
 
-**Embeddings and Transformers**: Transformer integration, shared embedding layers, multi-task learning, static word vectors, pretraining → See [Embeddings and Transformers](reference/05-embeddings-transformers.md)
+**Embeddings and Transformers**: Transformer integration, shared embedding layers, multi-task learning, static word vectors, pretraining → [Embeddings and Transformers](reference/05-embeddings-transformers.md)
 
-**API Reference**: Container objects (Doc, Token, Span, Vocab), serialization, memory management, extension attributes, custom components, CLI commands → See [API Reference](reference/06-api-reference.md)
+**API Reference**: Container objects (Doc, Token, Span, Vocab), serialization, memory management, extension attributes, custom components, CLI commands → [API Reference](reference/06-api-reference.md)

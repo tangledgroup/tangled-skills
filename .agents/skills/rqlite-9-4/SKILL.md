@@ -198,12 +198,12 @@ curl -s -XGET 'localhost:4001/db/backup?compress' -o bak.sqlite3.gz
 
 ## Advanced Topics
 
-**Installation & Setup**: Binary releases, Docker, Homebrew, building from source → See [Installation](reference/01-installation-setup.md)
+**Installation & Setup**: Binary releases, Docker, Homebrew, building from source → [Installation](reference/01-installation-setup.md)
 
-**HTTP API Reference**: Endpoints, writing/querying data, parameterized statements, transactions, BLOBs, bulk writes, queued writes → See [HTTP API](reference/02-http-api.md)
+**HTTP API Reference**: Endpoints, writing/querying data, parameterized statements, transactions, BLOBs, bulk writes, queued writes → [HTTP API](reference/02-http-api.md)
 
-**Clustering**: Manual and automatic cluster formation, DNS/Consul/etcd discovery, read-only nodes, growing/shrinking clusters, failure recovery → See [Clustering](reference/03-clustering.md)
+**Clustering**: Manual and automatic cluster formation, DNS/Consul/etcd discovery, read-only nodes, growing/shrinking clusters, failure recovery → [Clustering](reference/03-clustering.md)
 
-**Security**: TLS for HTTP and node-to-node, mutual TLS, authentication, role-based permissions, network security → See [Security](reference/04-security.md)
+**Security**: TLS for HTTP and node-to-node, mutual TLS, authentication, role-based permissions, network security → [Security](reference/04-security.md)
 
-**Advanced Operations**: Change Data Capture (CDC), SQLite extensions, backup/restore strategies, performance tuning, monitoring endpoints → See [Advanced Topics](reference/05-advanced-topics.md)
+**Advanced Operations**: Change Data Capture (CDC), SQLite extensions, backup/restore strategies, performance tuning, monitoring endpoints → [Advanced Topics](reference/05-advanced-topics.md)

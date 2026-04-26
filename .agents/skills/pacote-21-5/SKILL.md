@@ -134,8 +134,8 @@ await pacote.tarball.stream('axios@1', (stream) => {
 
 ## Advanced Topics
 
-**Fetcher Types and Spec Resolution**: Deep dive into the five fetcher classes — RegistryFetcher, GitFetcher, FileFetcher, DirFetcher, RemoteFetcher — and how pacote dispatches based on specifier type. See [Fetcher Architecture](reference/01-fetcher-architecture.md)
+**Fetcher Types and Spec Resolution**: Deep dive into the five fetcher classes — RegistryFetcher, GitFetcher, FileFetcher, DirFetcher, RemoteFetcher — and how pacote dispatches based on specifier type → [Fetcher Architecture](reference/01-fetcher-architecture.md)
 
-**Options Reference**: Complete reference of all configuration options including cache settings, integrity verification, security allowlists, registry customization, and file mode controls. See [Options Reference](reference/02-options-reference.md)
+**Options Reference**: Complete reference of all configuration options including cache settings, integrity verification, security allowlists, registry customization, and file mode controls → [Options Reference](reference/02-options-reference.md)
 
-**Security and Verification**: Sigstore attestation verification, registry signature validation, SRI integrity checks, TUF key retrieval, and the allowX family of options for controlling fetch sources. See [Security and Verification](reference/03-security-verification.md)
+**Security and Verification**: Sigstore attestation verification, registry signature validation, SRI integrity checks, TUF key retrieval, and the allowX family of options for controlling fetch sources → [Security and Verification](reference/03-security-verification.md)

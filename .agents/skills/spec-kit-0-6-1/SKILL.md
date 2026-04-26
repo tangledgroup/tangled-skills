@@ -186,12 +186,12 @@ git restore .specify/memory/constitution.md
 
 ## Advanced Topics
 
-**SDD Methodology**: The philosophy, workflow, and constitutional foundation of spec-driven development → See [SDD Methodology](reference/01-sdd-methodology.md)
+**SDD Methodology**: The philosophy, workflow, and constitutional foundation of spec-driven development → [SDD Methodology](reference/01-sdd-methodology.md)
 
-**Slash Commands Reference**: Complete reference for all core and optional `/speckit.*` commands → See [Slash Commands Reference](reference/02-slash-commands.md)
+**Slash Commands Reference**: Complete reference for all core and optional `/speckit.*` commands → [Slash Commands Reference](reference/02-slash-commands.md)
 
-**Extensions System**: Extension manifest schema, command files, hooks, catalog publishing, and development guide → See [Extensions System](reference/03-extensions.md)
+**Extensions System**: Extension manifest schema, command files, hooks, catalog publishing, and development guide → [Extensions System](reference/03-extensions.md)
 
-**Presets System**: Preset structure, template overrides, stacking priority, and publishing guide → See [Presets System](reference/04-presets.md)
+**Presets System**: Preset structure, template overrides, stacking priority, and publishing guide → [Presets System](reference/04-presets.md)
 
-**CLI Reference**: `specify` CLI commands, flags, environment variables, and troubleshooting → See [CLI Reference](reference/05-cli-reference.md)
+**CLI Reference**: `specify` CLI commands, flags, environment variables, and troubleshooting → [CLI Reference](reference/05-cli-reference.md)

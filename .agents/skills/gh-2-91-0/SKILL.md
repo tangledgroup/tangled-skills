@@ -303,16 +303,16 @@ gh alias delete bugs
 
 ## Advanced Topics
 
-**Authentication and Enterprise**: OAuth flows, token management, GitHub Enterprise Server setup, SSH key integration → See [Authentication](reference/01-authentication.md)
+**Authentication and Enterprise**: OAuth flows, token management, GitHub Enterprise Server setup, SSH key integration → [Authentication](reference/01-authentication.md)
 
-**Output Formatting**: JSON output, jq filtering, Go templates, helper functions (tablerow, timeago, hyperlink) → See [Output Formatting](reference/02-output-formatting.md)
+**Output Formatting**: JSON output, jq filtering, Go templates, helper functions (tablerow, timeago, hyperlink) → [Output Formatting](reference/02-output-formatting.md)
 
-**Extensions and Skills**: Extension system architecture, creating extensions, skill installation across agent hosts → See [Extensions and Skills](reference/03-extensions-skills.md)
+**Extensions and Skills**: Extension system architecture, creating extensions, skill installation across agent hosts → [Extensions and Skills](reference/03-extensions-skills.md)
 
-**GitHub Actions Automation**: Workflow management, run control, secrets, variables, cache operations → See [GitHub Actions](reference/04-github-actions.md)
+**GitHub Actions Automation**: Workflow management, run control, secrets, variables, cache operations → [GitHub Actions](reference/04-github-actions.md)
 
-**Codespaces Management**: Creating, managing, SSH access, port forwarding, Jupyter integration → See [Codespaces](reference/05-codespaces.md)
+**Codespaces Management**: Creating, managing, SSH access, port forwarding, Jupyter integration → [Codespaces](reference/05-codespaces.md)
 
-**Search and API**: Full-text search across code/issues/PRs/repos, REST and GraphQL API patterns → See [Search and API](reference/06-search-api.md)
+**Search and API**: Full-text search across code/issues/PRs/repos, REST and GraphQL API patterns → [Search and API](reference/06-search-api.md)
 
-**Configuration and Environment**: Config keys, environment variables, shell completion, telemetry → See [Configuration](reference/07-configuration.md)
+**Configuration and Environment**: Config keys, environment variables, shell completion, telemetry → [Configuration](reference/07-configuration.md)

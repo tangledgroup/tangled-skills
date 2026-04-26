@@ -70,8 +70,8 @@ VS Code extensions offer significant advantages: built-in GitHub Copilot authent
 
 ## Advanced Topics
 
-**Prompt Stack Architecture**: Deep dive into each layer of the prompt stack and how they interact → See [Prompt Stack Architecture](reference/01-prompt-stack-architecture.md)
+**Prompt Stack Architecture**: Deep dive into each layer of the prompt stack and how they interact → [Prompt Stack Architecture](reference/01-prompt-stack-architecture.md)
 
-**Implementation Patterns**: Building UI-driven pipelines, iterative agent training, and system prompt design → See [Implementation Patterns](reference/02-implementation-patterns.md)
+**Implementation Patterns**: Building UI-driven pipelines, iterative agent training, and system prompt design → [Implementation Patterns](reference/02-implementation-patterns.md)
 
-**Context Management**: Strategies for managing context limits, prompt budgets, history compaction, and decision logs → See [Context Management](reference/03-context-management.md)
+**Context Management**: Strategies for managing context limits, prompt budgets, history compaction, and decision logs → [Context Management](reference/03-context-management.md)

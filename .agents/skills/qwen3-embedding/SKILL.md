@@ -68,8 +68,8 @@ Key features include Matryoshka Representation Learning (MRL) for flexible outpu
 
 ## Advanced Topics
 
-**Model Comparison & Benchmarks**: MTEB, C-MTEB, and reranking benchmark results → See [Model Comparison](reference/01-model-comparison.md)
+**Model Comparison & Benchmarks**: MTEB, C-MTEB, and reranking benchmark results → [Model Comparison](reference/01-model-comparison.md)
 
-**Usage Examples**: Code for Sentence Transformers, Transformers, vLLM, TEI, and reranker usage → See [Usage Examples](reference/02-usage-examples.md)
+**Usage Examples**: Code for Sentence Transformers, Transformers, vLLM, TEI, and reranker usage → [Usage Examples](reference/02-usage-examples.md)
 
-**Architecture & Training**: Model architecture details, three-stage training pipeline, LoRA fine-tuning → See [Architecture & Training](reference/03-architecture-and-training.md)
+**Architecture & Training**: Model architecture details, three-stage training pipeline, LoRA fine-tuning → [Architecture & Training](reference/03-architecture-and-training.md)

@@ -173,16 +173,16 @@ The Next.js frontend provides these key routes:
 
 ## Advanced Topics
 
-**Plugin Configuration Reference**: Full ecommerce plugin config options, collection overrides, access control patterns → See [Plugin Configuration](reference/01-plugin-configuration.md)
+**Plugin Configuration Reference**: Full ecommerce plugin config options, collection overrides, access control patterns → [Plugin Configuration](reference/01-plugin-configuration.md)
 
-**Products and Variants**: Product catalog structure, variant types/options, pricing per currency, inventory management, gallery, related products → See [Products and Variants](reference/02-products-and-variants.md)
+**Products and Variants**: Product catalog structure, variant types/options, pricing per currency, inventory management, gallery, related products → [Products and Variants](reference/02-products-and-variants.md)
 
-**Carts and Checkout**: Cart operations, guest carts, item matching, checkout flow, payment initiation, order confirmation → See [Carts and Checkout](reference/03-carts-and-checkout.md)
+**Carts and Checkout**: Cart operations, guest carts, item matching, checkout flow, payment initiation, order confirmation → [Carts and Checkout](reference/03-carts-and-checkout.md)
 
-**Orders and Transactions**: Order lifecycle, transaction tracking, Stripe webhooks, guest order access with accessToken → See [Orders and Transactions](reference/04-orders-and-transactions.md)
+**Orders and Transactions**: Order lifecycle, transaction tracking, Stripe webhooks, guest order access with accessToken → [Orders and Transactions](reference/04-orders-and-transactions.md)
 
-**Access Control Patterns**: Role-based access (admin/customer), document ownership, published status filtering, field-level security → See [Access Control](reference/05-access-control.md)
+**Access Control Patterns**: Role-based access (admin/customer), document ownership, published status filtering, field-level security → [Access Control](reference/05-access-control.md)
 
-**Frontend Architecture**: Next.js App Router structure, React context for ecommerce state, Stripe Elements integration, layout builder blocks → See [Frontend Architecture](reference/06-frontend-architecture.md)
+**Frontend Architecture**: Next.js App Router structure, React context for ecommerce state, Stripe Elements integration, layout builder blocks → [Frontend Architecture](reference/06-frontend-architecture.md)
 
-**Deployment and Production**: Build process, Vercel deployment, PostgreSQL adapter, migrations, scheduled publishing, caching strategy → See [Deployment and Production](reference/07-deployment-and-production.md)
+**Deployment and Production**: Build process, Vercel deployment, PostgreSQL adapter, migrations, scheduled publishing, caching strategy → [Deployment and Production](reference/07-deployment-and-production.md)

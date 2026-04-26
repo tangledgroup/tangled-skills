@@ -226,14 +226,14 @@ curl -s -o /dev/null -w "Size: %{size_download} bytes, HTTP: %{http_code}\n" htt
 
 ## Advanced Topics
 
-**URL Syntax and Schemes**: URL parsing rules, scheme support, globbing, security considerations → See [URL Syntax](reference/01-url-syntax.md)
+**URL Syntax and Schemes**: URL parsing rules, scheme support, globbing, security considerations → [URL Syntax](reference/01-url-syntax.md)
 
-**libcurl Easy Interface**: Single-transfer C API, handle lifecycle, callbacks, options, error handling → See [Easy Interface](reference/02-libcurl-easy.md)
+**libcurl Easy Interface**: Single-transfer C API, handle lifecycle, callbacks, options, error handling → [Easy Interface](reference/02-libcurl-easy.md)
 
-**libcurl Multi Interface**: Concurrent transfers in a single thread, socket-based event loop, poll API → See [Multi Interface](reference/03-libcurl-multi.md)
+**libcurl Multi Interface**: Concurrent transfers in a single thread, socket-based event loop, poll API → [Multi Interface](reference/03-libcurl-multi.md)
 
-**SSL/TLS and Certificates**: TLS backends, certificate verification, client certs, HSTS, ECH, Alt-Svc → See [SSL/TLS](reference/04-ssl-tls.md)
+**SSL/TLS and Certificates**: TLS backends, certificate verification, client certs, HSTS, ECH, Alt-Svc → [SSL/TLS](reference/04-ssl-tls.md)
 
-**Protocols Reference**: Protocol-specific behaviors for HTTP, FTP, SFTP, IMAP, SMTP, POP3, MQTT, WebSocket → See [Protocols](reference/05-protocols.md)
+**Protocols Reference**: Protocol-specific behaviors for HTTP, FTP, SFTP, IMAP, SMTP, POP3, MQTT, WebSocket → [Protocols](reference/05-protocols.md)
 
-**Security and Configuration**: Security best practices, .netrc, config files, environment variables, write-out format → See [Security and Config](reference/06-security-config.md)
+**Security and Configuration**: Security best practices, .netrc, config files, environment variables, write-out format → [Security and Config](reference/06-security-config.md)

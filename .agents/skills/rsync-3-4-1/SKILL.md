@@ -212,12 +212,12 @@ rsync -avz --skip-compress=gz/jpg/mp[34]/zip/bz2 /src/ /dst/
 
 ## Advanced Topics
 
-**Command-Line Options**: Complete reference of all rsync options including transfer rules, delete modes, compression, and checksum algorithms → See [Command-Line Options](reference/01-command-line-options.md)
+**Command-Line Options**: Complete reference of all rsync options including transfer rules, delete modes, compression, and checksum algorithms → [Command-Line Options](reference/01-command-line-options.md)
 
-**Filter Rules and Pattern Matching**: Include/exclude patterns, merge files, per-directory filters, modifiers, anchoring, and interaction with deletions → See [Filter Rules](reference/02-filter-rules.md)
+**Filter Rules and Pattern Matching**: Include/exclude patterns, merge files, per-directory filters, modifiers, anchoring, and interaction with deletions → [Filter Rules](reference/02-filter-rules.md)
 
-**Rsync Daemon Configuration**: rsyncd.conf parameters, module setup, authentication, access control, logging, SSL/TLS proxy, and daemon launch methods → See [Daemon Configuration](reference/03-daemon-configuration.md)
+**Rsync Daemon Configuration**: rsyncd.conf parameters, module setup, authentication, access control, logging, SSL/TLS proxy, and daemon launch methods → [Daemon Configuration](reference/03-daemon-configuration.md)
 
-**Batch Mode and Incremental Backups**: Write-batch/read-batch for bulk deployment, `--link-dest`, `--compare-dest`, `--copy-dest`, `--backup-dir`, and atomic update patterns → See [Batch Mode and Backups](reference/04-batch-and-backups.md)
+**Batch Mode and Incremental Backups**: Write-batch/read-batch for bulk deployment, `--link-dest`, `--compare-dest`, `--copy-dest`, `--backup-dir`, and atomic update patterns → [Batch Mode and Backups](reference/04-batch-and-backups.md)
 
-**Symbolic Links, Security, and Troubleshooting**: Symlink handling modes, multi-host security considerations, common error diagnostics, exit codes, and FAQ solutions → See [Security and Troubleshooting](reference/05-security-and-troubleshooting.md)
+**Symbolic Links, Security, and Troubleshooting**: Symlink handling modes, multi-host security considerations, common error diagnostics, exit codes, and FAQ solutions → [Security and Troubleshooting](reference/05-security-and-troubleshooting.md)

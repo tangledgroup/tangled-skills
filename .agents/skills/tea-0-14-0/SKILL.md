@@ -128,8 +128,8 @@ man <(tea man)
 
 ## Advanced Topics
 
-**Command Reference**: Complete CLI reference for all subcommands and flags → See [Command Reference](reference/01-command-reference.md)
+**Command Reference**: Complete CLI reference for all subcommands and flags → [Command Reference](reference/01-command-reference.md)
 
-**Authentication and Configuration**: Login methods, config structure, OAuth2, SSH auth → See [Authentication](reference/02-authentication.md)
+**Authentication and Configuration**: Login methods, config structure, OAuth2, SSH auth → [Authentication](reference/02-authentication.md)
 
-**CI/CD and Automation Workflows**: Workflow dispatch, PR auto-merge, action secrets, webhooks → See [Automation Workflows](reference/03-automation-workflows.md)
+**CI/CD and Automation Workflows**: Workflow dispatch, PR auto-merge, action secrets, webhooks → [Automation Workflows](reference/03-automation-workflows.md)

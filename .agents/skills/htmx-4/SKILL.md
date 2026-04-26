@@ -128,10 +128,10 @@ In htmx 4.0, attribute inheritance is **explicit by default** using the `:inheri
 
 ## Advanced Topics
 
-**Core Attributes Reference**: All hx-* attributes with syntax and examples → See [Core Attributes](reference/01-core-attributes.md)
+**Core Attributes Reference**: All hx-* attributes with syntax and examples → [Core Attributes](reference/01-core-attributes.md)
 
-**Response Headers**: Server-controlled behavior via HX-* headers → See [Response Headers](reference/02-response-headers.md)
+**Response Headers**: Server-controlled behavior via HX-* headers → [Response Headers](reference/02-response-headers.md)
 
-**Extensions System**: SSE, WebSockets, preload, building custom extensions → See [Extensions](reference/03-extensions.md)
+**Extensions System**: SSE, WebSockets, preload, building custom extensions → [Extensions](reference/03-extensions.md)
 
-**Migration from htmx 2.x**: Breaking changes and upgrade guide → See [Migration Guide](reference/04-migration-guide.md)
+**Migration from htmx 2.x**: Breaking changes and upgrade guide → [Migration Guide](reference/04-migration-guide.md)

@@ -85,8 +85,8 @@ With Markdown link references at the bottom:
 
 ## Advanced Topics
 
-**Format Specification**: Complete changelog format rules, change types, and Markdown structure → See [Format Specification](reference/01-format-specification.md)
+**Format Specification**: Complete changelog format rules, change types, and Markdown structure → [Format Specification](reference/01-format-specification.md)
 
-**Semantic Versioning 2.0.0**: Full SemVer specification covering version format, precedence rules, pre-release and build metadata → See [Semantic Versioning 2.0.0](reference/02-semantic-versioning.md)
+**Semantic Versioning 2.0.0**: Full SemVer specification covering version format, precedence rules, pre-release and build metadata → [Semantic Versioning 2.0.0](reference/02-semantic-versioning.md)
 
-**Best Practices and FAQ**: Guiding principles, bad practices to avoid, effort reduction tips, and frequently asked questions → See [Best Practices and FAQ](reference/03-best-practices-faq.md)
+**Best Practices and FAQ**: Guiding principles, bad practices to avoid, effort reduction tips, and frequently asked questions → [Best Practices and FAQ](reference/03-best-practices-faq.md)

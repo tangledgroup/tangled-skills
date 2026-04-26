@@ -111,10 +111,10 @@ Supported URL schemes: `redis://`, `rediss://` (SSL), `unix://` (Unix socket).
 
 ## Advanced Topics
 
-**Models and Fields**: HashModel vs JsonModel, field types, validation, default values, CRUD operations, Meta configuration, abstract models → See [Models and Fields](reference/01-models-and-fields.md)
+**Models and Fields**: HashModel vs JsonModel, field types, validation, default values, CRUD operations, Meta configuration, abstract models → [Models and Fields](reference/01-models-and-fields.md)
 
-**Making Queries**: find() expressions, comparison/string/collection operators, AND/OR/NOT logic, pagination, sorting, field projection, bulk operations, vector search, async iteration → See [Making Queries](reference/02-making-queries.md)
+**Making Queries**: find() expressions, comparison/string/collection operators, AND/OR/NOT logic, pagination, sorting, field projection, bulk operations, vector search, async iteration → [Making Queries](reference/02-making-queries.md)
 
-**Migrations**: File-based schema migrations with rollback, data migrations, CLI commands (`om migrate`, `om migrate-data`), datetime normalization in 1.1 → See [Migrations](reference/03-migrations.md)
+**Migrations**: File-based schema migrations with rollback, data migrations, CLI commands (`om migrate`, `om migrate-data`), datetime normalization in 1.1 → [Migrations](reference/03-migrations.md)
 
-**FastAPI Integration**: Using Redis OM models as Pydantic schemas, dual Redis instances (cache vs data), lifespan setup, caching with fastapi-cache → See [FastAPI Integration](reference/04-fastapi-integration.md)
+**FastAPI Integration**: Using Redis OM models as Pydantic schemas, dual Redis instances (cache vs data), lifespan setup, caching with fastapi-cache → [FastAPI Integration](reference/04-fastapi-integration.md)

@@ -165,10 +165,10 @@ storage = EncryptedCookieStorage(
 
 ## Advanced Topics
 
-**Session Object API**: Properties, methods, and the `changed()`/`invalidate()` lifecycle → See [Session Reference](reference/01-session-reference.md)
+**Session Object API**: Properties, methods, and the `changed()`/`invalidate()` lifecycle → [Session Reference](reference/01-session-reference.md)
 
-**Storage Backends**: Detailed guide to all five storage implementations — SimpleCookie, EncryptedCookie (Fernet), NaCl, Redis, and Memcached → See [Storage Backends](reference/02-storage-backends.md)
+**Storage Backends**: Detailed guide to all five storage implementations — SimpleCookie, EncryptedCookie (Fernet), NaCl, Redis, and Memcached → [Storage Backends](reference/02-storage-backends.md)
 
-**AbstractStorage and Custom Storages**: Building custom session backends by extending `AbstractStorage` with `load_session()` and `save_session()` → See [Custom Storages](reference/03-custom-storages.md)
+**AbstractStorage and Custom Storages**: Building custom session backends by extending `AbstractStorage` with `load_session()` and `save_session()` → [Custom Storages](reference/03-custom-storages.md)
 
-**Middleware Internals and Third-Party Extensions**: How the middleware works, request/response flow, and community extensions for MongoDB, DynamoDB, and Firestore → See [Middleware and Extensions](reference/04-middleware-and-extensions.md)
+**Middleware Internals and Third-Party Extensions**: How the middleware works, request/response flow, and community extensions for MongoDB, DynamoDB, and Firestore → [Middleware and Extensions](reference/04-middleware-and-extensions.md)

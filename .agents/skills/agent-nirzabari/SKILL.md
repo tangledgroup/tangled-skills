@@ -60,18 +60,18 @@ Four major jumps in AI capability from a user's perspective:
 
 ## Advanced Topics
 
-**Harness Fundamentals**: The simplest agent loop, ralph wiggum pattern, and why it breaks at scale → See [Harness Fundamentals](reference/01-harness-fundamentals.md)
+**Harness Fundamentals**: The simplest agent loop, ralph wiggum pattern, and why it breaks at scale → [Harness Fundamentals](reference/01-harness-fundamentals.md)
 
-**Context Engineering**: Prompt architecture, AGENTS.md patterns, OpenAI's lessons on context management → See [Context Engineering](reference/02-context-engineering.md)
+**Context Engineering**: Prompt architecture, AGENTS.md patterns, OpenAI's lessons on context management → [Context Engineering](reference/02-context-engineering.md)
 
-**Tooling Systems**: Tool registries, compiled vs dynamic tool handlers, Codex orchestrator vs OpenCode plugins → See [Tooling Systems](reference/03-tooling-systems.md)
+**Tooling Systems**: Tool registries, compiled vs dynamic tool handlers, Codex orchestrator vs OpenCode plugins → [Tooling Systems](reference/03-tooling-systems.md)
 
-**Safety and Persistence**: Allowlists, sandboxing, AST-based command analysis, replay architecture → See [Safety and Persistence](reference/04-safety-and-persistence.md)
+**Safety and Persistence**: Allowlists, sandboxing, AST-based command analysis, replay architecture → [Safety and Persistence](reference/04-safety-and-persistence.md)
 
-**Client Surfaces and Extensibility**: TUI vs Web vs IDE patterns, MCP integration, Skills, plugin systems → See [Client Surfaces and Extensibility](reference/05-client-surfaces-and-extensibility.md)
+**Client Surfaces and Extensibility**: TUI vs Web vs IDE patterns, MCP integration, Skills, plugin systems → [Client Surfaces and Extensibility](reference/05-client-surfaces-and-extensibility.md)
 
-**LLM Provider Contract**: Streaming events (SSE), three-phase tool call lifecycle, multi-turn thread state, portability → See [LLM Provider Contract](reference/06-llm-provider-contract.md)
+**LLM Provider Contract**: Streaming events (SSE), three-phase tool call lifecycle, multi-turn thread state, portability → [LLM Provider Contract](reference/06-llm-provider-contract.md)
 
-**Harness Deep Dive**: Codex (Rust monolith) vs OpenCode (TS/Bun control-plane) architecture comparison across all 7 layers → See [Harness Deep Dive](reference/07-harness-deep-dive.md)
+**Harness Deep Dive**: Codex (Rust monolith) vs OpenCode (TS/Bun control-plane) architecture comparison across all 7 layers → [Harness Deep Dive](reference/07-harness-deep-dive.md)
 
-**Scaling Case Study**: Anthropic's C compiler case study — parallel Claude agents, git-based coordination, lessons learned → See [Scaling Case Study](reference/08-scaling-case-study.md)
+**Scaling Case Study**: Anthropic's C compiler case study — parallel Claude agents, git-based coordination, lessons learned → [Scaling Case Study](reference/08-scaling-case-study.md)

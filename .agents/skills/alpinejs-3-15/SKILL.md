@@ -157,12 +157,12 @@ Available plugins: Mask, Intersect, Resize, Persist, Collapse, Focus (formerly T
 
 ## Advanced Topics
 
-**Directives Reference**: All 15+ directives with syntax, modifiers, and examples → See [Directives](reference/01-directives.md)
+**Directives Reference**: All 15+ directives with syntax, modifiers, and examples → [Directives](reference/01-directives.md)
 
-**Magics and Globals**: `$el`, `$store`, `$watch`, `$dispatch`, `$nextTick`, `$refs`, `Alpine.data()`, `Alpine.store()`, `Alpine.bind()` → See [Magics & Globals](reference/02-magics-globals.md)
+**Magics and Globals**: `$el`, `$store`, `$watch`, `$dispatch`, `$nextTick`, `$refs`, `Alpine.data()`, `Alpine.store()`, `Alpine.bind()` → [Magics & Globals](reference/02-magics-globals.md)
 
-**Plugins Guide**: Mask, Intersect, Resize, Persist, Collapse, Focus, Anchor, Morph, Sort with installation and usage → See [Plugins](reference/03-plugins.md)
+**Plugins Guide**: Mask, Intersect, Resize, Persist, Collapse, Focus, Anchor, Morph, Sort with installation and usage → [Plugins](reference/03-plugins.md)
 
-**Event Modifiers**: `.prevent`, `.stop`, `.outside`, `.window`, `.debounce`, `.throttle`, `.once`, `.self`, `.camel`, `.passive` and more → See [Events & Modifiers](reference/04-events-modifiers.md)
+**Event Modifiers**: `.prevent`, `.stop`, `.outside`, `.window`, `.debounce`, `.throttle`, `.once`, `.self`, `.camel`, `.passive` and more → [Events & Modifiers](reference/04-events-modifiers.md)
 
-**Advanced Patterns**: CSP build, reactivity internals (`Alpine.reactive()`, `Alpine.effect()`), extending Alpine with custom directives/magics → See [Advanced Topics](reference/05-advanced-topics.md)
+**Advanced Patterns**: CSP build, reactivity internals (`Alpine.reactive()`, `Alpine.effect()`), extending Alpine with custom directives/magics → [Advanced Topics](reference/05-advanced-topics.md)

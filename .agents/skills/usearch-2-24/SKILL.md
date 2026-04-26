@@ -77,16 +77,16 @@ USearch automatically casts between input type and storage type. Recommended def
 
 ## Advanced Topics
 
-**Python Bindings**: Complete Python API with NumPy integration, batch operations, and JIT metrics → See [Python Bindings](reference/01-python-bindings.md)
+**Python Bindings**: Complete Python API with NumPy integration, batch operations, and JIT metrics → [Python Bindings](reference/01-python-bindings.md)
 
-**C++ API**: Core C++11 interface with templates, executors, and low-level control → See [C++ API](reference/02-cpp-api.md)
+**C++ API**: Core C++11 interface with templates, executors, and low-level control → [C++ API](reference/02-cpp-api.md)
 
-**Rust Bindings**: Rust SDK with native types, filtering predicates, and SIMD features → See [Rust Bindings](reference/03-rust-bindings.md)
+**Rust Bindings**: Rust SDK with native types, filtering predicates, and SIMD features → [Rust Bindings](reference/03-rust-bindings.md)
 
-**JavaScript Bindings**: Node.js and WASM support with BigInt keys → See [JavaScript Bindings](reference/04-javascript-bindings.md)
+**JavaScript Bindings**: Node.js and WASM support with BigInt keys → [JavaScript Bindings](reference/04-javascript-bindings.md)
 
-**Other Languages**: Go, Java, C, Swift, C#, and more → See [Other Languages](reference/05-other-languages.md)
+**Other Languages**: Go, Java, C, Swift, C#, and more → [Other Languages](reference/05-other-languages.md)
 
-**Metrics and Quantization**: Built-in metrics, user-defined metrics with JIT, scalar types → See [Metrics and Quantization](reference/06-metrics-and-quantization.md)
+**Metrics and Quantization**: Built-in metrics, user-defined metrics with JIT, scalar types → [Metrics and Quantization](reference/06-metrics-and-quantization.md)
 
-**Advanced Topics**: Clustering, joins, exact search, multi-index, serialization → See [Advanced Topics](reference/07-advanced-topics.md)
+**Advanced Topics**: Clustering, joins, exact search, multi-index, serialization → [Advanced Topics](reference/07-advanced-topics.md)
