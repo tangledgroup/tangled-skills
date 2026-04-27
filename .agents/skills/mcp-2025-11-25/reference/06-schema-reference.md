@@ -750,6 +750,49 @@ interface ElicitResult {
 }
 ```
 
+### Restricted JSON Schema Types (Elicitation Form Mode)
+
+Form mode schemas are limited to flat objects with primitive properties only. Complex nested structures and arrays of objects beyond enums are not supported.
+
+#### StringSchema
+
+```typescript
+interface StringSchema {
+  type: "string";
+  title?: string;
+  description?: string;
+  minLength?: number;
+  maxLength?: number;
+  pattern?: string;
+  format?: "email" | "uri" | "date" | "date-time";
+  default?: string;
+}
+```
+
+#### NumberSchema
+
+```typescript
+interface NumberSchema {
+  type: "number" | "integer";
+  title?: string;
+  description?: string;
+  minimum?: number;
+  maximum?: number;
+  default?: number;
+}
+```
+
+#### BooleanSchema
+
+```typescript
+interface BooleanSchema {
+  type: "boolean";
+  title?: string;
+  description?: string;
+  default?: boolean;
+}
+```
+
 ### Enum Schema Types
 
 **SingleSelectEnumSchema**: `UntitledSingleSelectEnumSchema | TitledSingleSelectEnumSchema`
@@ -947,3 +990,17 @@ interface CancelTaskRequestParams {
 ```
 
 `CancelTaskResult = Result & Task`
+
+## TitledMultiSelectEnumSchema
+
+```typescript
+interface TitledMultiSelectEnumSchema {
+  type: "array";
+  title?: string;
+  description?: string;
+  minItems?: number;
+  maxItems?: number;
+  items: { anyOf: { const: string; title: string }[] };
+  default?: string[];
+}
+```

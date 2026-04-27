@@ -2,7 +2,7 @@
 
 ## Model Context Protocol
 
-Model Context Protocol (MCP) is an open protocol that enables seamless integration between LLM applications and external data sources and tools. The specification defines authoritative protocol requirements based on the TypeScript schema in the MCP GitHub repository.
+Model Context Protocol (MCP) is an open protocol that enables seamless integration between LLM applications and external data sources and tools. The specification defines authoritative protocol requirements based on the TypeScript schema in the [MCP GitHub repository](https://github.com/modelcontextprotocol/modelcontextprotocol). The schema is [defined in TypeScript](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/schema/2025-11-25/schema.ts) and also [available as JSON Schema](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/schema/2025-11-25/schema.json).
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" are interpreted as described in BCP 14 (RFC2119, RFC8174) when they appear in all capitals.
 
@@ -57,6 +57,16 @@ MCP is built on several key design principles:
 
 - **Features can be added progressively**: Core protocol provides minimal required functionality. Additional capabilities are negotiated as needed, maintaining backwards compatibility.
 
+### Comparison with LSP
+
+MCP takes inspiration from the Language Server Protocol (LSP) in its client-server architecture and JSON-RPC 2.0 foundation. Key differences:
+
+- **Purpose**: LSP standardizes language services (completions, diagnostics, definitions); MCP standardizes LLM context exchange and tool integration
+- **Directionality**: LSP servers push diagnostics to clients; MCP servers primarily respond to client queries but can also request sampling through clients
+- **Content types**: MCP supports rich content (text, images, audio, resource links, embedded resources); LSP focuses on text and URIs
+- **Sampling**: MCP includes server-initiated LLM sampling (no equivalent in LSP)
+- **Elicitation**: MCP supports user input collection flows (no equivalent in LSP)
+
 ## Capability Negotiation
 
 MCP uses a capability-based negotiation system where clients and servers explicitly declare their supported features during initialization. Capabilities determine which protocol features and primitives are available during a session.
@@ -101,6 +111,15 @@ Each capability unlocks specific protocol features:
 - Error reporting
 - Logging
 
+## Server Isolation Boundaries
+
+MCP enforces strict isolation between servers:
+
+- Servers **cannot** read the full conversation history — they receive only necessary contextual information
+- Servers **cannot** see into other servers' data, tools, or responses
+- Each client-server session maintains its own security boundary
+- The host is responsible for enforcing these boundaries and aggregating context across clients
+
 ## Security and Trust & Safety
 
 MCP enables powerful capabilities through arbitrary data access and code execution paths. All implementors must carefully address security considerations.
@@ -143,3 +162,12 @@ Implementors SHOULD:
 
 - Clarified that servers using stdio transport may use stderr for all types of logging
 - Added optional `description` field to `Implementation` interface
+
+### Protocol Versions
+
+MCP uses date-based version identifiers. Available versions:
+
+- `2025-11-25` — Current (this specification)
+- `2025-06-18` — Previous stable
+- `2025-03-26` — Earlier release
+- `2024-11-05` — Initial release (deprecated HTTP+SSE transport)

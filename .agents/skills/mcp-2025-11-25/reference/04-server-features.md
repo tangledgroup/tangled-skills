@@ -127,6 +127,17 @@ Response:
 }
 ```
 
+### Tool Names
+
+Tool naming guidelines:
+
+- Tool names SHOULD be between 1 and 128 characters in length (inclusive)
+- Tool names SHOULD be considered case-sensitive
+- Tool names SHOULD NOT contain spaces, commas, or other special characters
+- Allowed characters: A-Z, a-z, 0-9, underscore (`_`), hyphen (`-`), dot (`.`)
+- Tool names SHOULD be unique within a server
+- Example valid tool names: `get_weather`, `send-email`, `db.query`
+
 ### Tool Definition
 
 - `name`: Unique identifier (1-128 chars, case-sensitive, allowed: A-Z, a-z, 0-9, underscore, hyphen, dot)

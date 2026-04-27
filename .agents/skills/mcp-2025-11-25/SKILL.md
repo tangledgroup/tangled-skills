@@ -16,6 +16,7 @@ tags:
 category: protocol
 external_references:
   - https://modelcontextprotocol.io/specification/2025-11-25
+  - https://github.com/modelcontextprotocol/modelcontextprotocol
 ---
 
 # Model Context Protocol (MCP) 2025-11-25
@@ -24,7 +25,7 @@ external_references:
 
 Model Context Protocol (MCP) is an open protocol that enables seamless integration between LLM applications and external data sources and tools. It provides a standardized way to connect language models with the context they need, whether building AI-powered IDEs, enhancing chat interfaces, or creating custom AI workflows.
 
-The protocol uses JSON-RPC 2.0 messages over stateful connections with capability negotiation between clients and servers. It takes inspiration from the Language Server Protocol (LSP), standardizing how additional context and tools integrate into the ecosystem of AI applications.
+The protocol uses JSON-RPC 2.0 messages over stateful connections with capability negotiation between clients and servers. It takes inspiration from the Language Server Protocol (LSP) in its client-server architecture and JSON-RPC foundation, but diverges by focusing on LLM context exchange rather than language services.
 
 ### Key Architecture
 
@@ -81,6 +82,30 @@ Resources, tools, prompts, and content blocks support optional annotations:
 - `priority`: Importance from 0.0 (optional) to 1.0 (required)
 - `lastModified`: ISO 8601 timestamp of last modification
 
+## Quick Reference
+
+### Protocol Version
+
+`2025-11-25` — the protocol version string used in `initialize` requests and the `MCP-Protocol-Version` HTTP header.
+
+### JSON-RPC Error Codes
+
+| Code | Meaning |
+|------|----------|
+| `-32700` | Parse error |
+| `-32600` | Invalid request (e.g., non-task-augmented when required) |
+| `-32601` | Method not found (capability not supported) |
+| `-32602` | Invalid params |
+| `-32603` | Internal error |
+| `-32002` | Resource not found |
+| `-32042` | URL elicitation required |
+| `-1` | User rejected (sampling) |
+
+### Transport Comparison
+
+- **stdio**: Client launches server as subprocess, JSON-RPC over stdin/stdout, newline-delimited. Best for local integrations.
+- **Streamable HTTP**: Server runs independently, client POSTs JSON-RPC messages to single endpoint, SSE for server-to-client. Supports multiple clients, session management, resumability.
+
 ## Security Principles
 
 MCP enables powerful capabilities through arbitrary data access and code execution paths. Key security principles:
@@ -104,3 +129,5 @@ MCP enables powerful capabilities through arbitrary data access and code executi
 **Client Features**: Roots, sampling, elicitation (form and URL modes) → [Client Features](reference/05-client-features.md)
 
 **Schema Reference**: Complete JSON-RPC message types and data structures → [Schema Reference](reference/06-schema-reference.md)
+
+**Authorization Extensions**: Optional extensions for client credentials and enterprise authorization → See [ext-auth repository](https://github.com/modelcontextprotocol/ext-auth)

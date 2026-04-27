@@ -243,7 +243,9 @@ Based on:
 - OAuth 2.0 Authorization Server Metadata (RFC8414)
 - OAuth 2.0 Dynamic Client Registration (RFC7591)
 - OAuth 2.0 Protected Resource Metadata (RFC9728)
-- OAuth Client ID Metadata Documents
+- OAuth Client ID Metadata Documents (draft-ietf-oauth-client-id-metadata-document-00)
+- OpenID Connect Discovery 1.0
+- RFC 8707 (Resource Indicators for OAuth 2.0)
 
 ### Roles
 
@@ -262,6 +264,24 @@ Discovery mechanisms:
 
 MCP clients MUST support both discovery mechanisms, using WWW-Authenticate when present, falling back to well-known URIs.
 
+### Authorization Server Metadata Discovery
+
+To handle different issuer URL formats and ensure interoperability with both OAuth 2.0 Authorization Server Metadata and OpenID Connect Discovery 1.0 specifications, MCP clients MUST attempt multiple well-known endpoints when discovering authorization server metadata.
+
+The discovery approach is based on RFC8414 Section 3.1 for OAuth 2.0 Authorization Server Metadata discovery and RFC8414 Section 5 for OpenID Connect Discovery 1.0 interoperability.
+
+**Discovery endpoint order:**
+
+1. OAuth 2.0 Authorization Server Metadata with path insertion: `https://auth.example.com/.well-known/oauth-authorization-server/tenant1`
+2. OAuth 2.0 Authorization Server Metadata with path appending: `https://auth.example.com/tenant1/.well-known/oauth-authorization-server`
+3. OpenID Connect Discovery 1.0 with path insertion: `https://auth.example.com/.well-known/openid-configuration/tenant1`
+4. OpenID Connect Discovery 1.0 path appending: `https://auth.example.com/tenant1/.well-known/openid-configuration`
+5. OpenID Connect Discovery 1.0: `https://auth.example.com/.well-known/openid-configuration`
+
+**OpenID Connect Discovery 1.0**: While the OpenID Provider Metadata does not define `code_challenge_methods_supported`, this field is commonly included by OpenID providers. MCP clients MUST verify the presence of `code_challenge_methods_supported` in the provider metadata response. If the field is absent, MCP clients MUST refuse to proceed.
+
+Authorization servers providing OpenID Connect Discovery 1.0 MUST include `code_challenge_methods_supported` in their metadata to ensure MCP compatibility.
+
 ### Client Registration Approaches
 
 Priority order:
@@ -271,10 +291,22 @@ Priority order:
 3. Dynamic Client Registration as fallback
 4. Prompt user for client information
 
+### Client ID Metadata Documents
+
+MCP clients and authorization servers SHOULD support OAuth Client ID Metadata Documents as specified in [draft-ietf-oauth-client-id-metadata-document-00](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-client-id-metadata-document-00). This provides a recommended client registration mechanism where clients can serve metadata documents at well-known URIs, reducing the need for pre-registration or dynamic client registration.
+
+MCP implementations supporting Client ID Metadata Documents MUST follow the requirements specified in the OAuth Client ID Metadata Document specification.
+
 ### Scope Selection Strategy
 
 1. Use `scope` parameter from initial WWW-Authenticate 401 response if provided
 2. If not available, use all scopes from `scopes_supported` in Protected Resource Metadata
+
+This approach accommodates the general-purpose nature of MCP clients, which typically lack domain-specific knowledge to make informed decisions about individual scope selection. Requesting all available scopes allows the authorization server and end-user to determine appropriate permissions during the consent process.
+
+### Incremental Scope Consent
+
+MCP supports incremental scope consent through step-up authorization flows. When a server requires additional scopes at runtime, it responds with HTTP 403 and a WWW-Authenticate header including `error="insufficient_scope"` and the required scopes. The client can then redirect the user through the authorization flow to obtain the additional scopes.
 
 ### Resource Parameter
 
@@ -310,3 +342,12 @@ MCP clients MUST implement PKCE per OAuth 2.1 Section 7.5.2 and MUST use `S256` 
 | 400 | Malformed authorization request |
 
 For insufficient scope errors at runtime, servers SHOULD respond with HTTP 403 and WWW-Authenticate header including `error="insufficient_scope"` and the required scopes.
+
+### MCP Authorization Extensions
+
+The core authorization specification defines several optional extensions that are additive (do not modify core protocol), composable (work together without conflicts), and versioned independently:
+
+- **Client Credentials**: OAuth 2.0 client credentials flow for server-to-server authentication
+- **Enterprise-Managed Authorization**: Enterprise-specific authorization mechanisms for organizational deployments
+
+A list of supported extensions can be found in the [MCP Authorization Extensions repository](https://github.com/modelcontextprotocol/ext-auth).
