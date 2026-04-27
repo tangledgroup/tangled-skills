@@ -2,9 +2,11 @@
 
 These optimizers produce optimal natural-language instructions for prompts. They go beyond few-shot examples to actually rewrite *what* the prompt tells the LM to do.
 
-## COPRO (Coordinate Prompt Asccent)
+## COPRO (Coordinate Prompt Ascent)
 
 COPRO generates and refines new instructions for each predictor using coordinate ascent (hill-climbing). It optimizes one predictor at a time while holding others fixed, cycling through all predictors for multiple rounds.
+
+**Constructor:** `dspy.COPRO(prompt_model=None, metric=None, breadth=10, depth=3, init_temperature=1.4, track_stats=False)`
 
 ### How COPRO Works — Step by Step
 
@@ -12,7 +14,7 @@ COPRO generates and refines new instructions for each predictor using coordinate
 
 For each predictor in the program:
 1. Extract the current basic instruction and output prefix
-2. Use a prompt model (separate LM or the configured one) to generate `breadth` new instruction candidates via the `BasicGenerateInstruction` signature:
+2. Use a prompt model to generate `breadth` new instruction candidates via the `BasicGenerateInstruction` signature:
 
 ```python
 class BasicGenerateInstruction(dspy.Signature):
@@ -25,17 +27,15 @@ class BasicGenerateInstruction(dspy.Signature):
     )
 ```
 
-3. Generates `breadth - 1` new candidates plus keeps the original instruction as a candidate
+3. Generates `breadth - 1` new candidates plus keeps the original instruction
 4. Uses `n=breadth-1` with `temperature=init_temperature` for diverse proposals
 
 **Phase 2: Coordinate Ascent Loop (Depth Iterations)**
 
-For each depth iteration (1 to `depth`):
-
-For each predictor in the program (in order):
-1. Take all instruction candidates for this predictor from the previous iteration
-2. If multiple predictors exist, re-evaluate each candidate instruction combined with the *currently best* instructions for other predictors
-3. Score each candidate by running the full program on the trainset and computing the metric
+For each depth iteration (1 to `depth`), for each predictor in order:
+1. Take all instruction candidates from the previous iteration
+2. If multiple predictors exist, re-evaluate each candidate combined with the *currently best* instructions for other predictors
+3. Score each candidate by running the full program on the trainset
 4. Keep the top-scoring candidates
 5. Feed these attempted instructions (with scores) to `GenerateInstructionGivenAttempts`:
 
@@ -68,28 +68,18 @@ After all depth iterations, select the predictor configuration with the highest 
 - `init_temperature`: Temperature for initial proposals (default: 1.4 — higher = more creative)
 - `track_stats`: Track optimization statistics
 
-```python
-from dspy.teleprompt import COPRO
-
-optimizer = COPRO(
-    metric=validate_answer,
-    breadth=10,
-    depth=3,
-    init_temperature=1.4,
-)
-optimized = optimizer.compile(student, trainset=trainset, eval_kwargs=dict(num_threads=4))
-```
-
 ### Key Characteristics
 
-- **Zero-shot by default**: COPRO optimizes instructions without few-shot examples. It can work on programs that already have demos (from BootstrapFewShot).
-- **Coordinate ascent**: Optimizes one predictor at a time. This makes the search space tractable for multi-predictor programs but means it may miss interactions between predictors.
-- **Hill-climbing with diversity**: The high initial temperature and multi-candidate evaluation prevent premature convergence.
-- **Instruction + prefix**: Optimizes both the task instruction AND the output field prefix (the string that prompts the LM to start generating).
+- **Zero-shot by default**: Optimizes instructions without few-shot examples. Works on programs that already have demos from BootstrapFewShot.
+- **Coordinate ascent**: Optimizes one predictor at a time — tractable for multi-predictor programs but may miss interactions between predictors
+- **Hill-climbing with diversity**: High initial temperature and multi-candidate evaluation prevent premature convergence
+- **Instruction + prefix**: Optimizes both the task instruction AND the output field prefix
 
 ## MIPROv2 (Meta-Instruction Prompt Optimization v2)
 
-MIPROv2 is DSPy's most sophisticated instruction optimizer. It generates both instructions AND few-shot examples, then uses Bayesian Optimization to search over their combinations.
+DSPy's most sophisticated instruction optimizer. Generates both instructions AND few-shot examples, then uses Bayesian Optimization to search over their combinations.
+
+**Constructor:** `dspy.MIPROv2(metric, prompt_model=None, task_model=None, teacher_settings=None, max_bootstrapped_demos=4, max_labeled_demos=4, auto="light", num_candidates=None, num_threads=None, max_errors=None, seed=9, init_temperature=1.0, verbose=False, track_stats=True, log_dir=None, metric_threshold=None)`
 
 ### How MIPROv2 Works — Step by Step
 
@@ -117,10 +107,10 @@ This is where MIPROv2 differs fundamentally from COPRO:
 
 1. Initialize a surrogate model (acquisition function) over the discrete space of instruction/demo combinations
 2. For each of `num_trials` trials:
-   a. Sample a minibatch of `minibatch_size` examples from the validation set
-   b. The acquisition function proposes which instruction + demo combination to evaluate next
-   c. Evaluate the candidate program on the minibatch
-   d. Update the surrogate model with the result
+   - Sample a minibatch of `minibatch_size` examples from the validation set
+   - The acquisition function proposes which instruction + demo combination to evaluate next
+   - Evaluate the candidate program on the minibatch
+   - Update the surrogate model with the result
 3. Every `minibatch_full_eval_steps` trials, evaluate top candidates on the full validation set
 4. Return the program with the best full-validation score
 
@@ -129,32 +119,12 @@ The Bayesian Optimization allows MIPROv2 to:
 - Learn which combinations work well together
 - Be sample-efficient by focusing evaluations on promising regions
 
-### Parameters
+### Auto Budgets
 
-- `metric`: Task metric (required)
-- `auto`: Preset budget — "light", "medium", or "heavy"
-- `num_trials`: Total BO trials (set automatically when using `auto`)
-- `num_candidates`: Number of instruction/demo candidates per predictor
-- `num_instruct_candidates` / `num_fewshot_candidates`: Separate control
-- `max_bootstrapped_demos` / `max_labeled_demos`: Demo limits
-- `minibatch`: Use minibatch evaluation (default: True)
-- `minibatch_size`: Examples per trial evaluation (default: 35)
-- `minibatch_full_eval_steps`: Full eval frequency (default: 5)
-- `program_aware_proposer` / `data_aware_proposer` / `tip_aware_proposer` / `fewshot_aware_proposer`: Toggle awareness dimensions (all default True)
-- `view_data_batch_size`: Examples shown to instruction proposer (default: 10)
-- `task_model`: LM for the actual task execution
-- `prompt_model`: LM for instruction generation
-
-```python
-from dspy.teleprompt import MIPROv2
-
-optimizer = MIPROv2(
-    metric=validate_answer,
-    auto="medium",  # light/medium/heavy
-    num_threads=4,
-)
-optimized = optimizer.compile(student, trainset=trainset)
-```
+The `auto` parameter sets trial counts:
+- `"light"`: Quick optimization run (~$2, ~10 minutes typical)
+- `"medium"`: Balanced — good tradeoff between quality and cost
+- `"heavy"`: Thorough exploration for maximum quality
 
 ### When to Use MIPROv2
 
@@ -165,7 +135,9 @@ optimized = optimizer.compile(student, trainset=trainset)
 
 ## SIMBA (Stochastic Introspective Mini-Batch Ascent)
 
-SIMBA uses the LLM to introspectively analyze its own failures and generate self-improvement rules or demonstrations.
+Uses the LLM to introspectively analyze its own failures and generate self-improvement rules or demonstrations.
+
+**Constructor:** `dspy.SIMBA(metric, bsize=32, num_candidates=6, max_steps=8, max_demos=4, prompt_model=None, teacher_settings=None, demo_input_field_maxlen=100000, num_threads=None, temperature_for_sampling=0.2, temperature_for_candidates=0.2)`
 
 ### How SIMBA Works — Step by Step
 
@@ -185,31 +157,7 @@ SIMBA uses the LLM to introspectively analyze its own failures and generate self
 
 7. **Top-K + baseline selection**: Maintain the top-K scoring programs plus the original baseline, using softmax sampling for diversity
 
-8. **Repeat** for `max_steps` iterations, tracking which programs improve
-
-### Parameters
-
-- `metric`: Evaluation function (required)
-- `bsize`: Mini-batch size (default: 32)
-- `num_candidates`: New candidates per iteration (default: 6)
-- `max_steps`: Optimization steps (default: 8)
-- `max_demos`: Max demonstrations per predictor (default: 4; set to 0 for rules-only)
-- `prompt_model`: LM for introspection (defaults to configured LM)
-- `temperature_for_sampling`: Temperature for trajectory sampling (default: 0.2)
-- `temperature_for_candidates`: Temperature for source program selection (default: 0.2)
-
-```python
-from dspy.teleprompt import SIMBA
-
-optimizer = SIMBA(
-    metric=validate_answer,
-    bsize=32,
-    num_candidates=6,
-    max_steps=8,
-    max_demos=4,
-)
-optimized = optimizer.compile(student, trainset=trainset)
-```
+8. **Repeat** for `max_steps` iterations
 
 ### Key Characteristics
 

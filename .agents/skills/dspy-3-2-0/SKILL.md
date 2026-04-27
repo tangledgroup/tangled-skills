@@ -69,41 +69,22 @@ optimized_qa = optimizer.compile(qa, trainset=trainset)
 result = optimized_qa(question="What is the capital of France?")
 ```
 
-## Installation / Setup
-
-Install via pip:
-
-```bash
-pip install dspy
-```
-
-For the latest from main:
-
-```bash
-pip install git+https://github.com/stanfordnlp/dspy.git
-```
-
-Configure a language model before any DSPy code:
-
-```python
-import dspy
-
-lm = dspy.LM('openai/gpt-4o-mini', api_key='YOUR_KEY')
-dspy.configure(lm=lm)
-```
-
-DSPy supports OpenAI, Gemini, Anthropic, Vertex AI, Databricks, local LMs via any LiteLLM-compatible provider, and custom providers.
-
 ## Advanced Topics
 
-**Signatures & Modules**: The building blocks of DSPy programs → [Signatures & Modules](reference/01-signatures-and-modules.md)
+**Signatures**: Declarative input/output specs with inline strings and class-based definitions → [Signatures](reference/01-signatures.md)
 
-**Few-Shot Optimizers**: LabeledFewShot, BootstrapFewShot, BootstrapRS, KNNFewShot → [Few-Shot Learning Optimizers](reference/02-fewshot-optimizers.md)
+**Modules (API Reference)**: Complete API for all 11 built-in modules — Predict, ChainOfThought, ReAct, CodeAct, ProgramOfThought, RLM, BestOfN, Refine, MultiChainComparison, Parallel, Module base class → [Modules API](reference/02-modules-api.md)
 
-**Instruction Optimizers**: COPRO, MIPROv2, SIMBA — algorithms that evolve prompt instructions → [Instruction Optimization Algorithms](reference/03-instruction-optimizers.md)
+**Adapters**: Interface layer between DSPy and LMs — ChatAdapter, JSONAdapter, XMLAdapter, TwoStepAdapter → [Adapters](reference/03-adapters.md)
 
-**GEPA**: Genetic-Pareto reflective optimizer with textual feedback and Pareto-frontier evolution → [GEPA Reflective Optimizer](reference/04-gepa-optimizer.md)
+**Primitives**: Core data types — Example, Prediction, Tool, ToolCalls, Image, Audio, Code, History → [Primitives](reference/04-primitives.md)
 
-**Finetuning & Meta-Optimizers**: BootstrapFinetune, BetterTogether, Ensemble → [Finetuning & Meta-Optimizers](reference/05-finetuning-meta.md)
+**Few-Shot Optimizers**: LabeledFewShot, BootstrapFewShot, BootstrapRS, KNNFewShot → [Few-Shot Learning Optimizers](reference/05-fewshot-optimizers.md)
 
-**Evaluation & Metrics**: Defining metrics, the Evaluate utility, GEPA feedback metrics → [Evaluation & Metrics](reference/06-evaluation-metrics.md)
+**Instruction Optimizers**: COPRO, MIPROv2, SIMBA — algorithms that evolve prompt instructions → [Instruction Optimization Algorithms](reference/06-instruction-optimizers.md)
+
+**GEPA**: Genetic-Pareto reflective optimizer with textual feedback and Pareto-frontier evolution → [GEPA Reflective Optimizer](reference/07-gepa-optimizer.md)
+
+**Finetuning & Meta-Optimizers**: BootstrapFinetune, BetterTogether, Ensemble → [Finetuning & Meta-Optimizers](reference/08-finetuning-meta.md)
+
+**Evaluation & Metrics**: Defining metrics, the Evaluate utility, GEPA feedback metrics → [Evaluation & Metrics](reference/09-evaluation-metrics.md)

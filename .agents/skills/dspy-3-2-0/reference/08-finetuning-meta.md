@@ -4,6 +4,8 @@
 
 Distills a prompt-based DSPy program into weight updates. The output is a DSPy program with the same structure, but where each step uses a fine-tuned model instead of a prompted LM.
 
+**Constructor:** `dspy.BootstrapFinetune(metric=None, multitask=True, train_kwargs=None, adapter=None, exclude_demos=False, num_threads=None)`
+
 ### How BootstrapFinetune Works
 
 1. **Bootstrap traces**: Like `BootstrapFewShot`, runs a teacher program on training data to collect full execution traces (inputs and outputs at every predictor)
@@ -14,50 +16,41 @@ Distills a prompt-based DSPy program into weight updates. The output is a DSPy p
 
 4. **Replace prompted predictors with finetuned models**: The compiled program has the same structure, but each `dspy.Predict` internally uses the fine-tuned weights instead of prompt engineering
 
+### Requirements
+
+- Student program must have LMs explicitly set via `set_lm()` — cannot rely on global `dspy.settings.lm`
+- Requires a fine-tunable model backend (e.g., OpenAI finetuning, local training)
+
 ### Parameters
 
 - `metric`: Validation function (required)
-- `teacher_settings`: Settings for the teacher model
-- `max_bootstrapped_demos`: Max traces to collect
-- `max_labeled_demos`: Max labeled examples
-- `demo_input_field_maxlen`: Max characters per input field (default: 100,000)
+- `multitask`: Train all predictors jointly (default: True) vs separately
+- `train_kwargs`: Fine-tuning parameters, can be per-LM dict
+- `adapter`: Adapter to use during fine-tuning, can be per-LM dict
+- `exclude_demos`: Exclude demonstration examples from fine-tuning data
 - `num_threads`: Parallel execution threads
-- Fine-tuning-specific parameters depend on the backend
 
 ```python
-from dspy.teleprompt import BootstrapFinetune
-
-# Student must have LM explicitly set (not relying on global dspy.settings.lm)
 classify.set_lm(lm)
 
-optimizer = BootstrapFinetune(
+optimizer = dspy.BootstrapFinetune(
     metric=lambda x, y, trace=None: x.label == y.label,
     num_threads=24,
 )
 optimized = optimizer.compile(classify, trainset=trainset)
 ```
 
-### Requirements
-
-- Student program must have LMs explicitly set via `set_lm()` — cannot rely on global `dspy.settings.lm`
-- Requires a fine-tunable model backend (e.g., OpenAI finetuning, local training)
-- Works best when transitioning from large prompted models to efficient small finetuned models
-
-### Use Cases
-
-- Deploying efficient AI systems: Replace expensive API calls with a fine-tuned small model
-- After prompt optimization: Run MIPROv2 or GEPA first to discover effective task decompositions, then distill into weights
-- Production constraints: When latency or cost requires local inference
-
 ## BetterTogether
 
 A meta-optimizer that combines prompt optimization and weight optimization (fine-tuning) in configurable sequences. Proposed in "Fine-Tuning and Prompt Optimization: Two Great Steps that Work Better Together" (Soylu, Potts, Khattab, 2024).
+
+**Constructor:** `dspy.BetterTogether(metric, **optimizers)`
 
 ### Core Insight
 
 Prompt optimization discovers effective task decompositions and reasoning strategies. Weight optimization specializes the model to execute these patterns efficiently. Using them in sequences allows each to build on the other's improvements.
 
-Empirically, `prompt → weight` or `prompt → weight → prompt` sequences often outperform either strategy alone.
+Empirically, `prompt → weight` or `prompt → weight → prompt` sequences often outperform either strategy alone, even with state-of-the-art optimizers.
 
 ### How BetterTogether Works
 
@@ -67,22 +60,19 @@ Empirically, `prompt → weight` or `prompt → weight → prompt` sequences oft
 4. **Track validation scores**: When a valset is provided, return the best-performing program across all stages
 
 ```python
-from dspy.teleprompt import BetterTogether, GEPA, BootstrapFinetune
-
-optimizer = BetterTogether(
+optimizer = dspy.BetterTogether(
     metric=my_metric,
-    p=GEPA(metric=my_metric, auto="medium"),
-    w=BootstrapFinetune(metric=my_metric),
+    p=dspy.GEPA(metric=my_metric, auto="medium"),
+    w=dspy.BootstrapFinetune(metric=my_metric),
 )
 
-# Student must have LM explicitly set
 student.set_lm(lm)
 
 compiled = optimizer.compile(
     student,
     trainset=trainset,
     valset=valset,
-    strategy="p -> w",  # prompt optimization then weight optimization
+    strategy="p -> w",
 )
 ```
 
@@ -95,8 +85,6 @@ compiled = optimizer.compile(
 
 ### Passing Optimizer-Specific Arguments
 
-Use `optimizer_compile_args` to customize each optimizer's behavior:
-
 ```python
 compiled = optimizer.compile(
     student,
@@ -104,8 +92,8 @@ compiled = optimizer.compile(
     valset=valset,
     strategy="p -> w",
     optimizer_compile_args={
-        "p": {"auto": "heavy"},           # GEPA-specific args
-        "w": {"max_bootstrapped_demos": 8},  # BootstrapFinetune-specific args
+        "p": {"auto": "heavy"},
+        "w": {"max_bootstrapped_demos": 8},
     },
 )
 ```
@@ -120,6 +108,8 @@ compiled = optimizer.compile(
 
 Ensembles multiple DSPy programs into a single program that runs all of them and reduces outputs.
 
+**Constructor:** `dspy.Ensemble(reduce_fn=None, size=None, deterministic=False)`
+
 ### How Ensemble Works
 
 1. Takes a list of trained DSPy programs
@@ -130,23 +120,14 @@ Ensembles multiple DSPy programs into a single program that runs all of them and
 3. Returns the ensembled program
 
 ```python
-from dspy.teleprompt import Ensemble
-
-# Get top programs from an optimizer run, or compile separately
 programs = [prog1, prog2, prog3, prog4, prog5]
 
-optimizer = Ensemble(
+optimizer = dspy.Ensemble(
     reduce_fn=dspy.majority,  # Vote for the most common answer
     size=3,                   # Sample 3 out of 5 at inference time
 )
 ensembled = optimizer.compile(programs)
 ```
-
-### Parameters
-
-- `reduce_fn`: Function to combine outputs (common: `dspy.majority`)
-- `size`: Number of programs to sample per call (None = use all)
-- `deterministic`: Not yet implemented (must be False)
 
 ### Common reduce_fn: dspy.majority
 
@@ -169,22 +150,21 @@ DSPy optimizers compose naturally. Common patterns:
 
 ```python
 # Pattern 1: Optimize prompts, then fine-tune
-mipro = MIPROv2(metric=metric, auto="medium")
+mipro = dspy.MIPROv2(metric=metric, auto="medium")
 prompt_optimized = mipro.compile(student, trainset=trainset)
 
-finetune = BootstrapFinetune(metric=metric)
+finetune = dspy.BootstrapFinetune(metric=metric)
 final = finetune.compile(prompt_optimized, trainset=trainset)
 
 # Pattern 2: Optimize, ensemble top candidates, optimize again
-mipro = MIPROv2(metric=metric, auto="heavy")
+mipro = dspy.MIPROv2(metric=metric, auto="heavy")
 optimized = mipro.compile(student, trainset=trainset)
 
-# Extract candidates and ensemble
-ensemble = Ensemble(reduce_fn=dspy.majority)
+ensemble = dspy.Ensemble(reduce_fn=dspy.majority)
 final = ensemble.compile(optimized.candidate_programs[:5])
 
 # Pattern 3: BetterTogether (prompt -> weight -> prompt)
-bt = BetterTogether(metric=metric, p=MIPROv2(...), w=BootstrapFinetune(...))
+bt = dspy.BetterTogether(metric=metric, p=dspy.MIPROv2(...), w=dspy.BootstrapFinetune(...))
 final = bt.compile(student, trainset=trainset, valset=valset, strategy="p -> w -> p")
 ```
 

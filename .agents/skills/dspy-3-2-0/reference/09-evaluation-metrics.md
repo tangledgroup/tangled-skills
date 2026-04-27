@@ -41,6 +41,7 @@ When `trace is not None`, the metric is being used to validate bootstrapped demo
 - `dspy.evaluate.metrics.answer_exact_match`: Case-insensitive exact string match
 - `dspy.evaluate.metrics.answer_passage_match`: Checks if answer appears within a passage
 - `dspy.SemanticF1()`: LM-based semantic F1 score for long-form outputs
+- `dspy.CompleteAndGrounded`: Checks completeness and groundedness of outputs
 
 ## The Evaluate Utility
 
@@ -127,6 +128,38 @@ Key points:
 - If predictor-level feedback is unavailable, program-level feedback is acceptable
 - If no feedback dict is returned, GEPA defaults to: `f"This trajectory got a score of {score}."`
 - The metric must accept five arguments: `(gold, pred, trace, pred_name, pred_trace)`
+
+## Data Handling
+
+### Example Objects
+
+```python
+qa_pair = dspy.Example(question="This is a question?", answer="This is an answer.")
+print(qa_pair.question)   # "This is a question?"
+print(qa_pair.answer)     # "This is an answer."
+```
+
+### Specifying Input Keys
+
+```python
+# Mark specific fields as inputs (rest are labels/metadata)
+qa_pair = qa_pair.with_inputs("question")
+
+# Access only input fields
+input_only = qa_pair.inputs()
+
+# Access only label fields
+label_only = qa_pair.labels()
+```
+
+### Building Trainsets
+
+```python
+trainset = [
+    dspy.Example(report="LONG REPORT 1", summary="short summary 1").with_inputs("report"),
+    dspy.Example(report="LONG REPORT 2", summary="short summary 2").with_inputs("report"),
+]
+```
 
 ## Saving and Loading Programs
 
