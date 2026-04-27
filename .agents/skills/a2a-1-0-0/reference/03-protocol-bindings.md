@@ -327,9 +327,19 @@ Clients MUST send the `A2A-Version` header (or request parameter) with each requ
 - If version is not supported, agent returns `VersionNotSupportedError`
 - Agents can expose multiple interfaces with different versions under same or different URLs
 
+## Protocol Selection
+
+Clients MUST follow these rules when selecting a protocol:
+
+1. Parse `supportedInterfaces` if present, and select the first supported transport
+2. Prefer earlier entries in the ordered list when multiple options are supported
+3. Use the correct URL for the selected transport
+
+The first entry in `supportedInterfaces` represents the agent's preferred interface.
+
 ## Custom Bindings
 
-Implementers MAY create custom protocol bindings (e.g., WebSocket). Requirements:
+Implementers MAY create custom protocol bindings (e.g., WebSocket, MQTT). Requirements:
 
 1. Implement all core operations
 2. Preserve data model equivalence
@@ -340,6 +350,14 @@ Implementers MAY create custom protocol bindings (e.g., WebSocket). Requirements
 7. Specify service parameter transmission mechanism
 8. Document streaming support (if any)
 
+**Key areas to specify for custom bindings:**
+
+- **Data Type Mappings:** How each Protocol Buffer type is represented (binary encoding, enum representation, timestamp format)
+- **Service Parameters:** Mechanism for carrying key-value context (headers, metadata fields), encoding/size constraints
+- **Error Mapping:** Mapping table equivalent to the standard error code mappings
+- **Streaming:** Stream mechanism, ordering guarantees, reconnection behavior, termination signaling
+- **Authentication:** How credentials are transmitted over the custom transport
+
 Example custom binding declaration:
 
 ```json
@@ -347,9 +365,11 @@ Example custom binding declaration:
   "supportedInterfaces": [
     {
       "url": "wss://agent.example.com/a2a/websocket",
-      "protocolBinding": "https://example.com/bindings/websocket/v1",
+      "protocolBinding": "https://a2a-protocol.org/bindings/websocket",
       "protocolVersion": "1.0"
     }
   ]
 }
 ```
+
+Custom protocol bindings are a complementary but distinct concept to Extensions. Extensions modify the behavior of protocol interactions on top of an existing transport. Custom protocol bindings change the transport layer itself.

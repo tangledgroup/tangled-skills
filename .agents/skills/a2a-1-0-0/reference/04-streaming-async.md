@@ -42,7 +42,7 @@ The stream MUST follow one of these patterns:
 
 1. **Message-only stream:** If the agent returns a Message, the stream contains exactly one Message object and closes immediately. No task tracking or updates.
 
-2. **Task lifecycle stream:** If the agent returns a Task, the stream begins with the Task object, followed by zero or more TaskStatusUpdateEvent or TaskArtifactUpdateEvent objects. The stream closes when the task reaches a terminal state (completed, failed, canceled, rejected).
+2. **Task lifecycle stream:** If the agent returns a Task, the stream begins with the Task object, followed by zero or more TaskStatusUpdateEvent or TaskArtifactUpdateEvent objects. The stream closes when the task reaches a terminal state (completed, failed, canceled, rejected) or an interrupted state (input-required, auth-required).
 
 ### Event Structure
 
@@ -75,7 +75,7 @@ Establishes a streaming connection to receive updates for an existing task:
 
 - Returns Task object as the first event (current state at subscription time)
 - Followed by status and artifact update events
-- Stream terminates when task reaches terminal state
+- Stream terminates when task reaches terminal or interrupted state
 - Returns `UnsupportedOperationError` for tasks already in terminal states
 
 ### Reconnection
@@ -104,7 +104,7 @@ Client provides a PushNotificationConfig to the server either:
 
 1. Client registers webhook URL in PushNotificationConfig
 2. Agent processes task asynchronously
-3. On significant state changes, agent sends HTTP POST to the webhook URL
+3. On significant state changes (terminal state, input-required, auth-required), agent sends HTTP POST to the webhook URL
 4. Payload is a StreamResponse (same format as streaming events)
 5. Client responds with HTTP 2xx to acknowledge receipt
 6. Configuration persists until task completion or explicit deletion
@@ -129,6 +129,10 @@ X-A2A-Notification-Token: secure-client-token-for-task-aaa
   }
 }
 ```
+
+### Client-Side Push Notification Service
+
+The `url` in `PushNotificationConfig.url` points to a client-side Push Notification Service responsible for receiving HTTP POST notifications from the A2A Server. Its responsibilities include authenticating the incoming notification, validating its relevance, and relaying the notification or its content to the appropriate client application logic.
 
 ### Server Guarantees
 
@@ -167,8 +171,11 @@ Delete is idempotent — multiple deletions of the same config have the same eff
 - SHOULD verify task ID matches an expected task
 - SHOULD implement rate limiting to prevent webhook flooding
 - SHOULD use HTTPS endpoints for webhook URLs
+- Should reject notifications that are too old (timestamp validation)
+- Should use unique identifiers (e.g., JWT `jti` claim) to prevent replay attacks
 
-**Example JWT + JWKS Flow:**
+### Example Asymmetric Key Flow (JWT + JWKS)
+
 1. Client creates PushNotificationConfig with `authentication.scheme: "Bearer"`
 2. Agent generates JWT signed with its private key, including claims (iss, aud, iat, exp, jti, taskId)
 3. Agent makes public keys available via JWKS endpoint

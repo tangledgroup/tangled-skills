@@ -1,6 +1,15 @@
 # Protocol Data Model
 
-The A2A protocol defines a canonical data model using Protocol Buffers. All protocol bindings must provide functionally equivalent representations. JSON serialization uses camelCase field names per ProtoJSON specification. Enum values use SCREAMING_SNAKE_CASE as defined in the proto.
+The A2A protocol defines a canonical data model using Protocol Buffers (proto3). The normative definition is in `a2a.proto`. All protocol bindings must provide functionally equivalent representations. JSON serialization uses camelCase field names per ProtoJSON specification. Enum values use SCREAMING_SNAKE_CASE as defined in the proto.
+
+## Field Presence and Optionality
+
+- **Optional fields not explicitly set:** MUST be omitted from JSON
+- **Optional fields explicitly set to defaults:** MUST be included in JSON
+- **Required fields:** MUST always be present, even if matching default
+- **Repeated fields with empty arrays:** Omit unless field is REQUIRED
+
+This semantics is critical for Agent Card signing — the canonical form must accurately reflect which fields were explicitly provided versus omitted.
 
 ## Core Objects
 
@@ -65,28 +74,6 @@ Optional fields on all Parts:
 - `filename` (string): Content name
 - `metadata` (map<string, value>): Additional context
 
-**Example Parts:**
-
-Text Part:
-```json
-{"text": "Hello, world!"}
-```
-
-File Part (inline):
-```json
-{"raw": "iVBORw0KGgo...", "filename": "diagram.png", "mediaType": "image/png"}
-```
-
-File Part (URL reference):
-```json
-{"url": "https://storage.example.com/file.png?token=xyz", "filename": "output.png", "mediaType": "image/png"}
-```
-
-Data Part:
-```json
-{"data": {"ticketNumber": "REQ12312", "description": "VPN access request"}, "mediaType": "application/json"}
-```
-
 ### Artifact
 
 Tangible output generated during task processing.
@@ -122,7 +109,7 @@ Fields:
 
 ### TaskArtifactUpdateEvent
 
-Indicates artifact updates during task processing.
+Indicates artifact updates during task processing. Used to stream large files or data structures in chunks.
 
 Fields:
 - `taskId` (string, REQUIRED): Task identifier
@@ -178,7 +165,7 @@ Client responsibilities:
 
 ### AgentCard
 
-The agent's digital business card. Full specification in the Security & Enterprise reference. Key structure:
+The agent's digital business card. Full specification in the Agent Discovery reference. Key structure:
 
 ```json
 {
@@ -222,6 +209,7 @@ Fields:
 - `examples` (string[]): Example inputs
 - `inputModes` (string[]): Supported input MIME types
 - `outputModes` (string[]): Supported output MIME types
+- `securityRequirements` (string[]): Security schemes required for this skill
 
 ### AgentCapabilities
 
@@ -233,6 +221,25 @@ Fields:
 - `stateTransitionHistory` (boolean): Full state transition history in Task
 - `extendedAgentCard` (boolean): Authenticated extended Agent Card available
 - `extensions` (AgentExtension[]): Declared protocol extensions
+
+### AgentExtension
+
+Declares a supported protocol extension.
+
+Fields:
+- `uri` (string, REQUIRED): Unique identifier for the extension
+- `description` (string, REQUIRED): Human-readable description
+- `required` (boolean): Whether client must support this extension
+- `params` (object): Extension-specific parameters
+
+### AgentCardSignature
+
+JWS signature for Agent Card authenticity verification.
+
+Fields:
+- `protected` (string, REQUIRED): Base64url-encoded JWS Protected Header
+- `signature` (string, REQUIRED): Base64url-encoded signature value
+- `header` (object): Optional JWS Unprotected Header as JSON object
 
 ## Data Conventions
 

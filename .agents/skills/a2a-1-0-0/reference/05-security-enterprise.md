@@ -3,7 +3,7 @@
 ## Transport Security
 
 - Production deployments MUST use encrypted communication (HTTPS for HTTP-based bindings, TLS for gRPC)
-- Implementations SHOULD use modern TLS configurations (TLS 1.3+ recommended)
+- Implementations SHOULD use modern TLS configurations (TLS 1.3+ recommended) with strong cipher suites
 - Agents SHOULD enforce HSTS headers when using HTTP-based bindings
 - Implementations SHOULD disable deprecated SSL/TLS versions (SSLv3, TLS 1.0, TLS 1.1)
 - Clients SHOULD verify the server's TLS certificate against trusted CAs during handshake
@@ -14,9 +14,9 @@ A2A delegates authentication to standard web mechanisms. Identity is handled at 
 
 ### Process
 
-1. **Discovery:** Client discovers server's authentication requirements via `securitySchemes` in Agent Card
+1. **Discovery of Requirements:** Client discovers server's authentication requirements via `securitySchemes` in Agent Card
 2. **Credential Acquisition (Out-of-Band):** Client obtains credentials through processes external to A2A (OAuth flows, secure key distribution)
-3. **Credential Transmission:** Client includes credentials in protocol-appropriate headers (e.g., `Authorization: Bearer <TOKEN>`)
+3. **Credential Transmission:** Client includes credentials in protocol-appropriate headers (`Authorization: Bearer <TOKEN>`, `API-Key: <KEY_VALUE>`)
 
 ### Server Responsibilities
 
@@ -36,26 +36,35 @@ Agent Card declares schemes using OpenAPI-compatible structures:
 - **OpenID Connect:** References OIDC discovery document URL
 - **Mutual TLS (mTLS):** Client certificate authentication
 
-### In-Task Authorization
+## In-Task Authorization
 
-Agents may need additional credentials during task execution (e.g., OAuth token for an API call). A2A provides `TASK_STATE_AUTH_REQUIRED` for this:
+Agents may need additional credentials during task execution (e.g., OAuth token for an API call). A2A provides `TASK_STATE_AUTH_REQUIRED` for this.
 
-**Agent responsibilities:**
+### Agent Responsibilities
+
 1. MUST use a Task to track the operation
 2. MUST transition TaskState to `TASK_STATE_AUTH_REQUIRED`
-3. MUST include a status message explaining required authorization (unless negotiated out-of-band)
+3. MUST include a status message explaining required authorization (unless negotiated out-of-band or via extension)
+4. SHOULD maintain active response streams after setting AUTH_REQUIRED (if credentials received out-of-band)
+5. MAY immediately continue task processing after receiving the credential, without requiring a follow-up message from the client
 
-**Client responsibilities:**
+### Client Responsibilities
+
 1. Upon receiving AUTH_REQUIRED, take action to resolve the authorization
-2. May send response message to negotiate, correct, or reject
-3. May contact another service to fulfill authorization
-4. SHOULD subscribe to task stream or register webhook to avoid missing updates
+2. May send a response message to negotiate, correct, or reject the authorization request
+3. May contact another human, agent, or service to fulfill the authorization
+4. SHOULD subscribe to task stream, register webhook, or begin polling to avoid missing updates
 
-**Security considerations for in-task auth:**
+### Authorization Delegation Chains
+
+If the client is itself an A2A agent actively processing a Task, it may further delegate the authorization request to its own client by transitioning its own Task to `TASK_STATE_AUTH_REQUIRED`. This enables forming a chain of Tasks in AUTH_REQUIRED state.
+
+### Security Considerations for In-Task Auth
+
 - Credentials SHOULD be received out-of-band via secure channel (HTTPS)
 - In-band credential exchange may be negotiated via extensions
-- Credentials SHOULD be bound to the originating agent
-- Sensitive credentials SHOULD be encrypted
+- If using in-band exchange, credentials SHOULD be bound to the originating agent (e.g., via encryption) so only that agent can use them
+- Sensitive credentials SHOULD be encrypted when passing through chains of agents
 
 ## Authorization
 
@@ -74,14 +83,13 @@ Once authenticated, the server authorizes requests based on identity and policie
 - **GetTask:** MUST verify client has access to the requested task
 - **Task operations** (Cancel, Subscribe, Push Notification Config): MUST verify appropriate access rights
 
-### Authorization Models
+### Skill-Based Authorization
 
-Agents may base authorization on:
-- User identity (user-based)
-- Organizational roles/groups (role-based)
-- Project/workspace membership (project-based)
-- Tenant boundaries (multi-tenant)
-- Custom domain-specific logic
+Access can be controlled on a per-skill basis, as advertised in the Agent Card. Specific OAuth scopes SHOULD grant an authenticated client access to invoke certain skills but not others.
+
+### Principle of Least Privilege
+
+Agents MUST grant only the necessary permissions required for a client or user to perform their intended operations through the A2A interface.
 
 ## Agent Card Signing
 
@@ -151,6 +159,14 @@ Agents MAY provide additional capabilities to authenticated clients via the GetE
 - Agents SHOULD implement credential revocation mechanisms
 - Agents SHOULD log authentication failures and implement rate limiting against brute-force
 
+## Data Privacy and Confidentiality
+
+- Agents MUST comply with applicable data protection regulations (GDPR, CCPA, HIPAA)
+- Agents SHOULD provide mechanisms for users to request data deletion
+- Agents SHOULD implement appropriate data retention policies
+- Agents SHOULD minimize logging of sensitive or personal information
+- Data must be protected both in transit (TLS) and at rest per enterprise security policies
+
 ## Audit and Monitoring
 
 - Agents SHOULD log security-relevant events (auth failures, authorization denials, suspicious requests)
@@ -163,13 +179,6 @@ Agents MAY provide additional capabilities to authenticated clients via the GetE
 - Agents SHOULD implement rate limiting on all operations
 - Agents SHOULD return appropriate error responses when limits are exceeded
 - Agents MAY implement different rate limits for different operations or user tiers
-
-## Data Privacy
-
-- Agents MUST comply with applicable data protection regulations (GDPR, CCPA, HIPAA)
-- Agents SHOULD provide mechanisms for users to request data deletion
-- Agents SHOULD implement appropriate data retention policies
-- Agents SHOULD minimize logging of sensitive or personal information
 
 ## Observability and Tracing
 

@@ -12,13 +12,13 @@ A2A defines three core actors in its interaction model:
 
 ### Agent Card
 
-A JSON metadata document describing an agent's identity, capabilities, endpoint, skills, and authentication requirements. Enables clients to discover agents and understand how to interact with them securely and effectively.
+A JSON metadata document describing an agent's identity, capabilities, endpoint, skills, and authentication requirements. Enables clients to discover agents and understand how to interact with them securely and effectively. Published at `/.well-known/agent-card.json` (RFC 8615).
 
 Key fields:
 - `name` / `description`: Identity information
-- `supportedInterfaces`: Array of protocol bindings with URLs and versions
+- `supportedInterfaces`: Ordered array of protocol bindings with URLs, protocol types, and versions. First entry is preferred.
 - `provider`: Organization and URL
-- `capabilities`: Object declaring optional features (streaming, pushNotifications, extendedAgentCard)
+- `capabilities`: Object declaring optional features (streaming, pushNotifications, extendedAgentCard, stateTransitionHistory)
 - `securitySchemes` / `security`: Authentication requirements (OpenAPI-compatible)
 - `skills`: Array of AgentSkill objects describing available capabilities
 - `defaultInputModes` / `defaultOutputModes`: Supported MIME types
@@ -43,7 +43,7 @@ A single turn of communication between a client and an agent. Contains content a
 
 Key fields:
 - `role`: Either `ROLE_USER` or `ROLE_AGENT`
-- `parts`: Array of Part objects (text, file, or data)
+- `parts`: Array of Part objects (at least one)
 - `messageId`: Unique identifier for the message
 - `taskId`: Reference to an existing task (for follow-ups)
 - `contextId`: Conversational context grouping
@@ -64,6 +64,28 @@ All Parts may also include:
 - `mediaType`: MIME type of the content
 - `filename`: Optional name for the content
 - `metadata`: Key-value map for additional context
+
+**Example Parts:**
+
+Text Part:
+```json
+{"text": "Hello, world!"}
+```
+
+File Part (inline):
+```json
+{"raw": "iVBORw0KGgo...", "filename": "diagram.png", "mediaType": "image/png"}
+```
+
+File Part (URL reference):
+```json
+{"url": "https://storage.example.com/file.png?token=xyz", "filename": "output.png", "mediaType": "image/png"}
+```
+
+Data Part:
+```json
+{"data": {"ticketNumber": "REQ12312", "description": "VPN access request"}, "mediaType": "application/json"}
+```
 
 ### Artifact
 
@@ -89,33 +111,6 @@ Tasks progress through a defined state machine:
 
 Once a task reaches a terminal state, it cannot restart. Any refinement or follow-up must initiate a new task within the same `contextId`.
 
-## Multi-Turn Interaction Patterns
-
-### Context Continuity
-
-- Tasks maintain conversation context through the `contextId` field
-- Clients include `contextId` in subsequent messages to continue previous interactions
-- Clients use `taskId` (with or without `contextId`) to continue or refine a specific task
-- Clients use `contextId` without `taskId` to start a new task within an existing conversation context
-
-### Input Required Pattern
-
-1. Agent transitions task to `TASK_STATE_INPUT_REQUIRED`
-2. Status message explains what input is needed
-3. Client sends a new message with the same `taskId` and `contextId`
-4. Agent resumes processing
-
-### Follow-up and Refinement
-
-- Clients send additional messages with `taskId` references to continue or refine existing tasks
-- Use `referenceTaskIds` in Message to explicitly reference related tasks
-- New tasks within the same `contextId` can inherit context from previous interactions
-- Parallel follow-ups are supported — distinct parallel tasks per follow-up message
-
-### Context Inheritance
-
-New tasks created within the same `contextId` inherit context from previous interactions. Agents should leverage the shared `contextId` to provide contextually relevant responses.
-
 ## Agent Response Types
 
 Agents can respond in two ways:
@@ -126,27 +121,56 @@ Agents can respond in two ways:
 
 ### Agent Types
 
-- **Message-only Agents:** Always respond with Message objects. Don't manage complex state or long-running executions.
-- **Task-generating Agents:** Always respond with Task objects, even for simple interactions.
-- **Hybrid Agents:** Generate both Messages and Tasks. Use messages to negotiate capability and scope, then generate tasks to track execution.
+- **Message-only Agents:** Always respond with Message objects. Don't manage complex state or long-running executions. Might directly wrap LLM invocations and simple tools.
+- **Task-generating Agents:** Always respond with Task objects, even for simple interactions. Responses are modeled as completed tasks. Once a task is created, only Task objects are returned; once complete, no more messages can be sent.
+- **Hybrid Agents:** Generate both Messages and Tasks. Use messages to negotiate capability and scope, then generate tasks to track execution. Use messages before committing to a task, then Task for stateful processing.
 
-## Agent Discovery
+## Multi-Turn Interaction Patterns
 
-Clients find Agent Cards through:
+### Context Continuity
 
-1. **Well-Known URI:** `https://{server_domain}/.well-known/agent-card.json` (RFC 8615)
-2. **Curated Registries/Catalogs:** Central repositories allowing capability-based discovery
-3. **Direct Configuration:** Pre-configured URLs or embedded Agent Card content
+- `contextId` is a server-generated identifier that logically groups multiple related Task objects and independent Message objects, providing continuity across interactions.
+- Clients include `contextId` in subsequent messages to continue previous interactions.
+- Clients use `taskId` (with or without `contextId`) to continue or refine a specific task.
+- Clients use `contextId` without `taskId` to start a new task within an existing conversation context.
 
-### Caching
+### Input Required Pattern
 
-Agent Cards change infrequently. Servers should include `Cache-Control` with `max-age` and `ETag` headers. Clients should honor HTTP caching semantics (RFC 9111) and use conditional requests (`If-None-Match`, `If-Modified-Since`) when cached cards expire.
+1. Agent transitions task to `TASK_STATE_INPUT_REQUIRED`
+2. Status message explains what input is needed
+3. Client sends a new message with the same `taskId` and `contextId`
+4. Agent resumes processing
 
-## A2A vs MCP
+### Task Refinements
 
-A2A and MCP are complementary protocols:
+Clients send new requests based on task results or refine outputs of previous tasks by starting another interaction using the same `contextId`. Clients hint the agent by providing references to the original task using `referenceTaskIds` in the Message object. The agent responds with either a new Task or a Message.
 
-- **MCP (Model Context Protocol):** Standardizes how agents connect to and use tools, APIs, and data sources. Agent-to-tool communication.
-- **A2A:** Standardizes how independent agents communicate and collaborate as peers. Agent-to-agent communication.
+### Parallel Follow-ups
 
-An A2A client agent might request an A2A server agent to perform a complex task. The server agent internally uses MCP to interact with underlying tools, APIs, or data sources to fulfill the A2A task.
+A2A supports parallel work by enabling agents to create distinct, parallel tasks for each follow-up message sent within the same `contextId`. This allows clients to track individual tasks and create new dependent tasks as soon as a prerequisite task is complete.
+
+Example dependency chain:
+- Task 1: Book a flight to Helsinki.
+- Task 2 (depends on Task 1): Book a hotel.
+- Task 3 (depends on Task 1, parallel with Task 2): Book a snowmobile activity.
+- Task 4 (depends on Task 2): Add a spa reservation to the hotel booking.
+
+### Artifact Mutation Tracking
+
+Follow-up or refinement tasks often lead to new artifacts based on older ones. The client manages artifact linkage and version history. Serving agents should use a consistent `artifact-name` when generating refined versions. If the artifact reference is ambiguous, the agent responds with `TASK_STATE_INPUT_REQUIRED` to request clarification.
+
+### Task Immutability
+
+Once a task reaches a terminal state, it cannot restart. This offers:
+- **Task Immutability:** Clients reliably reference tasks and their associated state, artifacts, and messages.
+- **Clear Unit of Work:** Every new request, refinement, or follow-up becomes a distinct task.
+- **Easier Implementation:** Removes ambiguity about whether to create a new task or restart an existing one.
+
+## The Agentic Stack
+
+A2A sits within a broader agent stack:
+
+- **Models:** Large Language Models (LLMs) — fundamental to agent reasoning.
+- **Frameworks:** Toolkits for constructing agents (ADK, LangGraph, CrewAI).
+- **MCP:** Connects models/agents to data and external resources.
+- **A2A:** Standardizes communication among agents deployed in different organizations and developed using diverse frameworks.
