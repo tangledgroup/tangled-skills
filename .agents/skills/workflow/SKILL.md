@@ -13,18 +13,23 @@ category: meta
 
 # Workflow - create, read, execute and update plan
 
-Phase/task based workflow system with `PLAN.md` as single source of truth, strict phase numbering (`[emoji-of-phase] Phase X **NAME_OF_PHASE**`), strict task numbering (`[emoji-of-phase] Phase X - [emoji-of-task] Task X.Y`), inline dependency tracking, and emoji-coded statuses.
+Phase/task based workflow system with `PLAN.md` as single source of truth, strict phase numbering (`[emoji-of-phase] Phase X NAME_OF_PHASE`), strict task numbering (`[emoji-of-phase] Phase X - [emoji-of-task] Task X.Y`), inline dependency tracking, and emoji-coded statuses.
 
 There can be many `PLAN.md` files in different locations. Plan files can create dependency graph via `**Depends on Plan:** ...`.
 
 ## First open
 
-1. **No PLAN.md?** → Create `PLAN.md` with all phases based on given requirements. Determine phases and tasks. Ask questions how to build plan.
-2. **PLAN.md exists?** → Open it. Show and ask from where to continue.
+1. **No PLAN.md?** → Create `PLAN.md` with all phases based on given requirements. There are no predefined phases — determine them from context. Calibrate phase/task granularity to the requirements complexity and detect whether the requester is a beginner, advanced, or expert user. Ask clarifying questions before finalizing the plan.
+2. **PLAN.md exists?** → Open it. Examine `**Current Task:**` and propose a continuation point.
 
 ## Plan updates
 
-Update current `PLAN.md` file after every transition.
+Update the current `PLAN.md` file after every change:
+- Emoji status transitions on any phase or task
+- Adding, modifying, or removing phases or tasks
+- User-requested plan alterations
+
+Keep `**Current Phase:**` and `**Current Task:**` reflecting whichever phase/task was last worked on — not necessarily the last in list order.
 
 ## PLAN.md template
 
@@ -33,7 +38,7 @@ Update current `PLAN.md` file after every transition.
 
 <!-- optional: relative path to other PLAN.md -->
 **Depends on Plan:** ...
-<!-- required: [emoji-of-phase] Phase X **NAME_OF_PHASE** -->
+<!-- required: [emoji-of-phase] Phase X NAME_OF_PHASE -->
 **Current Phase:** ...
 <!-- required: [emoji-of-phase] Phase X - [emoji-of-task] Task X.Y -->
 **Current Task:** ...
@@ -55,23 +60,23 @@ Strictly use following emojis for `[emoji-of-phase]` and `[emoji-of-task]`:
 - ❌ **Error** – error / failure
 - ☑ **Done** – completed / done
 
-These are state transitions:
-- ☐ → ⚙️ means: transition from new, everything seams clear, to lets start doing/working
-- ☐ → ❓ means: transition from new, something is unclear, to ask question/clarification
-- ⚙️ → ❓ means: during doing/working state, something unexpected happened, so I need clarification
-- ⚙️ → ❌ means: during doing/working state, critical error/failure happened or blocker that stopped pipeline, transition to error state 
-- ⚙️ → ☑ means: during doing/working state, successfully solved, so transition to done 
-- ❓ → ⚙️ means: I have question, I got answer or was able to figure out what could be solutions, so transition to doing/working
-- ❌ → ⚙️ means: in error state, but based on my previous experience, I will decide to try one more time to work
-- ❌ → ❓ means: in error state, but I have questions which might for which I might get hit or answer how to solve
+These are valid state transitions:
+- ☐ → ⚙️ — new item, everything seems clear, start working
+- ☐ → ❓ — new item, something is unclear, ask for clarification
+- ⚙️ → ❓ — during work, something unexpected happened, need clarification
+- ⚙️ → ❌ — during work, critical error or blocker stopped progress
+- ⚙️ → ☑ — during work, successfully completed
+- ❓ → ⚙️ — question resolved, resume working
+- ❌ → ⚙️ — error state, decide to retry based on experience
+- ❌ → ❓ — error state, need clarification to proceed
 
-After transition is made from ☐ state, next state will be intelligently determined based on past experience and guidance.
+⚙️ (Doing) is always required before reaching ☑ (Done). You cannot skip to Done from Question or Error states.
 
 ## Phases
 
-Phase is strictly formatted as `[emoji-of-phase] Phase X`.
+Phase is strictly formatted as `[emoji-of-phase] Phase X NAME_OF_PHASE`.
 
-Every Phase **MUST** have a unique ID in the exact format `[emoji-of-phase] Phase X` (X = phase number).
+Every Phase **MUST** have a unique ID in the exact format `[emoji-of-phase] Phase X` (X = phase number, starting from 1).
 
 All phases, tasks and their additions, changes, removals, transitions and dependencies live ONLY in `PLAN.md` file.
 
@@ -92,3 +97,11 @@ For phase-bound dependencies, `A`, `B`, etc, are dependencies of form `Task X.Y`
 For cross-phase task dependencies, `A`, `B`, etc, are explicitly allowed and listed with full `Phase X - Task X.Y` where `X` can be phase ID from other phase and `Y` matches task ID from that other phase.
 
 This creates a clear directed graph that any reader (human or agent) can parse instantly.
+
+## Plan Dependencies
+
+Multiple `PLAN.md` files can exist in different locations. They form a dependency graph via optional `**Depends on Plan:**` header field.
+
+- Multiple dependencies are comma-separated with spaces: `../a/PLAN.md, ../../b/PLAN.md`
+- The dependency graph is resolved transitively by visiting referenced `PLAN.md` headers — not inline-expanded
+- When a dependency is incomplete, ask what to do before proceeding
