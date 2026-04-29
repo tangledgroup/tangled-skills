@@ -1,6 +1,6 @@
 ---
 name: workflow
-description: Phase-based workflow system with PLAN.md as single source of truth, strict task numbering (P X.Y), inline dependency tracking, and emoji-coded status prefixes (📋💬✔️⚠️🛑❌❓). Use when tackling projects that require structured iteration through Planning, Analysis, Design, Implementation, Testing, Deployment, and Maintenance phases with clear dependency graphs.
+description: Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require structured iteration through Planning, Analysis, Design, Implementation, Testing, Deployment, Maintenance, etc phases with clear dependency graphs.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"
@@ -11,94 +11,84 @@ tags:
 category: meta
 ---
 
-# workflow skill
+# Workflow - create, read, execute and update plan
 
-**Target Level:** Beginner / Intermediate / Advanced / Expert
+Phase/task based workflow system with `PLAN.md` as single source of truth, strict phase numbering (`[emoji-of-phase] Phase X **NAME_OF_PHASE**`), strict task numbering (`[emoji-of-phase] Phase X - [emoji-of-task] Task X.Y`), inline dependency tracking, and emoji-coded statuses.
 
-## Quick Start (first open)
+There can be many `PLAN.md` files in different locations. Plan files can create dependency graph via `**Depends on Plan:** ...`.
 
-1. **No PLAN.md?** → Create `PLAN.md` from the template at the bottom and start **Phase 1**.
-2. **PLAN.md exists?** → Open it. It contains **all numbered tasks + dependencies**.  
-   Continue from the highest-numbered unfinished task whose dependencies are all ✔️ Done.
-3. Update **Current Phase** here after every transition.
+## First open
 
-**Status from PLAN.md:** Read PLAN.md and paste 1-line summary here, e.g. "Phase 3 · Tasks 3.1–3.4 Done · Stopped at 3.5 (depends on 3.2, 2.1)"
+1. **No PLAN.md?** → Create `PLAN.md` with all phases based on given requirements. Determine phases and tasks. Ask questions how to build plan.
+2. **PLAN.md exists?** → Open it. Show and ask from where to continue.
 
-## Phases (high-level)
+## Plan updates
 
-```markdown
-## P 1 📋 **Planning**
-## P 2 📋 **Analysis**
-## P 3 📋 **Design**
-## P 4 📋 **Implementation**
-## P 5 📋 **Testing**
-## P 6 📋 **Deployment**
-## P 7 📋 **Maintenance**
-```
+Update current `PLAN.md` file after every transition.
 
-**All task status, numbering and dependencies live in PLAN.md — see below**
-
-## Live Plan & Tasks
-
-**All phases, tasks, additions, changes, removals, transitions and dependencies live ONLY in [PLAN.md](./PLAN.md)**
-
-**Strict numbering & dependency rules:**
-- Every task **MUST** have a unique ID in the exact format **`P X.Y`**  
-  (X = phase number, Y = sequential task number **within that phase**)
-- Dependencies are encoded **inline** at the end of each task line for maximum efficiency and clarity.
-- Format: `P X.Y [emoji] Status - Task description (depends on: P [emoji] A.B, P [emoji] C.D)`
-- Dependencies are **phase-bound by default** (most will be same-phase).  
-  Cross-phase dependencies are explicitly allowed and listed with full `P [emoji] X.Y`.
-- When a task has no dependencies → omit the `(depends on: …)` part.
-- This creates a clear directed graph that any reader (human or agent) can parse instantly.
-
-**Task status prefixes (use exactly these emojis):**
-- 📋 **To Do** – backlog / new
-- 💬 **Doing** – in progress / wip
-- ✔️ **Done** – completed / done
-- ⚠️ **Warning** – warning / attention required
-- 🛑 **Blocked** – blocker
-- ❌ **Error** – error
-- ❓ **Question** – question or clarification
-
-**Phase transition rules:**
-1. Mark all tasks in current phase as ✔️ **Done** (or ❌ **Cancelled**).
-2. Create next phase section in PLAN.md.
-3. Add new tasks starting with the next phase number (e.g. `P [emoji] 4.1`).
-4. Update **Current Phase** in SKILL.md.
-
-**PLAN.md = single source of truth**: project with dependency graph.
-
-**PLAN.md Starter Template**: Here is an example of new file named `PLAN.md`:
+## PLAN.md template
 
 ```markdown
 # PLAN.md — workflow
 
-**Current Phase:** P 1 Planning
-**Current Task:** P 1.1 📋 To Do - Define skill success criteria (depends on: none)
-**Last Updated:** YYYY-MM-DD HH:MM:SS
+<!-- optional: relative path to other PLAN.md -->
+**Depends on Plan:** ...
+<!-- required: [emoji-of-phase] Phase X **NAME_OF_PHASE** -->
+**Current Phase:** ...
+<!-- required: [emoji-of-phase] Phase X - [emoji-of-task] Task X.Y -->
+**Current Task:** ...
+<!-- required: YYYY-MM-DD HH:MM:SS -->
+**Created:** ...
+<!-- required: YYYY-MM-DD HH:MM:SS -->
+**Updated:** ...
 
-## Phase P 1 Planning
-P 1.1 📋 To Do - Define skill success criteria (depends on: none)
-P 1.2 📋 To Do - Identify prerequisites and constraints
-
-## Phase P 2 Analysis
-P 2.1 📋 To Do - Break down workflow into core components (depends on: P 📋 1.1, P 📋 1.2)
-P 2.2 📋 To Do - Research best practices and common pitfalls
-
-## Phase P 3 Design
-P 3.1 📋 To Do - Create learning roadmap and milestones (depends on: P 📋 2.1)
-P 3.2 📋 To Do - Define deliberate practice routines
-
-## Phase P 4 Implementation
-P 4.1 📋 To Do - Follow roadmap and study fundamentals (depends on: P 📋 3.1, P 📋 3.2)
-
-## Phase P 5 Testing
-P 5.1 📋 To Do - Deliberate practice with feedback loops (depends on: P 📋 4.1)
-
-## Phase P 6 Deployment
-P 6.1 📋 To Do - Apply workflow in real scenarios (depends on: P 📋 5.1)
-
-## Phase P 7 Maintenance
-P 7.1 📋 To Do - Set up regular practice schedule (depends on: P 📋 6.1)
+<!-- required: PHASES with TASKS start here -->
 ```
+
+## Emoji-coded statuses
+
+Strictly use following emojis for `[emoji-of-phase]` and `[emoji-of-task]`:
+
+- ☐ **To Do** – backlog / new
+- ❓ **Question** – question or clarification
+- ⚙️ **Doing** – in progress / wip
+- ❌ **Error** – error / failure
+- ☑ **Done** – completed / done
+
+These are state transitions:
+- ☐ → ⚙️ means: transition from new, everything seams clear, to lets start doing/working
+- ☐ → ❓ means: transition from new, something is unclear, to ask question/clarification
+- ⚙️ → ❓ means: during doing/working state, something unexpected happened, so I need clarification
+- ⚙️ → ❌ means: during doing/working state, critical error/failure happened or blocker that stopped pipeline, transition to error state 
+- ⚙️ → ☑ means: during doing/working state, successfully solved, so transition to done 
+- ❓ → ⚙️ means: I have question, I got answer or was able to figure out what could be solutions, so transition to doing/working
+- ❌ → ⚙️ means: in error state, but based on my previous experience, I will decide to try one more time to work
+- ❌ → ❓ means: in error state, but I have questions which might for which I might get hit or answer how to solve
+
+After transition is made from ☐ state, next state will be intelligently determined based on past experience and guidance.
+
+## Phases
+
+Phase is strictly formatted as `[emoji-of-phase] Phase X`.
+
+Every Phase **MUST** have a unique ID in the exact format `[emoji-of-phase] Phase X` (X = phase number).
+
+All phases, tasks and their additions, changes, removals, transitions and dependencies live ONLY in `PLAN.md` file.
+
+**PLAN.md = single source of truth**: project with dependency graph.
+
+## Tasks
+
+Task is strictly formatted as `[emoji-of-phase] Phase X - [emoji-of-task] Task X.Y`.
+
+Every task **MUST** have a unique ID in the exact format `[emoji-of-phase] Phase X - [emoji-of-task] Task X.Y` (X = phase number, Y = sequential task number **within that phase**).
+
+Task dependencies are **phase-bound by default** (most will be same-phase).
+
+When a task has dependencies, append to task name the suffix `(depends on: A, B, ...)` part. If current task don't have any dependencies, don't prepend `(depends on: ...)` for that task.
+
+For phase-bound dependencies, `A`, `B`, etc, are dependencies of form `Task X.Y` where `X` is current phase.
+
+For cross-phase task dependencies, `A`, `B`, etc, are explicitly allowed and listed with full `Phase X - Task X.Y` where `X` can be phase ID from other phase and `Y` matches task ID from that other phase.
+
+This creates a clear directed graph that any reader (human or agent) can parse instantly.
