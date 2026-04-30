@@ -1,7 +1,7 @@
 ---
 name: write-skill
 description: Generate fine-grained agent skills from user requirements, creating complete spec-compliant markdown files that work across pi, opencode, claude, and codex platforms. Use when creating new skills or converting existing documentation into skill format.
-version: "0.7.2"
+version: "0.7.3"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
@@ -19,7 +19,7 @@ category: tooling
 
 Generates spec-compliant, cross-platform agent skills from user requirements. Takes project/tool name, version, and documentation sources (URLs or filesystem paths), then produces complete SKILL.md files that work on pi, opencode, Claude Code, and Codex platforms.
 
-Skills are Markdown-only — no scripts or assets. If OS-level operations are needed, inline bash or Python with built-in modules is used instead.
+Skills are Markdown-only by default — no scripts or assets are generated unless the user explicitly requests them. If OS-level operations are needed, inline bash or Python with built-in modules is used instead.
 
 ## When to Use
 
@@ -55,6 +55,17 @@ my-skill/
 └── reference/           # Flat structure, numbered files
     ├── 01-core-concepts.md
     └── 02-advanced-topics.md
+```
+
+**Opt-in extras** (only when user explicitly requests scripts or assets):
+```
+my-skill/
+├── SKILL.md
+├── reference/
+├── scripts/              # Only if explicitly requested
+│   └── validate.sh
+└── assets/               # Only if explicitly requested
+    └── example-config.yaml
 ```
 
 ### Complexity Decision
@@ -314,9 +325,21 @@ Content here...
 Content here...
 ```
 
-## Skills Are Markdown-Only
+## Output Constraints
 
-No `scripts/` or `assets/` directories. Generated skills must never instruct installing packages (`pip`, `npm`, `cargo`, etc.). Use only tools already available on the system.
+### Default: Markdown-Only
+
+By default, generated skills contain only Markdown files:
+- `SKILL.md` (always)
+- `reference/*.md` (optional, for complex skills)
+
+Do **not** generate `scripts/` or `assets/` directories on your own initiative.
+
+### Opt-In: Scripts and Assets
+
+Only create `scripts/` or `assets/` when the user explicitly requests them (e.g., "include a validation script", "add example config files"). If you think they would be useful, suggest it to the user first and wait for confirmation — never generate them proactively.
+
+Even when scripts or assets are requested, generated skills must never instruct installing packages (`pip`, `npm`, `cargo`, etc.). Use only tools already available on the system.
 
 ### Tool Preference Hierarchy
 
@@ -379,6 +402,7 @@ for p in pathlib.Path(".").rglob("*.md"):
 - [ ] If complex: `reference/` with numbered files (`01-`, `02-`, etc.)
 - [ ] No nested `reference/` directories
 - [ ] SKILL.md under 500 lines (if references exist)
+- [ ] No `scripts/` or `assets/` unless explicitly requested by user
 
 ### Content
 - [ ] "Overview" section present
@@ -411,9 +435,15 @@ Define success criteria before generating:
 3. Check structure → verify: reference/ numbered correctly
 ```
 
+### No Proactive Asset Generation
+- Never generate `scripts/` or `assets/` on your own initiative
+- Only create them when the user explicitly requests them (e.g., "include scripts", "add assets")
+- If you think they would be useful, suggest it to the user first and wait for confirmation
+
 ### No External Dependencies
 - Never instruct installing packages (`pip install`, `npm install`, `cargo install`, etc.)
 - Use only tools available on the system: `bash`, `python3`, `curl`, `jq`, `pandoc`, `pdftotext`, `gs`, `grep`, `sed`, `awk`
+- This applies even when scripts or assets are explicitly requested
 - If a required tool is missing, note it rather than generating install instructions
 
 ### Prefer Simple References Over Tables
