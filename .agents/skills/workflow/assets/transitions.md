@@ -1,10 +1,14 @@
 ```mermaid
-flowchart TD
-    todo["☐ To Do<br>backlog / new"]
-    question["❓ Question<br>question or clarification"]
-    doing["⚙️ Doing<br>in progress / wip"]
-    error["❌ Error<br>error / failure"]
-    done["☑ Done<br>completed / done"]
+stateDiagram-v2
+    direction TB
+
+    [*] --> todo
+
+    state "☐ To Do<br>backlog / new" as todo
+    state "❓ Question<br>question or clarification" as question
+    state "⚙️ Doing<br>in progress / wip" as doing
+    state "❌ Error<br>error / failure" as error
+    state "☑ Done<br>completed / done" as done
 
     todo --> doing
     todo --> question
@@ -14,4 +18,6 @@ flowchart TD
     question --> doing
     error --> doing
     error --> question
+
+    done --> [*]
 ```
