@@ -145,16 +145,36 @@ If a phase has zero tasks, emit a warning — it can never reach ☑ (Done) and 
 
 ## Tasks
 
-Task is strictly formatted as `[emoji-of-phase] Phase X - [emoji-of-task] Task X.Y Task Title` (X = phase number, Y = sequential task number **within that phase**).
+Tasks are markdown list items. Each task is strictly formatted as:
+
+```
+- [emoji-of-phase] Phase X - [emoji-of-task] Task X.Y Task Title (depends on: ...)
+  - optional sub-bullet: acceptance criteria, notes, or implementation details
+  - optional sub-bullet: additional context
+```
+
 Every task **MUST** have a unique ID in the exact format `[emoji-of-phase] Phase X - [emoji-of-task] Task X.Y` (X = phase number, Y = sequential task number **within that phase**).
+
+Sub-bullets under a task are optional and carry no status tracking — they exist only to capture acceptance criteria, implementation notes, or context. They do not affect plan status derivation.
+
+### Task Granularity
+
+Each task should be small enough to complete in one focused work session and large enough to produce a verifiable outcome:
+
+- One task = one clear deliverable (a file, a function, a test, a config change)
+- If a task requires more than three sub-steps, split it into separate tasks
+- Tasks within a phase should be roughly comparable in scope
+- Use sub-bullets under the task to record acceptance criteria or key details
+
+### Task Dependencies
 
 Task dependencies are **phase-bound by default** (most will be same-phase).
 
 When a task has dependencies, append to the task title the suffix `(depends on: A , B , ...)`. If a task has no dependencies, don't append `(depends on: ...)` to it.
 
-For task that is phase-bound dependencies, `A`, `B`, etc, are dependencies of form `Task X.Y` where `X` is current phase.
+For phase-bound dependencies, `A`, `B`, etc. are of the form `Task X.Y` where `X` is the current phase.
 
-For cross-phase task dependencies, `A`, `B`, etc, are explicitly allowed and listed with full `Phase X - Task X.Y` where `X` can be phase ID from that other phase and `Y` matches task ID from its own phase.
+For cross-phase dependencies, use the full `Phase X - Task X.Y` form where `X` is the other phase's ID and `Y` is the task ID within that phase.
 
 This creates a clear directed graph that any reader (human or agent) can parse instantly.
 
