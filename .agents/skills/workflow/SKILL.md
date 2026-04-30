@@ -15,14 +15,14 @@ category: meta
 
 Phase/task based workflow system with `PLAN.md` as single source of truth.
 There can be many `PLAN.md` files in different locations.
-Plan files can create dependency graph via `**Depends on Plan:** ...`.
+Plan files create a dependency graph via `**Depends on Plans:** ...`.
 Strict phase numbering (`[emoji-of-phase] Phase X NAME_OF_PHASE`), inline phase dependency tracking, and emoji-coded statuses within current plan.
 Strict task numbering (`[emoji-of-phase] Phase X - [emoji-of-task] Task X.Y`), inline phase/task dependency tracking, and emoji-coded statuses within current plan.
 
 ## First open
 
 1. **PLAN.md doesn't exist?** → Create `PLAN.md` with all phases based on given requirements. There are no predefined phases — determine them from context. Calibrate phase/task granularity to the requirements complexity and detect whether the requester is a beginner, advanced, or expert user. Ask clarifying questions before finalizing the plan.
-2. **PLAN.md exists?** → Open it. Examine `**Current Phase:**` and `**Current Task:**` and propose a continuation point.
+2. **PLAN.md exists?** → Open it. Examine `**Current Phase:**` and `**Current Task:**` and propose a continuation point (hint: the next pending task could be one of the lowest-numbered but in this order ⚙️❓❌☐).
 
 ## Plan updates
 
@@ -33,14 +33,16 @@ Update the current `PLAN.md` file after every change:
 
 Keep `**Current Phase:**` and `**Current Task:**` reflecting whichever phase/task was last worked on — not necessarily the last in list order.
 
+When a task transitions to ☑ (Done), auto-advance `**Current Task:**` to the next pending task (lowest-numbered but in this order ❓❌☐ within the same phase, or the next phase if no pending tasks remain). If the completed task was the last one overall, keep `**Current Task:**` pointing to it.
+
 ## PLAN.md template
 
 ```markdown
 <!-- required: NAME_OF_PLAN is short but descriptive title of current plan -->
 # Plan: NAME_OF_PLAN
 
-<!-- optional: relative path to other PLAN.md file -->
-**Depends on Plan:** ...
+<!-- required: default NONE if doesn't have dependencies, or relative paths to other PLAN.md files -->
+**Depends on Plans:** ...
 <!-- required: [emoji-of-phase] Phase X NAME_OF_PHASE -->
 **Current Phase:** ...
 <!-- required: [emoji-of-phase] Phase X - [emoji-of-task] Task X.Y -->
@@ -82,8 +84,10 @@ These are valid state transitions:
 
 **PLAN.md = single source of truth**: project with dependency graph.
 Multiple `PLAN.md` files can exist in different locations.
-They form a dependency graph via optional `**Depends on Plan:**` header field:
-- Multiple dependencies are comma-separated with spaces: `../a/PLAN.md, ../../b/PLAN.md`
+They form a directed acyclic graph (DAG) via the required `**Depends on Plans:**` header field:
+- Multiple dependencies are comma-separated with spaces: `../a/PLAN.md , ../../b/PLAN.md`
+- Default value is `NONE` when the plan has no dependencies
+- Cycles are not allowed. If a cycle is detected, report it to the user and stop until resolved
 - The dependency graph is resolved transitively by visiting referenced `PLAN.md` headers — not inline-expanded
 - When a dependency is incomplete, ask what to do before proceeding
 
@@ -100,10 +104,18 @@ Every task **MUST** have a unique ID in the exact format `[emoji-of-phase] Phase
 
 Task dependencies are **phase-bound by default** (most will be same-phase).
 
-When a task has dependencies, append to task name the suffix `(depends on: A, B, ...)` part. If current task doesn't have any dependencies, don't prepend `(depends on: ...)` for that task.
+When a task has dependencies, append to the task name the suffix `(depends on: A , B , ...)`. If a task has no dependencies, don't append `(depends on: ...)` to it.
 
 For task that is phase-bound dependencies, `A`, `B`, etc, are dependencies of form `Task X.Y` where `X` is current phase.
 
 For cross-phase task dependencies, `A`, `B`, etc, are explicitly allowed and listed with full `Phase X - Task X.Y` where `X` can be phase ID from that other phase and `Y` matches task ID from its own phase.
 
 This creates a clear directed graph that any reader (human or agent) can parse instantly.
+
+## Plan Completion
+
+When all phases and tasks reach ☑ (Done), produce a short completion report summarizing:
+- What was accomplished (list of completed phases)
+- Any blockers or errors that were resolved
+- Any open questions or items left for future work
+- Path to the PLAN.md file
