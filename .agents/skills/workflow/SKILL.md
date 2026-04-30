@@ -16,8 +16,8 @@ category: meta
 Phase/task based workflow system with `PLAN.md` as single source of truth.
 There can be many `PLAN.md` files in different locations.
 Plan files create a dependency graph via `**Depends on Plans:** ...`.
-Strict phase numbering (`[emoji-of-phase] Phase X NAME_OF_PHASE`), inline phase dependency tracking, and emoji-coded statuses within current plan.
-Strict task numbering (`[emoji-of-phase] Phase X - [emoji-of-task] Task X.Y`), inline phase/task dependency tracking, and emoji-coded statuses within current plan.
+Strict phase numbering (`[emoji-of-phase] Phase X Phase Title`), inline phase dependency tracking, and emoji-coded statuses within current plan.
+Strict task numbering (`[emoji-of-phase] Phase X - [emoji-of-task] Task X.Y Task Title`), inline phase/task dependency tracking, and emoji-coded statuses within current plan.
 
 ## First open
 
@@ -39,12 +39,12 @@ Two rules govern `**Current Phase:**` and `**Current Task:**`:
 ## PLAN.md template
 
 ```markdown
-<!-- required: NAME_OF_PLAN is short but descriptive title of current plan -->
-# [emoji-of-plan] Plan: NAME_OF_PLAN
+<!-- required: Plan Title is short but descriptive title of current plan -->
+# [emoji-of-plan] Plan: Plan Title
 
 <!-- required: default NONE if doesn't have dependencies, or relative paths to other PLAN.md files -->
 **Depends on Plans:** ...
-<!-- required: [emoji-of-phase] Phase X NAME_OF_PHASE -->
+<!-- required: [emoji-of-phase] Phase X Phase Title -->
 **Current Phase:** ...
 <!-- required: [emoji-of-phase] Phase X - [emoji-of-task] Task X.Y -->
 **Current Task:** ...
@@ -85,7 +85,7 @@ These are valid state transitions:
 
 The plan itself carries a status via `[emoji-of-plan]` in its title:
 ```
-# [emoji-of-plan] Plan: NAME_OF_PLAN
+# [emoji-of-plan] Plan: Plan Title
 ```
 
 Strictly use following emojis for `[emoji-of-plan]` status:
@@ -137,7 +137,7 @@ They form a directed acyclic graph (DAG) via the required `**Depends on Plans:**
 
 ## Phases
 
-Phase is strictly formatted as `[emoji-of-phase] Phase X NAME_OF_PHASE`, where X is unique ID (X = phase number, starting from 1).
+Phase is strictly formatted as `[emoji-of-phase] Phase X Phase Title`, where X is unique ID (X = phase number, starting from 1).
 Every Phase **MUST** have a unique ID in the exact format `[emoji-of-phase] Phase X` (X = phase number, starting from 1).
 All phases, tasks and their additions, changes, removals, transitions and dependencies live ONLY in `PLAN.md` file.
 
@@ -145,12 +145,12 @@ If a phase has zero tasks, emit a warning — it can never reach ☑ (Done) and 
 
 ## Tasks
 
-Task is strictly formatted as `[emoji-of-phase] Phase X - [emoji-of-task] Task X.Y` (X = phase number, Y = sequential task number **within that phase**).
+Task is strictly formatted as `[emoji-of-phase] Phase X - [emoji-of-task] Task X.Y Task Title` (X = phase number, Y = sequential task number **within that phase**).
 Every task **MUST** have a unique ID in the exact format `[emoji-of-phase] Phase X - [emoji-of-task] Task X.Y` (X = phase number, Y = sequential task number **within that phase**).
 
 Task dependencies are **phase-bound by default** (most will be same-phase).
 
-When a task has dependencies, append to the task name the suffix `(depends on: A , B , ...)`. If a task has no dependencies, don't append `(depends on: ...)` to it.
+When a task has dependencies, append to the task title the suffix `(depends on: A , B , ...)`. If a task has no dependencies, don't append `(depends on: ...)` to it.
 
 For task that is phase-bound dependencies, `A`, `B`, etc, are dependencies of form `Task X.Y` where `X` is current phase.
 
