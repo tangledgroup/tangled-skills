@@ -40,7 +40,7 @@ Two rules govern `**Current Phase:**` and `**Current Task:**`:
 
 ```markdown
 <!-- required: NAME_OF_PLAN is short but descriptive title of current plan -->
-# Plan: NAME_OF_PLAN
+# [emoji-of-plan] Plan: NAME_OF_PLAN
 
 <!-- required: default NONE if doesn't have dependencies, or relative paths to other PLAN.md files -->
 **Depends on Plans:** ...
@@ -80,6 +80,49 @@ These are valid state transitions:
 - ❌ → ❓ — error state, need clarification to proceed
 
 ⚙️ (Doing) is always required before reaching ☑ (Done). You cannot skip to Done from Question or Error states.
+
+## Plan Statuses
+
+The plan itself carries a status via `[emoji-of-plan]` in its title:
+```
+# [emoji-of-plan] Plan: NAME_OF_PLAN
+```
+
+Strictly use following emojis for `[emoji-of-plan]` status:
+
+
+- ☐ **Not Started** — plan created but no work has begun on any phase or task
+- ❓ **Needs Clarification** — plan exists but requirements or scope need clarification before work can begin
+- ⚙️ **Active** — at least one phase or task is in progress or pending
+- ❌ **Blocked** — cannot proceed due to dependency cycles, unresolved external blockers, or critical failures across the plan
+- ☑ **Completed** — all phases and all tasks within them have reached (Done)
+
+### Plan Status Transitions
+
+These are valid state transitions for `[emoji-of-plan]`:
+
+- ☐ → ⚙️ — begin work on the plan (start first task)
+- ☐ → ❓ — plan created but scope or requirements need clarification before starting
+- ⚙️ → ❓ — during work, scope or requirements need re-evaluation
+- ⚙️ → ❌ — critical blocker stops all progress across the plan
+- ⚙️ → ☑ — all phases and tasks completed successfully
+- ❓ → ⚙️ — clarifications resolved, begin work
+- ❌ → ⚙️ — blocker resolved, resume work
+- ❌ → ❓ — need clarification on how to resolve the blocker
+
+⚙️ (Active) is always required before reaching ☑ (Completed). You cannot skip to Completed from Not Started or Blocked states.
+
+### Automatic Plan Status Derivation
+
+When updating `**Current Phase:**` or `**Current Task:**`, derive `[emoji-of-plan]` from the aggregate state of all phases and tasks:
+
+1. If **all** phases are ☑ → set plan to ☑ (Completed)
+2. If **any** phase or task is ❌ and no task is ⚙️ → set plan to ❌ (Blocked)
+3. If **any** task is ❓ and no task is ⚙️ → set plan to ❓ (Needs Clarification)
+4. If **any** task is ⚙️ → set plan to ⚙️ (Active)
+5. If all phases/tasks are ☐ and none have started → set plan to ☐ (Not Started)
+
+Update `[emoji-of-plan]` in the plan title whenever any phase or task status changes.
 
 ## Plan
 
