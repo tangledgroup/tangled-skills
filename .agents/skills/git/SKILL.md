@@ -9,6 +9,8 @@ version: "2.54.0"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
+  - meta
+  - meta-skill
   - git
   - version-control
   - conventional-commits

@@ -5,9 +5,10 @@ version: "0.7.2"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
+  - meta
+  - meta-skill
   - skill-writing
   - skill-generation
-  - meta-skill
   - automation
 category: tooling
 ---
