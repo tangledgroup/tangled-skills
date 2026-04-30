@@ -5,7 +5,7 @@ description: >
   Keep a Changelog message bodies, and Semantic Versioning 2.0.0. Use when managing repositories,
   writing structured commit messages with conventional types and changelog-style bodies,
   bumping versions, or analyzing codebase health through git history.
-version: "2.54.0"
+version: "0.1.0"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
@@ -64,11 +64,13 @@ When the user says "add, commit, push" (or similar shorthand), interpret as a th
 
 ### Default Behavior — All Changes
 
-"add" / "add all" → `git add .` then `git commit -m '<message>'`
-"commit" / "commit all" → `git add . && git commit -m '<message>'`
+"add" / "add all" → `git add .`
+"commit" / "commit all" → `git commit -a -m '<message>'`
 "push" / "push all" → `git push origin <current-branch>`
 "add, commit, push" → all three steps in order
 "acp" → short for "add, commit, push"
+
+### No File-Specific Overrides
 
 When no files are specified, **always operate on all changes**:
 ```bash
