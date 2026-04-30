@@ -21,7 +21,7 @@ Strict task numbering (`[emoji-of-phase] Phase X - [emoji-of-task] Task X.Y`), i
 
 ## First open
 
-1. **PLAN.md doesn't exist?** → Create `PLAN.md` with all phases based on given requirements. There are no predefined phases — determine them from context. Calibrate phase/task granularity to the requirements complexity and detect whether the requester is a beginner, advanced, or expert user. Ask clarifying questions before finalizing the plan.
+1. **PLAN.md doesn't exist?** → Create `PLAN.md` with all phases based on given requirements. There are no predefined phases — determine them from context. Calibrate phase/task granularity to the requirements complexity and detect whether the requester is a beginner, advanced, or expert user. Ask clarifying questions before finalizing the plan. If unable to ask (non-interactive mode), proceed with best-effort assumptions and document them in the plan.
 2. **PLAN.md exists?** → Open it. Examine `**Current Phase:**` and `**Current Task:**` and propose a continuation point (hint: the next pending task could be one of the lowest-numbered but in this order ⚙️❓❌☐).
 
 ## Plan updates
@@ -31,9 +31,10 @@ Update the current `PLAN.md` file after every change:
 - Adding, modifying, or removing phases or tasks
 - User-requested plan alterations
 
-Keep `**Current Phase:**` and `**Current Task:**` reflecting whichever phase/task was last worked on — not necessarily the last in list order.
+Two rules govern `**Current Phase:**` and `**Current Task:**`:
 
-When a task transitions to ☑ (Done), auto-advance `**Current Task:**` to the next pending task (lowest-numbered but in this order ❓❌☐ within the same phase, or the next phase if no pending tasks remain). If the completed task was the last one overall, keep `**Current Task:**` pointing to it.
+1. **During work** — point to whichever phase/task is currently being worked on (not necessarily the last in list order).
+2. **On completion** — when a task transitions to ☑ (Done), auto-advance both `**Current Phase:**` and `**Current Task:**` to the next pending task (lowest-numbered but in this order ❓❌☐ within the same phase, or the next phase if no pending tasks remain in the current phase). If the completed task was the last one overall, keep both fields pointing to it.
 
 ## PLAN.md template
 
@@ -47,9 +48,9 @@ When a task transitions to ☑ (Done), auto-advance `**Current Task:**` to the n
 **Current Phase:** ...
 <!-- required: [emoji-of-phase] Phase X - [emoji-of-task] Task X.Y -->
 **Current Task:** ...
-<!-- required: YYYY-MM-DD HH:MM:SS -->
+<!-- required: ISO 8601 / UTC (YYYY-MM-DDTHH:MM:SSZ) -->
 **Created:** ...
-<!-- required: YYYY-MM-DD HH:MM:SS -->
+<!-- required: ISO 8601 / UTC (YYYY-MM-DDTHH:MM:SSZ) -->
 **Updated:** ...
 
 <!-- required: PHASES with TASKS start here -->
@@ -87,7 +88,7 @@ Multiple `PLAN.md` files can exist in different locations.
 They form a directed acyclic graph (DAG) via the required `**Depends on Plans:**` header field:
 - Multiple dependencies are comma-separated with spaces: `../a/PLAN.md , ../../b/PLAN.md`
 - Default value is `NONE` when the plan has no dependencies
-- Cycles are not allowed. If a cycle is detected, report it to the user and stop until resolved
+- Cycles are not allowed. Check for cycles whenever any plan is created or when `**Depends on Plans:**` is modified. If a cycle is detected (including transitive cycles), report it to the user and stop until resolved
 - The dependency graph is resolved transitively by visiting referenced `PLAN.md` headers — not inline-expanded
 - When a dependency is incomplete, ask what to do before proceeding
 
@@ -96,6 +97,8 @@ They form a directed acyclic graph (DAG) via the required `**Depends on Plans:**
 Phase is strictly formatted as `[emoji-of-phase] Phase X NAME_OF_PHASE`, where X is unique ID (X = phase number, starting from 1).
 Every Phase **MUST** have a unique ID in the exact format `[emoji-of-phase] Phase X` (X = phase number, starting from 1).
 All phases, tasks and their additions, changes, removals, transitions and dependencies live ONLY in `PLAN.md` file.
+
+If a phase has zero tasks, emit a warning — it can never reach ☑ (Done) and is likely a mistake.
 
 ## Tasks
 
