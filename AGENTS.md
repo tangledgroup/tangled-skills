@@ -12,7 +12,6 @@ tangled-skills/
 │   │   └── reference/              # Optional reference files (flat structure, numbered)
 │   │       ├── 01-topic-name.md
 │   │       └── 02-another-topic.md
-├── README.md                       # Skills table and overview
 ├── README.md                       # Skills table and overview (auto-generated)
 ├── scripts/
 │   └── gen-skills-table.py         # Regenerates README.md skills table from YAML headers
@@ -29,3 +28,24 @@ python3 scripts/gen-skills-table.py
 ```
 
 This keeps the public skills index in sync with the actual `.agents/skills/` contents.
+
+## Package Installation Rules
+
+**Never install packages system-wide.** Always use local or ephemeral environments:
+
+| Ecosystem  | Do                                      | Don't                       |
+|------------|-----------------------------------------|-----------------------------|
+| Python     | `uv venv && uv pip install <pkg>`       | `pip install <pkg>`         |
+| Python CLI | `uvx <tool>`                            | `pipx install`, bare `pip`  |
+| Node.js    | `npx <pkg>` or project-local `npm i`    | `npm install -g <pkg>`      |
+| System     | Use what's already installed            | `apt install`, `brew install`, `apk add`, `pacman -S` |
+
+When running scripts that need dependencies, create a temporary virtual environment
+or use `uv run --with <pkg> <script>` for one-off executions.
+
+## Tooling Conventions
+
+- **Python packages**: Prefer `uv` over `pip`/`pip-tools`/`poetry`.
+- **Python CLI tools**: Use `uvx <tool>` for one-off runs (ephemeral venv, no persistent install).
+- **Node.js CLI tools**: Prefer `npx` over global installs.
+- **Scripts in this repo**: Run with `python3` (system Python is sufficient for our simple scripts).
