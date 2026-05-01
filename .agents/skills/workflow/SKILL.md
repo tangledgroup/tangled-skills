@@ -50,6 +50,10 @@ dependencies), only change the plan emoji to ☐ if it was previously ☑.
 Otherwise preserve whatever status is present. The only statuses that persist
 across non-completion edits are: ❓ ⚙️ ❌.
 
+After every PLAN.md edit, run the temp validator (see ## Validation). If errors
+are reported, fix them before proceeding. This catches emoji derivation
+mismatches that manual editing can introduce.
+
 Two rules govern `**Current Phase:**` and `**Current Task:**`:
 
 1. **During work** — point to whichever phase/task is currently being worked on (not necessarily the last in list order).
@@ -216,8 +220,139 @@ These are valid state transitions:
 
 ## Plan Completion
 
+Before producing the completion report, run the temp validator (see ## Validation).
+The plan is only considered complete when the validator reports zero errors and
+all tasks are ☑. This provides deterministic confirmation rather than relying
+solely on LLM judgment of emoji states.
+
 When all phases and tasks reach ☑ (Done), produce a short completion report summarizing:
 - What was accomplished (list of completed phases)
 - Any blockers or errors that were resolved
 - Any open questions or items left for future work
 - Path to the PLAN.md file
+
+## Validation
+
+After updating PLAN.md, verify internal consistency by generating a temporary
+validation script, running it, and deleting it. Never store validation scripts
+permanently alongside the skill or plan.
+
+Generate the script inline to a temp path (e.g., `/tmp/validate_plan.py`),
+run it against the PLAN.md, then delete:
+
+```bash
+cat > /tmp/validate_plan.py << 'PYEOF'
+import re, sys, pathlib
+
+plan_path = sys.argv[1] if len(sys.argv) > 1 else "PLAN.md"
+text = pathlib.Path(plan_path).read_text()
+
+phase_re = re.compile(r'^##\s+([☐❓⚙️❌☑])\s+Phase\s+(\d+)\s+')
+task_re = re.compile(r'^-\s+([☐❓⚙️❌☑])\s+Task\s+(\d+\.\d+)\s+')
+plan_re = re.compile(r'^#\s+([☐❓⚙️❌☑])\s+Plan:', re.MULTILINE)
+dep_re = re.compile(r'\(depends on:\s*(.+?)\)')
+
+errors = []
+phases = {}
+current_phase = None
+all_task_ids = set()
+
+for line in text.splitlines():
+    m = phase_re.match(line)
+    if m:
+        num = int(m.group(2))
+        phases[num] = {'emoji': m.group(1), 'tasks': {}}
+        current_phase = num
+        continue
+    m = task_re.match(line)
+    if m and current_phase is not None:
+        tid = m.group(2)
+        x, y = map(int, tid.split('.'))
+        if x != current_phase:
+            errors.append(f"Task {tid}: phase number {x} != current phase {current_phase}")
+        phases[current_phase]['tasks'][y] = m.group(1)
+        all_task_ids.add(f"Task {tid}")
+
+# Dependency references must exist
+for line in text.splitlines():
+    m = dep_re.search(line)
+    if m:
+        for dep in m.group(1).split(','):
+            ref = dep.strip()
+            task_ref = re.sub(r'^Phase\s+\d+\s*-\s*', '', ref)
+            if task_ref not in all_task_ids:
+                errors.append(f"Dependency '{ref}' references non-existent task")
+
+# Phase derivation check
+for num, info in sorted(phases.items()):
+    tasks = info['tasks']
+    if not tasks:
+        errors.append(f"Phase {num}: zero tasks (can never reach ☑)")
+        continue
+    actual = info['emoji']
+    vals = list(tasks.values())
+    expected = ('☑' if all(e == '☑' for e in vals)
+                else '⚙️' if any(e == '⚙️' for e in vals)
+                else '❓' if any(e == '❓' for e in vals)
+                else '❌' if any(e == '❌' for e in vals)
+                else '☐')
+    if actual != expected:
+        errors.append(f"Phase {num}: emoji is {actual} but derived from tasks is {expected}")
+
+# Plan derivation check
+m = plan_re.search(text)
+if m:
+    plan_actual = m.group(1)
+    phase_emojis = [info['emoji'] for info in phases.values()]
+    expected = ('☑' if all(e == '☑' for e in phase_emojis)
+                else '⚙️' if any(e == '⚙️' for e in phase_emojis)
+                else '❓' if any(e == '❓' for e in phase_emojis)
+                else '❌' if any(e == '❌' for e in phase_emojis)
+                else '☐')
+    if plan_actual != expected:
+        errors.append(f"Plan: emoji is {plan_actual} but derived from phases is {expected}")
+
+# Current Phase/Task references must exist
+cp_match = re.search(r'\*\*Current Phase:\*\*\s+(.+)', text)
+if cp_match:
+    ref = cp_match.group(1).strip()
+    phase_ref = re.sub(r'^[☐❓⚙️❌☑]\s+', '', ref)
+    phase_num = re.match(r'Phase\s+(\d+)', phase_ref)
+    if phase_num and int(phase_num.group(1)) not in phases:
+        errors.append(f"Current Phase references non-existent phase")
+
+ct_match = re.search(r'\*\*Current Task:\*\*\s+(.+)', text)
+if ct_match:
+    ref = ct_match.group(1).strip()
+    task_ref = re.sub(r'^.*?\s*-\s*', '', ref)
+    task_id = re.match(r'[☐❓⚙️❌☑]\s*Task\s+(\d+\.\d+)', task_ref)
+    if task_id and f"Task {task_id.group(1)}" not in all_task_ids:
+        errors.append(f"Current Task references non-existent task")
+
+if errors:
+    print(f"✗ {len(errors)} error(s):")
+    for e in errors:
+        print(f"  - {e}")
+    sys.exit(1)
+else:
+    total = sum(len(p['tasks']) for p in phases.values())
+    done = sum(1 for p in phases.values() for e in p['tasks'].values() if e == '☑')
+    print(f"✓ PLAN.md is consistent ({done}/{total} tasks done, {len(phases)} phases)")
+PYEOF
+
+python3 /tmp/validate_plan.py path/to/PLAN.md
+rm /tmp/validate_plan.py
+```
+
+**What it validates:**
+- Task emoji ∈ {☐ ❓ ⚙️ ❌ ☑}
+- Phase emoji matches derivation from its tasks (☑ only when all tasks are ☑)
+- Plan emoji matches derivation from its phases (☑ only when all phases are ☑)
+- Dependency references point to existing tasks
+- `**Current Phase:**` and `**Current Task:**` reference existing entries
+- Zero-task phases flagged as warnings
+
+**What it does NOT validate (requires LLM judgment):**
+- Whether the actual work described by a task was completed
+- Whether acceptance criteria were met
+- Semantic correctness of the plan content
