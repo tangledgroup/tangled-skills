@@ -1,7 +1,7 @@
 ---
 name: podman-py-5-8-0
 description: Python client library for Podman container engine providing programmatic access to containers, images, pods, networks, volumes, manifests, secrets, and quadlets via RESTful API. Use when building Python applications that require container orchestration, automation scripts, CI/CD integration, or container management without Docker dependency.
-license: Apache-2.0
+license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "5.8.0"
 tags:

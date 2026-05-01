@@ -7,7 +7,7 @@ description: >
   context curation. Available as both VS Code extension and CLI. Fork of Cline.
   Use when building or configuring Dirac, understanding its edit engine internals,
   integrating with its tool system, or deploying it as a coding agent in CI/CD.
-license: Apache-2.0
+license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.2.89"
 tags:

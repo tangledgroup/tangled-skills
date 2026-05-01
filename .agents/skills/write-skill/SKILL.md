@@ -83,7 +83,7 @@ Split into references when:
 
 ### Step 1: Validate Input
 
-Check that the skill name matches `^[a-z0-9]+(-[a-z0-9]+)*$` and version follows SemVer 2.0.0 format (`MAJOR.MINOR.PATCH`).
+Check that the skill name matches `^[a-z0-9]+(-[a-z0-9]+)*$` and version is a non-empty string matching the upstream project's versioning scheme (SemVer, date-based, two-part, or pre-release).
 
 ### Step 2: Crawl and Collect Content
 
@@ -119,7 +119,7 @@ name: <skill-name>
 description: <1-1024 char description, third person, includes WHAT and WHEN>
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "<semver>"
+version: "<upstream-version>"
 tags:
   - <tag1>
   - <tag2>
@@ -135,9 +135,9 @@ external_references:
 |-------|----------|-------------|
 | `name` | Yes | 1-64 chars, regex `^[a-z0-9]+(-[a-z0-9]+)*$`, matches directory name |
 | `description` | Yes | 1-1024 chars, third person, includes WHAT and WHEN |
-| `license` | No | License name (default: MIT) |
+| `license` | No | **Always MIT** — this is the skill file's license, never the upstream project's |
 | `author` | No | Format: `Name <email@example.com>` |
-| `version` | No | SemVer 2.0.0 format |
+| `version` | No | Non-empty string — preserve upstream version as-is (SemVer, date, two-part, pre-release) |
 | `tags` | No | Array of string tags |
 | `category` | No | Skill category classification |
 | `external_references` | No | User-provided starting URLs only |
@@ -155,15 +155,17 @@ external_references:
 Valid: `pdf-processing`, `data-analysis`, `fastapi-0-115`
 Invalid: `PDF-Processing`, `-pdf`, `pdf--processing`, `pdf processing`
 
-### SemVer 2.0.0 Rules
+### Version Field Rules
 
-- Format: `MAJOR.MINOR.PATCH` (e.g., `1.0.0`)
-- Pre-release: `1.0.0-alpha`, `1.0.0-beta.2`, `1.0.0-rc.1`
-- Build metadata: `1.0.0+20130313144700` (ignored in precedence)
-- MAJOR: backward incompatible changes
-- MINOR: backward compatible additions
-- PATCH: backward compatible fixes
-- No leading zeros in numeric identifiers
+The `version` field records the upstream project's version — **preserve it as-is**. Do not force it into a specific format. Acceptable formats:
+
+- **SemVer 2.0.0**: `1.2.3` (strict three-part `MAJOR.MINOR.PATCH`)
+- **SemVer pre-release**: `1.0.0-alpha`, `1.0.0-beta.2`, `1.0.0-rc.1`
+- **SemVer with build metadata**: `1.0.0+20130313144700` (ignored in precedence)
+- **Date-based**: `2025-11-25`, `2026-04-16` (for specs, snapshots, documentation releases)
+- **Two-part**: `0.16`, `0.5` (some projects only use `MAJOR.MINOR`)
+
+When constructing the **directory name**, hyphenate version components: `project-1-2-3`, `project-0-16`, `project-2025-11-25`. The `name` field in YAML must match the directory name exactly.
 
 ### Description Best Practices
 
@@ -273,7 +275,7 @@ name: <skill-name>
 description: <specific description with WHAT and WHEN>
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "<semver>"
+version: "<upstream-version>"
 tags:
   - <tag1>
   - <tag2>
@@ -344,7 +346,7 @@ Even when scripts or assets are requested, generated skills must never instruct 
 ### Tool Preference Hierarchy
 
 1. **Bash first** — file manipulation, validation, parsing, YAML checks, directory operations, URL fetching with `curl`, text processing with `sed`/`awk`/`grep`
-2. **Python stdlib only** — use when Bash is awkward (JSON parsing, complex string manipulation, SemVer validation). Only standard library modules: `json`, `pathlib`, `urllib`, `re`, `hashlib`, etc.
+2. **Python stdlib only** — use when Bash is awkward (JSON parsing, complex string manipulation, version validation). Only standard library modules: `json`, `pathlib`, `urllib`, `re`, `hashlib`, etc.
 3. **System tools** — `pandoc` for HTML→Markdown conversion, `pdftotext`/`gs` for PDFs, `jq` for JSON processing
 
 ### Inline Bash Examples
@@ -391,15 +393,15 @@ for p in pathlib.Path(".").rglob("*.md"):
 - [ ] `name` present and matches directory name
 - [ ] `name` matches regex `^[a-z0-9]+(-[a-z0-9]+)*$`
 - [ ] `description` present (1-1024 characters)
-- [ ] `license` is "MIT"
+- [ ] `license` is "MIT" (always — this is the skill file's license, not the upstream project's)
 - [ ] `author` format: `Name <email@example.com>`
-- [ ] `version` follows SemVer 2.0.0
+- [ ] `version` is non-empty and matches the upstream project's version string
 - [ ] Header ends with `---` before main content
 
 ### Structure
 - [ ] Directory name matches skill name
 - [ ] SKILL.md exists
-- [ ] If complex: `reference/` with numbered files (`01-`, `02-`, etc.)
+- [ ] If complex: `reference/` with zero-padded two-digit numbered files (`01-`, `02-`, … `10-`, `11-`)
 - [ ] No nested `reference/` directories
 - [ ] SKILL.md under 500 lines (if references exist)
 - [ ] No `scripts/` or `assets/` unless explicitly requested by user

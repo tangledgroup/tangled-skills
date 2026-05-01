@@ -1,7 +1,7 @@
 ---
 name: agentmemory-0-8-10
 description: Persistent memory engine for AI coding agents providing automatic cross-session context capture, hybrid search (BM25 + vector + knowledge graph), and multi-agent coordination via MCP server with 43 tools. Works with Claude Code, Cursor, Gemini CLI, OpenCode, Codex, Cline, Goose, Windsurf, Roo Code, Claude Desktop, Aider, Hermes, OpenClaw, Kilo Code, and any MCP client without external database dependencies. Use when building AI coding agent workflows that require persistent memory across sessions, semantic recall of past decisions and patterns, token-efficient context injection, or multi-agent coordination through shared memory with leases, signals, and routines.
-license: Apache-2.0
+license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.8.10"
 tags:

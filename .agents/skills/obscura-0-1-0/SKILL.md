@@ -1,7 +1,7 @@
 ---
 name: obscura-0-1-0
 description: Lightweight headless browser engine written in Rust for web scraping and AI agent automation. Runs real JavaScript via V8, supports Chrome DevTools Protocol (CDP), and acts as a drop-in replacement for headless Chrome with Puppeteer and Playwright. Use when building scrapers, automating web interactions, replacing headless Chrome with lower memory footprint (~30 MB vs 200+ MB), or needing built-in anti-detection capabilities.
-license: Apache-2.0
+license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"
 tags:

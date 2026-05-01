@@ -1,7 +1,7 @@
 ---
 name: pywebview-6-2-0
 description: Cross-platform wrapper around native webview components that lets Python applications display HTML content in a native GUI window. Use when building desktop applications with web-based UIs on Windows, macOS, Linux, or Android — including two-way JavaScript↔Python communication, DOM manipulation from Python, built-in HTTP server, window management, and bundler-friendly packaging.
-license: BSD-3-Clause
+license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "6.2.0"
 tags:
