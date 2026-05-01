@@ -44,6 +44,12 @@ Update the current `PLAN.md` file after every change:
 - Adding, modifying, or removing phases or tasks
 - User-requested plan alterations
 
+**Plan emoji preservation on update:** When editing a PLAN.md for any reason
+other than completing it (e.g., adding tasks, fixing content, updating
+dependencies), only change the plan emoji to ☐ if it was previously ☑.
+Otherwise preserve whatever status is present. The only statuses that persist
+across non-completion edits are: ❓ ⚙️ ❌.
+
 Two rules govern `**Current Phase:**` and `**Current Task:**`:
 
 1. **During work** — point to whichever phase/task is currently being worked on (not necessarily the last in list order).
@@ -105,6 +111,19 @@ These are valid state transitions for `[emoji-of-plan]`:
 
 ⚙️ (Active) is always required before reaching ☑ (Completed). You cannot skip to Completed from Not Started or Blocked states.
 
+### Plan Status Derivation
+
+The plan emoji is **derived from its phases**, not set independently:
+
+- ☑ **Completed** — only when **all** phases have reached ☑
+- ⚙️ **Active** — when at least one phase is ⚙️ or has a task that is ⚙️
+- ❓ **Needs Clarification** — when no phase is ⚙️/☑ but at least one is ❓
+- ❌ **Blocked** — when no phase is ⚙️/☑ but at least one is ❌
+- ☐ **Not Started** — all phases are still ☐
+
+When a plan transitions to ☑, it means every single task in every single phase
+is ☑. Do not mark the plan as completed until this condition is met.
+
 ## Plan
 
 **PLAN.md = single source of truth**: project with dependency graph.
@@ -158,6 +177,20 @@ For phase-bound dependencies, `A`, `B`, etc. are of the form `Task X.Y` where `X
 For cross-phase dependencies, use the full `Phase X - Task X.Y` form where `X` is the other phase's ID and `Y` is the task ID within that phase.
 
 This creates a clear directed graph that any reader (human or agent) can parse instantly.
+
+## Phase Status Derivation
+
+A phase emoji is **derived from its tasks**, not set independently:
+
+- ☑ **Done** — only when **all** tasks within the phase have reached ☑
+- ⚙️ **Active** — when at least one task is ⚙️ (Doing)
+- ❓ **Needs Clarification** — when no task is ⚙️ or ☑ but at least one is ❓
+- ❌ **Blocked** — when no task is ⚙️ or ☑ but at least one is ❌
+- ☐ **To Do** — all tasks are still ☐
+
+When marking a task as ☑, check if it was the last pending task in its phase.
+Only then change the phase emoji to ☑. If any task remains non-☑, leave the
+phase emoji as whatever derived status applies (never manually override).
 
 ## Phase and Task Statuses
 
