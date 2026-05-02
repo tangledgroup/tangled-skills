@@ -21,6 +21,8 @@ Generates spec-compliant, cross-platform agent skills from user requirements. Ta
 
 Skills are Markdown-only by default — no scripts or assets are generated unless the user explicitly requests them. If OS-level operations are needed, inline bash or Python with built-in modules is used instead.
 
+**Conciseness principle:** Assume the consuming agent already knows basics (what PDFs are, how libraries work). Only add context the agent doesn't already have. Challenge each piece of information: "Does the agent really need this explanation?" The description field is critical for skill selection — it must include both WHAT and WHEN so the agent can pick the right skill from potentially 100+ available skills.
+
 ## When to Use
 
 - Creating a new agent skill from scratch for a project, library, or tool
@@ -63,10 +65,20 @@ my-skill/
 ├── SKILL.md
 ├── reference/
 ├── scripts/              # Only if explicitly requested
-│   └── validate.sh
+│   ├── analyze_form.py   # Utility script (executed, not loaded into context)
+│   ├── fill_form.py      # Form filling script
+│   └── validate.py       # Validation script
 └── assets/               # Only if explicitly requested
     └── example-config.yaml
 ```
+
+**Script invocation:** When scripts exist, the skill must clearly state whether the agent should **execute** the script (preferred — "Run `python scripts/validate.py input.pdf`") or **read it as reference** ("See `scripts/validate.py` for the validation algorithm"). Scripts are executed via bash without loading their full contents into context — only output consumes tokens.
+
+**Script quality rules:**
+- Scripts must handle errors explicitly (never punt to the agent with bare exceptions)
+- All constants must be documented with justification (no "voodoo numbers")
+- Provide clear, specific error messages that help the agent fix issues
+- Make execution intent unambiguous in instructions
 
 ### Complexity Decision
 
@@ -78,6 +90,14 @@ Split into references when:
 - Total expected output exceeds ~500 lines
 - Content naturally falls into distinct topics
 - Dense reference material benefits from progressive disclosure
+
+**Progressive disclosure patterns:**
+
+- **High-level guide with references**: SKILL.md provides quick-start examples, then links to detailed reference files for advanced features. Agent loads references only when needed.
+- **Domain-specific organization**: For skills covering multiple domains, split by domain (e.g., `reference/finance.md`, `reference/sales.md`) so the agent loads only relevant context.
+- **Conditional details**: Show basic content in SKILL.md, link to advanced content that the agent reads conditionally based on the task.
+
+**Keep references one level deep from SKILL.md.** All reference files should link directly from SKILL.md. Never chain references (reference → reference → reference) — this causes incomplete information loading.
 
 ## Generation Workflow
 
@@ -320,12 +340,54 @@ The following sections are **optional** — include only when applicable:
 ```markdown
 # <Topic Name>
 
-## <Subsection>
+## Contents
+- Subsection 1
+- Subsection 2
+- Subsection 3
+
+## Subsection 1
 Content here...
 
-## <Subsection>
+## Subsection 2
 Content here...
 ```
+
+For reference files longer than 100 lines, include a table of contents at the top so the agent can see the full scope of available information even when previewing.
+
+### Degrees of Freedom
+
+Match the level of instruction specificity to the task's fragility:
+
+- **High freedom** (text-based instructions): Use when multiple approaches are valid and decisions depend on context. Example: "Analyze the code structure and suggest improvements."
+- **Medium freedom** (pseudocode or scripts with parameters): Use when a preferred pattern exists but some variation is acceptable. Example: provide a template function with configurable parameters.
+- **Low freedom** (specific scripts, few or no parameters): Use when operations are fragile and error-prone, consistency is critical, or a specific sequence must be followed. Example: "Run exactly this command: `python scripts/migrate.py --verify --backup`. Do not modify the command."
+
+### Workflow Patterns
+
+For complex multi-step tasks, provide checklists the agent can copy and track:
+
+```markdown
+## Task workflow
+
+Copy this checklist and track your progress:
+
+```
+Task Progress:
+- [ ] Step 1: Analyze input (run analyze.py)
+- [ ] Step 2: Create plan file
+- [ ] Step 3: Validate plan (run validate.py)
+- [ ] Step 4: Execute changes
+- [ ] Step 5: Verify output (run verify.py)
+```
+
+**Step 1: Analyze input**
+
+Run: `python scripts/analyze.py input.pdf`
+
+This extracts fields and saves to `fields.json`.
+```
+
+For quality-critical tasks, implement feedback loops: run validator → fix errors → repeat. Only proceed when validation passes.
 
 ## Output Constraints
 
@@ -343,6 +405,33 @@ Only create `scripts/` or `assets/` when the user explicitly requests them (e.g.
 
 Even when scripts or assets are requested, generated skills must never instruct installing packages (`pip`, `npm`, `cargo`, etc.). Use only tools already available on the system.
 
+**Script invocation in generated skills:**
+
+When a skill includes scripts, the SKILL.md must show how to execute them using bash. Scripts are run from the skill directory, so paths are relative to the skill root:
+
+```
+## Utility scripts
+
+**validate.py**: Check configuration for errors
+
+```bash
+python scripts/validate.py config.yaml
+# Returns: "OK" or lists specific errors with line numbers
+```
+
+**analyze.py**: Extract metadata from input files
+
+```bash
+python scripts/analyze.py input.pdf > metadata.json
+```
+```
+
+- Always use forward slashes in paths (`scripts/helper.py`), never backslashes
+- State clearly whether the agent should **execute** the script or **read it as reference**
+- Show expected output format so the agent knows what to expect
+- Scripts must handle errors explicitly — never bare `except:` or unhandled exceptions
+- Document all magic numbers/constants with justification comments
+
 ### Tool Preference Hierarchy
 
 1. **Bash first** — file manipulation, validation, parsing, YAML checks, directory operations, URL fetching with `curl`, text processing with `sed`/`awk`/`grep`
@@ -351,7 +440,7 @@ Even when scripts or assets are requested, generated skills must never instruct 
 
 ### Inline Bash Examples
 
-Bash scripts are preferred for validation and file operations. Write them inline where the skill needs to perform checks.
+Bash scripts are preferred for validation and file operations. Write them inline where the skill needs to perform checks. Scripts execute via bash — they are not loaded into context, only their output consumes tokens.
 
 To validate a YAML header:
 ```bash
@@ -368,6 +457,14 @@ To count lines in a skill:
 ```bash
 wc -l SKILL.md | awk '{print $1}'
 ```
+
+To execute a skill script (when scripts are requested):
+```bash
+python scripts/validate.py input.pdf
+# Output: "OK" or specific error messages with line numbers
+```
+
+**Key principle:** Scripts should solve problems, not punt to the agent. Handle errors explicitly and provide specific, actionable error messages.
 
 ### Inline Python Examples
 
@@ -405,12 +502,26 @@ for p in pathlib.Path(".").rglob("*.md"):
 - [ ] No nested `reference/` directories
 - [ ] SKILL.md under 500 lines (if references exist)
 - [ ] No `scripts/` or `assets/` unless explicitly requested by user
+- [ ] All file paths use forward slashes (no backslashes)
+- [ ] Reference files are one level deep from SKILL.md (no chained references)
 
 ### Content
 - [ ] "Overview" section present
 - [ ] "When to Use" with specific scenarios
 - [ ] At least one code example (if applicable to the skill type)
 - [ ] No hallucinated content — all from downloaded sources
+- [ ] Content is concise — no over-explaining basics the agent already knows
+- [ ] Consistent terminology throughout (one term per concept)
+- [ ] No time-sensitive information (or placed in "old patterns" section)
+- [ ] Single recommended approach given (not multiple options causing confusion)
+
+### Scripts (if explicitly requested)
+- [ ] Script paths use forward slashes
+- [ ] Execution intent is clear ("Run" vs "See for reference")
+- [ ] Scripts handle errors explicitly (no bare exceptions)
+- [ ] All constants documented with justification
+- [ ] Expected output format shown in SKILL.md
+- [ ] No install instructions in scripts (only system-available tools)
 
 ## Behavioral Guidelines
 
@@ -454,3 +565,12 @@ Define success criteria before generating:
 - Express examples, concepts, and guidance as prose, lists, or code blocks — tables are the last resort
 - YAML field rules are acceptable as a table since each row is a key-value pair with no simpler alternative
 - Extension mappings are acceptable as a table when listing many file types concisely
+
+### Conciseness and Clarity
+- Assume the consuming agent already knows fundamentals (what PDFs are, how libraries work)
+- Only add context the agent doesn't already have — challenge each paragraph's token cost
+- Use consistent terminology throughout (one term per concept, never mix synonyms)
+- Avoid time-sensitive information; use "old patterns" collapsible sections for legacy content
+- Provide a single recommended approach with an escape hatch, not a list of alternatives
+- All file paths use forward slashes (`scripts/helper.py`), never backslashes
+- Keep references one level deep from SKILL.md — no chained references

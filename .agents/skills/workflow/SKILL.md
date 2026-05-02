@@ -235,73 +235,19 @@ When all phases and tasks reach ☑ (Done), produce a short completion report su
 
 ## Validation
 
-After updating PLAN.md, run a pure bash validation. This catches structural
+After updating PLAN.md, run the validator script. This catches structural
 problems that manual editing can introduce. Emoji derivation (does phase emoji
 match its tasks?) is checked by the LLM during edits — the validator focuses on
 things that fail silently.
 
+Scripts live in `scripts/` relative to this SKILL.md. Resolve the full path
+from wherever this skill is installed (not a hardcoded `.agents/skills/` prefix):
+
 ```bash
-validate_plan() {
-  local plan="$1" errors=0
-
-  # Must have plan header with valid emoji
-  if ! grep -qP '^# [☐❓⚙️❌☑] Plan:' "$plan"; then
-    echo "✗ Missing or invalid plan header"
-    errors=$((errors + 1))
-  fi
-
-  # Must have at least one phase
-  local phases=$(grep -cP '^## [☐❓⚙️❌☑] Phase \d+' "$plan")
-  if [ "$phases" -eq 0 ]; then
-    echo "✗ No phases found"
-    errors=$((errors + 1))
-  fi
-
-  # Must have at least one task
-  local tasks=$(grep -cP '^- [☐❓⚙️❌☑] Task \d+\.\d+' "$plan")
-  if [ "$tasks" -eq 0 ]; then
-    echo "✗ No tasks found"
-    errors=$((errors + 1))
-  fi
-
-  # No tasks with invalid emojis
-  local bad_tasks=$(grep -cP '^- [^☐❓⚙️❌☑] Task' "$plan" || true)
-  if [ "$bad_tasks" -gt 0 ]; then
-    echo "✗ $bad_tasks task(s) with invalid emoji"
-    errors=$((errors + 1))
-  fi
-
-  # No phases with invalid emojis
-  local bad_phases=$(grep -cP '^## [^☐❓⚙️❌☑] Phase' "$plan" || true)
-  if [ "$bad_phases" -gt 0 ]; then
-    echo "✗ $bad_phases phase(s) with invalid emoji"
-    errors=$((errors + 1))
-  fi
-
-  # Check for zero-task phases
-  local empty_phases=0 in_phase=0 task_count=0
-  while IFS= read -r line; do
-    if echo "$line" | grep -qP '^## [☐❓⚙️❌☑] Phase \d+'; then
-      [ "$in_phase" -eq 1 ] && [ "$task_count" -eq 0 ] && empty_phases=$((empty_phases + 1))
-      in_phase=1
-      task_count=0
-    elif echo "$line" | grep -qP '^- [☐❓⚙️❌☑] Task'; then
-      task_count=$((task_count + 1))
-    fi
-  done < "$plan"
-  [ "$in_phase" -eq 1 ] && [ "$task_count" -eq 0 ] && empty_phases=$((empty_phases + 1))
-  if [ "$empty_phases" -gt 0 ]; then
-    echo "⚠ $empty_phases phase(s) with zero tasks"
-  fi
-
-  if [ "$errors" -eq 0 ]; then
-    echo "✓ PLAN.md passes checks ($tasks tasks, $phases phases)"
-  else
-    echo "✗ $errors error(s) found"
-    return 1
-  fi
-}
+bash <path-to-this-skill>/scripts/validate-plan.sh path/to/PLAN.md
 ```
+
+(See [scripts/validate-plan.sh](scripts/validate-plan.sh) for the full implementation.)
 
 **What it validates:**
 - Plan header exists with valid emoji
@@ -320,105 +266,45 @@ validate_plan() {
 
 ## Atomic Updates
 
-When multiple processes or agents might edit PLAN.md concurrently, use `flock`
-for advisory locking and temp-file + rename for atomic writes. This prevents
+When multiple processes or agents might edit PLAN.md concurrently, use the
+provided scripts for advisory locking and atomic writes. This prevents
 overwrites and partial writes.
 
-### Lock-and-edit pattern
+### Available Scripts
+
+| Script | Purpose |
+|--------|---------|
+| [scripts/update-plan.sh](scripts/update-plan.sh) | Lock-and-edit with `flock` + atomic rename. Supports `set-task-status`, `set-phase-status`, `update-timestamp`, `set-current-task`, `set-current-phase`. |
+| [scripts/derive-phase-emoji.sh](scripts/derive-phase-emoji.sh) | Derive phase emoji from its tasks' emojis using AWK. Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
+| [scripts/workflow.sh](scripts/workflow.sh) | Full workflow: lock → edit → validate with automatic rollback on validation failure. |
+
+### Usage Examples
+
+Scripts are in `scripts/` relative to this SKILL.md. Replace `<path-to-this-skill>`
+with the actual directory containing this SKILL.md:
 
 ```bash
-update_plan() {
-  local plan="$1"
-  local lockfile="${plan}.lock"
+# Mark task 2.3 as Doing (⚙️)
+bash <path-to-this-skill>/scripts/update-plan.sh PLAN.md set-task-status "Task 2.3" "⚙️"
 
-  # Acquire exclusive lock, timeout after 30 seconds
-  (
-    flock -w 30 200 || { echo "✗ Timeout waiting for PLAN.md lock"; exit 1; }
+# Change phase 2 emoji to Active
+bash <path-to-this-skill>/scripts/update-plan.sh PLAN.md set-phase-status "Phase 2" "⚙️"
 
-    # Write to temp file in same directory (ensures same filesystem for atomic rename)
-    local tmpfile
-    tmpfile=$(mktemp "${plan}.XXXXXX")
+# Update timestamp
+bash <path-to-this-skill>/scripts/update-plan.sh PLAN.md update-timestamp
 
-    # Copy current content and apply edits
-    cp "$plan" "$tmpfile"
-    # ... apply sed/awk edits to $tmpfile ...
+# Set Current Task
+bash <path-to-this-skill>/scripts/update-plan.sh PLAN.md set-current-task "⚙️ Task 2.3"
 
-    # Atomic rename
-    mv -f "$tmpfile" "$plan"
+# Derive phase emoji from its tasks
+echo "Phase 2 emoji: $(bash <path-to-this-skill>/scripts/derive-phase-emoji.sh PLAN.md 2)"
 
-  ) 200>"$lockfile"
-}
+# Full workflow with validation and rollback
+bash <path-to-this-skill>/scripts/workflow.sh PLAN.md set-task-status "Task 2.3" "☑"
 ```
 
-Properties:
+### Properties
 - **`flock -w 30`** — blocks other writers, times out after 30s to avoid deadlocks
 - **`mktemp` + `mv -f`** — write to temp then atomic rename, so PLAN.md is never left partial
 - **Advisory lock** — readers can still read PLAN.md while locked (they see the old version)
-
-### Common edits in pure bash
-
-```bash
-# Change task 2.3 to Doing (⚙️)
-sed -i 's/^- [☐❓❌☑] Task 2\.3 /- ⚙️ Task 2.3 /' PLAN.md
-
-# Change phase 2 emoji to Active
-sed -i 's/^## [☐❓❌☑] Phase 2 /## ⚙️ Phase 2 /' PLAN.md
-
-# Update timestamp
-sed -i "s/^\*\*Updated:\*\* .*/\*\*Updated:\*\* $(date -u +%Y-%m-%dT%H:%M:%SZ)/" PLAN.md
-
-# Advance Current Task
-sed -i 's/^\*\*Current Task:\*\* .*/\*\*Current Task:\*\* ⚙️ Task 2.3/' PLAN.md
-```
-
-### Derive phase emoji from its tasks (awk)
-
-```bash
-# Usage: derive_phase_emoji PLAN.md <phase-number>
-derive_phase_emoji() {
-  local plan="$1" phase_num="$2"
-  awk -v pn="$phase_num" '
-    /^## .* Phase / { current = $NF }
-    current == pn && /^- [☐❓⚙️❌☑] Task/ {
-      emoji = substr($2, 1, 1)
-      if (emoji == "⚙️") found_doing++
-      else if (emoji == "❓") found_question++
-      else if (emoji == "❌") found_error++
-      else if (emoji == "☑") found_done++
-      total++
-    }
-    END {
-      if (found_doing) print "⚙️"
-      else if (found_question) print "❓"
-      else if (found_error) print "❌"
-      else if (total && found_done == total) print "☑"
-      else print "☐"
-    }
-  ' "$plan"
-}
-```
-
-### Full workflow: lock → edit → validate
-
-```bash
-PLAN_PATH="path/to/PLAN.md"
-LOCKFILE="${PLAN_PATH}.lock"
-
-(
-  flock -w 30 200 || exit 1
-
-  # Write to temp, then atomic rename
-  TMPFILE=$(mktemp "${PLAN_PATH}.XXXXXX")
-  cp "$PLAN_PATH" "$TMPFILE"
-
-  # Apply edits (example: mark task 2.3 as done)
-  sed -i 's/^- [☐❓⚙️❌] Task 2\.3 /- ☑ Task 2.3 /' "$TMPFILE"
-
-  # Atomic rename
-  mv -f "$TMPFILE" "$PLAN_PATH"
-
-  # Validate (still under lock)
-  validate_plan "$PLAN_PATH"
-
-) 200>"$LOCKFILE"
-```
+- **Automatic rollback** — `workflow.sh` backs up the file and restores it if validation fails
