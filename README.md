@@ -230,10 +230,11 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 202 | uv-0-11-8 | uv | 0.11.8 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | A skill for using uv 0.11.8, an extremely fast Python package and project manager written in Rust that replaces pip,... |
 | 203 | workflow | workflow | 0.1.3 | meta, meta-skill, workflow, task-management | Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require... |
 | 204 | write-skill | write-skill | 0.8.2 | meta, meta-skill, skill-writing, skill-generation, automation | Generate fine-grained agent skills from user requirements, creating complete spec-compliant markdown files that work... |
-| 205 | yq-4-53-2 | yq | 4.53.2 | yaml, json, xml, ini, csv | A skill for using yq v4.x, a lightweight and portable command-line YAML, JSON, XML, INI, Properties, CSV/TSV, HCL,... |
-| 206 | zeromq-wiki-3-2-0 | zeromq-wiki | 3.2.0 | zeromq, messaging, distributed-systems, networking, sockets | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and best... |
-| 207 | zeromq-zguide-3-2-0 | zeromq-zguide | 3.2.0 | zeromq, zmq, messaging, sockets, distributed-systems | Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and distributed... |
+| 205 | yjs-13-6-30 | yjs | 13.6.30 | yjs, crdt, collaborative-editing, real-time, shared-types | CRDT framework that exposes shared types (Y.Map, Y.Array, Y.Text, Y.XmlFragment) for conflict-free collaborative... |
+| 206 | yq-4-53-2 | yq | 4.53.2 | yaml, json, xml, ini, csv | A skill for using yq v4.x, a lightweight and portable command-line YAML, JSON, XML, INI, Properties, CSV/TSV, HCL,... |
+| 207 | zeromq-wiki-3-2-0 | zeromq-wiki | 3.2.0 | zeromq, messaging, distributed-systems, networking, sockets | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and best... |
+| 208 | zeromq-zguide-3-2-0 | zeromq-zguide | 3.2.0 | zeromq, zmq, messaging, sockets, distributed-systems | Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and distributed... |
 
 ## Statistics
 
-- **Total Skills**: 207
+- **Total Skills**: 208
