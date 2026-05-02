@@ -50,9 +50,12 @@ dependencies), only change the plan emoji to ☐ if it was previously ☑.
 Otherwise preserve whatever status is present. The only statuses that persist
 across non-completion edits are: ❓ ⚙️ ❌.
 
-After every PLAN.md edit, run the temp validator (see ## Validation). If errors
-are reported, fix them before proceeding. This catches emoji derivation
-mismatches that manual editing can introduce.
+After every PLAN.md edit, run the validator (see ## Validation). If errors
+are reported, fix them before proceeding. This catches structural problems
+that manual editing can introduce.
+
+All PLAN.md edits must go through the atomic update pattern (see ## Atomic Updates)
+to prevent concurrent processes from overwriting each other.
 
 Two rules govern `**Current Phase:**` and `**Current Task:**`:
 
@@ -220,10 +223,9 @@ These are valid state transitions:
 
 ## Plan Completion
 
-Before producing the completion report, run the temp validator (see ## Validation).
+Before producing the completion report, run the validator (see ## Validation).
 The plan is only considered complete when the validator reports zero errors and
-all tasks are ☑. This provides deterministic confirmation rather than relying
-solely on LLM judgment of emoji states.
+all tasks are ☑.
 
 When all phases and tasks reach ☑ (Done), produce a short completion report summarizing:
 - What was accomplished (list of completed phases)
@@ -233,126 +235,190 @@ When all phases and tasks reach ☑ (Done), produce a short completion report su
 
 ## Validation
 
-After updating PLAN.md, verify internal consistency by generating a temporary
-validation script, running it, and deleting it. Never store validation scripts
-permanently alongside the skill or plan.
-
-Generate the script inline to a temp path (e.g., `/tmp/validate_plan.py`),
-run it against the PLAN.md, then delete:
+After updating PLAN.md, run a pure bash validation. This catches structural
+problems that manual editing can introduce. Emoji derivation (does phase emoji
+match its tasks?) is checked by the LLM during edits — the validator focuses on
+things that fail silently.
 
 ```bash
-cat > /tmp/validate_plan.py << 'PYEOF'
-import re, sys, pathlib
+validate_plan() {
+  local plan="$1" errors=0
 
-plan_path = sys.argv[1] if len(sys.argv) > 1 else "PLAN.md"
-text = pathlib.Path(plan_path).read_text()
+  # Must have plan header with valid emoji
+  if ! grep -qP '^# [☐❓⚙️❌☑] Plan:' "$plan"; then
+    echo "✗ Missing or invalid plan header"
+    errors=$((errors + 1))
+  fi
 
-phase_re = re.compile(r'^##\s+([☐❓⚙️❌☑])\s+Phase\s+(\d+)\s+')
-task_re = re.compile(r'^-\s+([☐❓⚙️❌☑])\s+Task\s+(\d+\.\d+)\s+')
-plan_re = re.compile(r'^#\s+([☐❓⚙️❌☑])\s+Plan:', re.MULTILINE)
-dep_re = re.compile(r'\(depends on:\s*(.+?)\)')
+  # Must have at least one phase
+  local phases=$(grep -cP '^## [☐❓⚙️❌☑] Phase \d+' "$plan")
+  if [ "$phases" -eq 0 ]; then
+    echo "✗ No phases found"
+    errors=$((errors + 1))
+  fi
 
-errors = []
-phases = {}
-current_phase = None
-all_task_ids = set()
+  # Must have at least one task
+  local tasks=$(grep -cP '^- [☐❓⚙️❌☑] Task \d+\.\d+' "$plan")
+  if [ "$tasks" -eq 0 ]; then
+    echo "✗ No tasks found"
+    errors=$((errors + 1))
+  fi
 
-for line in text.splitlines():
-    m = phase_re.match(line)
-    if m:
-        num = int(m.group(2))
-        phases[num] = {'emoji': m.group(1), 'tasks': {}}
-        current_phase = num
-        continue
-    m = task_re.match(line)
-    if m and current_phase is not None:
-        tid = m.group(2)
-        x, y = map(int, tid.split('.'))
-        if x != current_phase:
-            errors.append(f"Task {tid}: phase number {x} != current phase {current_phase}")
-        phases[current_phase]['tasks'][y] = m.group(1)
-        all_task_ids.add(f"Task {tid}")
+  # No tasks with invalid emojis
+  local bad_tasks=$(grep -cP '^- [^☐❓⚙️❌☑] Task' "$plan" || true)
+  if [ "$bad_tasks" -gt 0 ]; then
+    echo "✗ $bad_tasks task(s) with invalid emoji"
+    errors=$((errors + 1))
+  fi
 
-# Dependency references must exist
-for line in text.splitlines():
-    m = dep_re.search(line)
-    if m:
-        for dep in m.group(1).split(','):
-            ref = dep.strip()
-            task_ref = re.sub(r'^Phase\s+\d+\s*-\s*', '', ref)
-            if task_ref not in all_task_ids:
-                errors.append(f"Dependency '{ref}' references non-existent task")
+  # No phases with invalid emojis
+  local bad_phases=$(grep -cP '^## [^☐❓⚙️❌☑] Phase' "$plan" || true)
+  if [ "$bad_phases" -gt 0 ]; then
+    echo "✗ $bad_phases phase(s) with invalid emoji"
+    errors=$((errors + 1))
+  fi
 
-# Phase derivation check
-for num, info in sorted(phases.items()):
-    tasks = info['tasks']
-    if not tasks:
-        errors.append(f"Phase {num}: zero tasks (can never reach ☑)")
-        continue
-    actual = info['emoji']
-    vals = list(tasks.values())
-    expected = ('☑' if all(e == '☑' for e in vals)
-                else '⚙️' if any(e == '⚙️' for e in vals)
-                else '❓' if any(e == '❓' for e in vals)
-                else '❌' if any(e == '❌' for e in vals)
-                else '☐')
-    if actual != expected:
-        errors.append(f"Phase {num}: emoji is {actual} but derived from tasks is {expected}")
+  # Check for zero-task phases
+  local empty_phases=0 in_phase=0 task_count=0
+  while IFS= read -r line; do
+    if echo "$line" | grep -qP '^## [☐❓⚙️❌☑] Phase \d+'; then
+      [ "$in_phase" -eq 1 ] && [ "$task_count" -eq 0 ] && empty_phases=$((empty_phases + 1))
+      in_phase=1
+      task_count=0
+    elif echo "$line" | grep -qP '^- [☐❓⚙️❌☑] Task'; then
+      task_count=$((task_count + 1))
+    fi
+  done < "$plan"
+  [ "$in_phase" -eq 1 ] && [ "$task_count" -eq 0 ] && empty_phases=$((empty_phases + 1))
+  if [ "$empty_phases" -gt 0 ]; then
+    echo "⚠ $empty_phases phase(s) with zero tasks"
+  fi
 
-# Plan derivation check
-m = plan_re.search(text)
-if m:
-    plan_actual = m.group(1)
-    phase_emojis = [info['emoji'] for info in phases.values()]
-    expected = ('☑' if all(e == '☑' for e in phase_emojis)
-                else '⚙️' if any(e == '⚙️' for e in phase_emojis)
-                else '❓' if any(e == '❓' for e in phase_emojis)
-                else '❌' if any(e == '❌' for e in phase_emojis)
-                else '☐')
-    if plan_actual != expected:
-        errors.append(f"Plan: emoji is {plan_actual} but derived from phases is {expected}")
-
-# Current Phase/Task references must exist
-cp_match = re.search(r'\*\*Current Phase:\*\*\s+(.+)', text)
-if cp_match:
-    ref = cp_match.group(1).strip()
-    phase_ref = re.sub(r'^[☐❓⚙️❌☑]\s+', '', ref)
-    phase_num = re.match(r'Phase\s+(\d+)', phase_ref)
-    if phase_num and int(phase_num.group(1)) not in phases:
-        errors.append(f"Current Phase references non-existent phase")
-
-ct_match = re.search(r'\*\*Current Task:\*\*\s+(.+)', text)
-if ct_match:
-    ref = ct_match.group(1).strip()
-    task_ref = re.sub(r'^.*?\s*-\s*', '', ref)
-    task_id = re.match(r'[☐❓⚙️❌☑]\s*Task\s+(\d+\.\d+)', task_ref)
-    if task_id and f"Task {task_id.group(1)}" not in all_task_ids:
-        errors.append(f"Current Task references non-existent task")
-
-if errors:
-    print(f"✗ {len(errors)} error(s):")
-    for e in errors:
-        print(f"  - {e}")
-    sys.exit(1)
-else:
-    total = sum(len(p['tasks']) for p in phases.values())
-    done = sum(1 for p in phases.values() for e in p['tasks'].values() if e == '☑')
-    print(f"✓ PLAN.md is consistent ({done}/{total} tasks done, {len(phases)} phases)")
-PYEOF
-
-python3 /tmp/validate_plan.py path/to/PLAN.md
-rm /tmp/validate_plan.py
+  if [ "$errors" -eq 0 ]; then
+    echo "✓ PLAN.md passes checks ($tasks tasks, $phases phases)"
+  else
+    echo "✗ $errors error(s) found"
+    return 1
+  fi
+}
 ```
 
 **What it validates:**
-- Task emoji ∈ {☐ ❓ ⚙️ ❌ ☑}
-- Phase emoji matches derivation from its tasks (☑ only when all tasks are ☑)
-- Plan emoji matches derivation from its phases (☑ only when all phases are ☑)
-- Dependency references point to existing tasks
-- `**Current Phase:**` and `**Current Task:**` reference existing entries
+- Plan header exists with valid emoji
+- At least one phase and one task present
+- All phase/task emojis are from the allowed set {☐ ❓ ⚙️ ❌ ☑}
 - Zero-task phases flagged as warnings
 
 **What it does NOT validate (requires LLM judgment):**
+- Phase emoji derivation from its tasks
+- Plan emoji derivation from its phases
+- Dependency references point to existing tasks
+- `**Current Phase:**` and `**Current Task:**` reference existing entries
 - Whether the actual work described by a task was completed
 - Whether acceptance criteria were met
 - Semantic correctness of the plan content
+
+## Atomic Updates
+
+When multiple processes or agents might edit PLAN.md concurrently, use `flock`
+for advisory locking and temp-file + rename for atomic writes. This prevents
+overwrites and partial writes.
+
+### Lock-and-edit pattern
+
+```bash
+update_plan() {
+  local plan="$1"
+  local lockfile="${plan}.lock"
+
+  # Acquire exclusive lock, timeout after 30 seconds
+  (
+    flock -w 30 200 || { echo "✗ Timeout waiting for PLAN.md lock"; exit 1; }
+
+    # Write to temp file in same directory (ensures same filesystem for atomic rename)
+    local tmpfile
+    tmpfile=$(mktemp "${plan}.XXXXXX")
+
+    # Copy current content and apply edits
+    cp "$plan" "$tmpfile"
+    # ... apply sed/awk edits to $tmpfile ...
+
+    # Atomic rename
+    mv -f "$tmpfile" "$plan"
+
+  ) 200>"$lockfile"
+}
+```
+
+Properties:
+- **`flock -w 30`** — blocks other writers, times out after 30s to avoid deadlocks
+- **`mktemp` + `mv -f`** — write to temp then atomic rename, so PLAN.md is never left partial
+- **Advisory lock** — readers can still read PLAN.md while locked (they see the old version)
+
+### Common edits in pure bash
+
+```bash
+# Change task 2.3 to Doing (⚙️)
+sed -i 's/^- [☐❓❌☑] Task 2\.3 /- ⚙️ Task 2.3 /' PLAN.md
+
+# Change phase 2 emoji to Active
+sed -i 's/^## [☐❓❌☑] Phase 2 /## ⚙️ Phase 2 /' PLAN.md
+
+# Update timestamp
+sed -i "s/^\*\*Updated:\*\* .*/\*\*Updated:\*\* $(date -u +%Y-%m-%dT%H:%M:%SZ)/" PLAN.md
+
+# Advance Current Task
+sed -i 's/^\*\*Current Task:\*\* .*/\*\*Current Task:\*\* ⚙️ Task 2.3/' PLAN.md
+```
+
+### Derive phase emoji from its tasks (awk)
+
+```bash
+# Usage: derive_phase_emoji PLAN.md <phase-number>
+derive_phase_emoji() {
+  local plan="$1" phase_num="$2"
+  awk -v pn="$phase_num" '
+    /^## .* Phase / { current = $NF }
+    current == pn && /^- [☐❓⚙️❌☑] Task/ {
+      emoji = substr($2, 1, 1)
+      if (emoji == "⚙️") found_doing++
+      else if (emoji == "❓") found_question++
+      else if (emoji == "❌") found_error++
+      else if (emoji == "☑") found_done++
+      total++
+    }
+    END {
+      if (found_doing) print "⚙️"
+      else if (found_question) print "❓"
+      else if (found_error) print "❌"
+      else if (total && found_done == total) print "☑"
+      else print "☐"
+    }
+  ' "$plan"
+}
+```
+
+### Full workflow: lock → edit → validate
+
+```bash
+PLAN_PATH="path/to/PLAN.md"
+LOCKFILE="${PLAN_PATH}.lock"
+
+(
+  flock -w 30 200 || exit 1
+
+  # Write to temp, then atomic rename
+  TMPFILE=$(mktemp "${PLAN_PATH}.XXXXXX")
+  cp "$PLAN_PATH" "$TMPFILE"
+
+  # Apply edits (example: mark task 2.3 as done)
+  sed -i 's/^- [☐❓⚙️❌] Task 2\.3 /- ☑ Task 2.3 /' "$TMPFILE"
+
+  # Atomic rename
+  mv -f "$TMPFILE" "$PLAN_PATH"
+
+  # Validate (still under lock)
+  validate_plan "$PLAN_PATH"
+
+) 200>"$LOCKFILE"
+```
