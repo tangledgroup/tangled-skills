@@ -3,7 +3,7 @@ name: workflow
 description: Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require structured iteration through Planning, Analysis, Design, Implementation, Testing, Deployment, Maintenance, etc phases with clear dependency graphs.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.1"
+version: "0.1.2"
 tags:
   - meta
   - meta-skill
@@ -233,6 +233,11 @@ When all phases and tasks reach ☑ (Done), produce a short completion report su
 - Any open questions or items left for future work
 - Path to the PLAN.md file
 
+## Dependencies
+
+Scripts require: bash 4+, awk, sed, grep, flock, mktemp, date.
+All are available on Linux/macOS. On minimal containers, ensure `util-linux` (flock) is installed.
+
 ## Validation
 
 After updating PLAN.md, run the validator script. This catches structural
@@ -240,14 +245,12 @@ problems that manual editing can introduce. Emoji derivation (does phase emoji
 match its tasks?) is checked by the LLM during edits — the validator focuses on
 things that fail silently.
 
-Scripts live in `scripts/` relative to this SKILL.md. Resolve the full path
-from wherever this skill is installed (not a hardcoded `.agents/skills/` prefix):
+Scripts live in `scripts/` relative to this SKILL.md. Use paths relative to
+the skill directory:
 
 ```bash
-bash <path-to-this-skill>/scripts/validate-plan.sh path/to/PLAN.md
+bash scripts/validate-plan.sh path/to/PLAN.md
 ```
-
-(See [scripts/validate-plan.sh](scripts/validate-plan.sh) for the full implementation.)
 
 **What it validates:**
 - Plan header exists with valid emoji
@@ -272,35 +275,34 @@ overwrites and partial writes.
 
 ### Available Scripts
 
-| Script | Purpose |
-|--------|---------|
-| [scripts/update-plan.sh](scripts/update-plan.sh) | Lock-and-edit with `flock` + atomic rename. Supports `set-task-status`, `set-phase-status`, `update-timestamp`, `set-current-task`, `set-current-phase`. |
-| [scripts/derive-phase-emoji.sh](scripts/derive-phase-emoji.sh) | Derive phase emoji from its tasks' emojis using AWK. Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
-| [scripts/workflow.sh](scripts/workflow.sh) | Full workflow: lock → edit → validate with automatic rollback on validation failure. |
+All paths are relative to this skill's directory (where SKILL.md lives).
+
+| Script | Mode | Purpose |
+|--------|------|---------|
+| [scripts/update-plan.sh](scripts/update-plan.sh) | **Execute** | Lock-and-edit with `flock` + atomic rename. Supports `set-task-status`, `set-phase-status`, `update-timestamp`, `set-current-task`, `set-current-phase`. |
+| [scripts/derive-phase-emoji.sh](scripts/derive-phase-emoji.sh) | **Execute** | Derive phase emoji from its tasks' emojis using AWK. Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
+| [scripts/workflow.sh](scripts/workflow.sh) | **Execute** | Full workflow: lock → edit → validate with automatic rollback on validation failure. |
 
 ### Usage Examples
 
-Scripts are in `scripts/` relative to this SKILL.md. Replace `<path-to-this-skill>`
-with the actual directory containing this SKILL.md:
-
 ```bash
 # Mark task 2.3 as Doing (⚙️)
-bash <path-to-this-skill>/scripts/update-plan.sh PLAN.md set-task-status "Task 2.3" "⚙️"
+bash scripts/update-plan.sh PLAN.md set-task-status "Task 2.3" "⚙️"
 
 # Change phase 2 emoji to Active
-bash <path-to-this-skill>/scripts/update-plan.sh PLAN.md set-phase-status "Phase 2" "⚙️"
+bash scripts/update-plan.sh PLAN.md set-phase-status "Phase 2" "⚙️"
 
 # Update timestamp
-bash <path-to-this-skill>/scripts/update-plan.sh PLAN.md update-timestamp
+bash scripts/update-plan.sh PLAN.md update-timestamp
 
 # Set Current Task
-bash <path-to-this-skill>/scripts/update-plan.sh PLAN.md set-current-task "⚙️ Task 2.3"
+bash scripts/update-plan.sh PLAN.md set-current-task "⚙️ Task 2.3"
 
 # Derive phase emoji from its tasks
-echo "Phase 2 emoji: $(bash <path-to-this-skill>/scripts/derive-phase-emoji.sh PLAN.md 2)"
+echo "Phase 2 emoji: $(bash scripts/derive-phase-emoji.sh PLAN.md 2)"
 
 # Full workflow with validation and rollback
-bash <path-to-this-skill>/scripts/workflow.sh PLAN.md set-task-status "Task 2.3" "☑"
+bash scripts/workflow.sh PLAN.md set-task-status "Task 2.3" "☑"
 ```
 
 ### Properties
@@ -308,3 +310,4 @@ bash <path-to-this-skill>/scripts/workflow.sh PLAN.md set-task-status "Task 2.3"
 - **`mktemp` + `mv -f`** — write to temp then atomic rename, so PLAN.md is never left partial
 - **Advisory lock** — readers can still read PLAN.md while locked (they see the old version)
 - **Automatic rollback** — `workflow.sh` backs up the file and restores it if validation fails
+- **Cleanup on exit** — temp files, backups, and lock files are removed via trap on normal exit, INT, and TERM

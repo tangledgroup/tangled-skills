@@ -40,6 +40,12 @@ if [[ ! -f "$plan" ]]; then
 fi
 
 lockfile="${plan}.lock"
+tmpfile=""
+
+cleanup() {
+  rm -f "$tmpfile" 2>/dev/null || true
+}
+trap cleanup EXIT INT TERM
 
 do_edit() {
   local plan_dir

@@ -77,7 +77,13 @@ my-skill/
     └── example-config.yaml
 ```
 
-**Script invocation:** When scripts exist, the skill must clearly state whether the agent should **execute** the script (preferred — "Run `python scripts/validate.py input.pdf`") or **read it as reference** ("See `scripts/validate.py` for the validation algorithm"). Scripts are executed via bash without loading their full contents into context — only output consumes tokens.
+**Script invocation:** When scripts exist, the skill must clearly state whether the agent should **execute** the script (preferred — "Run `bash scripts/validate.py input.pdf`") or **read it as reference** ("See `scripts/validate.py` for the validation algorithm"). Scripts are executed via bash without loading their full contents into context — only output consumes tokens.
+
+**Script path convention:** Always use paths relative to the skill directory (where SKILL.md lives), matching the [Pi Coding Agent convention](https://pi.dev/docs/latest/skills). The agent resolves them from the skill's known location:
+```bash
+bash scripts/validate-plan.sh /path/to/PLAN.md
+```
+Never use `<path-to-this-skill>` placeholders or absolute paths — the agent knows where the skill lives."Run `python scripts/validate.py input.pdf`") or **read it as reference** ("See `scripts/validate.py` for the validation algorithm"). Scripts are executed via bash without loading their full contents into context — only output consumes tokens.
 
 **Script quality rules:**
 - Scripts must handle errors explicitly (never punt to the agent with bare exceptions)
@@ -303,7 +309,7 @@ Match the level of instruction specificity to the task's fragility:
 
 - **High freedom** (text-based instructions): Use when multiple approaches are valid and decisions depend on context. Example: "Analyze the code structure and suggest improvements."
 - **Medium freedom** (pseudocode or scripts with parameters): Use when a preferred pattern exists but some variation is acceptable. Example: provide a template function with configurable parameters.
-- **Low freedom** (specific scripts, few or no parameters): Use when operations are fragile and error-prone, consistency is critical, or a specific sequence must be followed. Example: "Run exactly this command: `python scripts/migrate.py --verify --backup`. Do not modify the command."
+- **Low freedom** (specific scripts, few or no parameters): Use when operations are fragile and error-prone, consistency is critical, or a specific sequence must be followed. Example: "Run exactly this command: `bash scripts/migrate.sh --verify --backup`. Do not modify the command."
 
 ### Workflow Patterns
 
@@ -325,7 +331,7 @@ Task Progress:
 
 **Step 1: Analyze input**
 
-Run: `python scripts/analyze.py input.pdf`
+Run: `bash scripts/analyze.sh input.pdf`
 
 This extracts fields and saves to `fields.json`.
 ```

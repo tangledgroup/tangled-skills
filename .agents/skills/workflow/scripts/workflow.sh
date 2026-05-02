@@ -38,6 +38,12 @@ fi
 
 lockfile="${plan}.lock"
 backup="${plan}.bak"
+tmpfile=""
+
+cleanup() {
+  rm -f "$backup" "$tmpfile" 2>/dev/null || true
+}
+trap cleanup EXIT INT TERM
 
 (
   flock -w 30 200 || { echo "✗ Timeout waiting for PLAN.md lock"; exit 1; }
@@ -65,13 +71,11 @@ backup="${plan}.bak"
       ;;
     set-current-task)
       [[ $# -lt 1 ]] && { echo "✗ Usage: set-current-task <value>"; exit 1; }
-      local safe_val
       safe_val=$(printf '%s\n' "$1" | sed 's/[&\/\\]/\\&/g')
       sed -i "s/^\*\*Current Task:\*\* .*/\*\*Current Task:\*\* ${safe_val}/" "$tmpfile"
       ;;
     set-current-phase)
       [[ $# -lt 1 ]] && { echo "✗ Usage: set-current-phase <value>"; exit 1; }
-      local safe_val
       safe_val=$(printf '%s\n' "$1" | sed 's/[&\/\\]/\\&/g')
       sed -i "s/^\*\*Current Phase:\*\* .*/\*\*Current Phase:\*\* ${safe_val}/" "$tmpfile"
       ;;
