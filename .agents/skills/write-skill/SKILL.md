@@ -1,7 +1,7 @@
 ---
 name: write-skill
 description: Generate fine-grained agent skills from user requirements, creating complete spec-compliant markdown files that work across pi, opencode, claude, and codex platforms. Use when creating new skills or converting existing documentation into skill format.
-version: "0.8.1"
+version: "0.8.2"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
@@ -11,6 +11,10 @@ tags:
   - skill-generation
   - automation
 category: tooling
+external_references:
+  - https://pi.dev/docs/latest/skills
+  - https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
+  - https://opencode.ai/docs/skills
 ---
 
 # write-skill — Generate Agent Skills
