@@ -1,7 +1,7 @@
 ---
 name: write-skill
 description: Generate fine-grained agent skills from user requirements, creating complete spec-compliant markdown files that work across pi, opencode, claude, and codex platforms. Use when creating new skills or converting existing documentation into skill format.
-version: "0.8.0"
+version: "0.8.1"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
@@ -72,12 +72,12 @@ my-skill/
 ├── scripts/              # Only if explicitly requested
 │   ├── analyze_form.py   # Utility script (executed, not loaded into context)
 │   ├── fill_form.py      # Form filling script
-│   └── validate.py       # Validation script
+│   └── validate.sh       # Validation script
 └── assets/               # Only if explicitly requested
     └── example-config.yaml
 ```
 
-**Script invocation:** When scripts exist, the skill must clearly state whether the agent should **execute** the script (preferred — "Run `bash scripts/validate.py input.pdf`") or **read it as reference** ("See `scripts/validate.py` for the validation algorithm"). Scripts are executed via bash without loading their full contents into context — only output consumes tokens.
+**Script invocation:** When scripts exist, the skill must clearly state whether the agent should **execute** the script (preferred — "Run `bash scripts/validate.sh input.pdf`") or **read it as reference** ("See `scripts/validate.sh` for the validation algorithm"). Scripts are executed via bash without loading their full contents into context — only output consumes tokens.
 
 **Script path convention:** Always use paths relative to the skill directory (where SKILL.md lives), matching the [Pi Coding Agent convention](https://pi.dev/docs/latest/skills). The agent resolves them from the skill's known location:
 ```bash
