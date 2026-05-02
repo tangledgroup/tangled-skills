@@ -24,8 +24,9 @@ usage() {
   exit "${1:-0}"
 }
 
-[[ $# -lt 2 ]] && usage 1
+[[ $# -eq 0 ]] && usage 1
 [[ "$1" == "--help" || "$1" == "-h" ]] && usage 0
+[[ $# -lt 2 ]] && usage 1
 
 plan="$1"
 action="$2"

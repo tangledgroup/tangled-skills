@@ -3,7 +3,7 @@ name: workflow
 description: Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require structured iteration through Planning, Analysis, Design, Implementation, Testing, Deployment, Maintenance, etc phases with clear dependency graphs.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.2"
+version: "0.1.3"
 tags:
   - meta
   - meta-skill
