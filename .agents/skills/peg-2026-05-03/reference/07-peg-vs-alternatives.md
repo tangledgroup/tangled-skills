@@ -1,10 +1,28 @@
 # PEG vs Alternatives
 
 ## Contents
+- LL(1) Background
 - PEG vs Context-Free Grammars
 - PEG vs Regular Expressions
+- Performance Benchmarks (CPython)
 - Advantages Summary
 - Disadvantages Summary
+
+## LL(1) Background
+
+LL(1) parsers parse left-to-right, performing leftmost derivation with exactly one token of lookahead. They construct **parse tables** from **first sets** (terminals that can start a rule's derivation) and **follow sets** (terminals that can appear immediately after a rule in a partial derivation).
+
+**First set example:** Given `rule: A | B`, if only `A` starts with terminal `a` and only `B` starts with `b`, the parser decides which alternative to expand based on the current token.
+
+**Follow set example:** Given `rule: A 'b'`, if `A` can produce empty string (ε-production), the follow set tells the parser that `b` can legitimately appear after an empty `A`.
+
+**Limitations:**
+- Single-token lookahead cannot distinguish alternatives with overlapping first sets (e.g., `expr` and `assignment` both starting with `NAME`)
+- Cannot handle left recursion at all
+- Requires grammar transformations that obscure intent
+- Some constructs are provably impossible (e.g., Python's `with (...)` continuation across lines)
+
+CPython's old parser worked around these by accepting invalid programs and checking later, creating maintenance burden in the AST generation layer.
 
 ## PEG vs Context-Free Grammars
 
@@ -60,6 +78,27 @@ PEG languages are closed under intersection and complement. This is a direct con
 - Well-understood theory and transformations
 - Good error reporting in LR parsers (position is known)
 - Lower memory usage (LR parsers scale with parse depth, not input size)
+
+**PEG advantages:**
+- No ambiguity — grammar order determines behavior
+- Unlimited lookahead via predicates
+- Unified lexer + parser eliminates scannerless gap
+- Linear-time parsing guaranteed with packrat
+- Grammar closely matches how the parser operates (easier to reason about)
+- Easier to express complex disambiguation (dangling else, soft keywords)
+- Direct AST construction via grammar actions (eliminates intermediate CST)
+
+### Performance Benchmarks (CPython PEP 617)
+
+The CPython PEG parser was tuned to within **10% of the old LL(1) parser** in both speed and memory:
+
+| Metric | Old LL(1) parser | New PEG parser |
+|--------|-----------------|----------------|
+| Stdlib compile time | 3.367s | 3.290s (slightly faster) |
+| Stdlib max RSS | 70 MiB | 77 MiB (~10% more) |
+| Large file (100K lines) parse+compile | 1.44s, 836 MiB | 1.28s, 681 MiB (faster, less memory) |
+
+The PEG parser uses slightly more memory for typical code but can use less for large files because it eliminates the intermediate CST. For the stdlib workload, it's marginally faster with ~10% more peak memory.
 
 **PEG advantages:**
 - No ambiguity — grammar order determines behavior

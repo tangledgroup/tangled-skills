@@ -2,6 +2,7 @@
 
 ## Contents
 - Mindset Shift: Don't Reason Like EBNF
+- Parser Combinator Perspective
 - Ordered Choice Consequences
 - Whitespace Handling Strategies
 - Soft vs Hard Keywords
@@ -15,6 +16,18 @@ Key differences in reasoning:
 - If a rule returns failure, it doesn't mean parsing failed — just "try something else"
 - The parser is **eager**: if a rule succeeds, the caller accepts it even if accepting causes overall failure later
 - Effects of ordered choice may be hidden by many levels of indirection
+
+## Parser Combinator Perspective
+
+PEGs can be viewed as **recursive descent parsers expressed via parser combinators** where the choice operator is ordered. This perspective clarifies several design decisions:
+
+- Each rule is a composable parser function
+- Sequence (`e1 e2`) composes two parsers: run first, then second on remainder
+- Choice (`e1 / e2`) tries first, falls back to second only on total failure
+- Repetition operators are combinator wrappers around the base parser
+- Memoization can be applied as a decorator pattern — any parser can be wrapped with caching without modifying its implementation (LPeg uses this)
+
+This view explains why PEG naturally supports scannerless parsing: the type-3 (regular expression) expressions in the grammar handle tokenization, and type-2 (context-free) behavior emerges through recursive rule references. Whitespace and comments are consumed at strategic points in the grammar rather than in a separate phase.
 
 ## Ordered Choice Consequences
 

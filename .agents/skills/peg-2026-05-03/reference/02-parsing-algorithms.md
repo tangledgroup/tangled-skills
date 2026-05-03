@@ -5,6 +5,7 @@
 - Packrat Parsing
 - Selective Memoization
 - Tokenizer Integration
+- Limited Backtracking (Non-Packrat)
 - When Separate Tokenizer Is Better
 - Context Manager Approach (TatSu-style)
 
@@ -63,6 +64,8 @@ def statement(self):
 ```
 The context manager catches exceptions and resets the tokenizer position. This works in Python but Guido rejected it for CPython's parser generator because: (1) it's "too magical" — readers must stay aware that every method call may raise, (2) C has no `with` statement, so this pattern doesn't translate to generated C code.
 
+**Key invariant:** If all parsing methods abide by the rule that failure leaves the tokenizer position unchanged, then `mark()`/`reset()` around a single method call is provably unnecessary (by induction). Only explicit resets within multi-step alternatives are needed.
+
 **AST construction:** Each parsing method returns an AST node on success, null on failure:
 ```python
 class Node:
@@ -97,6 +100,20 @@ memo[rule_id][position] = (success, consumed_length, result_data)
 **Memory tradeoff:** Packrat parsers use more memory than LR/LL parsers (which scale with parse depth). However, queries and source code typically have bounded nesting depth in practice. For recursive grammars and some inputs, parse tree depth can be proportional to input size (e.g., LISP `(x (x (x ...)))`), making both approaches asymptotically equivalent in worst case.
 
 **Generator vs function distinction:** If parsing produces the full parse tree before returning, memory is already proportional to input size regardless of parser type. If parsing is provided as a generator (yielding partial results), packrat parsers still need the full memo table, while LR parsers can discard completed branches. The feasibility of generator-style parsing depends on the grammar — some PEGs require consuming all input before discovering they need to backtrack to the beginning.
+
+## Limited Backtracking (Non-Packrat)
+
+Not all PEG parsers use packrat memoization. The **Mouse** parser generator (Redziejowski) takes a different approach: simple recursive descent with limited backtracking, no full memo table.
+
+**Design philosophy:** Packrat parsing guarantees linear time at large memory cost. Mouse abandons this complexity for transparent design — each grammar rule becomes a straightforward recursive procedure. For typical programming language grammars (Java, C), experiments show moderate backtracking activity in practice, making full memoization unnecessary overhead.
+
+**Tradeoffs:**
+- **Simpler code**: Generated parsers closely follow the grammar structure, easy to debug and modify
+- **Lower memory**: No memo table proportional to input size × rule count
+- **No linear-time guarantee**: Worst case remains exponential, though rare in practice
+- **Optional small memoization**: Mouse can optionally apply selective memoization techniques for hot rules
+
+This approach suits interactive applications with short inputs and parser generators where transparency matters more than worst-case guarantees.
 
 ## Selective Memoization
 
@@ -142,7 +159,7 @@ class Tokenizer:
         ...
 ```
 
-**Lazy tokenization:** Tokenize on demand rather than eagerly consuming all input. This ensures syntax errors are reported before distant tokenizer errors (e.g., unclosed string at end of file). The tokenizer produces tokens into a growing array; the parser reads from it and can reset position via `mark()`/`reset()`.
+**Lazy tokenization:** Tokenize on demand rather than eagerly consuming all input. This ensures syntax errors are reported before distant tokenizer errors (e.g., unclosed string at end of file). The tokenizer produces tokens into a growing array; the parser reads from it and can reset position via `mark()`/`reset()`. CPython uses this approach — the `Tokenizer` class wraps a generator, appending tokens to an internal array only when the parser reaches the end of already-tokenized input.
 
 **Tokenizer error timing:** Most tokenizer errors are reported immediately by raising exceptions. However, some special errors (e.g., unclosed parentheses affecting token boundaries) are reported only after the parser finishes without returning anything. This ensures the parser sees consistent token streams during backtracking.
 

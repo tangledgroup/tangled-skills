@@ -6,6 +6,7 @@
 - LPeg (Lua)
 - PeppaPEG (ANSI C)
 - peg/leg (Ian Piumarta)
+- Mouse (Redziejowski)
 - Guile `(ice-9 peg)` Module
 - LL(1) Workarounds Eliminated by PEG
 
@@ -244,7 +245,7 @@ CMake-based. Can be used as a library (`pkg-config --cflags --libs libpeppa`) or
 
 ### Performance optimization
 
-Callgrind profiling revealed that functions like `P4_NeedLoosen`, `P4_IsTight`, `P4_IsScoped`, `P4_NeedSquash`, and `P4_IsSquashed` were called excessively during parsing. Removing these inline checks and pre-computing values yielded a **10x speedup**. Doxygen is used for documentation extraction from source code.
+Callgrind profiling (via `valgrind --tool=callgrind`) revealed that annotation-check functions (`P4_NeedLoosen`, `P4_IsTight`, `P4_IsScoped`, `P4_NeedSquash`, `P4_IsSquashed`) were called excessively during every parse step. The fix: pre-compute annotation values at grammar load time rather than checking inline during parsing. This yielded a **10x speedup**. Doxygen is used for documentation extraction from source code.
 
 ### C API
 
@@ -282,6 +283,40 @@ Alternative syntax intended as a `lex`/`yacc` replacement:
 ### Version history
 
 Latest release 0.1.20 (2019). Active maintenance with incremental feature additions: semantic values, reentrant parsing, UTF-8 support, C++ compatibility.
+
+## Mouse (Redziejowski)
+
+Java-based PEG parser generator that transcribes PEG into recursive-descent Java procedures with limited backtracking. Named in contrast to "Rats!" (one of the first packrat generators).
+
+### Design philosophy
+
+Abandons packrat memoization complexity for transparent, grammar-faithful code generation. Each PEG rule becomes a named Java method that closely follows the grammar structure. Suitable for interactive applications and language development where parser transparency matters more than worst-case guarantees.
+
+### Features
+
+- **Limited backtracking**: No full memo table — simple recursive descent with ordered choice fallback
+- **Recursive ascent left-recursion** (since v2.0): Constructs alternate PEG behind the scenes for left-recursive rules. Requires first expression in recursive Sequence to be non-nullable.
+- **PEG Explorer tool**: Assists in checking whether a grammar is PEG-complete (when limited backtracking finds everything full backtracking would)
+- **Colon operator** (since v2.3): Makes identifier/keyword constructs Explorer-friendly
+- **Semantic actions via Java**: Each rule can specify `{}` for a corresponding method in a separate Java class with access to `rhs(i)` and `rhsSize()`
+- **Optional small memoization**: Selective caching for hot rules using techniques from Redziejowski's research
+- **Sample grammars**: Java 18 (with left-recursive Primary), preprocessed C (with semantic actions for typedef context-dependence)
+
+### Semantic action API
+
+```java
+// Grammar rule with semantic action marker
+Sum = Space Sign Number (AddOp Number)* !_ {} ;
+
+// Corresponding Java method
+void Sum() {
+    int n = rhsSize();
+    double s = (Double) rhs(2).get();
+    if (!rhs(1).isEmpty()) s = -s;
+    for (int i = 4; i < n; i += 2)
+        s += rhs(i-1).charAt(0) == '+' ? (Double)rhs(i).get() : -(Double)rhs(i).get();
+}
+```
 
 ## Guile `(ice-9 peg)` Module
 

@@ -3,7 +3,7 @@
 ## Contents
 - The Left Recursion Problem
 - Idiomatic Workaround
-- Left Recursion Support Techniques
+- Left Recursion Support Techniques (Ford/Warth, OMeta, Recursive Ascent, Tratt)
 - Associativity Control
 
 ## The Left Recursion Problem
@@ -113,6 +113,20 @@ rule ← 'optional'? rule '@' some_other_rule
 ### OMeta algorithm
 
 OMeta supports full direct and indirect left recursion without additional complexity, but again at the cost of linear-time guarantees.
+
+### Recursive ascent (Mouse, based on Hill 2010)
+
+The Mouse parser generator uses **recursive ascent** to handle left recursion. Instead of modifying the packrat algorithm, it constructs an alternate PEG behind the scenes that handles left-recursive parts. The transformation rewrites left-recursive rules into equivalent non-left-recursive forms while preserving the intended parse tree structure.
+
+**Requirements:**
+- Limited to Choice and Sequence operators
+- First expression in a recursive Sequence must be non-nullable
+
+This approach keeps the grammar readable (left-recursive form is accepted as input) while generating correct parsers. Used in Mouse's Java 18 grammar with left-recursive `Primary` definitions.
+
+### Direct left-recursive PEGs (Tratt)
+
+Tratt (2010) described a technique for direct left-recursive PEGs that exploits partial packrat technology — using memoization selectively rather than fully. The approach handles direct left recursion by tracking the best result at each position during iterative evaluation, similar to Ford/Warth but with different implementation mechanics.
 
 ### Autumn expression clusters
 

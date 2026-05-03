@@ -9,6 +9,9 @@
 - Precedence Table
 - Key Semantic Differences from CFGs
 - The Midpoint Problem
+- Closure Properties
+- PEG-Completeness
+- Computational Model Note
 - Self-Describing PEG Meta-Grammar
 
 ## Parsing Expressions and Grammars
@@ -199,6 +202,30 @@ Position:  123456
 At position 1, S matches only 3 characters (`xxx`), not all 5. The greedy choice at position 3 consumed `xxx` (positions 3-5) instead of the single `x` that would have allowed the outer rule to match all 5. **Locally optimal ≠ globally optimal.**
 
 The language itself is regular (odd number of x's), expressible as a simple regex or CFG with different structure. But this specific PEG grammar cannot recognize it correctly.
+
+## Closure Properties
+
+| Operation | CFG | PEG |
+|-----------|-----|-----|
+| Union | ✓ | ✓ |
+| Intersection | ✗ | ✓ |
+| Complement | ✗ | ✓ |
+
+PEG languages are closed under intersection and complement. This is a direct consequence of the predicate operators `&` and `!`. Any PEG can be intersected with another via `&`, and complemented via `!`. CFGs lack these closure properties — the intersection or complement of two context-free languages is not necessarily context-free.
+
+## PEG-Completeness
+
+A grammar is **PEG-complete** when its limited backtracking (ordered choice with no re-entry into successful branches) finds everything that full backtracking would. Not all grammars are PEG-complete: some strings accepted by the EBNF interpretation of a grammar are rejected by the PEG interpretation due to eager matching.
+
+Classic example: `A = aaAaa / aa` as EBNF accepts any even-length string of `a`s. As PEG, it accepts only strings whose length is a power of 2 (2, 4, 8, 16...) because the first alternative greedily consumes too many characters.
+
+Conditions for PEG-completeness have been formally identified in research (Mascarenhas, Medeiros, Ierusalimschy 2014; Redziejowski 2013). Tools like the Mouse PEG Explorer assist in checking whether a given grammar is PEG-complete.
+
+When designing grammars intended to match their EBNF interpretation, ensure alternatives are ordered longest-first and that no alternative can subsume another through greedy matching.
+
+## Computational Model Note
+
+Packrat parsers assume a **random-access machine (RAM)** model with pointer arithmetic for hash table lookups. Theoretical discussions using more restricted models (e.g., lambda calculus) may penalize packrat parsers' reputation by treating memoization access as non-constant time. Real systems have hash tables readily available, making amortized constant access achievable. This is not a penalty — it reflects that packrat parsers tap into computational power older parsing algorithms do not employ.
 
 ## Self-Describing PEG Meta-Grammar
 

@@ -1,6 +1,6 @@
 ---
 name: peg-2026-05-03
-description: Parsing Expression Grammars (PEGs) — recognition-based formal grammars using ordered choice to eliminate ambiguity, with linear-time packrat parsing. Covers operators (cut/commit, gather), recursive descent and packrat algorithms, left recursion handling, grammar design patterns, practical implementations (CPython pegen, DuckDB, LPeg, PeppaPEG, peg/leg, Guile), CFG/regex comparisons, Pika parsing, runtime-extensible grammars, and undecidability. Use when designing language parsers, replacing LL(1)/LALR parsers, implementing scannerless parsing, building runtime-extensible query syntax, or prototyping new language grammar.
+description: Parsing Expression Grammars (PEGs) — recognition-based formal grammars using ordered choice to eliminate ambiguity, with linear-time packrat parsing. Covers operators, algorithms, left recursion handling, grammar design, practical implementations (CPython pegen, DuckDB, LPeg, PeppaPEG, Mouse, Guile), CFG/regex comparisons, and undecidability. Use when designing language parsers, implementing scannerless parsing, or prototyping new language grammar.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "2026-05-03"
@@ -17,17 +17,17 @@ external_references:
   - https://soasme.medium.com/the-c-tricks-i-used-when-developing-peppa-peg-a93302603322
   - https://medium.com/@gvanrossum_83706/peg-parsers-7ed72462f97c
   - https://medium.com/@gvanrossum_83706/building-a-peg-parser-d4869b5958fb
+  - https://pablo-bravo.com/compiler-construction-2
+  - https://peps.python.org/pep-0617/
+  - https://www.romanredz.se/Mouse/index.htm#grammars
   - https://github.com/soasme/PeppaPEG
   - https://github.com/gpakosz/peg
-  - https://pablo-bravo.com/compiler-construction-2
-  - https://eli.thegreenplace.net/2026/rewriting-pycparser-with-the-help-of-an-llm/
   - https://duckdb.org/2024/11/22/runtime-extensible-parsers
   - https://github.com/we-like-parsers/pegen
   - https://www.gnu.org/software/guile/manual/html_node/PEG-Parsing.html
   - https://bford.info/pub/lang/peg.pdf
   - https://arxiv.org/pdf/1509.02439
   - https://we-like-parsers.github.io/pegen/peg_parsers.html
-  - https://peps.python.org/pep-0617/
 ---
 
 # Parsing Expression Grammars (PEG)
@@ -50,7 +50,7 @@ A ← ('a' A 'b')?
 B ← ('b' B 'c')?
 ```
 
-PEGs are used in production by CPython (since 3.9, default from 3.10 via PEP 617), DuckDB (experimental PEG parser since v1.5), Lua (LPeg), Guile Scheme, jq, and various parser generator tools.
+PEGs are used in production by CPython (since 3.9, default from 3.10 via PEP 617), DuckDB (experimental PEG parser since v1.5), Lua (LPeg), Guile Scheme, jq, and various parser generator tools including Mouse (Java-based, limited backtracking with recursive ascent left-recursion support).
 
 ## When to Use
 
