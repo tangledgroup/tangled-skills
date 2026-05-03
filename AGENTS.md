@@ -13,7 +13,7 @@ tangled-skills/
 │   │       ├── 01-topic-name.md
 │   │       └── 02-another-topic.md
 ├── README.md                       # Skills table and overview (auto-generated)
-├── scripts/
+├── misc/
 │   └── gen-skills-table.py         # Regenerates README.md skills table from YAML headers
 └── AGENTS.md                       # This file
 ```
@@ -24,7 +24,7 @@ After **every** skill addition, deletion, rename, or YAML header edit, regenerat
 the README.md skills table:
 
 ```bash
-python3 scripts/gen-skills-table.py
+python3 misc/gen-skills-table.py
 ```
 
 This keeps the public skills index in sync with the actual `.agents/skills/` contents.
