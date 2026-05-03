@@ -1,10 +1,10 @@
-# ☐ Plan: prescheme-2026-05-03 Skill
+# ☑ Plan: prescheme-2026-05-03 Skill
 
 **Depends On:** NONE
 **Created:** 2026-05-03T19:46:00Z
-**Updated:** 2026-05-03T19:46:00Z
-**Current Phase:** ⚙️ Phase 4
-**Current Task:** ⚙️ Task 4.1
+**Updated:** 2026-05-03T19:50:00Z
+**Current Phase:** ☑ Phase 4
+**Current Task:** ☑ Task 4.2
 
 ## Source Analysis Summary
 
@@ -91,12 +91,12 @@ SKILL.md will be a navigation hub (~150 lines), 4 reference files for progressiv
   - Tooling plans: CLI, Emacs plugin, documentation
   - Future possibilities: LLVM/Wasm backends, static analysis repurposing
 
-## ⚙️ Phase 4 Validate And Finalize
+## ☑ Phase 4 Validate And Finalize
 
-- ⚙️ Task 4.1 Run validation checklist against all files (depends on: Task 3.1 , Task 3.2 , Task 3.3 , Task 3.4)
+- ☑ Task 4.1 Run validation checklist against all files (depends on: Task 3.1 , Task 3.2 , Task 3.3 , Task 3.4)
   - YAML header checks
   - Structure checks (SKILL.md < 500 lines, reference flat structure)
   - Content checks (no hallucinations, concise, consistent terminology)
 
-- ☐ Task 4.2 Regenerate README.md skills table (depends on: Task 4.1)
+- ☑ Task 4.2 Regenerate README.md skills table (depends on: Task 4.1)
   - Run python3 misc/gen-skills-table.py

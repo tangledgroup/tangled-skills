@@ -1,6 +1,6 @@
 ---
 name: lisp-in-c-2026-05-03
-description: "Build a Lisp interpreter in C from scratch, covering S-expression parsing, manual memory management with linked-list data structures, hash-table environments for lexical scoping, the eval-apply cycle, user-defined functions, and REPL. Two approaches: string-only atoms with sentinel-node lists (LIPS style) vs typed union AST nodes. Use when building interpreters in C, understanding evaluation at the systems level with explicit memory management, or studying pointer-based data structures for language implementation."
+description: "Build a Lisp interpreter in C from scratch, covering S-expression parsing, manual memory management, hash-table environments for lexical scoping, the eval-apply cycle, user-defined functions, and REPL. Two approaches: string-only atoms with sentinel-node lists (LIPS) vs typed union AST nodes. Use when building interpreters in C, understanding evaluation with explicit memory management, or studying pointer-based data structures for language implementation."
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "2026-05-03"

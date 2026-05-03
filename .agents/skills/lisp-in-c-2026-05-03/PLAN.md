@@ -1,10 +1,10 @@
-# ⚙️ Plan: lisp-in-c-2026-05-03 Skill Generation
+# ☑ Plan: lisp-in-c-2026-05-03 Skill Generation
 
 **Depends On:** NONE
 **Created:** 2026-05-03T12:00:00Z
 **Updated:** 2026-05-03T12:00:00Z
-**Current Phase:** ⚙️ Phase 4
-**Current Task:** ⚙️ Task 4.1
+**Current Phase:** ☑ Phase 4
+**Current Task:** ☑ Task 4.4
 
 ---
 
@@ -157,25 +157,25 @@ The skill naturally splits into 4 reference domains:
   - Memory discipline: when to free, deep copy semantics
   - Include complete builtin implementations
 
-## ☐ Phase 4 Validate And Finalize
+## ☑ Phase 4 Validate And Finalize
 
-- ☐ Task 4.1 Run YAML header validation (depends on: Task 2.1)
+- ☑ Task 4.1 Run YAML header validation (depends on: Task 2.1)
   - name matches directory
   - description within 150-400 chars
   - all required fields present
   - valid YAML syntax
 
-- ☐ Task 4.2 Validate structure (depends on: Task 2.6 , Task 3.4)
+- ☑ Task 4.2 Validate structure (depends on: Task 2.6 , Task 3.4)
   - SKILL.md under 500 lines
   - reference/ has 4 numbered files
   - No chained references
   - All links resolve
 
-- ☐ Task 4.3 Validate content quality (depends on: Task 3.4)
+- ☑ Task 4.3 Validate content quality (depends on: Task 3.4)
   - No hallucinated content
   - Concise, no over-explaining basics
   - Consistent terminology
   - Code examples compile conceptually
   - Single recommended approach with escape hatches
 
-- ☐ Task 4.4 Run gen-skills-table.py and verify README update (depends on: Task 4.3)
+- ☑ Task 4.4 Run gen-skills-table.py and verify README update (depends on: Task 4.3)
