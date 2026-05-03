@@ -225,25 +225,26 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 197 | textual-8-2-5 | textual | 8.2.5 | tui, terminal-ui, python, framework, reactive | Rapid application development framework for building sophisticated terminal and browser user interfaces in Python.... |
 | 198 | tinycc-0-9-27 | tinycc | 0.9.27 | c-compiler, code-generation, dynamic-compilation, x86, arm | Complete toolkit for TinyCC 0.9.27, a small hyper-fast C compiler that generates native x86/x86_64/ARM code directly... |
 | 199 | tinypy-1-1-0 | tinypy | 1.1.0 | python, vm, embedding, scripting, minimal | A minimalist Python implementation in ~64k of code featuring a fully bootstrapped parser and bytecode compiler written... |
-| 200 | tokenizers-0-22-3 | tokenizers | 0.22.3 | nlp, tokenization, rust, python, transformers | Fast state-of-the-art tokenizers library for NLP written in Rust with |
-| 201 | tokenizers-0-23-1 | tokenizers | 0.23.1 | nlp, tokenization, rust, python, transformers | Fast state-of-the-art tokenizers library for NLP written in Rust with Python, Node.js, and Ruby bindings. Use when... |
-| 202 | transformers-5-5-4 | transformers | 5.5.4 | nlp, machine-learning, deep-learning, pytorch, huggingface | Complete toolkit for Hugging Face Transformers 5.5.4 providing state-of-the-art pretrained models for NLP, computer... |
-| 203 | transformers-5-7-0 | transformers | 5.7.0 | nlp, machine-learning, deep-learning, pytorch, huggingface | Complete toolkit for Hugging Face Transformers 5.7.0 providing state-of-the-art pretrained models for NLP, computer... |
-| 204 | ty-0-0-29 | ty | 0.0.29 | python, type-checking, static-analysis, language-server, mypy-alternative | A skill for using ty 0.0.29, an extremely fast Python type checker and language server written in Rust that is 10x-100x... |
-| 205 | ty-0-0-33 | ty | 0.0.33 | python, type-checking, static-analysis, language-server, mypy-alternative | A skill for using ty 0.0.33, an extremely fast Python type checker and language server written in Rust that is 10x-100x... |
-| 206 | tzip | tzip | 0.4.0 | meta, meta-skill, token-prune, efficiency, guidelines | Lightweight token-pruning communication mode that drops filler and hedging while keeping full sentences and... |
-| 207 | upx-5-1-1 | upx | 5.1.1 | compression, executable-packer, distribution, size-optimization, cross-platform | A skill for using UPX (Ultimate Packer for eXecutables) v5.1.1 to compress and decompress executable files across... |
-| 208 | usearch-2-24-0 | usearch | 2.24.0 | vector-search, hnsw, similarity-search, approximate-nearest-neighbors, embedding-search | High-performance single-file similarity search and clustering engine for vectors supporting HNSW algorithm with... |
-| 209 | usearch-2-25-1 | usearch | 2.25.1 | vector-search, ann, hnsw, similarity-search, clustering | High-performance single-file similarity search and clustering engine for vectors using HNSW algorithm with user-defined... |
-| 210 | uv-0-11-6 | uv | 0.11.6 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | A skill for using uv 0.11.6, an extremely fast Python package and project manager written in Rust that replaces pip,... |
-| 211 | uv-0-11-8 | uv | 0.11.8 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | A skill for using uv 0.11.8, an extremely fast Python package and project manager written in Rust that replaces pip,... |
-| 212 | workflow | workflow | 0.1.3 | meta, meta-skill, workflow, task-management | Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require... |
-| 213 | write-skill | write-skill | 0.8.2 | meta, meta-skill, skill-writing, skill-generation, automation | Generate fine-grained agent skills from user requirements, creating complete spec-compliant markdown files that work... |
-| 214 | yjs-13-6-30 | yjs | 13.6.30 | yjs, crdt, collaborative-editing, real-time, shared-types | CRDT framework that exposes shared types (Y.Map, Y.Array, Y.Text, Y.XmlFragment) for conflict-free collaborative... |
-| 215 | yq-4-53-2 | yq | 4.53.2 | yaml, json, xml, ini, csv | A skill for using yq v4.x, a lightweight and portable command-line YAML, JSON, XML, INI, Properties, CSV/TSV, HCL,... |
-| 216 | zeromq-wiki-3-2-0 | zeromq-wiki | 3.2.0 | zeromq, messaging, distributed-systems, networking, sockets | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and best... |
-| 217 | zeromq-zguide-3-2-0 | zeromq-zguide | 3.2.0 | zeromq, zmq, messaging, sockets, distributed-systems | Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and distributed... |
+| 200 | tinyscheme-1-41 | tinyscheme | 1.41 | tinyscheme, scheme, lisp, interpreter, embedded | Lightweight Scheme interpreter (R5RS subset) in ~5000 lines of C, designed as an embeddable scripting engine.... |
+| 201 | tokenizers-0-22-3 | tokenizers | 0.22.3 | nlp, tokenization, rust, python, transformers | Fast state-of-the-art tokenizers library for NLP written in Rust with |
+| 202 | tokenizers-0-23-1 | tokenizers | 0.23.1 | nlp, tokenization, rust, python, transformers | Fast state-of-the-art tokenizers library for NLP written in Rust with Python, Node.js, and Ruby bindings. Use when... |
+| 203 | transformers-5-5-4 | transformers | 5.5.4 | nlp, machine-learning, deep-learning, pytorch, huggingface | Complete toolkit for Hugging Face Transformers 5.5.4 providing state-of-the-art pretrained models for NLP, computer... |
+| 204 | transformers-5-7-0 | transformers | 5.7.0 | nlp, machine-learning, deep-learning, pytorch, huggingface | Complete toolkit for Hugging Face Transformers 5.7.0 providing state-of-the-art pretrained models for NLP, computer... |
+| 205 | ty-0-0-29 | ty | 0.0.29 | python, type-checking, static-analysis, language-server, mypy-alternative | A skill for using ty 0.0.29, an extremely fast Python type checker and language server written in Rust that is 10x-100x... |
+| 206 | ty-0-0-33 | ty | 0.0.33 | python, type-checking, static-analysis, language-server, mypy-alternative | A skill for using ty 0.0.33, an extremely fast Python type checker and language server written in Rust that is 10x-100x... |
+| 207 | tzip | tzip | 0.4.0 | meta, meta-skill, token-prune, efficiency, guidelines | Lightweight token-pruning communication mode that drops filler and hedging while keeping full sentences and... |
+| 208 | upx-5-1-1 | upx | 5.1.1 | compression, executable-packer, distribution, size-optimization, cross-platform | A skill for using UPX (Ultimate Packer for eXecutables) v5.1.1 to compress and decompress executable files across... |
+| 209 | usearch-2-24-0 | usearch | 2.24.0 | vector-search, hnsw, similarity-search, approximate-nearest-neighbors, embedding-search | High-performance single-file similarity search and clustering engine for vectors supporting HNSW algorithm with... |
+| 210 | usearch-2-25-1 | usearch | 2.25.1 | vector-search, ann, hnsw, similarity-search, clustering | High-performance single-file similarity search and clustering engine for vectors using HNSW algorithm with user-defined... |
+| 211 | uv-0-11-6 | uv | 0.11.6 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | A skill for using uv 0.11.6, an extremely fast Python package and project manager written in Rust that replaces pip,... |
+| 212 | uv-0-11-8 | uv | 0.11.8 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | A skill for using uv 0.11.8, an extremely fast Python package and project manager written in Rust that replaces pip,... |
+| 213 | workflow | workflow | 0.1.3 | meta, meta-skill, workflow, task-management | Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require... |
+| 214 | write-skill | write-skill | 0.8.2 | meta, meta-skill, skill-writing, skill-generation, automation | Generate fine-grained agent skills from user requirements, creating complete spec-compliant markdown files that work... |
+| 215 | yjs-13-6-30 | yjs | 13.6.30 | yjs, crdt, collaborative-editing, real-time, shared-types | CRDT framework that exposes shared types (Y.Map, Y.Array, Y.Text, Y.XmlFragment) for conflict-free collaborative... |
+| 216 | yq-4-53-2 | yq | 4.53.2 | yaml, json, xml, ini, csv | A skill for using yq v4.x, a lightweight and portable command-line YAML, JSON, XML, INI, Properties, CSV/TSV, HCL,... |
+| 217 | zeromq-wiki-3-2-0 | zeromq-wiki | 3.2.0 | zeromq, messaging, distributed-systems, networking, sockets | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and best... |
+| 218 | zeromq-zguide-3-2-0 | zeromq-zguide | 3.2.0 | zeromq, zmq, messaging, sockets, distributed-systems | Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and distributed... |
 
 ## Statistics
 
-- **Total Skills**: 217
+- **Total Skills**: 218
