@@ -2,9 +2,13 @@
 
 ## Contents
 - Parsing Expressions and Grammars
+- Atomic Expressions
 - Operator Semantics
+- Cut/Commit Operator
+- Gather Syntax
 - Precedence Table
 - Key Semantic Differences from CFGs
+- Self-Describing PEG Meta-Grammar
 
 ## Parsing Expressions and Grammars
 
@@ -14,21 +18,22 @@ A **parsing expression grammar** is a collection of named parsing expressions th
 
 **Concrete syntax conventions:**
 - Ford's primary dialect: `Identifier ← Expression`
-- Common variants: `<-`, `:=`, `=`
+- Common variants: `<-`, `:=`, `=`, `:`
 - Terminals in quotes: `"terminal"`, `'another'`
 - Nonterminals as bare identifiers: `Nonterminal`
 - Character classes: `[abc]`, `[0-9A-Za-z]`
 - Any character: `.`
 - Backslash escapes: `\n`, `\r`, `\\`
 
-**Atomic expressions:**
+## Atomic Expressions
+
 - **Terminal**: A literal character or string. `"bar"` equals `"b" "a" "r"`.
 - **Nonterminal**: Reference to another rule, equivalent to a function call.
 - **Character class**: `[abc]` matches one listed character. Ranges: `[0-9]`.
 - **Any**: `.` matches any single terminal.
-- **Empty string (ε)**: Always succeeds, consumes nothing.
-- **End of input**: `!.` (not-predicate on any-char).
-- **Failure**: Matches nothing.
+- **Empty string (ε)**: Always succeeds, consumes nothing. Written as `?` on an empty expression or simply omitted.
+- **End of input**: `!.` (not-predicate on any-char) — succeeds when no next character exists.
+- **Failure**: Matches nothing. Some PEG variants provide explicit `failure` or `_` expressions.
 
 ## Operator Semantics
 
@@ -45,20 +50,21 @@ Bad ← "a" "b" "c"
      # Input: "ab" → fails, consumes nothing
 ```
 
-### Ordered Choice (`e1 / e2`)
+### Ordered Choice (`e1 / e2` or `e1 | e2`)
 
 Try `e1`. If it succeeds, return immediately — `e2` is never attempted. If `e1` fails, backtrack to the starting position and try `e2`.
 
 ```
-# Matches "if x then y" but NOT "if x then y else z"
-# because first alternative succeeds and second is discarded
-IfStmt ← 'if' Expr 'then' Stmt 'else' Stmt
-       / 'if' Expr 'then' Stmt
-
 # CORRECT order — longer alternative first:
 IfStmt ← 'if' Expr 'then' Stmt 'else' Stmt
        / 'if' Expr 'then' Stmt
+
+# WRONG — second alternative never fires:
+IfStmt ← 'if' Expr 'then' Stmt
+       / 'if' Expr 'then' Stmt 'else' Stmt
 ```
+
+This is the PEG solution to the **dangling else** problem. In CFGs, `if-then` and `if-then-else` create ambiguity. In PEG, ordering resolves it deterministically.
 
 ### Repetition (`e*`, `e+`, `e?`)
 
@@ -68,20 +74,12 @@ IfStmt ← 'if' Expr 'then' Stmt 'else' Stmt
 
 **Critical difference from regex:** These never backtrack to leave input for subsequent patterns. `(a* a)` always fails because `a*` consumes all `a`s.
 
-```
-# Matches any number of digits
-Number ← [0-9]+
-
-# Always fails — Number consumed all digits, nothing left for final digit
-Bad ← Number [0-9]
-```
-
 ### And-Predicate (`&e`)
 
 Invoke `e`. If `e` succeeds, the predicate succeeds. If `e` fails, the predicate fails. **Never consumes input** — always backtracks to starting position regardless of how much `e` consumed internally.
 
 ```
-# Matches identifier only if NOT followed by "<-" (i.e., not a rule definition)
+# Matches identifier only if NOT followed by "<-" (not a rule definition)
 Primary ← Identifier !LEFTARROW
 
 # Matches "foo" only if followed by "bar"
@@ -96,20 +94,33 @@ Invoke `e`. If `e` fails, the predicate succeeds. If `e` succeeds, the predicate
 # Matches any character except newline
 NonNewline ← !EndOfLine .
 
-# Matches a single "a" only if not part of a run of a's followed by b
-LoneA ← !(a+ b) "a"
-
 # End of input: no next character exists
 EndOfFile ← !.
 ```
 
-### Grouping (`(e)`)
+## Cut/Commit Operator (`~`)
 
-Parenthesized expression. Controls precedence in complex expressions.
+The cut operator (`~`), supported by pegen and some other PEG variants, commits to the current alternative. Once the parser passes `~`, it will not backtrack past this point — even if the rule ultimately fails.
 
 ```
-# Matches optional parenthesized expression
-OptGroup ← '(' Expr ')' ?
+# If '(' matches, commit to this path — don't try other alternatives on failure
+rule ← '(' ~ Expr ')' / OtherAlt
+
+# Without cut: if Expr or ')' fails, backtracks to try OtherAlt
+# With cut: if Expr or ')' fails, the whole rule fails (no backtrack)
+```
+
+This is useful for providing specific error messages: once you've matched the opening of a construct, you want to report errors within it rather than silently trying other alternatives.
+
+## Gather Syntax (`s.e+`)
+
+The gather syntax (`s.e+`), supported by pegen, matches one or more occurrences of `e` separated by `s`. The generated parse tree does not include the separator. Equivalent to `(e (s e)*)` but cleaner.
+
+```
+# Match comma-separated expressions, without commas in the result
+comma_separated ← ','.expr+
+
+# Equivalent to: expr (',' expr)*
 ```
 
 ## Precedence Table
@@ -119,8 +130,8 @@ From highest (tightest binding) to lowest:
 | Priority | Operators |
 |----------|-----------|
 | 5 | `(e)` — grouping |
-| 4 | `e*`, `e+`, `e?` — suffix repetition/optional |
-| 3 | `&e`, `!e` — prefix predicates |
+| 4 | `e*`, `e+`, `e?`, `{n}` — suffix repetition/optional |
+| 3 | `&e`, `!e`, `~` — prefix predicates, cut |
 | 2 | `e1 e2` — sequence (juxtaposition) |
 | 1 | `e1 / e2` — ordered choice |
 
@@ -146,3 +157,43 @@ For any given input position and rule, the result is deterministic: same success
 ### No ambiguity possible
 
 PEGs cannot be ambiguous by construction. The ordered choice operator deterministically selects exactly one parse tree (or none). This eliminates the entire class of ambiguity-related problems that plague CFG-based parsers.
+
+### Adding rules can remove strings
+
+In CFG, adding a new production cannot remove strings from the language (though it can introduce ambiguity). In PEG, adding a rule before an existing one can **subsume** it:
+
+```
+# G1 accepts "ab" and "a"
+G1 ← "a" "b" / "a"
+
+# G2 accepts only "a" — "ab" is consumed by first alternative, leaving nothing for second
+G2 ← "a" / "a" "b"
+```
+
+## Self-Describing PEG Meta-Grammar
+
+Ford's original paper includes a PEG that describes its own complete syntax — both lexical and syntactic rules in one unified specification:
+
+```
+Grammar    ← Spacing Definition+ EndOfFile
+Definition ← Identifier LEFTARROW Expression
+Expression ← Sequence (SLASH Sequence)*
+Sequence   ← Prefix*
+Prefix     ← (AND / NOT)? Suffix
+Suffix     ← Primary (QUESTION / STAR / PLUS)?
+Primary    ← Identifier !LEFTARROW
+           / OPEN Expression CLOSE
+           / Literal
+           / Class
+           / DOT
+
+# Lexical rules — same grammar, different level
+Identifier ← IdentStart IdentCont* Spacing
+Literal    ← ['] (!['] Char)* ['] Spacing
+           / ["] (!["] Char)* ["] Spacing
+Class      ← '[' (!']' Range)* ']' Spacing
+Spacing    ← (Space / Comment)*
+Comment    ← '#' (!EndOfLine .)* EndOfLine
+```
+
+This demonstrates PEG's unified grammar capability: lexical rules (identifiers, literals, comments) and syntactic rules (grammar structure, expressions) coexist in a single specification with no separate tokenizer phase.

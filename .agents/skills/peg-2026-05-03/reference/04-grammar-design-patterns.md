@@ -4,8 +4,6 @@
 - Ordered Choice Consequences
 - Whitespace Handling Strategies
 - Soft vs Hard Keywords
-- Error Handling and Recovery
-- Semantic Actions
 
 ## Ordered Choice Consequences
 
@@ -24,8 +22,6 @@ IfStmt ← 'if' Expr 'then' Stmt
 IfStmt ← 'if' Expr 'then' Stmt 'else' Stmt
        / 'if' Expr 'then' Stmt
 ```
-
-This is the PEG solution to the **dangling else** problem that plagues CFGs. In a CFG, `if-then` and `if-then-else` create ambiguity. In PEG, ordering resolves it deterministically.
 
 ### Subsumed alternatives
 
@@ -57,10 +53,16 @@ PEG parsers are **eager**: if a rule succeeds, the caller accepts it even if acc
 
 ```
 # ('a'|'aa')'a' does NOT accept "aaa"
-# Because 'a'|'aa' greedily matches first 'a', then final 'a' consumes second,
+# 'a'|'aa' greedily matches first 'a', then final 'a' consumes second,
 # leaving third 'a' unmatched. Parser does NOT backtrack to try 'aa'.
 Rule ← ('a' | 'aa') 'a'
+
+# ('aa'|'a')'a' does NOT accept "aa"
+# 'aa'|'a' consumes both 'a's, leaving nothing for final 'a'
+Rule ← ('aa' | 'a') 'a'
 ```
+
+Neither rule accepts both `aa` and `aaa`. This is fundamentally different from CFG, where both alternatives would contribute to the language. The fix: order longer alternatives first.
 
 ## Whitespace Handling Strategies
 
@@ -145,86 +147,6 @@ MatchStmt ← &"match" "match" NAME ':' ...
 
 The `&"match"` predicate checks that the next token is literally `match` without consuming it. If a later rule needs `match` as an identifier, it fires first and consumes the token.
 
-**Pitfalls:** Soft keywords can be accepted in unintended positions due to ordered choice. Define them where few alternatives compete.
+**Pitfalls:** Soft keywords can be accepted in unintended positions due to ordered choice. Define them where few alternatives compete. In pegen, soft keywords are defined using double quotes (`"match"`) while hard keywords use single quotes (`'class'`).
 
-## Error Handling and Recovery
-
-### The error location problem
-
-When PEG parsing fails completely (no rule succeeds in consuming all input), the parser does not inherently know **where** the error is. Every position was tried, and every attempt ultimately failed.
-
-### Two-pass approach (pegen)
-
-CPython's pegen uses a two-pass strategy:
-
-1. **First pass**: Parse without `invalid_` rules. Record failure position.
-2. **Second pass**: If first pass failed, retry with `invalid_` rules enabled. These rules match common error patterns and produce specific error messages.
-3. If second pass also fails generically, use the first pass's failure location.
-
-```
-# Invalid rule — only active in second pass
-invalid_for_loop_statement ← 'for' !NAME
-    { raise SyntaxError("expected target after 'for'") }
-```
-
-Rules starting with `invalid_` are excluded from the first parsing pass.
-
-### Exception-based error reporting
-
-In pegen, if a rule action raises an exception (including `SyntaxError`), parsing stops immediately and the exception propagates. This allows custom error messages:
-
-```
-# Grammar action that validates parsed content
-type_expr ← '(' NAME ')'
-    {
-        if not is_valid_type(name):
-            raise SyntaxError(f"'{name}' is not a valid type")
-        return TypeNode(name)
-    }
-```
-
-### Recovery annotations
-
-Research papers describe annotating rules with recovery actions that:
-1. Show multiple errors in a single parse attempt
-2. Provide context-specific error messages
-3. Allow parsing to continue past errors for IDE support
-
-## Semantic Actions
-
-Semantic actions are code executed during or after rule matching, used to build ASTs, validate content, or compute derived values.
-
-### Inline actions (peg/leg)
-
-Code embedded directly in the grammar:
-
-```
-# peg/leg syntax — @{...} executes during matching
-number ← [0-9]+ @{ return atoi(yytext); }
-```
-
-### Grammar actions (pegen)
-
-C function calls after rule match, referenced by `#` prefix:
-
-```
-# pegen grammar syntax
-power ← a=primary '**' b=power #{ binop(a, b, '#') #}
-       / primary
-```
-
-The `a=` and `b=` capture named results. The `#{...}#` block calls the generated C function.
-
-### Separation of concerns
-
-Best practice: keep grammar rules focused on structure, move complex logic to action functions:
-
-```
-# Grammar defines structure
-expr ← left=term op=add_op right=expr #{ make_binop(left, op, right) #}
-     / term
-
-# Action builds AST node
-make_binop(left, op, right):
-    return BinOpNode(op=op, left=left, right=right)
-```
+**Guido's note on soft keywords:** "Soft keywords can be a bit challenging to manage as they can be accepted in places you don't intend to, given how the order alternatives behave in PEG parsers. In general, try to define them in places where there is not a lot of alternatives."

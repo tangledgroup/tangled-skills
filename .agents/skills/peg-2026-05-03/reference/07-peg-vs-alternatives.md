@@ -12,11 +12,12 @@
 
 | Property | CFG | PEG |
 |----------|-----|-----|
-| Choice operator | Unordered (`\|`) | Ordered (`/`) |
+| Choice operator | Unordered (`\|`) | Ordered (`/` or `\|`) |
 | Commutativity | `A \| B` = `B \| A` | `A / B` ≠ `B / A` |
 | Ambiguity | Possible (multiple parse trees) | Impossible (single parse tree or none) |
 | Parsing approach | Deduce which alternative fits | Try alternatives in order, first wins |
 | Empty productions | Natural (`A → ε`) | Via `?` operator |
+| Adding rules | Cannot remove strings from language | Can subsume existing alternatives |
 
 ### Language expressiveness
 
@@ -24,6 +25,7 @@
 - Non-context-free languages: `a^n b^n c^n` is expressible as PEG but provably not CFG
 - Greedy longest-match semantics directly in grammar
 - Negative syntax (`!e`) for exclusion patterns
+- Closed under intersection and complement (via `&` and `!`)
 
 **CFG may do some things PEG cannot (conjectured, not proven):**
 - The midpoint problem: `S ← 'x' S 'x' / 'x'` struggles with odd-length `x` strings due to greedy matching
@@ -49,14 +51,14 @@ PEG languages are closed under intersection and complement. This is a direct con
 | LALR(1) | O(n) but restricted grammar class |
 | GLR | O(n²) worst case, handles all CFGs |
 | PEG (naive recursive descent) | O(2^n) exponential |
-| PEG (packrat with memoization) | O(n) linear for any PEG |
+| PEG (packrat with memoization) | O(n × r) linear for any PEG |
 
 ### Practical comparison
 
 **CFG advantages:**
 - Mature tooling (yacc, bison, antlr)
 - Well-understood theory and transformations
-- Good error reporting in LR parsers
+- Good error reporting in LR parsers (position is known)
 - Lower memory usage (LR parsers scale with parse depth, not input size)
 
 **PEG advantages:**
@@ -66,6 +68,15 @@ PEG languages are closed under intersection and complement. This is a direct con
 - Linear-time parsing guaranteed with packrat
 - Grammar closely matches how the parser operates (easier to reason about)
 - Easier to express complex disambiguation (dangling else, soft keywords)
+- Direct AST construction via grammar actions (eliminates intermediate CST)
+
+### Migration motivation (pycparser case study)
+
+Eli Bendersky's pycparser project (~20M daily downloads) migrated from PLY (YACC-based) to hand-written recursive descent, motivated by:
+- Growing reduce-reduce conflicts as C11/C23 features were added
+- YACC rules having "spooky-action-at-a-distance" effects (brittle rule ordering)
+- PLY abandonment/archiving creating dependency risk
+- Recursive descent parsers being easier to understand, maintain, and often faster (~30% speedup observed)
 
 ## PEG vs Regular Expressions
 
@@ -98,12 +109,13 @@ PEG languages are closed under intersection and complement. This is a direct con
 
 1. **No compilation required**: PEGs can be executed directly without converting to state machines or lookup tables
 2. **Unambiguous by construction**: Ordered choice eliminates the ambiguity problem entirely
-3. **Linear-time parsing**: Packrat memoization guarantees O(n) for any PEG
+3. **Linear-time parsing**: Packrat memoization guarantees O(n × r) for any PEG
 4. **Unified grammar**: Single grammar handles both lexical and syntactic rules (scannerless parsing)
 5. **Unlimited lookahead**: Predicates provide arbitrary lookahead without special machinery
 6. **Ordered choice matches intuition**: Grammar order reflects parser behavior — easier to reason about
-7. **Rich operator set**: Sequence, choice, repetition, predicates, grouping — expressive with few primitives
+7. **Rich operator set**: Sequence, choice, repetition, predicates, cut, grouping — expressive with few primitives
 8. **Closure under intersection/complement**: Enables powerful composition of grammars
+9. **Direct AST construction**: Grammar actions build AST during parsing, eliminating intermediate CST
 
 ## Disadvantages Summary
 
@@ -115,3 +127,4 @@ PEG languages are closed under intersection and complement. This is a direct con
 6. **Midpoint problem**: Greedy matching may miss globally optimal parses for certain nondeterministic CFG rules
 7. **Flat parse trees**: Idiomatic repetition form `A (op A)*` produces flat lists, not binary trees — associativity must be imposed post-parse
 8. **Not all CFG languages expressible**: Conjectured that some context-free languages cannot be expressed as PEGs
+9. **Eager matching**: Parser accepts first successful match even if it causes failure later (no global backtracking)

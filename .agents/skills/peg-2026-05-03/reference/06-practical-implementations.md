@@ -24,20 +24,27 @@ stmt:
 
 simple_stmt:
     small_stmt (';' small_stmt)* NEWLINE
-
-compound_stmt:
-    if_stmt
-    / while_stmt
-    / for_stmt
-    / try_stmt
-    / with_stmt
-    / funcdef
-    / classdef
 ```
+
+### Complete operator reference
+
+| Syntax | Meaning |
+|--------|---------|
+| `e1 e2` | Match e1, then match e2 |
+| `e1 \| e2` | Match e1 or e2 (ordered choice) |
+| `(e)` | Grouping |
+| `[e]` or `e?` | Optionally match e |
+| `e*` | Zero or more occurrences of e |
+| `e+` | One or more occurrences of e |
+| `s.e+` | One or more e separated by s (gather) |
+| `&e` | Succeed if e parses, consume nothing (positive lookahead) |
+| `!e` | Fail if e parses, consume nothing (negative lookahead) |
+| `~` | Commit to current alternative (cut) |
+| `name=e` | Named capture — bind result to name for use in actions |
 
 ### Key features
 
-- **Selective memoization**: Disabled by default. Opt-in via `(memo)` marker after rule name:
+- **Selective memoization**: Disabled by default. Opt-in via `(memo)` marker:
   ```
   expr_list[type] (memo):
       expr (',' expr)* ','?
@@ -46,17 +53,17 @@ compound_stmt:
 
 - **Hard vs soft keywords**: Single quotes for hard (`'class'`), double quotes for soft (`"match"`). Soft keywords allow `match = 42` as valid identifier usage.
 
-- **Grammar actions**: C function calls after rule matches:
+- **Grammar actions**: Code blocks after rule matches:
   ```
-  power: a=primary '**' b=power #{ binop(a, b, '#') #}
+  power[expr_ty]: a=primary '**' b=power #{ binop(a, b, '#') #}
   ```
   Named captures via `name=` prefix. Actions generate C code in the output parser.
 
 - **Error handling**: Two-pass parsing with `invalid_` rules for specialized error messages. Rules starting with `invalid_` are excluded from first pass and only active on retry.
 
-- **Separate tokenizer**: Python's tokenizer handles indentation tracking (requires a stack), encoding, interactive mode, f-string nesting, and backtracking errors (unclosed parentheses). The tokenizer produces a token stream that the parser consumes via `mark()`/`reset()` for backtracking.
+- **Separate tokenizer**: Python's tokenizer handles indentation tracking (requires a stack), encoding, interactive mode, f-string nesting, and backtracking errors. Produces token stream consumed via `mark()`/`reset()` for backtracking.
 
-- **Left recursion**: Supported via Ford/Warth iterative fixed-point algorithm. Rules like `expr: expr '+' term` work directly.
+- **Left recursion**: Supported via Ford/Warth iterative fixed-point algorithm. Handles direct, indirect, and hidden left recursion.
 
 ### Rationale for PEG over LL(1)
 
@@ -64,6 +71,11 @@ compound_stmt:
 - Complex AST construction scattered across grammar rules
 - No left recursion support in LL(1), requiring awkward grammar rewrites
 - Intermediate parse tree (CST) adds memory overhead before AST conversion
+- PEG allows direct AST construction via grammar actions, eliminating intermediate CST
+
+### Performance
+
+Tuned to within 10% of the old LL(1) parser in speed and memory. For compiling stdlib: new parser is slightly faster but uses ~10% more memory. The elimination of intermediate CST partially offsets packrat memoization overhead.
 
 ## DuckDB Runtime-Extensible Parser
 
@@ -80,8 +92,16 @@ DuckDB v1.5 (March 2026) shipped an experimental PEG parser, opt-in via `CALL en
 
 - Uses **cpp-peglib** (single-header C++17 PEG engine) as the execution backend
 - Grammar load time: ~3ms from text representation
-- Parsing performance: ~10x slower than YACC baseline on TPC-H queries
+- Parsing performance: ~10x slower than YACC baseline on TPC-H queries (sub-ms absolute)
 - Grammar syntax uses `/` for choice (cpp-peglib convention), `?` for optional, `*` for repetition
+
+### Grammar macros and features
+
+- `Parens(D)` — shorthand for `'(' D ')'`
+- `List(D)` — shorthand for `D (',' D)*`
+- `%whitespace` rule handles tokenization
+- `%recover(Name)` — recovery annotation for custom error messages
+- `i"keyword"` — case-insensitive keyword matching
 
 ### Example grammar (abridged)
 
@@ -95,7 +115,32 @@ SimpleSelect <- WithClause? SelectClause FromClause?
 FromClause <- 'FROM' TableReference ((',' TableReference) / ExplicitJoin)*
 ```
 
-Special rules `Parens(D)` and `List(D)` are grammar macros. `%whitespace` rule handles tokenization.
+### Runtime extension examples
+
+**Adding UNPIVOT statement:**
+```
+UnpivotStatement <- 'UNPIVOT' Identifier
+    'ON' Parens(List(Identifier) / '*')
+SingleStmt <- SelectStatement / UnpivotStatement
+```
+
+**Adding SQL/PGQ GRAPH_TABLE:**
+```
+PropertyGraphReference <- 'GRAPH_TABLE'i '('
+        Identifier ','
+        'MATCH'i List(Pattern)
+        'COLUMNS'i Parens(List(ColumnReference))
+    ')' Identifier?
+TableReference <- PropertyGraphReference / ...
+```
+
+**Adding dplyr syntax:**
+```
+DplyrStatement <- Identifier Pipe Verb (Pipe Verb)*
+Verb <- VerbName Parens(List(Argument))
+Pipe <- '%>%'
+SingleStmt <- SelectStatement / DplyrStatement
+```
 
 ## LPeg (Lua)
 
@@ -107,13 +152,13 @@ Created by Roberto Ierusalimschy (Lua author). PEG-based pattern matching librar
 - Parser combinators style: patterns are first-class values composable with operators
 - `re` module provides regex-like syntax on top of LPeg internals
 
-### Usage pattern
+### Parser combinator API
 
 ```lua
 local lpeg = require "lpeg"
 
 -- Character classes
-local Cn = lpeg.R"09"^1          -- digits
+local Cn = lpeg.R"09"^1          -- digits (one or more)
 local Cl = lpeg.R"az"            -- lowercase letter
 
 -- Sequence and choice
@@ -122,6 +167,19 @@ local Ident = Cl * (Cl + Cn)^0
 
 -- And-predicate (lookahead)
 local NotSpace = lpeg.P" " ^ -1  -- succeed if not space
+
+-- Captures (extract matched text)
+local Capture = lpeg.C(Ident)    -- capture identifier
+
+-- Rule references (for recursion)
+local V = lpeg.V                 -- reference to named rule
+
+-- Pattern table for recursive grammars
+local grammar = lpeg.P {
+    "expression";
+    expression = lpeg.V("term") * (lpeg.P"+" * lpeg.V("term"))^0;
+    term = lpeg.R"09"^1;
+}
 ```
 
 ### Strengths
@@ -129,6 +187,7 @@ local NotSpace = lpeg.P" " ^ -1  -- succeed if not space
 - Extremely fast (compiled patterns, not interpreted)
 - Integrates naturally with Lua's pattern matching
 - Used in production for parsing JSON, XML, and custom DSLs in Lua applications
+- No separate tokenizer needed — patterns operate directly on strings
 
 ## PeppaPEG (ANSI C)
 
@@ -138,13 +197,9 @@ Ultra-lightweight PEG parser in ANSI C. Single header (`peppa.h`) + source file 
 
 - Built-in grammars: JSON, TOML v1.0, Lua v5.3, Go v1.17, HCL2, ABNF (RFC 5234)
 - CLI tool `peppa` for grammar development and testing
-- Annotations for tree control:
-  - `@tight`: Remove intermediate nodes
-  - `@squashed`: Flatten nested groups
-  - `@lifted`: Promote child to parent level
-  - `@spaced`: Handle whitespace around rule
+- Annotations for tree control
 
-### Example grammar (JSON)
+### Grammar syntax
 
 ```
 @lifted entry = &. value !.;
@@ -154,11 +209,37 @@ item = string ":" value;
 array = "[" (value ("," value)*)? "]";
 @tight string = "\"" ([\u0020-\u0021] / [\u0023-\u005b] / [\u005d-\U0010ffff] / escape )* "\"";
 @squashed @tight number = minus? integral fractional? exponent?;
+@tight @squashed @lifted escape = "\\" ("\"" / "/" / "\\" / "b" / "f" / "n" / "r" / "t" / unicode);
+@tight @squashed unicode = "u" ([0-9] / [a-f] / [A-F]){4};
+@spaced @lifted whitespace = " " / "\r" / "\n" / "\t";
 ```
+
+### Annotations
+
+- `@tight`: Remove intermediate nodes from the parse tree
+- `@squashed`: Flatten nested groups (merge sequential matches into single node)
+- `@lifted`: Promote child to parent level (skip wrapper node)
+- `@spaced`: Handle whitespace around rule automatically
+
+### Special syntax
+
+- `i"keyword"` — case-insensitive keyword matching
+- `{n}` — exact repetition (e.g., `[0-9]{4}` matches exactly 4 digits)
+- `;` terminates rules (vs `.` in some other PEG variants)
 
 ### Build
 
 CMake-based. Can be used as a library (`pkg-config --cflags --libs libpeppa`) or by copying header/source into project. Uses Unity testing framework and Valgrind for memory leak detection.
+
+### C API
+
+```c
+P4_Grammar* grammar = P4_LoadGrammar("entry = ...");
+P4_Source* source = P4_CreateSource("[1,2,3]", "entry");
+P4_Parse(grammar, source);
+P4_Node* root = P4_GetSourceAST(source);
+P4_JsonifySourceAst(stdout, root, NULL);
+```
 
 ## peg/leg (Ian Piumarta)
 
@@ -166,7 +247,7 @@ Two recursive-descent parser generators producing C code from PEG grammars.
 
 ### peg
 
-Processes PEGs using Ford's original syntax. Generates a C program that recognizes sentences of the grammar.
+Processes PEGs using Ford's original syntax. Generates a C program that recognizes sentences of the grammar. MIT licensed, unencumbered generated parsers.
 
 ### leg
 
@@ -178,11 +259,10 @@ Alternative syntax intended as a `lex`/`yacc` replacement:
 ### Features
 
 - Semantic actions via `{...}` blocks with access to `yytext`
-- Inline variables in actions
+- Inline actions via `@{...}` executed **during** matching (not after)
 - Error actions via `~` operator
 - Reentrant parsing through `yyparsefrom_r()`
 - `#line` directives for error reporting (disable with `-P`)
-- MIT licensed, unencumbered generated parsers
 
 ### Version history
 

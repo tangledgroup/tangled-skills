@@ -55,6 +55,7 @@ Traditional parser generators (yacc, bison) produce static parsers baked into th
 - Grammar load time matters for short-lived instances (e.g., DuckDB in Wasm)
 - Pre-compiling grammar to code is possible but defeats extensibility
 - Runtime compilation overhead vs static parser: ~10x slower on benchmarks
+- Absolute parsing time still sub-millisecond for typical queries
 - For long-running services, load time is amortized
 
 ## Unified Grammars (Scannerless Parsing)
@@ -81,7 +82,7 @@ Primary    ← Identifier !LEFTARROW
 # Lexical rules — same grammar, different level
 Identifier ← IdentStart IdentCont* Spacing
 Literal    ← ['] (!['] Char)* ['] Spacing
-           / ["] (![" Char)* ["] Spacing
+           / ["] (!["] Char)* ["] Spacing
 Class      ← '[' (!']' Range)* ']' Spacing
 Spacing    ← (Space / Comment)*
 Comment    ← '#' (!EndOfLine .)* EndOfLine
@@ -149,6 +150,15 @@ For CFGs, determining whether a grammar generates any strings is decidable. For 
 
 **Proof sketch:** Any instance of the Post correspondence problem reduces to the PEG emptiness problem. Given pairs `(α₁, β₁), ..., (αₙ, βₙ)`, construct a PEG where a match exists iff a valid Post correspondence sequence exists. Since PCP is undecidable, so is PEG emptiness.
 
+The constructed PEG:
+```
+S ← &(A !.) &(B !.) (γ₁/.../γₙ)+ γ₀
+A ← γ₀ / γ₁ A α₁ / ... / γₙ A αₙ
+B ← γ₀ / γ₁ B β₁ / ... / γₙ B βₙ
+```
+
+Where `γᵢ` are pairwise distinct equally long strings. Any string matched by `S` has the form where `α_{k₁}...α_{kₘ} = β_{k₁}...β_{kₘ}`, which is exactly a Post correspondence solution.
+
 ### Consequences
 
 - Cannot algorithmically verify that a PEG grammar is "useful" (matches at least one string)
@@ -164,3 +174,15 @@ For CFGs, determining whether a grammar generates any strings is decidable. For 
 ### Computational power
 
 PEGs are at least as powerful as deterministic LR(k) languages and some non-context-free languages. The exact relationship between PEG languages and context-free languages remains one of the open questions in formal language theory.
+
+### Non-context-free example: `a^n b^n c^n`
+
+PEG can recognize `{a^n b^n c^n : n ≥ 0}`, which is provably not context-free:
+
+```
+S ← &(A !('a'/'b')) 'a'* B !.
+A ← ('a' A 'b')?
+B ← ('b' B 'c')?
+```
+
+For `A` to match, the first stretch of `a`s must be followed by exactly the same number of `b`s and no more. Additionally, `B` must match where the `a`s switch to `b`s, meaning those `b`s are followed by an equal number of `c`s. The `&` predicate ensures `A` succeeds (validating a count = b count) while consuming nothing, then `'a'*` consumes the a's, `B` matches and validates b count = c count, and `!.` ensures end of input.

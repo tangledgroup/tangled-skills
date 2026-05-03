@@ -99,10 +99,14 @@ Warth et al. (2008) extended packrat parsing to support direct left recursion us
 4. Repeat until no improvement (fixed point reached)
 
 **Properties:**
-- Supports direct left recursion
+- Supports direct left recursion and indirect left recursion (when using memoization cache)
 - Loses guaranteed linear-time parsing (may iterate multiple times per position)
-- Does not handle indirect or hidden left recursion
 - Used by CPython pegen
+
+CPython's implementation handles even hidden left recursion like:
+```
+rule ← 'optional'? rule '@' some_other_rule
+```
 
 ### OMeta algorithm
 
@@ -126,10 +130,6 @@ E = expr
 - `@left recur` marks the rule as left-recursive (enables fixed-point iteration)
 - Right associativity is default (no annotation needed)
 - Performance: O(P × L) without full memoization
-
-### Pika parsing (bottom-up)
-
-Pika parsing applies PEG rules bottom-up and right-to-left, the inverse of recursive descent order. This naturally handles left recursion without rewriting or fixed-point iteration, and provides optimal error recovery.
 
 ## Associativity Control
 
@@ -170,3 +170,16 @@ Expr ← expr
   → Expr '^' Expr @+               # right-associative (default, no @left recur)
   → Number @+
 ```
+
+### With pegen grammar actions
+
+Left-recursive rules with explicit AST construction:
+
+```
+# CPython-style: left-recursive rule builds left-associative tree directly
+expr[expr_ty]:
+    | l=expr '+' r=term { _Py_BinOp(l, Add, r, EXTRA) }
+    | t=term { t }
+```
+
+Each iteration of the left recursion wraps the previous result as the left operand, producing a properly left-associative tree during parsing itself.

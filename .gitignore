@@ -206,7 +206,7 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-PLAN.md
+# PLAN.md
 # generate_skills*.py
 # generated_skills*.json
 # *.log

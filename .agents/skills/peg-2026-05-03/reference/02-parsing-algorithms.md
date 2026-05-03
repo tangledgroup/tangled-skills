@@ -5,10 +5,11 @@
 - Packrat Parsing
 - Selective Memoization
 - Tokenizer Integration
+- When Separate Tokenizer Is Better
 
 ## Recursive Descent Parsing
 
-The most direct PEG implementation maps each nonterminal to a function. Each function takes an input position and returns success/failure plus the number of consumed characters.
+The most direct PEG implementation maps each nonterminal to a function. Each function takes an input position and returns success/failure plus the number of consumed characters (or an AST node on success, null on failure).
 
 **Core model:**
 ```python
@@ -22,13 +23,39 @@ def rule_name(position):
     return result
 ```
 
+**Parser infrastructure pattern (Guido's approach):**
+```python
+class Parser:
+    def __init__(self, tokenizer):
+        self.tokenizer = tokenizer
+
+    def mark(self):
+        return self.tokenizer.mark()
+
+    def reset(self, pos):
+        self.tokenizer.reset(pos)
+
+    def expect(self, arg):
+        token = self.tokenizer.peek_token()
+        if token.type == arg or token.string == arg:
+            return self.tokenizer.get_token()
+        return None  # Failure — tokenizer position unchanged
+```
+
 **Key properties:**
 - Each grammar rule → one function
-- Failure ≠ error — means "try next alternative"
+- **Failure ≠ error** — means "try next alternative"
 - On failure, no input is consumed (backtrack to calling position)
-- Sequence: call first sub-rule, then second on remainder
-- Choice: try first, if fails try second from same position
-- Predicates: call sub-rule, discard result, return success/fail without advancing
+- Parsing methods must explicitly restore tokenizer position when they abandon a parse after consuming tokens
+- If all parsing methods abide by these rules, it's provable by induction that `mark()`/`reset()` around a single parsing method call is unnecessary
+
+**AST construction:** Each parsing method returns an AST node on success, null on failure:
+```python
+class Node:
+    def __init__(self, type, children):
+        self.type = type      # e.g., "add", "if"
+        self.children = children  # list of nodes and tokens
+```
 
 **Naive recursive descent has exponential worst case.** The unlimited lookahead capability means the parser may explore an exponential number of paths. For a grammar with L precedence levels and P operators, parsing a single token can require O((P+1)^L) expression invocations.
 
@@ -51,7 +78,9 @@ memo[rule_id][position] = (success, consumed_length, result_data)
 - **Space**: O(n × r) for the memo table. Proportional to total input size, not parse tree depth.
 - **Amortized constant access**: Requires hash table or direct addressing for memo lookups.
 
-**Memory tradeoff:** Packrat parsers use more memory than LR/LL parsers (which scale with parse depth), but queries and source code typically have bounded nesting depth in practice, making the difference manageable.
+**Computational model note:** Packrat parsers assume a random-access machine (RAM) model with pointer arithmetic for hash tables. Theoretical discussions using more restricted models (e.g., lambda calculus) may penalize packrat parsers' reputation, but real systems have this capability readily available.
+
+**Memory tradeoff:** Packrat parsers use more memory than LR/LL parsers (which scale with parse depth). However, queries and source code typically have bounded nesting depth in practice. For recursive grammars and some inputs, parse tree depth can be proportional to input size, making both approaches asymptotically equivalent in worst case.
 
 ## Selective Memoization
 
@@ -79,12 +108,6 @@ PEG parsers support two approaches to tokenization:
 
 A tokenizer runs before the parser, producing a stream of tokens. The parser operates on tokens rather than raw characters.
 
-**Benefits:**
-- Complex indentation tracking (Python requires a stack)
-- Encoding handling and interactive mode
-- Existing well-tested tokenizers can be reused
-- Tokenizer errors reported before parser sees bad input
-
 **Tokenizer API requirements for PEG backtracking:**
 ```python
 class Tokenizer:
@@ -103,7 +126,7 @@ class Tokenizer:
         ...
 ```
 
-**Lazy tokenization:** Tokenize on demand rather than eagerly consuming all input. This ensures syntax errors are reported before distant tokenizer errors (e.g., unclosed string at end of file).
+**Lazy tokenization:** Tokenize on demand rather than eagerly consuming all input. This ensures syntax errors are reported before distant tokenizer errors (e.g., unclosed string at end of file). The tokenizer produces tokens into a growing array; the parser reads from it and can reset position via `mark()`/`reset()`.
 
 ### Unified grammar (scannerless)
 
@@ -121,3 +144,14 @@ The PEG handles both lexical and syntactic rules in a single grammar. No separat
 3. Explicit at strategic points: reference `Spacing` only where needed
 
 Ford's self-describing PEG uses approach 1 — each lexical token definition consumes trailing whitespace and comments via a `Spacing` nonterminal.
+
+## When Separate Tokenizer Is Better
+
+- Complex indentation tracking (Python requires a stack inside the tokenizer)
+- Encoding detection and handling
+- Interactive mode with line-by-line processing
+- Existing well-tested tokenizer that would be costly to reimplement
+- Tokenizer errors should be reported before parser sees bad input
+- Backtracking errors in tokenizer (e.g., unclosed parentheses affecting token boundaries)
+
+CPython uses a separate tokenizer for all these reasons. The tokenizer is complex enough (f-string nesting, indentation stack, encoding) that reimplementing it as PEG rules would not be practical.
