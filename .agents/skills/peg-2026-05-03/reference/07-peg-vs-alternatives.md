@@ -73,10 +73,11 @@ PEG languages are closed under intersection and complement. This is a direct con
 ### Migration motivation (pycparser case study)
 
 Eli Bendersky's pycparser project (~20M daily downloads) migrated from PLY (YACC-based) to hand-written recursive descent, motivated by:
-- Growing reduce-reduce conflicts as C11/C23 features were added
-- YACC rules having "spooky-action-at-a-distance" effects (brittle rule ordering)
+- **177 reduce-reduce conflicts** in the latest PLY-based release — severe maintenance hazard where parsing rules are tie-broken by order of appearance (very brittle, "spooky-action-at-a-distance" effects)
+- Growing conflicts as C11/C23 features were added
 - PLY abandonment/archiving creating dependency risk
-- Recursive descent parsers being easier to understand, maintain, and often faster (~30% speedup observed)
+- **~30% speedup** observed from recursive descent vs YACC-generated parser
+- Recursive descent parsers being easier to understand and maintain
 
 ## PEG vs Regular Expressions
 
@@ -96,7 +97,7 @@ Eli Bendersky's pycparser project (~20M daily downloads) migrated from PLY (YACC
 
 **End of input:** PEG expresses end-of-input with `!.` (no next character exists). Regex requires magic anchors `$` or `\Z`.
 
-**Regex → PEG compilation:** Any regex can be compiled to a PEG by creating a nonterminal for each NFA state and encoding transitions as ordered choices. Use NFA (not DFA) to avoid exponential blowup.
+**Regex → PEG compilation:** Any regex can be compiled to a PEG by creating a nonterminal for each NFA state and encoding transitions as ordered choices. Use NFA (not DFA) — the DFA equivalent can be exponentially larger for some regex families.
 
 ### When to prefer PEG over regex
 

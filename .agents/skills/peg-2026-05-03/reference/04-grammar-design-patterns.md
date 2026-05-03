@@ -1,9 +1,20 @@
 # Grammar Design Patterns
 
 ## Contents
+- Mindset Shift: Don't Reason Like EBNF
 - Ordered Choice Consequences
 - Whitespace Handling Strategies
 - Soft vs Hard Keywords
+
+## Mindset Shift: Don't Reason Like EBNF
+
+PEG may look like EBNF, but its meaning is quite different. **Don't try to reason about a PEG grammar the same way you would with EBNF or context-free grammars.** PEG is optimized to describe **how** input strings will be parsed, while CFGs are optimized to generate strings of the language they describe.
+
+Key differences in reasoning:
+- Alternatives are ordered (`A | B` ≠ `B | A`)
+- If a rule returns failure, it doesn't mean parsing failed — just "try something else"
+- The parser is **eager**: if a rule succeeds, the caller accepts it even if accepting causes overall failure later
+- Effects of ordered choice may be hidden by many levels of indirection
 
 ## Ordered Choice Consequences
 

@@ -21,7 +21,7 @@ Pika parsing, described by Luke Hutchison (arXiv:2005.06444), applies PEG rules 
 ### Advantages over top-down PEG
 
 - **Left recursion solved**: Right-to-left order means `A ← A e` does not loop — the parser has already processed the right side before reaching the left recursive reference
-- **Optimal error recovery**: Bottom-up approach provides better context for error location and recovery suggestions
+- **Optimal error recovery**: Bottom-up approach provides better context for error location because it processes from the end, so when a rule fails to match, the parser knows exactly what was expected at that position. Top-down parsers lose this context through backtracking.
 - **No grammar rewriting needed**: Use natural left-recursive forms directly
 
 ### Tradeoffs
@@ -40,7 +40,7 @@ Traditional parser generators (yacc, bison) produce static parsers baked into th
 - **Dialect switching**: Support multiple language variants in one instance
 - **Research prototyping**: Rapidly iterate on grammar changes
 - **Wasm deployments**: Avoid baking all features into size-constrained binaries
-- **Security restrictions**: Dynamically restrict acceptable grammar subsets
+- **Security restrictions**: Dynamically restrict acceptable grammar subsets (e.g., sandbox mode that only allows SELECT, no INSERT/UPDATE)
 
 ### Implementation approach (DuckDB)
 

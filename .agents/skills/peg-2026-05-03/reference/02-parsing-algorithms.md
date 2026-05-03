@@ -6,6 +6,7 @@
 - Selective Memoization
 - Tokenizer Integration
 - When Separate Tokenizer Is Better
+- Context Manager Approach (TatSu-style)
 
 ## Recursive Descent Parsing
 
@@ -47,7 +48,20 @@ class Parser:
 - **Failure ≠ error** — means "try next alternative"
 - On failure, no input is consumed (backtrack to calling position)
 - Parsing methods must explicitly restore tokenizer position when they abandon a parse after consuming tokens
-- If all parsing methods abide by these rules, it's provable by induction that `mark()`/`reset()` around a single parsing method call is unnecessary
+- If all parsing methods abide by these rules, it's provable by induction that `mark()`/`reset()` around a single parsing method call is unnecessary.
+
+**Context manager approach (TatSu-style):** An alternative to explicit `mark()`/`reset()` uses a context manager that automatically resets on failure:
+```python
+def statement(self):
+    with self.alt():
+        return self.assignment()
+    with self.alt():
+        return self.expr()
+    with self.alt():
+        return self.if_statement()
+    raise ParsingFailure
+```
+The context manager catches exceptions and resets the tokenizer position. This works in Python but Guido rejected it for CPython's parser generator because: (1) it's "too magical" — readers must stay aware that every method call may raise, (2) C has no `with` statement, so this pattern doesn't translate to generated C code.
 
 **AST construction:** Each parsing method returns an AST node on success, null on failure:
 ```python
@@ -80,7 +94,9 @@ memo[rule_id][position] = (success, consumed_length, result_data)
 
 **Computational model note:** Packrat parsers assume a random-access machine (RAM) model with pointer arithmetic for hash tables. Theoretical discussions using more restricted models (e.g., lambda calculus) may penalize packrat parsers' reputation, but real systems have this capability readily available.
 
-**Memory tradeoff:** Packrat parsers use more memory than LR/LL parsers (which scale with parse depth). However, queries and source code typically have bounded nesting depth in practice. For recursive grammars and some inputs, parse tree depth can be proportional to input size, making both approaches asymptotically equivalent in worst case.
+**Memory tradeoff:** Packrat parsers use more memory than LR/LL parsers (which scale with parse depth). However, queries and source code typically have bounded nesting depth in practice. For recursive grammars and some inputs, parse tree depth can be proportional to input size (e.g., LISP `(x (x (x ...)))`), making both approaches asymptotically equivalent in worst case.
+
+**Generator vs function distinction:** If parsing produces the full parse tree before returning, memory is already proportional to input size regardless of parser type. If parsing is provided as a generator (yielding partial results), packrat parsers still need the full memo table, while LR parsers can discard completed branches. The feasibility of generator-style parsing depends on the grammar — some PEGs require consuming all input before discovering they need to backtrack to the beginning.
 
 ## Selective Memoization
 
@@ -127,6 +143,8 @@ class Tokenizer:
 ```
 
 **Lazy tokenization:** Tokenize on demand rather than eagerly consuming all input. This ensures syntax errors are reported before distant tokenizer errors (e.g., unclosed string at end of file). The tokenizer produces tokens into a growing array; the parser reads from it and can reset position via `mark()`/`reset()`.
+
+**Tokenizer error timing:** Most tokenizer errors are reported immediately by raising exceptions. However, some special errors (e.g., unclosed parentheses affecting token boundaries) are reported only after the parser finishes without returning anything. This ensures the parser sees consistent token streams during backtracking.
 
 ### Unified grammar (scannerless)
 

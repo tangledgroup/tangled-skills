@@ -8,6 +8,7 @@
 - Gather Syntax
 - Precedence Table
 - Key Semantic Differences from CFGs
+- The Midpoint Problem
 - Self-Describing PEG Meta-Grammar
 
 ## Parsing Expressions and Grammars
@@ -169,6 +170,35 @@ G1 ← "a" "b" / "a"
 # G2 accepts only "a" — "ab" is consumed by first alternative, leaving nothing for second
 G2 ← "a" / "a" "b"
 ```
+
+## The Midpoint Problem
+
+PEG's greedy matching can fail to find globally optimal parses for certain grammars. Ford's "midpoint problem" demonstrates this:
+
+```
+S ← 'x' S 'x' / 'x'
+```
+
+This CFG accepts odd-length strings of `x`. As a PEG, it fails on some inputs due to greedy matching. Tracing `xxxxxq`:
+
+```
+Position:  123456
+  String:  xxxxxq
+  Results:
+           ↑ Pos.6: Neither branch of S matches (q ≠ 'x', no 'x' for first branch)
+          ↑ Pos.5: First branch fails, second succeeds → match length 1
+         ↑ Pos.4: First branch fails, second succeeds → match length 1
+        ↑ Pos.3: First branch succeeds → match length 3 (consumes positions 3-5)
+       ↑ Pos.2: First branch: after 'x' at pos 2, S matches at pos 3 (length 3),
+                then needs 'x' but finds q at pos 6 → FAILS.
+                Second branch succeeds → match length 1
+      ↑ Pos.1: First branch: after 'x' at pos 1, S matches at pos 2 (length 1),
+               then needs 'x' at pos 3 → succeeds → match length 3
+```
+
+At position 1, S matches only 3 characters (`xxx`), not all 5. The greedy choice at position 3 consumed `xxx` (positions 3-5) instead of the single `x` that would have allowed the outer rule to match all 5. **Locally optimal ≠ globally optimal.**
+
+The language itself is regular (odd number of x's), expressible as a simple regex or CFG with different structure. But this specific PEG grammar cannot recognize it correctly.
 
 ## Self-Describing PEG Meta-Grammar
 

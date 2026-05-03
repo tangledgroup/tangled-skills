@@ -103,6 +103,8 @@ Warth et al. (2008) extended packrat parsing to support direct left recursion us
 - Loses guaranteed linear-time parsing (may iterate multiple times per position)
 - Used by CPython pegen
 
+**OMeta comparison:** OMeta supports full direct and indirect left recursion without additional algorithmic complexity, but also loses linear-time guarantees. The key difference: Ford/Warth uses the memoization cache to track "best result so far" and iterates until fixed point; OMeta uses a different mechanism (threaded state) that handles indirect recursion naturally but with similar performance tradeoffs.
+
 CPython's implementation handles even hidden left recursion like:
 ```
 rule ← 'optional'? rule '@' some_other_rule

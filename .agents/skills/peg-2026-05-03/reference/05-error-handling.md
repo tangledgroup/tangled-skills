@@ -6,12 +6,21 @@
 - Recovery Annotations
 - Exception-Based Error Reporting
 - Semantic Actions
+- YACC "All-or-Nothing" Behavior
 
 ## The Error Location Problem
 
 When PEG parsing fails completely (no rule succeeds in consuming all input), the parser does not inherently know **where** the error is. Every position was tried, and every attempt ultimately failed.
 
 This contrasts with LR parsers, which can report the position where they got stuck. In PEG, the backtracking nature means the parser explores many paths before concluding failure, losing the original error location.
+
+**YACC-style parsers exhibit "all-or-nothing" behavior:** the entire query either parses or doesn't. This is why queries with typos (e.g., `SELEXT` instead of `SELECT`) are harshly rejected. MySQL's error messages are notoriously unhelpful:
+```
+You have an error in your SQL syntax; check the manual that corresponds
+to your MySQL server version for the correct syntax to use near 'SELEXT'
+at line 1.
+```
+PEG parsers with recovery annotations can provide better context-specific messages.
 
 ## Two-Pass Approach (pegen)
 
@@ -75,18 +84,25 @@ Semantic actions are code executed during or after rule matching, used to build 
 
 ### Grammar actions (pegen)
 
-C function calls after rule match, referenced by `#` prefix in C mode or `{...}` in Python mode:
+Code blocks executed after rule match. Two syntax modes:
 
+**C mode:** Actions use `#{...}#` delimiters, generating C code:
 ```
-# pegen grammar syntax — C mode
-power ← a=primary '**' b=power #{ binop(a, b, '#') #}
+power[expr_ty]: a=primary '**' b=power #{ binop(a, b, '#') #}
        / primary
+```
 
-# pegen grammar syntax — Python mode
+**Python mode:** Actions use `{...}` delimiters, generating Python code:
+```
 expr: expr '+' term { ast.BinOp(expr, ast.Add(), term) }
 ```
 
-Named captures via `name=` prefix bind subexpression results. Actions generate code in the output parser.
+Named captures via `name=` prefix bind subexpression results for use in actions. Actions generate code in the output parser.
+
+**Return behavior:**
+- If an action is omitted in C mode and there's a single name in the alternative, it gets returned automatically
+- If no action and no single name, a dummy object is returned (avoid this case)
+- In Python mode, omitting an action returns a list of all parsed expressions (meant for debugging)
 
 ### Inline actions (peg/leg)
 

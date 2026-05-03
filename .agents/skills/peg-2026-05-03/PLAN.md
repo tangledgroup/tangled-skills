@@ -1,226 +1,289 @@
-# ☑ Plan: Improve PEG Skill (v2026-05-03)
+# ☑ Plan: Improve PEG Skill (v2026-05-03) — Round 2
 
 **Depends On:** NONE
 **Created:** 2026-05-03T12:00:00Z
-**Updated:** 2026-05-03T12:00:00Z
-**Current Phase:** ☑ Phase 11 Final Validation & Sync
-**Current Task:** ☑ Task 11.3 Regenerate README.md skills table
+**Updated:** 2026-05-03T14:00:00Z
+**Current Phase:** ☑ Phase 12 Final Validation & Sync
+**Current Task:** ☑ Task 12.2 Regenerate README.md skills table
 
 ---
 
 ## Goals
 
-The existing PEG skill is structurally sound but has gaps in depth, accuracy, and coverage. All 15 external sources cover different aspects that need to be integrated. The improvement focuses on:
+The existing PEG skill (SKILL.md + 8 reference files, ~1556 lines total) is structurally sound and covers most major topics. Round 2 focuses on:
 
-1. Fixing inaccuracies and missing details from crawled sources
-2. Adding content areas not yet covered (PeppaPEG annotations, pegen cut operator, Guile PEG API, LPeg parser combinators, peg/leg semantics)
-3. Improving conciseness per write-skill guidelines
-4. Ensuring all reference files are comprehensive and accurate
+1. **Accuracy fixes**: Inaccurate or incomplete details discovered from re-reading sources
+2. **Missing content**: Key details not yet captured from any source
+3. **Conciseness**: Per write-skill guidelines — challenge every paragraph
+4. **Cross-referencing**: Ensure consistent terminology and no contradictions across files
 
-## Source Coverage Map
+## Gap Analysis Summary (After Re-Reading All Sources)
 
-| Source | Current Coverage | Gaps |
-|--------|-----------------|------|
-| Wikipedia | Core concepts, CFG comparison, midpoint problem, undecidability | Missing: a^n b^n c^n grammar example, computational model (RAM assumption for packrat) |
-| Ford 2004 paper | Operators, semantics | Missing: self-describing PEG meta-grammar details, formal proof elements |
-| Guido PEG series | pegen overview, tokenizer integration | Missing: detailed parser infrastructure code patterns, Node class design |
-| PeppaPEG repo/medium | Annotations (@tight/@squashed/@lifted/@spaced) present but thin | Missing: grammar syntax specifics (i"keyword", {n} repetition), CLI usage, C API patterns |
-| DuckDB extensible parsers | Runtime extension covered | Missing: %recover error handling, cpp-peglib macros (Parens/List), dplyr example, GRAPH_TABLE |
-| pegen docs/PEP 617 | Selective memoization, soft/hard keywords | Missing: `~` cut operator, `s.e+` gather syntax, grammar actions `{...}` patterns, invalid_ rules |
-| Eli Bendersky (pycparser) | Not referenced at all | Key insight: YACC → recursive descent migration, reduce-reduce conflicts as motivation for PEG |
-| Guile PEG | Basic mention only | Missing: compile-time vs runtime compilation modes, match-pattern vs search-for-pattern, superset syntax |
-| LPeg | Basic mention only | Missing: parser combinator patterns, lpeg.P/lpeg.R/lpeg.V usage, bytecode compilation model |
-| peg/leg (Ian Piumarta) | Basic mention only | Missing: `~` error actions, @{...} inline actions, yytext access, leg as lex/yacc replacement syntax |
-| Pablo Bravo | Not referenced at all | Key insight: full Java-like grammar example showing complete PEG usage |
-| arXiv 1509.02439 (Hutchison) | Pika parsing covered | Missing: right-to-left bottom-up mechanics details, error recovery specifics |
+### Critical gaps found:
 
-## Analysis Summary
+**From Wikipedia (re-read):**
+- `a^n b^n` grammar example as simpler non-regex demonstration — currently only have `a^n b^n c^n`
+- Computational model discussion is present but could be tighter
+- Indirect left recursion section has more detail about OMeta and GLR comparison
+- Memory consumption discussion: the generator vs function distinction for parse tree retention
+- "Midpoint problem" walkthrough (positional trace on `xxxxxq`) is missing — currently just mentioned
 
-**What's working well:**
+**From Guido's PEG series (re-read):**
+- First article: LL(1) limitations are well-described but the specific examples (`table[index+1].name.first = 'Steven'` needing unlimited lookahead) could strengthen the motivation section
+- Second article: The "important requirement for parsing methods" (must restore tokenizer position on failure, proved by induction that mark/reset around single method is unnecessary) — this key insight is in 02 but could be clearer
+- Context manager approach (TatSu-style) and why Guido rejected it for C generation — missing entirely
+- The Node class design is present but the "type + children" pattern explanation is thin
+
+**From PeppaPEG medium article:**
+- Callgrind performance optimization story (removing P4_NeedLoosen, P4_IsTight calls = 10x speedup) — completely missing
+- Unity testing framework usage — not referenced
+- Doxygen for documentation extraction — not referenced
+- This is mostly implementation trivia but the 10x optimization story is relevant
+
+**From Eli Bendersky (pycparser):**
+- Already well-referenced in 07-peg-vs-alternatives.md migration section
+- Missing: The "mental roadblock" / potential well concept — why people avoid rewriting parsers
+- Missing: ~30% speedup from recursive descent vs YACC (concrete benchmark)
+- Missing: PLY abandonment as dependency risk motivation
+- Missing: 177 reduce-reduce conflicts in latest pycparser (concrete number showing YACC brittleness)
+
+**From DuckDB extensible parsers:**
+- Already well-covered in 06 and 08
+- Missing: The "all-or-nothing" behavior of YACC vs PEG error recovery
+- Missing: MySQL's notoriously unhelpful error message example
+- Missing: cpp-peglib making heavy use of recursive function calls (optimization opportunity)
+- Missing: Grammar load time matters for short-lived instances (Wasm context)
+
+**From pegen docs:**
+- Already well-covered
+- Missing: The "don't try to reason about PEG like EBNF" warning — important mindset shift
+- Missing: Tokenizer errors (unclosed parenthesis) reported only after parser finishes
+
+**From Guile PEG:**
+- Already covered compile-time vs runtime, match-pattern vs search-for-pattern
+- Missing: Guile's superset syntax for controlling preserved information — what does this mean concretely?
+- Missing: The `(ice-9 peg)` module compiles to lambda expressions (not bytecode or C)
+
+**From Pablo Bravo:**
+- Already referenced Java-like grammar
+- Missing: The "parser combinators" framing — PEG as recursive descent via parser combinators
+- Missing: Decorator pattern for memoization in combinator-style implementations
+
+**From PEP 617:**
+- Already covered gather syntax, cut operator
+- Missing: Specific workarounds in old LL(1) grammar (namedexpr_test example)
+- Missing: `with ( ... )` continuation across lines being impossible in LL(1)
+- Missing: bpo-26415 excessive peak memory from CST
+- Missing: Grammar actions section — `{...}` syntax for Python mode vs `#{...}#` for C mode
+
+**From Ford 2004 paper (referenced, not crawled):**
+- Self-describing meta-grammar is present
+- Missing: Formal PEG definition tuple `(N, Σ, P, eS)` — already in 01
+- Missing: The single parse rule property (deterministic result for any position/rule)
+
+**From arXiv 1509.02439 (Hutchison, Pika):**
+- Already covered right-to-left bottom-up mechanics
+- Missing: Why Pika specifically helps with error recovery (bottom-up provides better context)
+
+**From pegen GitHub repo:**
+- Not crawled — could have grammar syntax details
+
+### What's working well:
 - Operator table in SKILL.md is clear and accurate
-- Left recursion coverage is comprehensive
-- Grammar design patterns are solid
-- CFG vs PEG comparison is thorough
+- Left recursion coverage is comprehensive (03)
+- Grammar design patterns are solid (04)
+- CFG vs PEG comparison is thorough (07)
+- Practical implementations cover all major tools (06)
+- Error handling as separate file is good (05)
+- Pika parsing and runtime extensibility covered (08)
 
-**What needs improvement:**
-- Several practical implementations under-described (LPeg, peg/leg, Guile)
-- Missing key pegen syntax features (`~` cut, `s.e+` gather, `{...}` actions)
-- PeppaPEG annotations need more detail with working examples
-- DuckDB runtime extensibility patterns incomplete
-- No coverage of the YACC→recursive descent migration motivation (pycparser case study)
-- Missing: error recovery/recovery annotations as a distinct topic
-- Some sections could be more concise per write-skill guidelines
-
-## Structure Changes
-
-Current 7 reference files are well-organized. Adding 1 new file for error handling, and splitting practical implementations to reduce the largest file. New structure:
-
-```
-reference/
-├── 01-core-concepts.md          # Operators, semantics, precedence (expand with missing details)
-├── 02-parsing-algorithms.md     # Recursive descent, packrat, selective memoization, tokenizer integration
-├── 03-left-recursion-and-associativity.md  # Left recursion problem, workarounds, fixed-point, expression clusters
-├── 04-grammar-design-patterns.md   # Ordered choice consequences, whitespace, soft/hard keywords
-├── 05-error-handling.md         # NEW: Error location problem, two-pass approach, recovery annotations, exception-based reporting
-├── 06-practical-implementations.md # CPython pegen, DuckDB, LPeg, PeppaPEG, peg/leg, Guile (expand all)
-├── 07-peg-vs-alternatives.md    # CFG comparison, regex comparison, pros/cons
-└── 08-advanced-topics.md        # Pika parsing, runtime extensibility, unified grammars, expression clusters, theory
-```
+### Structure assessment:
+Current 8 reference files are well-organized. No structural changes needed.
+Line counts are reasonable (130-295 per file). Total 1556 lines is appropriate for this complexity.
 
 ---
 
 ## Phases and Tasks
 
-## ⚙️ Phase 1 Review & Gap Analysis
+## ☑ Phase 1 Deep Gap Analysis
 
-- ☑ Task 1.1 Audit existing SKILL.md against all 15 sources
-  - Read all existing files, cross-reference with crawled content
-  - Document what's missing or inaccurate
-- ☑ Task 1.2 Map source coverage to reference file assignments
-  - Determine which gaps go into which reference files
-  - Identify new reference files needed
-- ☑ Task 1.3 Define final structure and write this PLAN.md
+- ☑ Task 1.1 Cross-reference all 15 sources against existing content
+  - Read each reference file, note exact line numbers of missing/inaccurate content
+  - Document findings in this plan
+- ☑ Task 1.2 Prioritize gaps by impact
+  (depends on: Task 1.1)
+  - High: accuracy fixes, missing key concepts
+  - Medium: additional examples, deeper explanations
+  - Low: trivia, implementation details from single source
+  
+  **Priority assignments:**
+  
+  HIGH (must fix):
+  - Midpoint problem walkthrough missing from 01 (Wikipedia source has detailed positional trace)
+  - Context manager / TatSu approach missing from 02 (Guido's key design decision)
+  - Python mode `{...}` vs C mode `#{...}#` grammar actions distinction unclear in 05/06
+  - pycparser migration numbers (~30% speedup, 177 conflicts) missing from 07
+  - Pika error recovery advantages under-explained in 08
+  - "Don't reason like EBNF" mindset warning missing from 04
+  
+  MEDIUM (should add):
+  - `a^n b^n` simpler example alongside `a^n b^n c^n`
+  - Generator vs function memory distinction in packrat
+  - Tokenizer error timing (unclosed paren after parser finishes)
+  - OMeta comparison in left recursion section
+  - MySQL unhelpful error as contrast
+  - cpp-peglib recursive call optimization note
+  
+  LOW (nice to have):
+  - PeppaPEG Callgrind optimization story
+  - Unity testing framework mention
+  - Doxygen documentation extraction
+  - Parser combinator framing from Pablo Bravo
+  - Guile superset syntax details
 
-## ⚙️ Phase 2 Rewrite SKILL.md
+## ☑ Phase 2 SKILL.md Improvements
 
-- ☑ Task 2.1 Update YAML header (refine description, tags)
-  - Ensure description captures full scope including runtime extensibility
-- ☑ Task 2.2 Improve Overview section
-  - Add a^n b^n c^n example as concrete demonstration of PEG power
-  - Tighten prose per conciseness rules
-- ☑ Task 2.3 Expand Core Operators table
-  - Add `~` (cut/commit) operator from pegen
-  - Add `s.e+` (gather) syntax from pegen
-- ☑ Task 2.4 Update Minimal Example
-  - Show both idiomatic right-recursive and left-recursive forms
-  - Add grammar actions example
+- ☑ Task 2.1 Tighten Overview section
+  - Add `a^n b^n` as simpler non-regex example alongside `a^n b^n c^n`
+  - Ensure production users list is current (CPython, DuckDB v1.5, jq)
+- ☑ Task 2.2 Review operator table for completeness
+  - Verify all operators from Ford paper + pegen + PeppaPEG are represented
+  - Check precedence values match sources
+- ☑ Task 2.3 Improve minimal example
+  - Ensure both right-recursive and left-recursive forms shown
+  - Grammar actions example is clear
 
-## ⚙️ Phase 3 Rewrite reference/01-core-concepts.md
+## ☑ Phase 3 reference/01-core-concepts.md Improvements
 
-- ☑ Task 3.1 Expand atomic expressions section
-  - Add failure expression, epsilon details
-  - Add concrete syntax conventions from Ford paper
-- ☑ Task 3.2 Improve operator semantics with more examples
-  - Add cut (`~`) operator if not in SKILL.md
-  - Clarify sequence backtracking behavior with worked example
-- ☑ Task 3.3 Add section on PEG meta-grammar (self-describing PEG)
-  - Ford's self-describing grammar as concrete example
-  - Show how PEG describes itself
+- ☑ Task 3.1 Add midpoint problem walkthrough
+  (depends on: Task 1.2)
+  - Positional trace showing how `S ← 'x' S 'x' / 'x'` fails on odd-length strings
+  - Explain greedy matching consequence with worked example
+- ☑ Task 3.2 Tighten atomic expressions
+  - Add failure expression (`_` or `failure`) with usage context
+  - Ensure end-of-input pattern (`!.`) is clearly explained
+- ☑ Task 3.3 Review self-describing meta-grammar
+  - Verify Ford's grammar matches the paper exactly
+  - Ensure lexical vs syntactic separation is clear
 
-## ⚙️ Phase 4 Rewrite reference/02-parsing-algorithms.md
+## ☑ Phase 4 reference/02-parsing-algorithms.md Improvements
 
-- ☑ Task 4.1 Expand recursive descent section
-  - Add Guido's parser infrastructure pattern (mark/reset/expect)
-  - Add Node class design for AST construction
-- ☑ Task 4.2 Improve packrat parsing section
-  - Add computational model note (RAM assumption, hash table requirement)
-  - Clarify memo table structure more precisely
-- ☑ Task 4.3 Expand tokenizer integration
-  - Add lazy tokenization pattern from Guido's implementation
-  - Add when separate tokenizer is better vs unified grammar
+- ☑ Task 4.1 Add context manager approach discussion
+  (depends on: Task 1.2)
+  - TatSu-style `with self.alt()` pattern
+  - Why Guido rejected it for C code generation
+  - Exception-based control flow tradeoffs
+- ☑ Task 4.2 Tighten packrat parsing section
+  - Add generator vs function distinction for memory analysis
+  - Clarify when LR and packrat have same worst-case (LISP example)
+- ☑ Task 4.3 Improve tokenizer integration
+  - Add tokenizer error reporting timing (unclosed paren after parser finishes)
+  - Clarify lazy tokenization rationale (syntax errors before tokenizer errors)
 
-## ⚙️ Phase 5 Rewrite reference/03-left-recursion-and-associativity.md
+## ☑ Phase 5 reference/03-left-recursion-and-associativity.md Improvements
 
-- ☑ Task 5.1 Review for accuracy and completeness
-  - Cross-check Ford/Warth algorithm description against sources
-  - Ensure indirect left recursion case is covered
-- ☑ Task 5.2 Improve expression clusters section
-  - Add Autumn syntax with worked example
-  - Clarify @+ and @left recur annotations
+- ☑ Task 5.1 Review Ford/Warth algorithm description
+  (depends on: Task 1.2)
+  - Ensure indirect left recursion case is clearly explained
+  - Add OMeta comparison (supports full direct+indirect, loses linear time)
+- ☑ Task 5.2 Tighten expression clusters section
+  - Verify Autumn syntax annotations are accurate
+  - Ensure @+ and @left recur semantics are clear
 
-## ⚙️ Phase 6 Rewrite reference/04-grammar-design-patterns.md
+## ☑ Phase 6 reference/04-grammar-design-patterns.md Improvements
 
-- ☑ Task 6.1 Expand ordered choice consequences
-  - Add eager matching example with detailed walkthrough
-  - Add subsumed alternatives detection guidance
-- ☑ Task 6.2 Improve soft vs hard keywords section
-  - Add pegen quote convention (single='hard', double="soft")
-  - Add pitfalls and mitigation strategies
-- ☑ Task 6.3 Move error handling to new file (Phase 7)
-  - Extract error handling content from this file
+- ☑ Task 6.1 Add "don't reason like EBNF" warning
+  (depends on: Task 1.2)
+  - Key mindset shift from pegen docs
+  - Ordered choice consequences are deeper than CFG intuition suggests
+- ☑ Task 6.2 Tighten soft keyword section
+  - Add concrete pitfalls with examples
+  - Ensure pegen quote convention is clear
 
-## ⚙️ Phase 7 Create reference/05-error-handling.md (NEW)
+## ☑ Phase 7 reference/05-error-handling.md Improvements
 
-- ☑ Task 7.1 Write error location problem section
-  - Explain why PEG doesn't know where errors are on total failure
-  - Two-pass approach (pegen's invalid_ rules)
-- ☑ Task 7.2 Write recovery annotations section
-  - DuckDB %recover pattern with worked example
-  - Exception-based error reporting in pegen
-  - Recovery action patterns from research papers
-- ☑ Task 7.3 Write semantic actions section
-  - Inline actions (peg/leg @{...}) vs grammar actions (pegen #{...}#)
-  - Named captures, AST construction patterns
-  - Separation of concerns guidance
+- ☑ Task 7.1 Expand error location problem
+  (depends on: Task 1.2)
+  - Add Pika's bottom-up advantage for error recovery
+  - MySQL unhelpful error example as contrast
+- ☑ Task 7.2 Tighten semantic actions section
+  - Clarify Python mode `{...}` vs C mode `#{...}#` syntax
+  - Add return behavior rules (single name → auto-return, no action → dummy)
+- ☑ Task 7.3 Review recovery annotations
+  - Ensure DuckDB %recover pattern is clear
+  - Exception-based reporting in pegen is accurate
 
-## ⚙️ Phase 8 Rewrite reference/06-practical-implementations.md
+## ☑ Phase 8 reference/06-practical-implementations.md Improvements
 
 - ☑ Task 8.1 Expand CPython pegen section
-  - Add complete grammar syntax reference (all operators including ~ and s.e+)
-  - Add grammar actions with worked examples (C and Python)
-  - Add invalid_ rule pattern for error handling
-  - Add rationale from Eli Bendersky's pycparser migration case study
+  (depends on: Task 1.2)
+  - Add specific LL(1) workarounds eliminated (namedexpr_test, with-statement continuation)
+  - Add bpo-26415 memory savings from eliminating CST
+  - Grammar actions: Python mode `{...}` vs C mode `#{...}#` with examples
 - ☑ Task 8.2 Expand DuckDB section
-  - Add cpp-peglib macros (Parens(D), List(D))
-  - Add %whitespace tokenization
-  - Add runtime extension patterns (UNPIVOT, GRAPH_TABLE, dplyr)
-  - Add performance numbers (~10x slower but sub-ms absolute)
+  - Add "all-or-nothing" YACC behavior contrast
+  - Add cpp-peglib recursive call optimization note
+  - Clarify Wasm context for grammar load time
 - ☑ Task 8.3 Expand LPeg section
-  - Add parser combinator patterns (lpeg.P, lpeg.R, lpeg.V, lpeg.C)
-  - Add bytecode compilation model
-  - Add concrete examples beyond basic usage
+  - Add parser combinator framing (patterns as first-class values)
+  - Bytecode compilation model explained more clearly
 - ☑ Task 8.4 Expand PeppaPEG section
-  - Add all annotation details (@tight, @squashed, @lifted, @spaced) with explanations
-  - Add grammar syntax (i"keyword" for case-insensitive, {n} for exact repetition)
-  - Add CLI tool usage pattern
+  - Add Callgrind optimization story (10x speedup from removing inline checks)
+  - Ensure all annotations (@tight/@squashed/@lifted/@spaced) have clear examples
 - ☑ Task 8.5 Expand peg/leg section
-  - Add ~ error action operator
-  - Add @{...} inline actions during matching
-  - Add yytext access in actions
-  - Add leg as lex/yacc replacement positioning
+  - Verify ~ error action vs @{...} inline action distinction
+  - yytext access pattern is clear
 - ☑ Task 8.6 Expand Guile section
-  - Add compile-time vs runtime compilation modes
-  - Add match-pattern vs search-for-pattern API
-  - Add superset syntax for controlling preserved information
+  (depends on: Task 1.2)
+  - Clarify superset syntax for controlling preserved information
+  - Compile to lambda expressions (not bytecode/C) — emphasize this difference
 
-## ⚙️ Phase 9 Rewrite reference/07-peg-vs-alternatives.md
+## ☑ Phase 9 reference/07-peg-vs-alternatives.md Improvements
 
-- ☑ Task 9.1 Review and tighten CFG comparison
-  - Ensure closure properties table is accurate
-  - Add computational model comparison (RAM assumption)
-- ☑ Task 9.2 Improve regex comparison
-  - Add regex→PEG compilation approach (NFA states as nonterminals)
-  - Clarify greedy behavior differences with worked example
-- ☑ Task 9.3 Update pros/cons lists
-  - Ensure balanced and current
+- ☑ Task 9.1 Add concrete migration numbers
+  (depends on: Task 1.2)
+  - pycparser: ~30% speedup, 177 reduce-reduce conflicts eliminated
+  - CPython: bpo-26415 memory savings
+- ☑ Task 9.2 Tighten regex comparison
+  - Ensure NFA→PEG compilation approach is clear
+  - Greedy behavior difference with worked example
+- ☑ Task 9.3 Review pros/cons lists
+  - Add parser combinator framing to advantages
+  - Ensure disadvantages are balanced and current
 
-## ⚙️ Phase 10 Rewrite reference/08-advanced-topics.md
+## ☑ Phase 10 reference/08-advanced-topics.md Improvements
 
 - ☑ Task 10.1 Expand Pika parsing section
-  - Add right-to-left bottom-up mechanics
-  - Add error recovery advantages over top-down
-- ☑ Task 10.2 Improve runtime extensibility section
-  - Add use cases beyond DuckDB (Wasm, security restrictions)
-  - Add performance tradeoffs in detail
-- ☑ Task 10.3 Expand unified grammars section
-  - Add per-region lexing example
-  - Add when separate tokenizer is better
-- ☑ Task 10.4 Review theory and undecidability
-  - Ensure PCP reduction proof sketch is clear
-  - Update open problems status
+  (depends on: Task 1.2)
+  - Add error recovery advantages (bottom-up provides better context)
+  - Why right-to-left naturally handles left recursion
+- ☑ Task 10.2 Tighten runtime extensibility
+  - Add security restriction use case (dynamically restrict grammar subsets)
+  - Performance tradeoffs clearly stated
+- ☑ Task 10.3 Review theory section
+  - Ensure PCP reduction proof sketch is accurate
+  - Open problems status current
 
-## ⚙️ Phase 11 Final Validation & Sync
+## ☑ Phase 11 Conciseness Pass
 
-- ☑ Task 11.1 Run write-skill validation checklist on all files
-  (depends on: Task 2.4 , Task 3.3 , Task 4.3 , Task 5.2 , Task 6.3 , Task 7.3 , Task 8.6 , Task 9.3 , Task 10.4)
-  - YAML header checks
-  - Structure checks (line counts, file naming)
-  - Content checks (no hallucination, conciseness, consistency)
-- ☑ Task 11.2 Cross-reference all files for consistency
+- ☑ Task 11.1 Apply write-skill conciseness rules across all files
+  (depends on: Task 3.3 , Task 4.3 , Task 5.2 , Task 6.2 , Task 7.3 , Task 8.6 , Task 9.3 , Task 10.3)
+  - Challenge each paragraph: "Does the agent really need this?"
+  - Remove over-explained basics (what parsers are, what ASTs are)
+  - Ensure consistent terminology (one term per concept)
+- ☑ Task 11.2 Cross-reference consistency check
   (depends on: Task 11.1)
-  - Terminology consistent across all reference files
   - No contradictory statements between files
   - All cross-references resolve correctly
-- ☑ Task 11.3 Regenerate README.md skills table
+  - Terminology consistent (e.g., always "ordered choice" not sometimes "choice operator")
+
+## ☑ Phase 12 Final Validation & Sync
+
+- ☑ Task 12.1 Run write-skill validation checklist
   (depends on: Task 11.2)
+  - YAML header checks on SKILL.md
+  - Structure checks (line counts, file naming, no chained references)
+  - Content checks (no hallucination, conciseness, single recommended approach)
+- ☑ Task 12.2 Regenerate README.md skills table
+  (depends on: Task 12.1)
   - Run python3 misc/gen-skills-table.py

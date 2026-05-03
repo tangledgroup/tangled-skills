@@ -7,6 +7,7 @@
 - PeppaPEG (ANSI C)
 - peg/leg (Ian Piumarta)
 - Guile `(ice-9 peg)` Module
+- LL(1) Workarounds Eliminated by PEG
 
 ## CPython pegen (PEP 617)
 
@@ -67,11 +68,15 @@ simple_stmt:
 
 ### Rationale for PEG over LL(1)
 
-- Some Python rules are not actually LL(1) (e.g., assignment vs expression disambiguation requires unlimited lookahead)
-- Complex AST construction scattered across grammar rules
-- No left recursion support in LL(1), requiring awkward grammar rewrites
-- Intermediate parse tree (CST) adds memory overhead before AST conversion
-- PEG allows direct AST construction via grammar actions, eliminating intermediate CST
+- **Some rules are not actually LL(1):** Assignment vs expression disambiguation requires unlimited lookahead. Old workaround:
+  ```
+  # Old LL(1) workaround — accepts invalid programs, checked later
+  namedexpr_test: test [':=' test]
+  ```
+  PEG allows the natural form: `[NAME ':='] test`. Similarly, `with ( ... )` continuation across lines was impossible in LL(1) since first sets of context managers include `(`.
+- **Complex AST construction:** Old parser had huge coupling between AST generation and parse tree shape. Code inspected child node counts to deduce which grammar alternative produced them.
+- **No left recursion support:** Required awkward grammar rewrites producing flat parse trees needing post-processing.
+- **Intermediate parse tree (CST):** bpo-26415 showed excessive peak memory from keeping CST in memory. PEG constructs AST directly, eliminating the intermediate step.
 
 ### Performance
 
@@ -91,8 +96,9 @@ DuckDB v1.5 (March 2026) shipped an experimental PEG parser, opt-in via `CALL en
 ### Implementation
 
 - Uses **cpp-peglib** (single-header C++17 PEG engine) as the execution backend
-- Grammar load time: ~3ms from text representation
-- Parsing performance: ~10x slower than YACC baseline on TPC-H queries (sub-ms absolute)
+- Grammar load time: ~3ms from text representation — matters for short-lived instances (Wasm, DuckDB lives for milliseconds)
+- Parsing performance: ~10x slower than YACC baseline (YACC 0.03ms vs cpp-peglib 0.3ms for TPC-H Query 1), but sub-ms absolute — acceptable since parsing is a tiny fraction of query processing
+- cpp-peglib makes heavy use of recursive function calls — optimization opportunity via loop abstraction
 - Grammar syntax uses `/` for choice (cpp-peglib convention), `?` for optional, `*` for repetition
 
 ### Grammar macros and features
@@ -142,15 +148,20 @@ Pipe <- '%>%'
 SingleStmt <- SelectStatement / DplyrStatement
 ```
 
+### Error handling advantages over YACC
+
+YACC-style parsers exhibit "all-or-nothing" behavior: the entire query either parses or doesn't. PEG with `%recover` annotations can show multiple errors and provide context-specific messages, addressing one of the most-reported support issues in database systems.
+
 ## LPeg (Lua)
 
 Created by Roberto Ierusalimschy (Lua author). PEG-based pattern matching library that replaces regex in Lua.
 
 ### Architecture
 
+- **Parser combinator model:** Patterns are first-class Lua values composable with operators (`*` for sequence, `+` for choice, `^` for repetition). This differs from text-based PEG grammars — patterns are constructed programmatically.
 - Compiles PEG patterns to efficient bytecode (not interpreted at runtime)
-- Parser combinators style: patterns are first-class values composable with operators
 - `re` module provides regex-like syntax on top of LPeg internals
+- Memoization via decorator pattern: any parser can be wrapped with memoization without modifying its implementation
 
 ### Parser combinator API
 
@@ -231,6 +242,10 @@ array = "[" (value ("," value)*)? "]";
 
 CMake-based. Can be used as a library (`pkg-config --cflags --libs libpeppa`) or by copying header/source into project. Uses Unity testing framework and Valgrind for memory leak detection.
 
+### Performance optimization
+
+Callgrind profiling revealed that functions like `P4_NeedLoosen`, `P4_IsTight`, `P4_IsScoped`, `P4_NeedSquash`, and `P4_IsSquashed` were called excessively during parsing. Removing these inline checks and pre-computing values yielded a **10x speedup**. Doxygen is used for documentation extraction from source code.
+
 ### C API
 
 ```c
@@ -289,7 +304,7 @@ Guile Scheme's PEG module compiles grammars to lambda expressions.
 
 ### Design
 
-- Superset of standard PEG syntax for controlling preserved information
-- Compiles to Scheme lambdas (not bytecode or C)
+- **Compiles to Scheme lambdas:** Unlike most PEG implementations that produce bytecode or C code, Guile's `(ice-9 peg)` compiles grammars directly to lambda expressions. These are first-class Scheme values that can be inspected, modified, and composed.
+- Superset of standard PEG syntax for controlling preserved information — the extended syntax lets you specify which matched subexpressions should be retained in the result (useful for extracting specific parts without building full parse trees)
 - Supports both matching (regex-like) and full parsing (tree-building)
 - Documented with syntax reference, API reference, tutorial, and internals guide
