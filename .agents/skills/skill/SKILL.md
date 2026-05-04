@@ -87,7 +87,7 @@ my-skill/
 ```bash
 bash scripts/validate-plan.sh /path/to/PLAN.md
 ```
-Never use `<path-to-this-skill>` placeholders or absolute paths — the agent knows where the skill lives."Run `python scripts/validate.py input.pdf`") or **read it as reference** ("See `scripts/validate.py` for the validation algorithm"). Scripts are executed via bash without loading their full contents into context — only output consumes tokens.
+Never use `<path-to-this-skill>` placeholders or absolute paths — the agent knows where the skill lives.
 
 **Script quality rules:**
 - Scripts must handle errors explicitly (never punt to the agent with bare exceptions)
@@ -157,10 +157,16 @@ Report success with file tree and validation results.
 After every skill addition, deletion, rename, or YAML header edit, regenerate the README skills table:
 
 ```bash
-python3 misc/gen-skills-table.py
+bash scripts/gen-skill-list.sh
 ```
 
 This keeps the public skills index in sync with `.agents/skills/` contents.
+
+## Commands
+
+The `skill` meta-skill supports six lifecycle commands: **write**, **update**, **improve**, **remove**, **upload**, and **download**. Full instructions for each are in the lifecycle reference:
+
+→ [Lifecycle Commands](reference/05-lifecycle-commands.md)
 
 ## YAML Header Rules
 
@@ -351,3 +357,5 @@ For quality-critical tasks, implement feedback loops: run validator → fix erro
 **Validation Checklist**: YAML header checks, structure checks, content checks, script checks → [Validation Checklist](reference/03-validation-checklist.md)
 
 **Behavioral Guidelines**: Think before coding, simplicity first, surgical changes, no external dependencies, conciseness rules → [Behavioral Guidelines](reference/04-behavioral-guidelines.md)
+
+**Lifecycle Commands**: Write, update, improve, remove skills locally; upload to and download from GitHub → [Lifecycle Commands](reference/05-lifecycle-commands.md)
