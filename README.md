@@ -99,7 +99,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 71 | fltk-1-4-5 | fltk | 1.4.5 | fltk, gui, c++, desktop, widgets | Cross-platform C++ GUI toolkit with ~80 widget classes, OpenGL/GLUT integration, drawing primitives, image support... |
 | 72 | gh-2-91-0 | gh | 2.91.0 | github, cli, devops, automation, ci-cd | GitHub CLI v2.91.0 for managing repositories, pull requests, issues, releases, workflows, codespaces, and more from the... |
 | 73 | gh-2-92-0 | gh | 2.92.0 | github, cli, devops, automation, ci-cd | GitHub CLI v2.92.0 for managing repositories, pull requests, issues, releases, workflows, codespaces, and more from the... |
-| 74 | git | git | 0.2.0 | meta, meta-skill, git, version-control, conventional-commits | Complete Git 2.54.0 toolkit covering version control workflows, Conventional Commits v1.0.0, Keep a Changelog message... |
+| 74 | git | git | 0.2.1 | meta, meta-skill, git, version-control, conventional-commits | Complete Git 2.54.0 toolkit covering version control workflows, Conventional Commits v1.0.0, Keep a Changelog message... |
 | 75 | haproxy-3-3-0 | haproxy | 3.3.0 | load balancing, reverse proxy, SSL termination, high availability, HTTP proxy | Complete HAProxy 3.3.0 toolkit for load balancing, reverse proxying, |
 | 76 | haproxy-3-3-8 | haproxy | 3.3.8 | load balancing, reverse proxy, SSL termination, high availability, HTTP proxy | Complete HAProxy 3.3.8 toolkit for load balancing, reverse proxying, |
 | 77 | hnswlib-0-9-0 | hnswlib | 0.9.0 | ann, vector-search, hnsw, nearest-neighbor, simd | Header-only C++ library implementing Hierarchical Navigable Small World graphs for fast approximate nearest neighbor... |
@@ -219,7 +219,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 191 | sqlalchemy-2-0-49 | sqlalchemy | 2.0.49 | database, orm, sql, python, postgresql | Complete SQLAlchemy 2.0 toolkit for database operations, ORM mapping, and SQL expression construction. Use when... |
 | 192 | sqlite-3-53-0 | sqlite | 3.53.0 | sqlite, database, sql, json, fts | Complete toolkit for SQLite 3.53 covering all official documentation topics including SQL queries, C API integration,... |
 | 193 | stanza-1-11-1 | stanza | 1.11.1 | nlp, natural-language-processing, multilingual, tokenization, pos-tagging | Stanford NLP Group's official Python NLP library for 80+ languages providing tokenization, POS tagging, lemmatization,... |
-| 194 | stitch-2026-05-04 | stitch | 2026-05-04 | stitch, ui-design, ai-design, mcp, google-labs | AI-powered UI design tool from Google Labs that generates high-fidelity screens and frontend code from natural language... |
+| 194 | stitch-2026-05-04 | stitch | 2026-05-04 | stitch, ui-design, ai-design, mcp, google-labs | AI-powered UI design tool from Google Labs generating high-fidelity screens and frontend code from text prompts and... |
 | 195 | stringzilla-4-6-0 | stringzilla | 4.6.0 | simd, string-processing, search, hashing, sorting | High-performance SIMD-accelerated string library for search, hashing, sorting, and fuzzy matching in... |
 | 196 | tailwindcss-4-2-4 | tailwindcss | 4.2.4 | css, tailwind, styling, frontend, utility-first | A skill for using Tailwind CSS v4.2, a utility-first CSS framework with CSS-based configuration via @theme, OKLCH color... |
 | 197 | tailwindcss-browser-4-2-0 | tailwindcss-browser | 4.2.0 | css, tailwind, browser, prototyping, no-build | A skill for using Tailwind CSS v4.2 browser build (@tailwindcss/browser) that enables in-browser Tailwind compilation... |
