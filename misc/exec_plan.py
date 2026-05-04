@@ -31,7 +31,7 @@ RETRY_BACKOFF_FACTOR = 2
 PROMPT = """\
 /skill:workflow from local @PLAN.md execute next task.
 just one task.
-you are allowed to use `write-skill` (write-skill assume complex skill) and `tzip` (`tzip on`) skills.
+you are allowed to use `skill` (skill assume complex skill) and `tzip` (`tzip on`) skills.
 if plan is fully successfully completed, just return `[[PLAN DONE]]`."""
 
 

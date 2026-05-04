@@ -35,7 +35,7 @@ MODEL = "Qwen/Qwen3.6-27B"
 MAX_CONCURRENT = 3
 TIMEOUT_PER_SKILL = 60 * 60  # seconds
 
-SKIP_SKILLS = {"write-skill", "plan", "git", "tzip"}
+SKIP_SKILLS = {"skill", "plan", "git", "tzip"}
 
 # ---------------------------------------------------------------------------
 # Retry configuration
@@ -278,7 +278,7 @@ def generate_skill(args: tuple) -> dict:
 
     if mode == "regen":
         prompt = (
-            f"/skill:write-skill '{name}' based on external references {refs_str} . "
+            f"/skill:skill '{name}' based on external references {refs_str} . "
             f"This skill has an existing YAML header that was preserved. "
             f"Regenerate the SKILL.md body (after the --- delimiter) and create "
             f"reference files as needed. After reviewing external references, "
@@ -287,7 +287,7 @@ def generate_skill(args: tuple) -> dict:
         )
     else:
         prompt = (
-            f"/skill:write-skill '{name}' based on external references {refs_str} . "
+            f"/skill:skill '{name}' based on external references {refs_str} . "
             f"After reviewing external references, write skill until it is complete. "
             f"Don't ask user any questions. Assume the best answers. Proceed!"
         )

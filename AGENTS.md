@@ -4,6 +4,8 @@ This document provides guidance for AI agents working with the tangled-skills re
 
 ## Repository Structure
 
+**Ignore misc directory content**: Ignore content from `misc/` directory.
+
 ```
 tangled-skills/
 ├── .agents/skills/
@@ -13,8 +15,6 @@ tangled-skills/
 │   │       ├── 01-topic-name.md
 │   │       └── 02-another-topic.md
 ├── README.md                       # Skills table and overview (auto-generated)
-├── misc/
-│   └── gen-skills-table.py         # Regenerates README.md skills table from YAML headers
 └── AGENTS.md                       # This file
 ```
 

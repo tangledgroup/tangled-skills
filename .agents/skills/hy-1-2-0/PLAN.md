@@ -69,7 +69,7 @@ Structure: SKILL.md (hub) + 8 reference files covering all major domains.
 
 ## ⚙️ Phase 4 Validation & Sync
 
-- ☑ Task 4.1 Validate all files against write-skill checklist (depends on: Phase 3 - Task 3.8)
+- ☑ Task 4.1 Validate all files against skill checklist (depends on: Phase 3 - Task 3.8)
   - YAML header checks (name regex, description length, version, MIT license)
   - Structure checks (directory name matches, SKILL.md under 500 lines, reference files flat with zero-padded numbering, no chained references)
   - Content checks (no hallucinated content, concise, consistent terminology, all from crawled sources)

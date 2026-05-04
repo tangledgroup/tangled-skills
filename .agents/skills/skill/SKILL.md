@@ -1,5 +1,5 @@
 ---
-name: write-skill
+name: skill
 description: Generate fine-grained agent skills from user requirements, creating complete spec-compliant markdown files that work across pi, opencode, claude, and codex platforms. Use when creating new skills or converting existing documentation into skill format.
 version: "0.8.2"
 author: Tangled <noreply@tangledgroup.com>
@@ -17,7 +17,7 @@ external_references:
   - https://opencode.ai/docs/skills
 ---
 
-# write-skill — Generate Agent Skills
+# skill — Generate Agent Skills
 
 ## Overview
 
@@ -157,7 +157,7 @@ Report success with file tree and validation results.
 After every skill addition, deletion, rename, or YAML header edit, regenerate the README skills table:
 
 ```bash
-python3 scripts/gen-skills-table.py
+python3 misc/gen-skills-table.py
 ```
 
 This keeps the public skills index in sync with `.agents/skills/` contents.

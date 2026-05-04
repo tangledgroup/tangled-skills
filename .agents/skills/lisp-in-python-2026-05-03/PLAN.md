@@ -120,7 +120,7 @@ Synthesizing best elements from all sources into a clean, well-documented interp
 
 ## ☑ Phase 4 Validate & Sync
 
-- ☑ Task 4.1 Validate against write-skill checklist
+- ☑ Task 4.1 Validate against skill checklist
   - YAML header: valid block, name matches dir, description has WHAT+WHEN
   - Structure: SKILL.md + reference/ with numbered files, no chained refs
   - Content: Overview present, When to Use specific, concise, no hallucination

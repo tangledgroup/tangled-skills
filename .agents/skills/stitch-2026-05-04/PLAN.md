@@ -166,7 +166,7 @@ Write all 6 reference files with detailed content from collected sources.
 
 ## ⚙️ Phase 4 Validation and Polish
 
-Validate all files against the write-skill checklist.
+Validate all files against the skill checklist.
 
 - ☑ Task 4.1 YAML header validation (depends on: Task 2.6)
   - name matches directory, regex valid
