@@ -5,7 +5,7 @@ description: >
   Keep a Changelog message bodies, and Semantic Versioning 2.0.0. Use when managing repositories,
   writing structured commit messages with conventional types and changelog-style bodies,
   bumping versions, or analyzing codebase health through git history.
-version: "0.2.0"
+version: "0.2.1"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:
@@ -29,6 +29,7 @@ external_references:
   - https://piechowski.io/post/git-commands-before-reading-code/
   - https://raw.githubusercontent.com/forrestchang/andrej-karpathy-skills/refs/heads/main/skills/karpathy-guidelines/SKILL.md
   - https://gitcheatsheet.dev/docs/everyday-git/merging/
+  - https://github.com/newren/git-filter-repo
 ---
 
 # Git Toolkit
@@ -186,3 +187,4 @@ For unknown next `v<MAJOR>.<MINOR>.<PATCH>`, include `[Unreleased]` for work not
 **Essential Commands**: Init, clone, add, commit, branch, diff, stash, reset, remote, log → [Essential Commands](reference/01-essential-commands.md)
 **Merging Patterns**: Merge types, flags, conflicts, strategies, rebase decisions → [Merging Patterns](reference/02-merging-patterns.md)
 **Codebase Diagnostics**: Churn hotspots, bus factor, bug clusters, velocity → [Codebase Diagnostics](reference/03-codebase-diagnostics.md)
+**History Rewriting**: git filter-repo for stripping files, renaming paths, removing secrets, rewriting authors → [History Rewriting](reference/04-filter-repo.md)
