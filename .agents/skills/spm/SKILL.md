@@ -295,15 +295,41 @@ Write SKILL.md (simple) or SKILL.md + reference/ (complex).
 
 ### Step 6: Validate
 
-Run the validation checklist before considering the skill complete.
+Run the structural validator first, then perform the LLM-judgment checks.
+
+#### 6a. Run Structural Validator
+
+```bash
+bash scripts/validate-skill.sh [--strict] <SKILL_DIR>
+```
+
+The `validate-skill.sh` script checks **structural integrity only**:
+- YAML header fields (presence, format, length)
+- Directory layout (SKILL.md, reference/, scripts/, assets/)
+- File naming conventions (`NN-*.md` in reference/)
+- Section presence (Overview, When to Use, Advanced Topics)
+- Script references exist on disk
+
+Use `--strict` to promote warnings to errors.
+
+**What the script does NOT validate** (requires LLM judgment):
+- Content accuracy and completeness
+- No hallucinated content
+- Code example quality
+- Consistent terminology
+- Concise writing without over-explanation
+- Single recommended approach (not multiple options)
+- Script execution clarity and error handling
+
+#### 6b. LLM Judgment Checks
+
+After the structural validator passes, review these items manually:
 
 #### Contents
-1. YAML Header Checks
-2. Structure Checks
-3. Content Checks
+1. YAML Header Checks (automated by `validate-skill.sh`)
+2. Structure Checks (automated by `validate-skill.sh`)
+3. Content Checks (LLM judgment)
 4. Script Checks (if applicable)
-
-Run this checklist before considering the skill complete.
 
 #### 1. YAML Header
 
@@ -357,7 +383,7 @@ Report success with file tree and validation results.
 After **every** skill addition, deletion, rename, update, or YAML header edit, regenerate the README.md skills table:
 
 ```bash
-bash .agents/skills/spm/scripts/gen-skills-table.sh [SKILLS_DIR] [README_PATH]
+bash scripts/gen-skills-table.sh [SKILLS_DIR] [README_PATH]
 ```
 
 Arguments (both optional):
