@@ -17,7 +17,7 @@ tags:
   - keep-a-changelog
   - semver
   - devops
-category: development
+category: meta
 external_references:
   - https://git-scm.com/cheat-sheet
   - https://git-scm.com/docs/user-manual.html
@@ -32,7 +32,7 @@ external_references:
   - https://github.com/newren/git-filter-repo
 ---
 
-# Git Toolkit
+# Git version control
 
 ## Overview
 

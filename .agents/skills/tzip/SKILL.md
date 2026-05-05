@@ -10,20 +10,18 @@ tags:
   - token-prune
   - efficiency
   - guidelines
-category: communication
+category: meta
 external_references:
   - https://raw.githubusercontent.com/forrestchang/andrej-karpathy-skills/refs/heads/main/skills/karpathy-guidelines/SKILL.md
   - https://raw.githubusercontent.com/JuliusBrussee/caveman/refs/heads/main/skills/caveman/SKILL.md
   # - https://github.com/ZLKong/Awesome-Collection-Token-Reduction/tree/main
 ---
 
-# tzip 0.4.0
+# tzip - Token ZIP - Prune Tokens
 
 ## Overview
 
-tzip = **Token ZIP**. Prune output tokens lightly while keeping full technical accuracy,
-full sentences, and professional tone. Default mode is lite pruning: drop filler/hedging,
-keep articles and grammar structure; pair with guidelines for code quality.
+tzip = **TZIP**, **TokenZIP**, **Token ZIP**. Prune output tokens lightly while keeping full technical accuracy, full sentences, and professional tone. Default mode is lite pruning: drop filler/hedging, keep articles and grammar structure; pair with guidelines for code quality.
 
 ## When to Use
 
