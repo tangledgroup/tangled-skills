@@ -84,7 +84,10 @@ my-skill/
 - Scripts must handle errors explicitly (never punt to the agent with bare exceptions)
 - All constants must be documented with justification
 - Provide clear, specific error messages that help the agent fix issues
-- Make execution intent unambiguous in instructions
+- **Make execution intent explicit**: Always state whether the agent should execute or read a script:
+  - **Execute** (preferred): "Run `analyze_form.py` to extract fields" — the script runs via bash, only output consumes tokens. More reliable and token-efficient.
+  - **Read as reference**: "See `extract_algorithm.py` for the field extraction logic" — the agent reads the source code to understand complex algorithms or adapt the approach.
+- When in doubt, prefer execution over reading. Scripts that run deterministically are more reliable than agent-generated equivalents.
 
 ### Progressive Disclosure Patterns
 
@@ -93,6 +96,12 @@ my-skill/
 - **Conditional details**: Show basic content in SKILL.md, link to advanced content that the agent reads conditionally based on the task.
 
 **Keep references one level deep from SKILL.md.** All reference files should link directly from SKILL.md. Never chain references (reference → reference → reference) — this causes incomplete information loading.
+
+## Advanced Topics
+
+**Evaluation-Driven Development**: Build evaluations before writing skill content, iterate based on real agent behavior → [Evaluation-Driven Development](reference/01-evaluation-driven-development.md)
+
+**Degrees of Freedom**: Match instruction specificity to task fragility — high, medium, or low freedom → [Degrees of Freedom](reference/02-degrees-of-freedom.md)
 
 ## Generation Workflow
 
@@ -212,12 +221,27 @@ Description Formula — Construct descriptions using this pattern:
 
 Aim for **150-400 characters**. Under 100 = too vague, over 600 = token waste.
 
+**Key terms checklist**: The description is the primary signal agents use to select this skill from potentially 100+ available skills. Ensure it includes:
+- **WHAT**: What the skill does (action verb + domain)
+- **WHEN**: Specific trigger scenarios that tell the agent when to load this skill
+- **Key terms**: Include distinctive keywords from the project/tool name and its primary use cases
+- **Third person only**: Never "I can help" or "you can use" — write as objective description
+
 ```yaml
 # Good — specific, third person, includes WHAT and WHEN
 description: Extracts text and tables from PDF files and merges multiple PDFs. Use when working with PDF documents.
 
+# Good — includes key capabilities for discoverability
+description: Complete toolkit for NumPy 2.4 providing n-dimensional arrays, mathematical functions, linear algebra, and Fourier transforms. Use when building Python programs requiring numerical array computing or high-performance vectorized computation.
+
 # Poor — too vague
 description: Helps with PDFs.
+
+# Poor — first person (breaks discovery)
+description: I can help you process Excel files and generate reports.
+
+# Poor — missing WHEN
+description: A library for working with PDF documents including extraction and merging.
 ```
 
 Output File Templates — SKILL.md Template:
@@ -292,6 +316,20 @@ For reference files longer than 100 lines, include a table of contents at the to
 ### Step 5: Write Output Files
 
 Write SKILL.md (simple) or SKILL.md + reference/ (complex).
+
+### Step 5a: Avoid Anti-Patterns
+
+Check the generated skill against these common mistakes before proceeding to validation:
+
+**Windows-style paths**: Always use forward slashes in file references (e.g. `reference/guide.md`, not `reference\guide.md`). Backslash paths cause errors on Unix systems and break cross-platform compatibility.
+
+**Offering too many options**: Don't present multiple approaches unless necessary. Give a single recommended approach. If alternatives exist, put them in a reference file, not the main SKILL.md. Multiple options confuse the agent and increase token usage.
+
+**Time-sensitive information**: Don't include details that will become outdated (e.g., "the latest version is 3.2"). If historical context is needed, use an "old patterns" section clearly labeled as legacy.
+
+**Over-explaining basics**: The target agent already knows common concepts (what HTTP is, what a database does). Only add context the agent doesn't already have. Challenge each paragraph: "Does this justify its token cost?"
+
+**Inconsistent terminology**: Choose one term per concept and use it throughout (always "API endpoint," not sometimes "URL" or "route"). Inconsistency confuses the agent.
 
 ### Step 6: Validate
 
