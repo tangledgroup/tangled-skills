@@ -357,7 +357,13 @@ Report success with file tree and validation results.
 After **every** skill addition, deletion, rename, update, or YAML header edit, regenerate the README.md skills table:
 
 ```bash
-bash scripts/gen-skills-table.sh
+bash .agents/skills/spm/scripts/gen-skills-table.sh [SKILLS_DIR] [README_PATH]
 ```
 
+Arguments (both optional):
+- `SKILLS_DIR` — path to the skills directory (default: `.agents/skills`)
+- `README_PATH` — path to README.md to update (default: `README.md`)
+
 This keeps the public skills index in sync with the actual `.agents/skills/` contents.
+
+The script is a pure bash tool — no Python or external YAML parsers required. It extracts YAML headers from each SKILL.md, derives project names by stripping version suffixes, truncates descriptions to ~120 characters, and rewrites the Skills Table section in README.md.
