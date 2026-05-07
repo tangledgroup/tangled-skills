@@ -1,5 +1,5 @@
 ---
-name: workflow
+name: plan
 description: Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require structured iteration through Planning, Analysis, Design, Implementation, Testing, Deployment, Maintenance, etc phases with clear dependency graphs.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
@@ -12,11 +12,11 @@ tags:
 category: meta
 ---
 
-# Workflow - create, read, execute and update plan(s)
+# Plan - create, read, execute and update plan(s)
 
 ## Overview
 
-Phase/task based workflow system with `PLAN.md` as single source of truth.
+Phase/task based planning system with `PLAN.md` as single source of truth.
 There can be many `PLAN.md` files in different locations.
 Plan files create a dependency graph via `**Depends On:** ...`.
 Strict phase numbering (`[emoji-of-phase] Phase X Phase Title`), inline phase dependency tracking, and emoji-coded statuses within current plan.
