@@ -103,6 +103,25 @@ my-skill/
 
 **Degrees of Freedom**: Match instruction specificity to task fragility — high, medium, or low freedom → [Degrees of Freedom](reference/02-degrees-of-freedom.md)
 
+## Commands
+
+All paths are relative to this skill's directory (where SKILL.md lives).
+
+### sync — Sync local .agents/skills with tangled-skills
+
+Download the latest skills from the tangled-skills repository and merge them into your local `.agents/skills/` directory.
+
+```bash
+bash scripts/sync.sh [TARGET_DIR]
+```
+
+**Arguments:**
+- `TARGET_DIR` — Directory where `.agents/skills` will be created/updated (default: current directory `.`)
+
+**What it does:** Fetches the `main` branch of tangled-skills from GitHub, extracts the `.agents/skills/` contents into `TARGET_DIR/.agents/skills/`, overwriting existing skills with upstream versions.
+
+**Dependencies:** bash, curl, tar
+
 ## Generation Workflow
 
 ### Step 0: Detect Mode
@@ -416,7 +435,7 @@ After the structural validator passes, review these items manually:
 
 Report success with file tree and validation results.
 
-### Step 8: Sync README
+### Step 8: Regenerate Skills Table in README.md
 
 After **every** skill addition, deletion, rename, update, or YAML header edit, regenerate the README.md skills table:
 
