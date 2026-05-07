@@ -27,12 +27,19 @@ if [[ ! -f "$plan" ]]; then
 fi
 
 awk -v pn="$phase_num" '
-  /^## .* Phase [0-9]/ { current = $4 }
-  current == pn && /^- .* Task/ {
-    if ($2 == "⚙️") found_doing++
-    else if ($2 == "❓") found_question++
-    else if ($2 == "❌") found_error++
-    else if ($2 == "☑") found_done++
+  /^## .* Phase [0-9]+/ {
+    # Extract phase number robustly via regex match
+    if (match($0, /Phase ([0-9]+)/, arr)) {
+      current = arr[1]
+    }
+  }
+  current == pn && /^- .+ Task/ {
+    # The emoji is the second field on the task line
+    em = $2
+    if (em == "⚙️") found_doing++
+    else if (em == "❓") found_question++
+    else if (em == "❌") found_error++
+    else if (em == "☑") found_done++
     total++
   }
   END {

@@ -5,6 +5,8 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 usage() {
   echo "Usage: $0 <PLAN.md>"
   echo ""
@@ -13,6 +15,8 @@ usage() {
   echo "  - At least one phase and one task present"
   echo "  - All phase/task emojis are from the allowed set {☐ ❓ ⚙️ ❌ ☑}"
   echo "  - Zero-task phases flagged as warnings"
+  echo "  - Phase emojis match derived status from their tasks"
+  echo "  - Plan emoji matches derived status from its phases"
   exit "${1:-0}"
 }
 
@@ -91,6 +95,67 @@ done < "$plan"
 
 if [[ "$empty_phases" -gt 0 ]]; then
   echo "⚠ $empty_phases phase(s) with zero tasks"
+fi
+
+# --- Emoji derivation checks ---
+
+# Check each phase emoji matches its derived status from tasks
+awk '
+  /^## .* Phase [0-9]+/ {
+    # Finalize previous phase
+    if (phase_seen) {
+      if (pt_doing)       derived = "⚙️"
+      else if (pt_quest)  derived = "❓"
+      else if (pt_error)  derived = "❌"
+      else if (pt_done == pt_total && pt_total > 0) derived = "☑"
+      else derived = "☐"
+
+      if (derived != file_emoji) {
+        print "✗ Phase " phase_num ": emoji is " file_emoji " but should be " derived " (derived from tasks)"
+        mismatches++
+      }
+    }
+
+    # Capture current phase emoji and number
+    file_emoji = $2
+    if (match($0, /Phase ([0-9]+)/, arr)) {
+      phase_num = arr[1]
+    }
+    phase_seen = 1
+    pt_doing = 0; pt_quest = 0; pt_error = 0; pt_done = 0; pt_total = 0
+  }
+  phase_seen && /^- .+ Task/ {
+    em = $2
+    if (em == "⚙️") pt_doing++
+    else if (em == "❓") pt_quest++
+    else if (em == "❌") pt_error++
+    else if (em == "☑") pt_done++
+    pt_total++
+  }
+  END {
+    # Finalize last phase
+    if (phase_seen) {
+      if (pt_doing)       derived = "⚙️"
+      else if (pt_quest)  derived = "❓"
+      else if (pt_error)  derived = "❌"
+      else if (pt_done == pt_total && pt_total > 0) derived = "☑"
+      else derived = "☐"
+
+      if (derived != file_emoji) {
+        print "✗ Phase " phase_num ": emoji is " file_emoji " but should be " derived " (derived from tasks)"
+        mismatches++
+      }
+    }
+    exit (mismatches + 0 > 0) ? 1 : 0
+  }
+' "$plan" || errors=$((errors + 1))
+
+# Check plan emoji matches derived status from phases (via their tasks)
+derived_plan=$(bash "$SCRIPT_DIR/derive-plan-emoji.sh" "$plan")
+file_plan_emoji=$(head -1 "$plan" | grep -oP '^\# \K\S+')
+if [[ "$derived_plan" != "$file_plan_emoji" ]]; then
+  echo "✗ Plan emoji is $file_plan_emoji but should be $derived_plan (derived from phases)"
+  errors=$((errors + 1))
 fi
 
 if [[ "$errors" -eq 0 ]]; then

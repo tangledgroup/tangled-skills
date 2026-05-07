@@ -1,6 +1,6 @@
 ---
-name: spm
-description: Skill Package Manager, spm, it is meta skill for skill authoring and skill package manager for AI agents.
+name: sman
+description: Skill Package Manager, sman, it is meta skill for skill authoring and skill package manager for AI agents.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"
@@ -16,7 +16,7 @@ external_references:
   - https://pi.dev/docs/latest/skills
 ---
 
-# spm - Skill Package Manager
+# sman - Skill Package Manager
 
 ## Overview
 
@@ -73,9 +73,9 @@ my-skill/
 ├── SKILL.md
 ├── reference/
 ├── scripts/              # Only if explicitly requested
-│   ├── analyze_form.py   # Utility script (executed, not loaded into context)
-│   ├── fill_form.py      # Form filling script
 │   └── validate.sh       # Validation script
+│   ├── analyze_form.py   # Utility script (executed, not loaded into context)
+│   ├── fill_form.lua     # Form filling script
 └── assets/               # Only if explicitly requested
     └── example-config.yaml
 ```

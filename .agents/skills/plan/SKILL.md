@@ -3,7 +3,7 @@ name: plan
 description: Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require structured iteration through Planning, Analysis, Design, Implementation, Testing, Deployment, Maintenance, etc phases with clear dependency graphs.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.3"
+version: "0.1.5"
 tags:
   - meta
   - meta-skill
@@ -37,12 +37,25 @@ When this skill is invoked, follow these steps:
 1. **PLAN.md doesn't exist?** → Create `PLAN.md` with all phases based on given requirements. There are no predefined phases — determine them from context. Calibrate phase/task granularity to the requirements complexity and detect whether the requester is a beginner, advanced, or expert user. Ask clarifying questions before finalizing the plan. If unable to ask (non-interactive mode), proceed with best-effort assumptions and document them in the plan.
 2. **PLAN.md exists?** → Open it. Examine `**Current Phase:**` and `**Current Task:**` and propose a continuation point (hint: the next pending task could be one of the lowest-numbered but in this order ⚙️ ❓ ❌ ☐). All running tasks have to be re-run with status ⚙️ because they were probably interrupted.
 
-## Plan updates
+## Status Update Rules (MANDATORY)
 
-Update the current `PLAN.md` file after every change:
-- Emoji status transitions on any phase or task
-- Adding, modifying, or removing phases or tasks
-- User-requested plan alterations
+**ALL status changes MUST use scripts. NEVER use `edit` or `write` to change
+task, phase, or plan emojis.** The `edit` and `write` tools may only be used
+for structural changes: adding/removing phases or tasks, changing titles,
+updating dependencies, adding sub-bullets, or modifying non-status content.
+
+| Operation | Tool |
+|-----------|------|
+| Set task status | `bash scripts/update-plan.sh PLAN.md set-task-status "Task X.Y" "⚙️"` |
+| Set phase status | `bash scripts/update-plan.sh PLAN.md set-phase-status "Phase X" "⚙️"` |
+| Get task status | `bash scripts/update-plan.sh PLAN.md get-task-status "Task X.Y"` |
+| Get phase status | `bash scripts/update-plan.sh PLAN.md get-phase-status "Phase X"` |
+| Get plan status | `bash scripts/update-plan.sh PLAN.md get-plan-status` |
+| Update timestamp | `bash scripts/update-plan.sh PLAN.md update-timestamp` |
+| Full workflow (with validation + rollback) | `bash scripts/workflow.sh PLAN.md set-task-status "Task X.Y" "☑"` |
+
+The scripts auto-derive phase emojis from tasks and plan emojis from phases.
+You never set a phase or plan emoji manually — it is always derived.
 
 **Plan emoji preservation on update:** When editing a PLAN.md for any reason
 other than completing it (e.g., adding tasks, fixing content, updating
@@ -129,7 +142,9 @@ The plan emoji is **derived from its phases**, not set independently:
 - ☐ **Not Started** — all phases are still ☐
 
 When a plan transitions to ☑, it means every single task in every single phase
-is ☑. Do not mark the plan as completed until this condition is met.
+is ☑. The scripts auto-derive the plan emoji after edits, so this happens
+automatically when using `update-plan.sh` or `workflow.sh`. Do not mark the
+plan as completed until this condition is met.
 
 ## Plan
 
@@ -195,9 +210,9 @@ A phase emoji is **derived from its tasks**, not set independently:
 - ❌ **Blocked** — when no task is ⚙️ or ☑ but at least one is ❌
 - ☐ **To Do** — all tasks are still ☐
 
-When marking a task as ☑, check if it was the last pending task in its phase.
-Only then change the phase emoji to ☑. If any task remains non-☑, leave the
-phase emoji as whatever derived status applies (never manually override).
+The scripts (`update-plan.sh`, `workflow.sh`) auto-derive phase and plan
+emojis after every task/phase status change. Phase and plan emojis are
+always derived — never set manually.
 
 ## Phase and Task Statuses
 
@@ -257,10 +272,10 @@ bash scripts/validate-plan.sh path/to/PLAN.md
 - At least one phase and one task present
 - All phase/task emojis are from the allowed set {☐ ❓ ⚙️ ❌ ☑}
 - Zero-task phases flagged as warnings
+- Phase emojis match their derived status from tasks (auto-checked)
+- Plan emoji matches its derived status from phases (auto-checked)
 
 **What it does NOT validate (requires LLM judgment):**
-- Phase emoji derivation from its tasks
-- Plan emoji derivation from its phases
 - Dependency references point to existing tasks
 - `**Current Phase:**` and `**Current Task:**` reference existing entries
 - Whether the actual work described by a task was completed
@@ -279,30 +294,33 @@ All paths are relative to this skill's directory (where SKILL.md lives).
 
 | Script | Mode | Purpose |
 |--------|------|---------|
-| [scripts/update-plan.sh](scripts/update-plan.sh) | **Execute** | Lock-and-edit with `flock` + atomic rename. Supports `set-task-status`, `set-phase-status`, `update-timestamp`, `set-current-task`, `set-current-phase`. |
+| [scripts/update-plan.sh](scripts/update-plan.sh) | **Execute** | Lock-and-edit with `flock` + atomic rename. Supports `set-task-status`, `set-phase-status`, `get-task-status`, `get-phase-status`, `get-plan-status`, `update-timestamp`, `set-current-task`, `set-current-phase`. Auto-derives phase and plan emojis after status changes. Read actions (`get-*`) are lock-free. |
 | [scripts/derive-phase-emoji.sh](scripts/derive-phase-emoji.sh) | **Execute** | Derive phase emoji from its tasks' emojis using AWK. Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
-| [scripts/workflow.sh](scripts/workflow.sh) | **Execute** | Full workflow: lock → edit → validate with automatic rollback on validation failure. |
+| [scripts/derive-plan-emoji.sh](scripts/derive-plan-emoji.sh) | **Execute** | Derive plan emoji from all phases (re-deriving each phase from its tasks). Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
+| [scripts/workflow.sh](scripts/workflow.sh) | **Execute** | Full workflow: lock → edit (via update-plan.sh) → re-derive all phases → validate with automatic rollback on validation failure. Same actions as update-plan.sh plus read-through for `get-*`. |
 
 ### Usage Examples
 
 ```bash
-# Mark task 2.3 as Doing (⚙️)
+# ── Status reads (deterministic, no lock) ───────────────────────────
+bash scripts/update-plan.sh PLAN.md get-task-status "Task 2.3"
+bash scripts/update-plan.sh PLAN.md get-phase-status "Phase 2"
+bash scripts/update-plan.sh PLAN.md get-plan-status
+
+# ── Status writes (atomic, auto-derives phase + plan emojis) ───────
 bash scripts/update-plan.sh PLAN.md set-task-status "Task 2.3" "⚙️"
-
-# Change phase 2 emoji to Active
-bash scripts/update-plan.sh PLAN.md set-phase-status "Phase 2" "⚙️"
-
-# Update timestamp
 bash scripts/update-plan.sh PLAN.md update-timestamp
-
-# Set Current Task
 bash scripts/update-plan.sh PLAN.md set-current-task "⚙️ Task 2.3"
 
-# Derive phase emoji from its tasks
-echo "Phase 2 emoji: $(bash scripts/derive-phase-emoji.sh PLAN.md 2)"
-
-# Full workflow with validation and rollback
+# ── Full workflow (edit + re-derive all phases + validate + rollback) ─
 bash scripts/workflow.sh PLAN.md set-task-status "Task 2.3" "☑"
+
+# ── Standalone derivation (read-only, no file changes) ─────────────
+echo "Phase 2 emoji: $(bash scripts/derive-phase-emoji.sh PLAN.md 2)"
+echo "Plan emoji: $(bash scripts/derive-plan-emoji.sh PLAN.md)"
+
+# ── Validation ─────────────────────────────────────────────────────
+bash scripts/validate-plan.sh PLAN.md
 ```
 
 ### Properties
@@ -311,3 +329,5 @@ bash scripts/workflow.sh PLAN.md set-task-status "Task 2.3" "☑"
 - **Advisory lock** — readers can still read PLAN.md while locked (they see the old version)
 - **Automatic rollback** — `workflow.sh` backs up the file and restores it if validation fails
 - **Cleanup on exit** — temp files, backups, and lock files are removed via trap on normal exit, INT, and TERM
+- **Lock-free reads** — `get-*` actions skip locking entirely (read-only)
+- **Nested lock safety** — `workflow.sh` sets `PLAN_SKIP_LOCK` when calling `update-plan.sh` to avoid deadlocks

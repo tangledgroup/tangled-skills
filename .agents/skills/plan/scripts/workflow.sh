@@ -1,10 +1,21 @@
 #!/usr/bin/env bash
-# workflow.sh — Full workflow: lock → edit → validate
+# workflow.sh — Full workflow: lock → edit → derive → validate
 # Usage: workflow.sh <PLAN.md> <action> [args...]
 #
-# Combines update-plan.sh and validate-plan.sh in one atomic operation.
-# Edits are applied under flock, then the plan is validated before releasing
-# the lock. If validation fails, the file is rolled back from backup.
+# Wraps update-plan.sh with automatic validation and rollback.
+# After applying the edit, it re-derives ALL phase emojis from tasks
+# (not just the affected one), derives the plan emoji, validates,
+# and rolls back if validation fails.
+#
+# Actions are the same as update-plan.sh:
+#   set-task-status <Task X.Y> <emoji>
+#   set-phase-status <Phase X> <emoji>
+#   get-task-status <Task X.Y>
+#   get-phase-status <Phase X>
+#   get-plan-status
+#   update-timestamp
+#   set-current-task <value>
+#   set-current-phase <value>
 
 set -euo pipefail
 
@@ -13,11 +24,14 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 usage() {
   echo "Usage: $0 <PLAN.md> <action> [args...]"
   echo ""
-  echo "Full workflow: lock → edit → validate (atomic)"
+  echo "Full workflow: lock → edit → derive → validate (atomic)"
   echo ""
-  echo "Actions (same as update-plan.sh):"
+  echo "Actions:"
   echo "  set-task-status <Task X.Y> <emoji>"
   echo "  set-phase-status <Phase X> <emoji>"
+  echo "  get-task-status <Task X.Y>"
+  echo "  get-phase-status <Phase X>"
+  echo "  get-plan-status"
   echo "  update-timestamp"
   echo "  set-current-task <value>"
   echo "  set-current-phase <value>"
@@ -33,7 +47,7 @@ action="$2"
 shift 2
 
 if [[ ! -f "$plan" ]]; then
-  echo "✗ File not found: $plan"
+  echo "✗ File not found: $plan" >&2
   exit 1
 fi
 
@@ -42,9 +56,17 @@ backup="${plan}.bak"
 tmpfile=""
 
 cleanup() {
-  rm -f "$backup" "$tmpfile" 2>/dev/null || true
+  rm -f "$backup" "$tmpfile" "${tmpfile}.new" 2>/dev/null || true
 }
 trap cleanup EXIT INT TERM
+
+# Read-only actions pass through without locking
+case "$action" in
+  get-task-status|get-phase-status|get-plan-status)
+    bash "$SCRIPT_DIR/update-plan.sh" "$plan" "$action" "$@"
+    exit $?
+    ;;
+esac
 
 (
   flock -w 30 200 || { echo "✗ Timeout waiting for PLAN.md lock"; exit 1; }
@@ -52,40 +74,38 @@ trap cleanup EXIT INT TERM
   # Safety backup
   cp -- "$plan" "$backup"
 
-  # Apply edit via update-plan.sh (without its own locking — we hold the lock)
+  # Delegate the edit + per-phase derive to update-plan.sh (skip its lock — we hold it)
+  PLAN_SKIP_LOCK=1 bash "$SCRIPT_DIR/update-plan.sh" "$plan" "$action" "$@"
+
+  # --- Re-derive ALL phase emojis (not just affected) for robustness ---
   plan_dir=$(dirname "$plan")
   tmpfile=$(mktemp "${plan_dir}/.plan-edit.$$-XXXXXX")
   cp -- "$plan" "$tmpfile"
 
-  case "$action" in
-    set-task-status)
-      [[ $# -lt 2 ]] && { echo "✗ Usage: set-task-status <Task X.Y> <emoji>"; exit 1; }
-      escaped_id=$(echo "$1" | sed 's/\./\\./g')
-      sed -i -E "s/^- (.+) ${escaped_id} /- ${2} ${escaped_id} /" "$tmpfile"
-      ;;
-    set-phase-status)
-      [[ $# -lt 2 ]] && { echo "✗ Usage: set-phase-status <Phase X> <emoji>"; exit 1; }
-      sed -i -E "s/^## (.+) ${1} /## ${2} ${1} /" "$tmpfile"
-      ;;
-    update-timestamp)
-      sed -i "s/^\*\*Updated:\*\* .*/\*\*Updated:\*\* $(date -u +%Y-%m-%dT%H:%M:%SZ)/" "$tmpfile"
-      ;;
-    set-current-task)
-      [[ $# -lt 1 ]] && { echo "✗ Usage: set-current-task <value>"; exit 1; }
-      safe_val=$(printf '%s\n' "$1" | sed 's/[&\/\\]/\\&/g')
-      sed -i "s/^\*\*Current Task:\*\* .*/\*\*Current Task:\*\* ${safe_val}/" "$tmpfile"
-      ;;
-    set-current-phase)
-      [[ $# -lt 1 ]] && { echo "✗ Usage: set-current-phase <value>"; exit 1; }
-      safe_val=$(printf '%s\n' "$1" | sed 's/[&\/\\]/\\&/g')
-      sed -i "s/^\*\*Current Phase:\*\* .*/\*\*Current Phase:\*\* ${safe_val}/" "$tmpfile"
-      ;;
-    *)
-      echo "✗ Unknown action: $action"
-      rm -f "$tmpfile"
-      exit 1
-      ;;
-  esac
+  phase_nums=$(awk '/^## .* Phase [0-9]+/ { if (match($0, /Phase ([0-9]+)/, arr)) print arr[1] }' "$tmpfile")
+  for pn in $phase_nums; do
+    derived=$(bash "$SCRIPT_DIR/derive-phase-emoji.sh" "$tmpfile" "$pn")
+    current=$(awk -v pn="$pn" '/^## .* Phase [0-9]+/ {
+      if (match($0, /Phase ([0-9]+)/, arr) && arr[1] == pn) { print $2; exit }
+    }' "$tmpfile")
+    if [[ "$derived" != "$current" ]]; then
+      echo "  → Phase $pn: $current → $derived (auto-derived from tasks)"
+      awk -v pn="$pn" -v em="$derived" '
+        /^## .* Phase [0-9]+/ && match($0, /Phase ([0-9]+)/, arr) && arr[1] == pn {
+          sub(/^## [^ ]+ /, "## " em " "); print; next
+        }
+        { print }
+      ' "$tmpfile" > "${tmpfile}.new" && mv -f "${tmpfile}.new" "$tmpfile"
+    fi
+  done
+
+  # --- Re-derive plan emoji from phases ---
+  derived_plan=$(bash "$SCRIPT_DIR/derive-plan-emoji.sh" "$tmpfile")
+  file_plan_emoji=$(head -1 "$tmpfile" | grep -oP '^\# \K\S+')
+  if [[ "$derived_plan" != "$file_plan_emoji" ]]; then
+    echo "  → Plan: $file_plan_emoji → $derived_plan (auto-derived from phases)"
+    sed -i "s/^# ${file_plan_emoji} /# ${derived_plan} /" "$tmpfile"
+  fi
 
   # Atomic rename
   mv -f "$tmpfile" "$plan"
