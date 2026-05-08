@@ -41,6 +41,8 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 
 
 
+
+
 ## Skills Table
 
 | No | Skill | Project | Version | Technologies | Description |
@@ -114,7 +116,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 67 | docker-docs-2026-04-16 | docker-docs | 2026-04-16 | containers, docker-engine, docker-desktop, docker-compose, dockerfile | Comprehensive reference for Docker platform including Docker Engine, |
 | 68 | dspy-3-2-0 | dspy | 3.2.0 | llm-programming, prompt-optimization, ai-compilation, few-shot-learning, instruction-tuning | DSPy is the framework for programming—rather than prompting—language models. It provides modular AI system ... |
 | 69 | duckdb-1-5-2 | duckdb | 1.5.2 | analytics, olap, embedded-database, sql, data-science | High-performance analytical SQL database with support for nested types, vectorized execution, and seamless ... |
-| 70 | duckduckgo-2026-05-08 | duckduckgo | 0.1.0 | web-search, web search, duckduckgo | Searches DuckDuckGo using the HTML endpoint (default, html→markdown via scrapling) and JSON API (--format json), ... |
+| 70 | duckduckgo-2026-05-08 | duckduckgo | 0.1.2 | web-search, web search, duckduckgo | Searches DuckDuckGo using the HTML endpoint (default, html→markdown via scrapling) and JSON API (--format json), ... |
 | 71 | esbuild-0-28-0 | esbuild | 0.28.0 | javascript, bundler, typescript, jsx, css | Complete toolkit for esbuild v0.28 JavaScript bundler providing CLI, JavaScript API, and Go API access for bundling, ... |
 | 72 | fltk-1-4-5 | fltk | 1.4.5 | fltk, gui, c++, desktop, widgets | Cross-platform C++ GUI toolkit with ~80 widget classes, OpenGL/GLUT integration, drawing primitives, image support ... |
 | 73 | gh-2-91-0 | gh | 2.91.0 | github, cli, devops, automation, ci-cd | GitHub CLI v2.91.0 for managing repositories, pull requests, issues, releases, workflows, codespaces, and more from ... |
@@ -267,10 +269,12 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 220 | usearch-2-25-1 | usearch | 2.25.1 | vector-search, ann, hnsw, similarity-search, clustering | High-performance single-file similarity search and clustering engine for vectors using HNSW algorithm with ... |
 | 221 | uv-0-11-6 | uv | 0.11.6 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | A skill for using uv 0.11.6, an extremely fast Python package and project manager written in Rust that replaces pip, ... |
 | 222 | uv-0-11-8 | uv | 0.11.8 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | A skill for using uv 0.11.8, an extremely fast Python package and project manager written in Rust that replaces pip, ... |
-| 223 | yjs-13-6-30 | yjs | 13.6.30 | yjs, crdt, collaborative-editing, real-time, shared-types | CRDT framework that exposes shared types (Y.Map, Y.Array, Y.Text, Y.XmlFragment) for conflict-free collaborative ... |
-| 224 | yq-4-53-2 | yq | 4.53.2 | yaml, json, xml, ini, csv | >- |
-| 225 | zeromq-wiki-3-2-0 | zeromq-wiki | 3.2.0 | zeromq, messaging, distributed-systems, networking, sockets | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and ... |
-| 226 | zeromq-zguide-3-2-0 | zeromq-zguide | 3.2.0 | zeromq, zmq, messaging, sockets, distributed-systems | Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and ... |
+| 223 | web-fetch | web-fetch | 0.1.0 | web-fetch, scraping, markdown, url-extraction | Fetches web pages and converts them to clean Markdown. Delegates to the local scrapling-0-4-7 skill for all URL ... |
+| 224 | web-search | web-search | 0.1.0 | web-search, search, meta-skill | Meta skill that delegates web search tasks to the local duckduckgo-2026-05-08 skill. Use when performing web ... |
+| 225 | yjs-13-6-30 | yjs | 13.6.30 | yjs, crdt, collaborative-editing, real-time, shared-types | CRDT framework that exposes shared types (Y.Map, Y.Array, Y.Text, Y.XmlFragment) for conflict-free collaborative ... |
+| 226 | yq-4-53-2 | yq | 4.53.2 | yaml, json, xml, ini, csv | >- |
+| 227 | zeromq-wiki-3-2-0 | zeromq-wiki | 3.2.0 | zeromq, messaging, distributed-systems, networking, sockets | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and ... |
+| 228 | zeromq-zguide-3-2-0 | zeromq-zguide | 3.2.0 | zeromq, zmq, messaging, sockets, distributed-systems | Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and ... |
 ## Statistics
 
-- **Total Skills**: 226
+- **Total Skills**: 228
