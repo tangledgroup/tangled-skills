@@ -3,10 +3,11 @@ name: sman
 description: Skill Package Manager, sman, it is meta skill for skill authoring and skill package manager for AI agents.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
+version: "0.1.1"
 tags:
   - meta
   - meta skill
+  - skill manager
   - skill package manager
   - authoring
 category: meta
