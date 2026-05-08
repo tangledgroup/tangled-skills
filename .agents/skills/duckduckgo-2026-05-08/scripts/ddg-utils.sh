@@ -502,9 +502,9 @@ if p._count == 0:
 #   Outputs markdown to stdout.
 ddg_convert_html_to_md() {
   if command -v pandoc &>/dev/null; then
-    pandoc -f html -t markdown 2>/dev/null
+    pandoc -f html -t gfm-raw_html --link-images=false --wrap=none 2>/dev/null
   else
-    echo "Warning: pandoc not found, returning raw HTML instead of markdown" >&2
+    echo "Warning: pandoc not found, returning raw HTML instead of markdown (gfm-raw_html)" >&2
     cat
   fi
 }
