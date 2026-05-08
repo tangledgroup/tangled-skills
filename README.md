@@ -30,6 +30,8 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 
 
 
+
+
 ## Skills Table
 
 | No | Skill | Project | Version | Technologies | Description |
@@ -180,7 +182,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 144 | pi-mono-0-66-1 | pi-mono | 0.66.1 | ai-coding-agent, terminal-harness, extensions, tui, session-management | Complete implementation guide for pi-mono monorepo architecture covering provider abstraction, agent runtime, ... |
 | 145 | pi-mono-0-71-0 | pi-mono | 0.71.0 | ai-coding-agent, terminal-harness, extensions, tui, session-management | Complete implementation guide for pi-mono monorepo architecture covering provider abstraction, agent runtime, ... |
 | 146 | pinecone-router-7-5-0 | pinecone-router | 7.5.0 | alpinejs, router, spa, client-side-routing, single-page-application | A comprehensive toolkit for building client-side routing in Alpine.js applications using Pinecone Router v7.5, ... |
-| 147 | plan | plan | 0.1.5 | meta, meta-skill, workflow, task-management | Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require ... |
+| 147 | pipe-0-1-0 | pipe | 0.1.0 | pipe, composition, chaining, workflow, meta-skill | Unix pipe-inspired function composition for LLM agents. Chains multiple operations (skills, tools, MCP tools, user ... |
 | 148 | podman-5-8-1 | podman | 5.8.1 | containers, daemonless, rootless, oci, pods | Comprehensive toolkit for Podman 5.8.1, a daemonless container engine providing Docker-compatible CLI for managing ... |
 | 149 | podman-5-8-2 | podman | 5.8.2 | containers, daemonless, rootless, oci, pods | Comprehensive toolkit for Podman 5.8.2, a daemonless container engine providing Docker-compatible CLI for managing ... |
 | 150 | podman-compose-1-5-0 | podman-compose | 1.5.0 | podman, compose, containers, orchestration, devops | Orchestrates multi-container applications using Compose specification files with Podman backend. Use when deploying ... |
@@ -217,7 +219,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 181 | scrapling-0-4-7 | scrapling | 0.4.7 | web-scraping, markdown, cli-tool, uvx, browser-automation | Web scraping tool that converts web pages to Markdown using Scrapling v0.4.7's CLI. Use when extracting content from ... |
 | 182 | semver-2-0-0 | semver | 2.0.0 | versioning, semver, semantic-versioning, releases, dependency-management | Implement and validate Semantic Versioning 2.0.0 to manage software version numbers, determine compatibility, ... |
 | 183 | sentence-transformers-5-4-1 | sentence-transformers | 5.4.1 | embeddings, semantic-search, reranking, nlp, sentence-embeddings | Comprehensive toolkit for computing text embeddings, semantic search, and reranking using Sentence Transformers ... |
-| 184 | sman | sman | 0.1.0 | meta, meta skill, skill package manager, authoring | Skill Package Manager, sman, it is meta skill for skill authoring and skill package manager for AI agents. |
+| 184 | sman | sman | 0.1.1 | meta, meta skill, skill manager, skill package manager, authoring | Skill Package Manager, sman, it is meta skill for skill authoring and skill package manager for AI agents. |
 | 185 | solidjs-1-9-12 | solidjs | 1.9.12 | solidjs, reactivity, signals, jsx, fine-grained | >- |
 | 186 | solid-meta-0-29-0 | solid-meta | 0.29.0 | solidjs, meta-tags, document-head, ssr, seo | Manages document head tags in SolidJS applications with @solidjs/meta v0.29, providing asynchronous SSR-ready ... |
 | 187 | solid-meta-0-29-4 | solid-meta | 0.29.4 | solidjs, meta-tags, document-head, ssr, seo | Manages document head tags in SolidJS applications with @solidjs/meta v0.29.4, providing asynchronous SSR-ready ... |
