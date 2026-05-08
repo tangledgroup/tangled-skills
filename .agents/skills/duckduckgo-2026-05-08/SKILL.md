@@ -3,7 +3,7 @@ name: duckduckgo-2026-05-08
 description: Searches DuckDuckGo using the HTML endpoint (default, html→markdown via scrapling) and JSON API (--format json), returning clean markdown results, quick answers, abstracts, result links, and related topics. Use when performing web searches from the terminal, fetching Wikipedia-style summaries for a topic, or gathering search results into clean LLM context.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
+version: "0.1.1"
 tags:
   - web-search
   - web search
@@ -37,10 +37,10 @@ Both endpoints accept a `q` parameter for the search query. Always URL-encode th
 
 | Format | scrapling (default) | curl | wget |
 |--------|-----------|------|------|
-| **html / markdown** (default) | Native `.md` via `--ai-targeted` | Raw HTML → pandoc → markdown | Raw HTML → pandoc → markdown |
+| **html / markdown** (default) | Native `.md` via `--ai-targeted` + `--css-selector '.web-result'` | Raw HTML → extract `.web-result` → pandoc → markdown | Raw HTML → extract `.web-result` → pandoc → markdown |
 | **json** | Falls back to curl/wget (scrapling breaks JSON) | Raw JSON as-is | Raw JSON as-is |
 
-- **html / markdown** (default): Scrapling provides native `.md` output with anti-bot evasion. curl/wget fetch raw HTML then convert via pandoc.
+- **html / markdown** (default): Scrapling provides native `.md` output with anti-bot evasion and `--css-selector '.web-result'` for targeted extraction. curl/wget fetch raw HTML, extract only `.web-result` elements via python3 html.parser, then convert to markdown via pandoc.
 - **json**: Always uses curl or wget. Scrapling transforms content and breaks JSON parsing.
 - `--pretty` flag prettifies JSON output through `jq .`.
 

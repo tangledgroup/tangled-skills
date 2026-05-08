@@ -37,6 +37,9 @@ BODY=$(ddg_scrapling_fetch "$HTML_URL")            # anti-bot, JS rendering → 
 BODY=$(ddg_curl_fetch "$JSON_URL")                  # enhanced browser headers → raw body
 BODY=$(ddg_wget_fetch "$HTML_URL")                  # fallback → raw body
 
+# HTML filtering (read HTML from stdin, output filtered HTML)
+echo "$RAW_HTML" | ddg_extract_web_results           # extract .web-result elements only
+
 # Filter JSON from stdin (pipe JSON into these functions)
 echo "$RAW_JSON" | ddg_summary
 echo "$RAW_JSON" | ddg_results 5
@@ -57,6 +60,7 @@ echo "$RAW_JSON" | ddg_check
 | `ddg_scrapling_fetch <url>` | Fetch via scrapling | URL | markdown (.md) |
 | `ddg_curl_fetch <url>` | Fetch via curl (enhanced headers) | URL | raw body |
 | `ddg_wget_fetch <url>` | Fetch via wget | URL | raw body |
+| `ddg_extract_web_results` | Extract `.web-result` elements from DDG HTML | stdin HTML | filtered HTML |
 | `ddg_convert_html_to_md` | Convert HTML stdin → markdown | stdin HTML | markdown |
 | `ddg_fetch_json <q> [opts]` | Fetch JSON API response | query + params | raw JSON |
 | `ddg_fetch_html <q>` | Fetch HTML → markdown | query text | markdown |

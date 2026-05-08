@@ -40,6 +40,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 
 
 
+
 ## Skills Table
 
 | No | Skill | Project | Version | Technologies | Description |
@@ -225,7 +226,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 179 | scheme-in-python-2026-05-03 | scheme-in-python | 2026-05-03 | scheme, interpreter, lisp, python, eval-apply | Build a Scheme interpreter in Python covering tokenization, eval/apply loop, environment frames with lexical and ... |
 | 180 | scikit-learn-1-8-0 | scikit-learn | 1.8.0 | machine-learning, classification, regression, clustering, pipelines | Complete scikit-learn 1.8 toolkit for machine learning covering supervised and unsupervised algorithms, pipelines, ... |
 | 181 | scipy-1-17-1 | scipy | 1.17.1 | scipy, scientific-computing, optimization, integration, statistics | Complete SciPy 1.17 toolkit for scientific computing covering optimization, integration, interpolation, eigenvalue ... |
-| 182 | scrapling-0-4-7 | scrapling | 0.4.7 | web-scraping, markdown, cli-tool, uvx, browser-automation | Web scraping tool that converts web pages to Markdown using Scrapling v0.4.7's CLI. Use when extracting content from ... |
+| 182 | scrapling-0-4-7 | scrapling | 0.1.2 | web-search, web scrape, web scraping, browser automation | Web scraping tool that converts web pages to Markdown using Scrapling v0.4.7's CLI. Use when extracting content from ... |
 | 183 | semver-2-0-0 | semver | 2.0.0 | versioning, semver, semantic-versioning, releases, dependency-management | Implement and validate Semantic Versioning 2.0.0 to manage software version numbers, determine compatibility, ... |
 | 184 | sentence-transformers-5-4-1 | sentence-transformers | 5.4.1 | embeddings, semantic-search, reranking, nlp, sentence-embeddings | Comprehensive toolkit for computing text embeddings, semantic search, and reranking using Sentence Transformers ... |
 | 185 | sman | sman | 0.1.1 | meta, meta skill, skill manager, skill package manager, authoring | Skill Package Manager, sman, it is meta skill for skill authoring and skill package manager for AI agents. |

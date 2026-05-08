@@ -37,15 +37,17 @@ Scrapling impersonates Safari, handles JS rendering, and outputs clean markdown 
 
 ## HTML Search with curl or wget (Fallback)
 
-When scrapling is unavailable, use curl or wget with automatic pandoc conversion:
+When scrapling is unavailable, use curl or wget with `.web-result` extraction and pandoc conversion:
 
 ```bash
-# Curl fetches raw HTML, automatically converted to markdown via pandoc
+# Curl fetches raw HTML, extracts .web-result elements, converts to markdown via pandoc
 bash scripts/ddg-search.sh "Rust" --backend curl
 
 # Wget fallback
 bash scripts/ddg-search.sh "Rust" --backend wget
 ```
+
+**How it works:** The curl/wget backends fetch the full HTML page, then `ddg_extract_web_results()` uses python3's built-in `html.parser` to extract only `<div class="...web-result ...">` elements — matching what scrapling does with `--css-selector '.web-result'`. This strips nav, footer, ads, and other page chrome before pandoc converts to markdown.
 
 If pandoc is not installed, a warning is printed to stderr and raw HTML is returned instead.
 

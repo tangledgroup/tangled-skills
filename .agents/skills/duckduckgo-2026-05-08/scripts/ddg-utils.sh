@@ -33,6 +33,9 @@
 #   High-Level Fetch (auto-selects best backend):
 #     ddg_http_fetch      <url>        — Auto-detect and fetch (scrapling > curl > wget)
 #
+#   HTML Filtering:
+#     ddg_extract_web_results  — Extract .web-result elements from DDG HTML stdin
+#
 #   Format Conversion:
 #     ddg_convert_html_to_md  — Convert raw HTML stdin to markdown via pandoc
 #
@@ -206,7 +209,8 @@ ddg_scrapling_fetch() {
 
   uvx 'scrapling[shell]' extract get "$url" "$tmpfile" \
     --impersonate safari \
-    --ai-targeted 2>/dev/null
+    --ai-targeted \
+    --css-selector '.web-result' >/dev/null
 
   local rc=$?
   if [[ $rc -ne 0 ]]; then
@@ -420,6 +424,76 @@ ddg_http_fetch() {
   esac
 }
 
+# ── HTML Filtering ───────────────────────────────────────────────────────────
+
+# ddg_extract_web_results
+#   Extract only .web-result div elements from DuckDuckGo HTML search results.
+#   Reads raw HTML from stdin, outputs filtered HTML to stdout containing only
+#   the search result blocks (titles, URLs, snippets). Strips nav, footer, ads,
+#   and other page chrome that would add noise when converting to markdown.
+#   Uses python3 html.parser (stdlib, no extra deps) for robust parsing of
+#   potentially malformed HTML from the browser.
+#   Streams directly (no bash variable capture) to handle large HTML pages.
+#   Exit 1 if python3 is unavailable or extraction yields zero results.
+ddg_extract_web_results() {
+  if ! command -v python3 &>/dev/null; then
+    echo "Error: ddg_extract_web_results requires 'python3' but it is not available" >&2
+    return 1
+  fi
+
+  # python3 html.parser extracts <div class="...web-result ..."> blocks from stdin.
+  # It handles malformed HTML gracefully (unclosed tags, nested attributes).
+  # Streams directly to stdout — no intermediate bash variable needed.
+  python3 -c '
+import sys
+from html.parser import HTMLParser
+
+class _WebResultExtractor(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self._depth = 0
+        self._capturing = False
+        self._count = 0
+        self._buf = []
+
+    def handle_starttag(self, tag, attrs):
+        cls = dict(attrs).get("class", "")
+        if "web-result" in cls.split() and self._depth == 0:
+            self._capturing = True
+            self._buf = []
+        if self._capturing:
+            self._depth += 1
+            attr_str = " ".join(f"{k}=\"{v}\"" for k, v in attrs if v is not None)
+            self._buf.append(f"<{tag} {attr_str}>")
+
+    def handle_endtag(self, tag):
+        if self._capturing:
+            self._depth -= 1
+            self._buf.append(f"</{tag}>")
+            if self._depth == 0:
+                self._capturing = False
+                self._count += 1
+                sys.stdout.write("".join(self._buf))
+                sys.stdout.write("\n")
+
+    def handle_data(self, data):
+        if self._capturing:
+            self._buf.append(data)
+
+    def handle_startendtag(self, tag, attrs):
+        if self._capturing:
+            attr_str = " ".join(f"{k}=\"{v}\"" for k, v in attrs if v is not None)
+            self._buf.append(f"<{tag} {attr_str}/>")
+
+html = sys.stdin.read()
+p = _WebResultExtractor()
+p.feed(html)
+if p._count == 0:
+    print("Warning: no .web-result elements found in HTML", file=sys.stderr)
+    sys.exit(1)
+'
+}
+
 # ── Format Conversion ────────────────────────────────────────────────────────
 
 # ddg_convert_html_to_md
@@ -474,8 +548,8 @@ ddg_fetch_json() {
 #   Fetch DuckDuckGo HTML endpoint and convert to markdown.
 #   Uses ddg_http_fetch() which auto-selects the best backend (scrapling > curl > wget).
 #   Output is always markdown:
-#     - scrapling: native .md output via --ai-targeted
-#     - curl/wget: raw HTML piped through pandoc for conversion
+#     - scrapling: native .md output via --ai-targeted + --css-selector '.web-result'
+#     - curl/wget: raw HTML → extract .web-result elements → pandoc → markdown
 #   If pandoc is unavailable and backend is curl/wget, returns raw HTML with warning.
 #   Exit 1 if fetch fails (network error, timeout, HTTP error).
 ddg_fetch_html() {
@@ -497,16 +571,16 @@ ddg_fetch_html() {
       ddg_scrapling_fetch "$url"
       ;;
     curl)
-      # Fetch raw HTML, convert to markdown via pandoc
+      # Fetch raw HTML → extract .web-result elements → pandoc → markdown
       local html
       html=$(ddg_curl_fetch "$url") || return 1
-      echo "$html" | ddg_convert_html_to_md
+      echo "$html" | ddg_extract_web_results | ddg_convert_html_to_md
       ;;
     wget)
-      # Fetch raw HTML, convert to markdown via pandoc
+      # Fetch raw HTML → extract .web-result elements → pandoc → markdown
       local html
       html=$(ddg_wget_fetch "$url") || return 1
-      echo "$html" | ddg_convert_html_to_md
+      echo "$html" | ddg_extract_web_results | ddg_convert_html_to_md
       ;;
   esac
 }
