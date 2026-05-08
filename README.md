@@ -32,6 +32,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 
 
 
+
 ## Skills Table
 
 | No | Skill | Project | Version | Technologies | Description |
@@ -182,7 +183,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 144 | pi-mono-0-66-1 | pi-mono | 0.66.1 | ai-coding-agent, terminal-harness, extensions, tui, session-management | Complete implementation guide for pi-mono monorepo architecture covering provider abstraction, agent runtime, ... |
 | 145 | pi-mono-0-71-0 | pi-mono | 0.71.0 | ai-coding-agent, terminal-harness, extensions, tui, session-management | Complete implementation guide for pi-mono monorepo architecture covering provider abstraction, agent runtime, ... |
 | 146 | pinecone-router-7-5-0 | pinecone-router | 7.5.0 | alpinejs, router, spa, client-side-routing, single-page-application | A comprehensive toolkit for building client-side routing in Alpine.js applications using Pinecone Router v7.5, ... |
-| 147 | pipe-0-1-0 | pipe | 0.1.0 | pipe, composition, chaining, workflow, meta-skill | Unix pipe-inspired function composition for LLM agents. Chains multiple operations (skills, tools, MCP tools, user ... |
+| 147 | plan | plan | 0.1.5 | meta, meta-skill, workflow, task-management | Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require ... |
 | 148 | podman-5-8-1 | podman | 5.8.1 | containers, daemonless, rootless, oci, pods | Comprehensive toolkit for Podman 5.8.1, a daemonless container engine providing Docker-compatible CLI for managing ... |
 | 149 | podman-5-8-2 | podman | 5.8.2 | containers, daemonless, rootless, oci, pods | Comprehensive toolkit for Podman 5.8.2, a daemonless container engine providing Docker-compatible CLI for managing ... |
 | 150 | podman-compose-1-5-0 | podman-compose | 1.5.0 | podman, compose, containers, orchestration, devops | Orchestrates multi-container applications using Compose specification files with Podman backend. Use when deploying ... |
