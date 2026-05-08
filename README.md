@@ -34,6 +34,10 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 
 
 
+
+
+
+
 ## Skills Table
 
 | No | Skill | Project | Version | Technologies | Description |
@@ -107,7 +111,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 67 | docker-docs-2026-04-16 | docker-docs | 2026-04-16 | containers, docker-engine, docker-desktop, docker-compose, dockerfile | Comprehensive reference for Docker platform including Docker Engine, |
 | 68 | dspy-3-2-0 | dspy | 3.2.0 | llm-programming, prompt-optimization, ai-compilation, few-shot-learning, instruction-tuning | DSPy is the framework for programming—rather than prompting—language models. It provides modular AI system ... |
 | 69 | duckdb-1-5-2 | duckdb | 1.5.2 | analytics, olap, embedded-database, sql, data-science | High-performance analytical SQL database with support for nested types, vectorized execution, and seamless ... |
-| 70 | duckduckgo-2026-05-08 | duckduckgo | 2026-05-08 | duckduckgo, search, web-search, curl, jq | Searches DuckDuckGo using the public JSON API and HTML endpoint, returning quick answers, abstracts, result links, ... |
+| 70 | duckduckgo-2026-05-08 | duckduckgo | 2026-05-08 | duckduckgo, search, web-search, curl, jq | Searches DuckDuckGo using the HTML endpoint (default, html→markdown via scrapling) and JSON API (--format json), ... |
 | 71 | esbuild-0-28-0 | esbuild | 0.28.0 | javascript, bundler, typescript, jsx, css | Complete toolkit for esbuild v0.28 JavaScript bundler providing CLI, JavaScript API, and Go API access for bundling, ... |
 | 72 | fltk-1-4-5 | fltk | 1.4.5 | fltk, gui, c++, desktop, widgets | Cross-platform C++ GUI toolkit with ~80 widget classes, OpenGL/GLUT integration, drawing primitives, image support ... |
 | 73 | gh-2-91-0 | gh | 2.91.0 | github, cli, devops, automation, ci-cd | GitHub CLI v2.91.0 for managing repositories, pull requests, issues, releases, workflows, codespaces, and more from ... |
