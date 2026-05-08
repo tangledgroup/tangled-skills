@@ -3,14 +3,13 @@ name: scrapling-0-4-7
 description: Web scraping tool that converts web pages to Markdown using Scrapling v0.4.7's CLI. Use when extracting content from URLs, converting web pages to readable Markdown for AI context or documentation, scraping JS-rendered pages with browser automation, or bypassing anti-bot protections with stealthy fetching.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.4.7"
+version: "0.1.2"
 tags:
-  - web-scraping
-  - markdown
-  - cli-tool
-  - uvx
-  - browser-automation
-category: cli-tool
+  - web-search
+  - web scrape
+  - web scraping
+  - browser automation
+category: web
 external_references:
   - https://scrapling.readthedocs.io/en/latest/
   - https://github.com/D4Vinci/Scrapling/tree/v0.4.7
@@ -40,21 +39,16 @@ The default behavior is: user provides a URL → scrape it → return Markdown i
 
 **Default flags:** Every command includes `--ai-targeted` (strips noise for clean AI-ready output). The `get` mode additionally includes `--impersonate safari` (Safari browser headers for better compatibility and lower detection). These defaults apply unless the user explicitly requests different behavior.
 
-Scrapling's CLI requires writing to a file with a `.md` extension to trigger HTML-to-Markdown conversion. The standard workflow uses a temporary file:
+Use `scripts/scrape.sh` (Execute) — a wrapper that handles the temp-file workflow automatically (creates `.md` temp file, runs scrapling, outputs to stdout, cleans up):
 
 ```bash
-TMPFILE=$(mktemp /tmp/scrape-XXXXXX.md)
-uvx 'scrapling[shell]' extract get 'https://example.com' "$TMPFILE" --impersonate safari --ai-targeted
-cat "$TMPFILE"
-rm -f "$TMPFILE"
+bash scripts/scrape.sh 'https://example.com'
 ```
 
-The temp file is always created, read back, then deleted — never left behind.
-
-When the user explicitly requests saving to a file, write directly to the target path instead:
+When saving to a specific file:
 
 ```bash
-uvx 'scrapling[shell]' extract get 'https://example.com' '/path/to/output.md' --impersonate safari --ai-targeted
+bash scripts/scrape.sh -o '/path/to/output.md' 'https://example.com'
 ```
 
 ## Fetch Modes
@@ -64,10 +58,6 @@ Three fetch modes are available. Default is `get` when no mode is specified.
 ### get (alias: simple-fetch)
 
 Plain HTTP request. Fastest option, works for static pages. Default flags: `--impersonate safari --ai-targeted`.
-
-```bash
-uvx 'scrapling[shell]' extract get '<URL>' <output_file> --impersonate safari --ai-targeted
-```
 
 Common options:
 - `-s, --css-selector TEXT` — Extract specific content via CSS selector
@@ -83,10 +73,6 @@ Common options:
 
 Browser automation via DynamicFetcher. Use when the page requires JavaScript to render content. Default flag: `--ai-targeted`. Note: `--impersonate` is not available for browser-based fetchers — they use real browser rendering instead.
 
-```bash
-uvx 'scrapling[shell]' extract fetch '<URL>' <output_file> --ai-targeted
-```
-
 Common options:
 - `--network-idle` — Wait for network idle before extracting
 - `--wait INTEGER` — Additional wait time in milliseconds after page load
@@ -101,10 +87,6 @@ Common options:
 
 Advanced stealth mode via StealthyFetcher. Use when the target site has anti-bot protections (Cloudflare, etc.). Default flag: `--ai-targeted`. Note: `--impersonate` is not available for browser-based fetchers — StealthyFetcher has its own built-in stealth mechanisms.
 
-```bash
-uvx 'scrapling[shell]' extract stealthy-fetch '<URL>' <output_file> --ai-targeted
-```
-
 Common options:
 - `--solve-cloudflare` — Solve Cloudflare challenges automatically
 - `--block-webrtc` — Block WebRTC to prevent IP leaks
@@ -114,61 +96,45 @@ Common options:
 - `-s, --css-selector TEXT` — Extract specific content via CSS selector
 - `--ai-targeted` — Extract only main content, strip noise for AI consumption (default: on)
 
-## Usage Examples
+## CLI Usage
 
-### Default: URL only (get mode, return Markdown inline)
-
-```bash
-TMPFILE=$(mktemp /tmp/scrape-XXXXXX.md)
-uvx 'scrapling[shell]' extract get 'https://example.com' "$TMPFILE" --impersonate safari --ai-targeted
-cat "$TMPFILE"
-rm -f "$TMPFILE"
-```
-
-### Save to a specific file
+The `scripts/scrape.sh` script (Execute) wraps the `uvx 'scrapling[shell]'` CLI, handling temp-file creation, output, and cleanup automatically. Paths are relative to this skill's directory.
 
 ```bash
-uvx 'scrapling[shell]' extract get 'https://example.com' './notes/example.md' --impersonate safari --ai-targeted
+# Default: URL only → Markdown to stdout (get mode, --ai-targeted, --impersonate safari)
+bash scripts/scrape.sh 'https://example.com'
+
+# Save to file instead of stdout
+bash scripts/scrape.sh -o './notes/example.md' 'https://example.com'
+
+# Extract with CSS selector
+bash scripts/scrape.sh -s 'article' 'https://blog.example.com'
+
+# JavaScript-rendered page (fetch mode)
+bash scripts/scrape.sh --mode fetch 'https://app.example.com'
+
+# Anti-bot bypass (stealthy mode)
+bash scripts/scrape.sh --mode stealthy 'https://protected.example.com'
+
+# Pass extra flags for mode-specific options
+bash scripts/scrape.sh --mode fetch --extra '--network-idle' 'https://app.example.com'
+bash scripts/scrape.sh --mode stealthy --extra '--solve-cloudflare' 'https://protected.example.com'
+
+# Override defaults: different browser, no ai-targeted
+bash scripts/scrape.sh --impersonate chrome 'https://example.com'
+bash scripts/scrape.sh --no-ai-targeted 'https://example.com'
 ```
 
-### Extract with CSS selector
-
-```bash
-TMPFILE=$(mktemp /tmp/scrape-XXXXXX.md)
-uvx 'scrapling[shell]' extract get 'https://blog.example.com' "$TMPFILE" --impersonate safari --ai-targeted -s 'article'
-cat "$TMPFILE"
-rm -f "$TMPFILE"
-```
-
-### JavaScript-rendered page (fetch mode)
-
-```bash
-TMPFILE=$(mktemp /tmp/scrape-XXXXXX.md)
-uvx 'scrapling[shell]' extract fetch 'https://app.example.com' "$TMPFILE" --ai-targeted --network-idle
-cat "$TMPFILE"
-rm -f "$TMPFILE"
-```
-
-### Anti-bot bypass (stealthy-fetch mode)
-
-```bash
-TMPFILE=$(mktemp /tmp/scrape-XXXXXX.md)
-uvx 'scrapling[shell]' extract stealthy-fetch 'https://protected.example.com' "$TMPFILE" --ai-targeted --solve-cloudflare
-cat "$TMPFILE"
-rm -f "$TMPFILE"
-```
-
-### Override defaults
-
-If the user requests different behavior (e.g., no impersonation, different browser, or raw output), adjust or omit the default flags accordingly:
-
-```bash
-# Different browser impersonation
-uvx 'scrapling[shell]' extract get 'https://example.com' "$TMPFILE" --impersonate chrome --ai-targeted
-
-# No impersonation, no ai-targeted (raw HTML output)
-uvx 'scrapling[shell]' extract get 'https://example.com' "$TMPFILE"
-```
+**Script options:**
+| Flag | Description |
+|------|-------------|
+| `--mode get\|fetch\|stealthy` | Fetch mode (default: `get`) |
+| `-s, --css-selector TEXT` | Extract specific content via CSS selector |
+| `-o, --output FILE` | Save to file instead of stdout |
+| `--impersonate BROWSER` | Browser headers: `safari` (default), `chrome`, `firefox`. Only for `get` mode. |
+| `--ai-targeted` | Strip noise for AI consumption (default: on) |
+| `--no-ai-targeted` | Disable ai-targeted output |
+| `--extra 'FLAGS'` | Pass extra flags directly to scrapling (e.g., `--network-idle`, `--solve-cloudflare`) |
 
 The `--ai-targeted` flag extracts only main body content, strips noise tags (`script`, `style`, `noscript`, `svg`), removes hidden elements (CSS-hidden, `aria-hidden`, `template` tags), strips zero-width unicode characters, and removes HTML comments. For browser commands (`fetch`/`stealthy-fetch`), it also automatically enables ad blocking.
 
