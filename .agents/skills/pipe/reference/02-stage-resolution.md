@@ -1,27 +1,69 @@
 # Stage Resolution
 
 ## Contents
+- Skill-First Guardrail
 - Script-Assisted Resolution
 - Stage Analysis
 - Resolution Priority Order
 - Ambiguity Resolution
 - Examples of Stage-to-Capability Mapping
 
+## Skill-First Guardrail
+
+**Before resolving any stage as a shell command or free-text instruction, check if a skill can handle it.**
+
+This is the most important rule in stage resolution. The pipe's purpose is to chain agent capabilities — skills are the richest, most structured of those capabilities. Guessing a `bash` command when a dedicated skill exists defeats the purpose and produces weaker results.
+
+### The Rule
+
+When a stage mentions a project name, tool name, domain keyword, or operation that could match an available skill:
+
+1. Extract keywords from the stage text
+2. Run `list-skills.sh --filter <keyword>` to check for matches
+3. If skills match, load the most specific one and let it handle the stage
+4. **Only if no skills match** fall through to built-in tools, MCP calls, or free-text
+
+### What Triggers a Skill Check?
+
+Any of these in stage text should trigger a skill lookup:
+
+| Stage Pattern | Example Keywords | Likely Skill Match |
+|---|---|---|
+| Project/tool name | `ruff`, `curl`, `nginx`, `duckdb` | Exact or near-exact skill name |
+| Domain operation | `search`, `fetch`, `format`, `validate` | Skills tagged with that domain |
+| File format mention | `YAML`, `PDF`, `Dockerfile` | Format-specific skills |
+| Protocol mention | `HTTP`, `SSE`, `WebSocket`, `SSH` | Protocol-specific skills |
+| Framework mention | `aiohttp`, `nextjs`, `solidjs` | Framework-specific skills |
+
+### What Does NOT Trigger a Skill Check?
+
+These patterns are safe to resolve without skill lookup:
+
+| Stage Pattern | Reason |
+|---|---|
+| Direct built-in tool names | `read src/main.py`, `edit file.txt`, `write output.md` — these name built-in tools directly |
+| Pure reasoning/generation | `summarize`, `count them`, `compare results` — no external capability needed |
+| Simple shell operations with no skill equivalent | `ls -la`, `echo hello` — unlikely to have a skill for basic shell commands |
+
 ## Script-Assisted Resolution
 
-Before resolving pipe stages, the agent should obtain an inventory of available skills using the `list-skills.sh` script:
+Use the `list-skills.sh` script to obtain an inventory of available skills:
 
 ```bash
 bash scripts/list-skills.sh
 ```
 
-This outputs a structured list of all available skills with their names, descriptions, and tags. For targeted lookups, use `--filter`:
+For targeted lookups, use `--filter`:
 
 ```bash
 bash scripts/list-skills.sh --filter "search"
 ```
 
-The script provides **pure inventory** — it does not match stages to skills or make any decisions. The agent reads the output and uses it to inform its resolution of each stage.
+The script outputs a structured list of all available skills with their names, descriptions, and tags. For multiple keywords, run the script multiple times or combine filters:
+
+```bash
+bash scripts/list-skills.sh --filter "web" --filter "search"
+```
 
 ### Why a Script?
 
@@ -37,24 +79,24 @@ Stages in a pipe are heterogeneous — each stage carries its own type of intent
 | Stage Type | Characteristics | Example |
 |---|---|---|
 | **Skill invocation** | References a domain, tool, or project that has a corresponding skill | `format with ruff`, `search for "rust async"` |
-| **Tool call** | Directly names a built-in tool or describes a simple file/terminal operation | `read src/main.py`, `bash ls -la` |
+| **Tool call** | Directly names a built-in tool or describes a simple file operation | `read src/main.py`, `write output.txt` |
 | **MCP call** | References an external service or MCP-exposed capability | `query the database via mcp` |
 | **Free-text instruction** | Describes reasoning, analysis, or generation that doesn't map to a specific capability | `summarize top 3 results`, `count them` |
 
 The agent should distinguish these types by analyzing the stage's language:
-- Does it mention a project/tool name? → check skill inventory
-- Does it name a built-in tool? → direct tool call
+- Does it mention a project/tool name? → **check skill inventory first**
+- Does it name a built-in tool directly? → direct tool call
 - Does it describe reasoning or generation? → free-text interpretation
 - When uncertain, check the skill inventory first
 
 ## Resolution Priority Order
 
-After obtaining the skill inventory and analyzing each stage's intent, resolve by checking capabilities in this priority order:
+After analyzing each stage's intent, resolve by checking capabilities in this priority order:
 
-1. **Skill invocation** — Does the stage's intent match an available skill from the inventory?
+1. **Skill invocation** — Run `list-skills.sh --filter <keyword>` to check for matching skills. If found, use the skill.
 2. **Tool call** — Is there a built-in tool (read, bash, edit, write) that performs the operation?
 3. **MCP call** — Is there an MCP server with a relevant tool/resource?
-4. **Free-text interpretation** — Treat as a direct instruction to the agent's reasoning
+4. **Free-text interpretation** — Treat as a direct instruction to the agent's reasoning.
 
 The first match wins. If multiple skills match, prefer the most specific one (narrowest scope that satisfies the stage).
 
@@ -93,13 +135,15 @@ If skills exist for `pip`, `poetry`, and `uv`, and the file is a standard `requi
 
 | Stage Text | Resolved Capability | Reasoning |
 |---|---|---|
-| `read src/main.py` | Built-in `read` tool | Direct tool name match |
-| `bash ls -la` | Built-in `bash` tool | Direct tool name match |
-| `search for "rust async"` | Skill or web search MCP | Keyword match against available skills/MCPs |
+| `read src/main.py` | Built-in `read` tool | Direct built-in tool name — no skill check needed |
+| `write output.md` | Built-in `write` tool | Direct built-in tool name — no skill check needed |
+| `search for "rust async"` | Skill (web-search or duckduckgo) | "search" is a domain operation → run `list-skills.sh --filter search` → find web-search skill |
+| `fetch https://example.com` | Skill (scrapling or jina-ai-reader) | URL fetching has dedicated skills → check inventory first, don't guess `curl` |
 | `summarize top 3 results` | Free-text interpretation | No specific skill/tool — agent reasoning |
 | `format with ruff` | `ruff` skill | Project name in stage text matches skill |
 | `count them` | Free-text interpretation | Context-dependent — agent counts from prior stage output |
 | `find function definitions` | Free-text or code analysis skill | Depends on available skills; falls back to reasoning |
 | `validate YAML header` | Free-text or validation skill | Depends on context and available capabilities |
+| `bash ls -la` | Built-in `bash` tool | Explicit bash invocation — no skill equivalent for basic shell commands |
 
-The key principle: the agent analyzes each stage independently using the skill inventory from `list-skills.sh` and its best judgment. The pipe syntax provides structure, but resolution is agent-driven with script-assisted awareness.
+The key principle: the agent analyzes each stage independently using the skill inventory from `list-skills.sh` and its best judgment. The pipe syntax provides structure, but resolution is agent-driven with script-assisted awareness. **Never guess a shell command when a skill might handle the stage.**

@@ -3,7 +3,7 @@ name: pipe
 description: Unix-style pipe expression syntax for chaining multiple agent operations sequentially. Each stage's output becomes the next stage's implicit context, enabling multi-step workflows in a single expression. Use when chaining 2+ operations where intermediate results feed into subsequent steps — e.g., search then summarize, read then analyze, transform then report.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.2"
+version: "0.1.3"
 tags:
   - pipe
   - meta
@@ -86,24 +86,26 @@ If any stage fails, the pipe stops by default (fail-fast). The agent may report 
 
 Each stage is a free-text instruction. Stages are heterogeneous — they may invoke skills, call built-in tools, invoke MCP servers, or be free-text instructions to the agent's reasoning. The agent must analyze each stage to determine its intent.
 
-### Get the Skill Inventory
+### Skill-First Guardrail
 
-Before resolving stages that might invoke skills, run the list-skills script to get an accurate inventory of available skills:
+**Before resolving any stage as a shell command or free-text instruction, check if a skill can handle it.**
+
+When a stage mentions a project name, tool name, domain keyword, or operation that could match an available skill, the agent **must** run `list-skills.sh` with relevant filters before falling back to bash or free-text:
 
 ```bash
-bash scripts/list-skills.sh [--filter <keyword>]
+bash scripts/list-skills.sh --filter <keyword>
 ```
 
-The script outputs a structured list of all available skills with their names, descriptions, and tags. The agent uses this inventory to make informed decisions — the script does not decide which skill matches, it only provides the list.
+Extract keywords from the stage text (project names, tool names, domain terms) and use them as filters. If the filter returns matching skills, load the most specific one and let it handle the stage. **Only if no skills match** should the agent fall through to built-in tools, MCP calls, or free-text interpretation.
+
+This prevents the agent from guessing shell commands (e.g., `curl`, `grep`, `bash`) when a dedicated skill exists for the operation.
 
 ### Resolution Priority
 
-After obtaining the skill inventory, resolve each stage by checking capabilities in this priority order:
-
-1. **Skill invocation** — Does the stage's intent match an available skill? Use the inventory from `list-skills.sh` to identify candidates. When a skill is chosen, let the skill handle its own logic — never reinterpret or override how a skill works.
-2. **Tool call** — Is there a built-in tool that performs this operation?
+1. **Skill invocation** — Run `list-skills.sh --filter <keyword>` to check for matching skills. If found, use the skill and let it handle its own logic.
+2. **Tool call** — Is there a built-in tool (read, bash, edit, write) that performs this operation?
 3. **MCP call** — Is there an MCP server with a relevant tool/resource?
-4. **Free-text interpretation** — Treat as a direct instruction to the agent's reasoning
+4. **Free-text interpretation** — Treat as a direct instruction to the agent's reasoning.
 
 The agent should resolve each stage independently — different stages in the same pipe can invoke different capability types.
 
@@ -112,7 +114,8 @@ The agent should resolve each stage independently — different stages in the sa
 - **Stages carry diverse intent**: A stage might be a skill invocation, a free-text instruction, a tool call, or a reasoning prompt. Analyze the stage content before deciding.
 - **Never reinterpret skill logic**: Once a skill is selected for a stage, let the skill make its own decisions. The pipe orchestrates the chain but does not control how individual skills operate.
 - **Prefer specificity**: When multiple skills could match, choose the narrowest scope that satisfies the stage.
-- **Fallback gracefully**: If no skill matches and no tool/MCP applies, interpret as free-text instruction.
+- **Never guess shell commands over skills**: If a stage's keywords match any skill, use the skill. Do not invent bash commands to replicate what a skill already provides.
+- **Fallback gracefully**: Only interpret as free-text or bash if no skill matches and no tool/MCP applies.
 
 ## Advanced Topics
 

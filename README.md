@@ -48,6 +48,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 
 
 
+
 ## Skills Table
 
 | No | Skill | Project | Version | Technologies | Description |
