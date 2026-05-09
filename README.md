@@ -44,6 +44,8 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 
 
 
+
+
 ## Skills Table
 
 | No | Skill | Project | Version | Technologies | Description |
@@ -194,7 +196,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 144 | pi-mono-0-66-1 | pi-mono | 0.66.1 | ai-coding-agent, terminal-harness, extensions, tui, session-management | Complete implementation guide for pi-mono monorepo architecture covering provider abstraction, agent runtime, ... |
 | 145 | pi-mono-0-71-0 | pi-mono | 0.71.0 | ai-coding-agent, terminal-harness, extensions, tui, session-management | Complete implementation guide for pi-mono monorepo architecture covering provider abstraction, agent runtime, ... |
 | 146 | pinecone-router-7-5-0 | pinecone-router | 7.5.0 | alpinejs, router, spa, client-side-routing, single-page-application | A comprehensive toolkit for building client-side routing in Alpine.js applications using Pinecone Router v7.5, ... |
-| 147 | pipe | pipe | 0.1.1 | pipe, meta, meta-skill, chaining, workflow | Unix-style pipe expression syntax for chaining multiple agent operations sequentially. Each stage's output becomes ... |
+| 147 | pipe | pipe | 0.1.2 | pipe, meta, meta-skill, chaining, workflow | Unix-style pipe expression syntax for chaining multiple agent operations sequentially. Each stage's output becomes ... |
 | 148 | plan | plan | 0.1.5 | meta, meta-skill, workflow, task-management | Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require ... |
 | 149 | podman-5-8-1 | podman | 5.8.1 | containers, daemonless, rootless, oci, pods | Comprehensive toolkit for Podman 5.8.1, a daemonless container engine providing Docker-compatible CLI for managing ... |
 | 150 | podman-5-8-2 | podman | 5.8.2 | containers, daemonless, rootless, oci, pods | Comprehensive toolkit for Podman 5.8.2, a daemonless container engine providing Docker-compatible CLI for managing ... |

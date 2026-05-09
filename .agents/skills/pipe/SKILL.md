@@ -3,7 +3,7 @@ name: pipe
 description: Unix-style pipe expression syntax for chaining multiple agent operations sequentially. Each stage's output becomes the next stage's implicit context, enabling multi-step workflows in a single expression. Use when chaining 2+ operations where intermediate results feed into subsequent steps — e.g., search then summarize, read then analyze, transform then report.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.1"
+version: "0.1.2"
 tags:
   - pipe
   - meta
@@ -38,36 +38,38 @@ pipe := stage ( "|" stage )*
 stage := <free-text-instruction>
 ```
 
-A pipe expression starts with at least one stage. Each additional stage is preceded by `|`. Whitespace around `|` is optional but recommended for readability.
+A pipe expression starts with at least one stage. Each additional stage is preceded by ` | `. Whitespace around `|` is recommended for readability.
 
-**Never start or end a line with `|`** — this is treated as a markdown table delimiter and will confuse the user, agent, and LLM.
+**Always keep pipes on a single line.** Starting a line with `|` triggers markdown table rendering and will corrupt the pipe expression. For long pipes, enclose the entire expression in a code block.
 
 ### Valid Pipes
 
-Example 1:
+Example 1 — Research workflow:
 ```
-/pipe search for "rust programming" | summarize top 3 results | read src/main.py | find all function definitions | list them with line numbers | bash ls -la | filter hidden files | count them
-```
-
-Example 2:
-```
-/pipe search for "rust programming" | summarize top 3 results |
-read src/main.py | find all function definitions | list them with line numbers |
-bash ls -la | filter hidden files | count them
+/pipe search for "rust async runtime comparison" | summarize top 3 results | generate comparison table
 ```
 
+Example 2 — Code analysis workflow:
+```
+/pipe read src/main.py | find all function definitions | list them with line numbers | count total functions
+```
+
+Example 3 — Long pipe in a code block:
+```
+/pipe search for "distributed consensus algorithms" | summarize top 5 results | extract key terms from summaries | generate comparison table
+```
 
 A single-stage pipe is syntactically valid but pointless — use pipes only when chaining 2+ stages.
 
 ### Escaping `|` Inside a Stage
 
-When a stage's free-text instruction contains a literal `|`, quote it with backticks or parentheses:
+When a stage's free-text instruction contains a literal `|`, wrap it in backticks, double quotes, or parentheses. The agent parses `|` delimiters at the top level only — ignoring `|` characters inside quoted strings, backticks, or parentheses.
 
 ```
-/pipe read config.yaml | extract field "type | category"
+/pipe read config.yaml | extract field `type | category`
 ```
 
-Here `"type | category"` inside quotes is treated as literal text within the second stage, not as a pipe delimiter. The agent should parse `|` delimiters at the top level only — ignoring `|` characters that appear inside quoted strings, backticks, or parentheses.
+Here `` `type | category` `` inside backticks is treated as literal text within the second stage, not as a pipe delimiter.
 
 ## Execution Model
 
