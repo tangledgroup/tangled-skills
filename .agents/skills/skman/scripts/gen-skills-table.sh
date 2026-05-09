@@ -214,28 +214,55 @@ sorted=$(sort -t$'\t' -k1,1 "$tmpfile" | cut -f2- | awk '{
   print
 }')
 
-# Build the complete table section
-table="## Skills Table"
-table="${table}"$'\n'
-table="${table}"$'\n'"| No | Skill | Project | Version | Technologies | Description |"
-table="${table}"$'\n'"|----|-------|---------|---------|--------------|-------------|"
-table="${table}"$'\n'"${sorted}"
+# Build the complete replacement block
+# Format: one blank line before heading, table content, one blank line after
+# Strip trailing newline from sorted to control spacing precisely
+sorted_trimmed=$(printf '%s' "$sorted")
 
-# Update README.md: replace everything from "## Skills Table" to just before
-# "## Statistics". Preserve content before and after.
-awk -v table="$table" '
-  BEGIN { printed_table=0; in_section=0 }
-  /^## Skills Table/ {
-    in_section=1
-    print ""
-    print table
-    next
-  }
-  /^## Statistics/ {
-    in_section=0
-  }
-  !in_section { print }
-' "$README_PATH" > "${README_PATH}.tmp"
+replacement=$(cat <<'ENDOFBLOCK'
+
+## Skills Table
+
+| No | Skill | Project | Version | Technologies | Description |
+|----|-------|---------|---------|--------------|-------------|
+ENDOFBLOCK
+)
+replacement+=$'\n'"${sorted_trimmed}"
+# Ensure trailing newline (command substitution strips it)
+replacement+=$'\n'
+
+# Update README.md: replace everything from "## Skills Table" through any
+# trailing blank lines up to "## Statistics". Preserve content before and after.
+# Use a two-pass approach: first extract the "before" part (stripping trailing
+# blanks), then write replacement + "after" part.
+
+skills_table_line=$(grep -n '^## Skills Table$' "$README_PATH" | head -1 | cut -d: -f1)
+stats_line=$(grep -n '^## Statistics$' "$README_PATH" | head -1 | cut -d: -f1)
+
+if [[ -z "$skills_table_line" || -z "$stats_line" ]]; then
+  echo "Error: Could not find ## Skills Table or ## Statistics in $README_PATH" >&2
+  exit 1
+fi
+
+# Find the last non-blank line before ## Skills Table
+before_end=$((skills_table_line - 1))
+while [[ $before_end -gt 0 ]]; do
+  line=$(sed -n "${before_end}p" "$README_PATH")
+  if [[ -n "$line" ]]; then
+    break
+  fi
+  before_end=$((before_end - 1))
+done
+
+# Extract parts and rebuild
+# replacement already ends with \n, so printf '%s' gives us the trailing newline
+# Then echo "" adds one more blank line before ## Statistics
+{
+  head -n "$before_end" "$README_PATH"
+  printf '%s' "$replacement"
+  echo ""
+  tail -n "+${stats_line}" "$README_PATH"
+} > "${README_PATH}.tmp"
 
 mv -f "${README_PATH}.tmp" "$README_PATH"
 

@@ -14,14 +14,12 @@ curl -L https://github.com/tangledgroup/tangled-skills/archive/refs/heads/main.t
 tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skills
 ```
 
-
 ### Skill Design Principles
 
 - **Detailed yet concise**: Skills provide comprehensive coverage while staying within typical LLM context limits
 - **Modular reference files**: Large topics are broken down into separate reference files that can be loaded on demand
 - **Markdown only**: All skill files are plain Markdown documents - no scripts or executable code
 - **Reference-driven**: Each skill links to official documentation and public resources for further exploration
-
 
 ## Skills Table
 
@@ -255,7 +253,6 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 226 | yq-4-53-2 | yq | 4.53.2 | yaml, json, xml, ini, csv | >- |
 | 227 | zeromq-wiki-3-2-0 | zeromq-wiki | 3.2.0 | zeromq, messaging, distributed-systems, networking, sockets | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and ... |
 | 228 | zeromq-zguide-3-2-0 | zeromq-zguide | 3.2.0 | zeromq, zmq, messaging, sockets, distributed-systems | Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and ... |
-
 
 ## Statistics
 
