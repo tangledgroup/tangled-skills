@@ -22,26 +22,28 @@ The code block preserves all `|` characters literally and avoids markdown parsin
 
 ## Composition With Other Meta-Skills
 
-Pipes compose with other meta-skills to drive structured workflows:
+Pipes compose with other meta-skills to drive structured workflows. The pipe provides the execution chain; the meta-skill provides the framework or tracking.
 
-### Pipe + Plan
+### Pipe Within Workflow Tasks
 
-Use pipes within plan tasks to specify multi-step execution for a single task:
+Use pipes within workflow task definitions to specify multi-step execution for a single task:
 
-```markdown
-- ☐ Task 3.2 Analyze and report (depends on: Task 3.1)
-  - Execute: /pipe read analysis-data.csv | compute statistics | generate report
+```
+Task: Analyze and report
+Execute: /pipe read analysis-data.csv | compute statistics | generate report
 ```
 
-The pipe defines the concrete steps; the plan tracks completion status.
+The pipe defines the concrete steps; the workflow skill tracks completion status.
 
-### Pipe + Evaluation-Driven Development
+### Pipe With Evaluation Workflows
 
-Combine pipes with [Evaluation-Driven Development](../skman/reference/01-evaluation-driven-development.md) to chain evaluation steps:
+Combine pipes with evaluation workflows to chain test steps:
 
 ```
 /pipe run baseline test without skill | record results | load skill and re-run same test | record results | compare scores and identify gaps
 ```
+
+The pipe sequences the evaluation steps; the evaluation framework interprets the results.
 
 ## Reusable Pipe Templates
 

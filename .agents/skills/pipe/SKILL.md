@@ -20,7 +20,7 @@ category: meta
 
 Pipe provides a unix-pipe-like expression syntax for chaining multiple agent operations sequentially. Just as `grep | sort | uniq` passes data through a pipeline of shell commands, `/pipe stage1 | stage2 | stage3` passes context through a sequence of agent stages.
 
-Each stage is evaluated left-to-right. The output (or result context) of one stage implicitly becomes the input context for the next stage. Stages can invoke skills, call tools, invoke MCP servers, or execute free-text instructions — the agent resolves each stage independently based on available capabilities.
+Each stage is evaluated left-to-right. The output (or result context) of one stage implicitly becomes the input context for the next stage. Stages can invoke skills, call tools, invoke MCP servers, or execute free-text instructions — the agent analyzes each stage independently to determine its intent.
 
 ## When to Use
 
@@ -76,7 +76,7 @@ Here `` `type | category` `` inside backticks is treated as literal text within 
 Pipes execute **sequentially, left-to-right**. Each stage:
 
 1. Receives the accumulated context from all previous stages
-2. Resolves to a capability (skill, tool, MCP call, or free-text instruction)
+2. Is analyzed by the agent to determine its intent (skill, tool, MCP, or free-text)
 3. Executes and produces output
 4. Passes its output as implicit context to the next stage
 
@@ -84,21 +84,42 @@ If any stage fails, the pipe stops by default (fail-fast). The agent may report 
 
 ## Stage Resolution
 
-Each stage is a free-text instruction. The agent resolves it by checking available capabilities in this priority order:
+Each stage is a free-text instruction. Stages are heterogeneous — they may invoke skills, call built-in tools, invoke MCP servers, or be free-text instructions to the agent's reasoning. The agent must analyze each stage to determine its intent.
 
-1. **Skill match** — Does an available skill's description match this stage's intent?
+### Get the Skill Inventory
+
+Before resolving stages that might invoke skills, run the list-skills script to get an accurate inventory of available skills:
+
+```bash
+bash scripts/list-skills.sh [--filter <keyword>]
+```
+
+The script outputs a structured list of all available skills with their names, descriptions, and tags. The agent uses this inventory to make informed decisions — the script does not decide which skill matches, it only provides the list.
+
+### Resolution Priority
+
+After obtaining the skill inventory, resolve each stage by checking capabilities in this priority order:
+
+1. **Skill invocation** — Does the stage's intent match an available skill? Use the inventory from `list-skills.sh` to identify candidates. When a skill is chosen, let the skill handle its own logic — never reinterpret or override how a skill works.
 2. **Tool call** — Is there a built-in tool that performs this operation?
 3. **MCP call** — Is there an MCP server with a relevant tool/resource?
-4. **Free-text interpretation** — Treat as a direct instruction to the agent
+4. **Free-text interpretation** — Treat as a direct instruction to the agent's reasoning
 
 The agent should resolve each stage independently — different stages in the same pipe can invoke different capability types.
+
+### Stage Analysis Principles
+
+- **Stages carry diverse intent**: A stage might be a skill invocation, a free-text instruction, a tool call, or a reasoning prompt. Analyze the stage content before deciding.
+- **Never reinterpret skill logic**: Once a skill is selected for a stage, let the skill make its own decisions. The pipe orchestrates the chain but does not control how individual skills operate.
+- **Prefer specificity**: When multiple skills could match, choose the narrowest scope that satisfies the stage.
+- **Fallback gracefully**: If no skill matches and no tool/MCP applies, interpret as free-text instruction.
 
 ## Advanced Topics
 
 **Execution Model**: Sequential evaluation rules, context propagation, output passing → [Execution Model](reference/01-execution-model.md)
 
-**Stage Resolution**: How the agent resolves free-text to skills, tools, and MCP calls → [Stage Resolution](reference/02-stage-resolution.md)
+**Stage Resolution**: Script-assisted resolution, stage analysis, capability mapping → [Stage Resolution](reference/02-stage-resolution.md)
 
 **Error Handling**: Failure modes, error propagation strategies, recovery patterns → [Error Handling](reference/03-error-handling.md)
 
-**Advanced Patterns**: Multi-line pipes, composition with other meta-skills, reusable templates → [Advanced Patterns](reference/04-advanced-patterns.md)
+**Advanced Patterns**: Multi-line pipes, composition with meta-skills, reusable templates → [Advanced Patterns](reference/04-advanced-patterns.md)
