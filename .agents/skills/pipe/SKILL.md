@@ -3,7 +3,7 @@ name: pipe
 description: Unix-style pipe expression syntax for chaining multiple agent operations sequentially. Each stage's output becomes the next stage's implicit context, enabling multi-step workflows in a single expression. Use when chaining 2+ operations where intermediate results feed into subsequent steps — e.g., search then summarize, read then analyze, transform then report.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
+version: "0.1.1"
 tags:
   - pipe
   - meta
@@ -44,19 +44,18 @@ A pipe expression starts with at least one stage. Each additional stage is prece
 
 ### Valid Pipes
 
+Example 1:
 ```
-/pipe search for "rust programming" | summarize top 3 results
-| read src/main.py | find all function definitions | list them with line numbers
-| bash ls -la | filter hidden files | count them
+/pipe search for "rust programming" | summarize top 3 results | read src/main.py | find all function definitions | list them with line numbers | bash ls -la | filter hidden files | count them
 ```
 
-### Invalid Pipes
+Example 2:
+```
+/pipe search for "rust programming" | summarize top 3 results |
+read src/main.py | find all function definitions | list them with line numbers |
+bash ls -la | filter hidden files | count them
+```
 
-```
-/pipe search for "rust" | summarize          # Missing leading | (if multi-line continuation)
-| search for "rust"                          # Leading | with no preceding stage on same line
-|                                              # Empty pipe, no stages
-```
 
 A single-stage pipe is syntactically valid but pointless — use pipes only when chaining 2+ stages.
 

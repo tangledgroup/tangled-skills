@@ -1,9 +1,9 @@
 ---
-name: sman
-description: Skill Package Manager, sman, it is meta skill for skill authoring and skill package manager for AI agents.
+name: skman
+description: Skill Package Manager, skman, it is meta skill for skill authoring and skill package manager for AI agents.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.1"
+version: "0.2.0"
 tags:
   - meta
   - meta skill
@@ -17,7 +17,7 @@ external_references:
   - https://pi.dev/docs/latest/skills
 ---
 
-# sman - Skill Package Manager
+# skman - Skill Package Manager
 
 ## Overview
 
