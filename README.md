@@ -23,32 +23,6 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 - **Reference-driven**: Each skill links to official documentation and public resources for further exploration
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Skills Table
 
 | No | Skill | Project | Version | Technologies | Description |
@@ -199,7 +173,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 144 | pi-mono-0-66-1 | pi-mono | 0.66.1 | ai-coding-agent, terminal-harness, extensions, tui, session-management | Complete implementation guide for pi-mono monorepo architecture covering provider abstraction, agent runtime, ... |
 | 145 | pi-mono-0-71-0 | pi-mono | 0.71.0 | ai-coding-agent, terminal-harness, extensions, tui, session-management | Complete implementation guide for pi-mono monorepo architecture covering provider abstraction, agent runtime, ... |
 | 146 | pinecone-router-7-5-0 | pinecone-router | 7.5.0 | alpinejs, router, spa, client-side-routing, single-page-application | A comprehensive toolkit for building client-side routing in Alpine.js applications using Pinecone Router v7.5, ... |
-| 147 | pipe | pipe | 0.1.2 | pipe, meta, meta-skill, chaining, workflow | Unix-style pipe expression syntax for chaining multiple agent operations sequentially. Each stage's output becomes ... |
+| 147 | pipe | pipe | 0.1.3 | pipe, meta, meta-skill, chaining, workflow | Unix-style pipe expression syntax for chaining multiple agent operations sequentially. Each stage's output becomes ... |
 | 148 | plan | plan | 0.1.5 | meta, meta-skill, workflow, task-management | Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require ... |
 | 149 | podman-5-8-1 | podman | 5.8.1 | containers, daemonless, rootless, oci, pods | Comprehensive toolkit for Podman 5.8.1, a daemonless container engine providing Docker-compatible CLI for managing ... |
 | 150 | podman-5-8-2 | podman | 5.8.2 | containers, daemonless, rootless, oci, pods | Comprehensive toolkit for Podman 5.8.2, a daemonless container engine providing Docker-compatible CLI for managing ... |
@@ -275,12 +249,14 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 220 | usearch-2-25-1 | usearch | 2.25.1 | vector-search, ann, hnsw, similarity-search, clustering | High-performance single-file similarity search and clustering engine for vectors using HNSW algorithm with ... |
 | 221 | uv-0-11-6 | uv | 0.11.6 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | A skill for using uv 0.11.6, an extremely fast Python package and project manager written in Rust that replaces pip, ... |
 | 222 | uv-0-11-8 | uv | 0.11.8 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | A skill for using uv 0.11.8, an extremely fast Python package and project manager written in Rust that replaces pip, ... |
-| 223 | web-fetch | web-fetch | 0.1.0 | meta, meta-skill, web-fetch, scraping, markdown | Fetches web pages and converts them to clean Markdown. Delegates to the local scrapling-0-4-7 skill for all URL ... |
-| 224 | web-search | web-search | 0.1.0 | meta, meta-skill, web-search, search, meta-skill | Meta skill that delegates web search tasks to the local duckduckgo-2026-05-08 skill. Use when performing web ... |
+| 223 | webfetch | webfetch | 0.1.0 | meta, meta-skill, webfetch, scraping, markdown | Fetches web pages and converts them to clean Markdown. Delegates to the local scrapling-0-4-7 skill for all URL ... |
+| 224 | websearch | websearch | 0.1.0 | meta, meta-skill, websearch, search, meta-skill | Meta skill that delegates web search tasks to the local duckduckgo-2026-05-08 skill. Use when performing web ... |
 | 225 | yjs-13-6-30 | yjs | 13.6.30 | yjs, crdt, collaborative-editing, real-time, shared-types | CRDT framework that exposes shared types (Y.Map, Y.Array, Y.Text, Y.XmlFragment) for conflict-free collaborative ... |
 | 226 | yq-4-53-2 | yq | 4.53.2 | yaml, json, xml, ini, csv | >- |
 | 227 | zeromq-wiki-3-2-0 | zeromq-wiki | 3.2.0 | zeromq, messaging, distributed-systems, networking, sockets | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and ... |
 | 228 | zeromq-zguide-3-2-0 | zeromq-zguide | 3.2.0 | zeromq, zmq, messaging, sockets, distributed-systems | Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and ... |
+
+
 ## Statistics
 
 - **Total Skills**: 228

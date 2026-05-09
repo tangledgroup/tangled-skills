@@ -1,5 +1,5 @@
 ---
-name: web-search
+name: websearch
 description: Meta skill that delegates web search tasks to the local duckduckgo-2026-05-08 skill. Use when performing web searches, fetching Wikipedia summaries, or gathering search results into LLM context.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
@@ -7,7 +7,7 @@ version: "0.1.0"
 tags:
   - meta
   - meta-skill
-  - web-search
+  - websearch
   - search
   - meta-skill
 category: meta

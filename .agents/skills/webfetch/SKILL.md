@@ -1,5 +1,5 @@
 ---
-name: web-fetch
+name: webfetch
 description: Fetches web pages and converts them to clean Markdown. Delegates to the local scrapling-0-4-7 skill for all URL extraction, JS-rendered page scraping, and anti-bot bypass. Use when retrieving webpage content, converting URLs to readable text, or fetching live web data for AI context.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
@@ -7,7 +7,7 @@ version: "0.1.0"
 tags:
   - meta
   - meta-skill
-  - web-fetch
+  - webfetch
   - scraping
   - markdown
   - url-extraction
