@@ -1,6 +1,6 @@
 ---
 name: lua-5-5-0
-description: Lightweight embeddable scripting language with a small C footprint, dynamic typing via tables, coroutines for cooperative multitasking, and a powerful C API for embedding. Use when writing Lua scripts, embedding Lua in C/C++ applications, creating DSLs or configuration languages, building game scripting systems, extending applications with runtime code, or working with Lua-based ecosystems (Neovim plugins, OpenResty, LÖVE2D).
+description: Lightweight embeddable scripting language with a small C footprint, dynamic typing via tables, coroutines, and a powerful C API for embedding. Use when writing Lua scripts, embedding Lua in C/C++ applications, creating DSLs or configuration languages, building game scripting systems, or working with Lua-based ecosystems (Neovim, OpenResty, LÖVE2D).
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

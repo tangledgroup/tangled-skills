@@ -1,6 +1,6 @@
 ---
 name: peg-2026-05-03
-description: Parsing Expression Grammars (PEGs) — recognition-based formal grammars using ordered choice to eliminate ambiguity, with linear-time packrat parsing. Covers operators, algorithms, left recursion handling, grammar design, practical implementations (CPython pegen, DuckDB, LPeg, PeppaPEG, Mouse, Guile), CFG/regex comparisons, and undecidability. Use when designing language parsers, implementing scannerless parsing, or prototyping new language grammar.
+description: Parsing Expression Grammars (PEGs) — recognition-based formal grammars using ordered choice to eliminate ambiguity, with linear-time packrat parsing. Covers operators, left recursion handling, grammar design, practical implementations (CPython pegen, DuckDB, LPeg), and CFG/regex comparisons. Use when designing language parsers, implementing scannerless parsing, or prototyping new language grammar.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

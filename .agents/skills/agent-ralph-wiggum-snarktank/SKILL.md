@@ -1,6 +1,6 @@
 ---
 name: agent-ralph-wiggum-snarktank
-description: Autonomous AI coding loop that runs AI coding tools (Amp or Claude Code) repeatedly until all PRD items are complete. Each iteration is a fresh instance with clean context. Memory persists via git history, progress.txt, and prd.json. Use when building features hands-free through iterative AI loops, shipping code while away, or implementing spec-driven development with the Ralph Wiggum technique derived from Geoffrey Huntley's original pattern.
+description: Autonomous AI coding loop that runs AI coding tools (Amp or Claude Code) repeatedly until all PRD items are complete. Each iteration is a fresh instance with clean context. Memory persists via git history, progress.txt, and prd.json. Use when building features hands-free through iterative AI loops, shipping code while away, or implementing spec-driven development with the Ralph Wiggum technique.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

@@ -1,6 +1,6 @@
 ---
 name: chonkie-1-6-2
-description: A skill for using Chonkie 1.6.2, a lightweight Rust-based text chunking library for RAG pipelines providing 10+ chunking strategies, pipeline orchestration, embeddings support, and vector database integrations with Python and JavaScript APIs. Use when building document ingestion pipelines for retrieval-augmented generation, splitting text into semantically meaningful chunks, or constructing end-to-end CHOMP workflows (fetch, clean, chunk, refine, store).
+description: Lightweight Rust-based text chunking library for RAG pipelines providing 10+ chunking strategies, pipeline orchestration, and vector database integrations with Python and JavaScript APIs. Use when building document ingestion pipelines for retrieval-augmented generation, splitting text into meaningful chunks, or constructing CHOMP workflows.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

@@ -1,6 +1,6 @@
 ---
 name: tinycc-0-9-27
-description: Complete toolkit for TinyCC 0.9.27, a small hyper-fast C compiler that generates native x86/x86_64/ARM code directly without an external assembler or linker. Use when compiling C code extremely fast, creating C scripts with shebangs, using libtcc for dynamic code generation at runtime, performing memory/bounds checking during development, building rescue disk toolchains, or cross-compiling for ARM and TMS320C67xx targets.
+description: Complete toolkit for TinyCC 0.9.27, a small hyper-fast C compiler generating native x86/x86_64/ARM code without an external assembler or linker. Use when compiling C code extremely fast, creating C scripts with shebangs, using libtcc for dynamic code generation, performing memory/bounds checking, or cross-compiling for ARM targets.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

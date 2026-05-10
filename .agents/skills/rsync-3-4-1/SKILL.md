@@ -1,6 +1,6 @@
 ---
 name: rsync-3-4-1
-description: Complete toolkit for rsync 3.4.1, the fast and versatile file-copying tool using delta-transfer algorithm. Use when backing up files, mirroring directories, syncing data across hosts via SSH or rsync daemon, implementing incremental backups with --link-dest or --backup-dir, creating batch updates for bulk deployments, configuring rsyncd.conf daemons, or managing complex include/exclude filter rules.
+description: Complete toolkit for rsync 3.4.1, the fast file-copying tool using delta-transfer algorithm. Use when backing up files, mirroring directories, syncing data across hosts via SSH or rsync daemon, implementing incremental backups, configuring rsyncd.conf daemons, or managing filter rules.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

@@ -1,6 +1,6 @@
 ---
 name: matplotlib-3-10-8
-description: Comprehensive toolkit for Matplotlib 3.10.8, the Python plotting library for creating static, animated, and interactive visualizations. Use when generating plots (line, scatter, bar, histogram, contour, 3D), customizing figures/axes/colors/text, managing backends and output formats (PNG, SVG, PDF, PS), configuring rcParams, building subplots/gridspecs, animations, or integrating with Jupyter notebooks.
+description: Comprehensive toolkit for Matplotlib 3.10.8, the Python plotting library for static, animated, and interactive visualizations. Use when generating plots (line, scatter, bar, histogram, contour, 3D), customizing figures/axes/colors/text, managing backends and output formats, configuring rcParams, building subplots/gridspecs, or integrating with Jupyter notebooks.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

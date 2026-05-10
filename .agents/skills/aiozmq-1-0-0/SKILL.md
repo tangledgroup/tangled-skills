@@ -1,6 +1,6 @@
 ---
 name: aiozmq-1-0-0
-description: Async ZeroMQ integration for Python asyncio providing transport-level APIs, stream abstraction, and RPC frameworks (request-reply, pipeline, pub-sub) for building distributed applications. Use when building async Python applications requiring message-oriented middleware, remote procedure calls over ZeroMQ, or event-driven distributed systems with high-performance messaging that cooperates with uvloop and aiohttp.
+description: Async ZeroMQ integration for Python asyncio providing transport-level APIs, stream abstraction, and RPC frameworks (request-reply, pipeline, pub-sub). Use when building async Python applications requiring message-oriented middleware, remote procedure calls over ZeroMQ, or event-driven distributed systems with high-performance messaging.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

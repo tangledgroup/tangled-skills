@@ -1,6 +1,6 @@
 ---
 name: opentelemetry-1-56-0
-description: Complete OpenTelemetry 1.56.0 specification toolkit for implementing distributed tracing, metrics collection, and logging across polyglot applications. Use when instrumenting services with OTel SDKs, configuring OTLP exporters, implementing sampling strategies (including AlwaysRecord), setting up context propagation with environment variable carriers, or building observability pipelines following the official OTel 1.56.0 spec.
+description: Complete OpenTelemetry 1.56.0 specification toolkit for implementing distributed tracing, metrics collection, and logging across polyglot applications. Use when instrumenting services with OTel SDKs, configuring OTLP exporters, implementing sampling strategies, setting up context propagation, or building observability pipelines following the OTel 1.56.0 spec.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

@@ -1,6 +1,6 @@
 ---
 name: usearch-2-25-1
-description: High-performance single-file similarity search and clustering engine for vectors using HNSW algorithm with user-defined metrics, quantization, and multi-language bindings (Python, C++, Rust, JavaScript, Java, Go, C, Swift, C#, Wolfram). Use when building vector search applications, implementing approximate nearest neighbors (ANN) search, performing semantic search, molecular similarity matching, geospatial indexing, or requiring faster alternatives to FAISS with custom distance functions.
+description: High-performance single-file similarity search engine for vectors using HNSW with user-defined metrics, quantization, and multi-language bindings (Python, C++, Rust, JavaScript, Go, Swift, C#, Wolfram). Use when building vector search applications, implementing ANN search, performing semantic search, or requiring faster alternatives to FAISS.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

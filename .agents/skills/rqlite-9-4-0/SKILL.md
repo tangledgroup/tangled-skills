@@ -23,7 +23,7 @@ external_references:
 
 ## Overview
 
-rqlite is a lightweight, fault-tolerant, distributed relational database built on [SQLite](https://www.sqlite.org/). It combines SQLite's simplicity and rock-solid reliability with the Raft consensus algorithm for automatic replication across multiple nodes. The latest stable release is **v9.4.5**.
+rqlite is a lightweight, fault-tolerant, distributed relational database built on [SQLite](https://www.sqlite.org/). It combines SQLite's simplicity and rock-solid reliability with the Raft consensus algorithm for automatic replication across multiple nodes.
 
 rqlite is delivered as a single self-contained binary with no external dependencies. Every write goes through the Raft log, ensuring strong consistency and high availability — every node in a cluster has a full copy of the database. It prioritizes data safety and availability over raw write throughput, making it ideal for applications where keeping data safe and available matters more than maximum write scaling.
 

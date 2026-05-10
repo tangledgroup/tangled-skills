@@ -1,6 +1,6 @@
 ---
 name: caddy-2-11-2
-description: Complete Caddy 2.11.2 web server toolkit covering Caddyfile configuration, JSON API, CLI commands, automatic HTTPS with Let's Encrypt and ZeroSSL, reverse proxy, TLS/SSL setup, PKI, modules, and extensions. Use when configuring Caddy as a web server or reverse proxy, setting up automatic HTTPS, creating Caddyfile configurations, managing certificates, building Go applications on Caddy platform, or implementing production-ready HTTP/HTTPS servers with zero downtime reloads.
+description: Complete Caddy 2.11.2 web server toolkit covering Caddyfile configuration, JSON API, automatic HTTPS with Let's Encrypt and ZeroSSL, reverse proxy, TLS/SSL, PKI, and modules. Use when configuring Caddy as a web server or reverse proxy, setting up automatic HTTPS, managing certificates, or implementing production-ready HTTP/HTTPS servers.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

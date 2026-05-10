@@ -1,6 +1,6 @@
 ---
 name: htmx-4-0-0
-description: "A skill for building interactive web applications with htmx 4.0 (currently at 4.0.0-beta2), a JavaScript library that provides HTML attributes for AJAX requests, CSS transitions, WebSockets, and Server-Sent Events without writing JavaScript. Use when creating dynamic user interfaces with hypermedia-driven architecture, migrating from htmx 2.x, or implementing modern web patterns using declarative HTML syntax. Note: 4.0 is not yet a stable release — latest stable is 2.0.10."
+description: "Build interactive web applications with htmx 4.0, a JavaScript library providing HTML attributes for AJAX, CSS transitions, WebSockets, and SSE without writing JavaScript. Use when creating dynamic user interfaces with hypermedia-driven architecture, migrating from htmx 2.x, or implementing declarative HTML patterns. Note: 4.0 is a beta release."
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

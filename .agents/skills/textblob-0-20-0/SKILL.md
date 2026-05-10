@@ -1,6 +1,6 @@
 ---
 name: textblob-0-20-0
-description: Python library for simplified natural language processing providing part-of-speech tagging, noun phrase extraction, sentiment analysis, classification (Naive Bayes, Decision Tree), tokenization, word inflection, lemmatization, spelling correction, and WordNet integration. Use when building text processing pipelines, performing quick NLP tasks without complex setup, or integrating with NLTK and pattern libraries.
+description: Python library for simplified natural language processing providing POS tagging, noun phrase extraction, sentiment analysis, classification (Naive Bayes, Decision Tree), tokenization, lemmatization, spelling correction, and WordNet integration. Use when building text processing pipelines, performing quick NLP tasks without complex setup, or integrating with NLTK.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

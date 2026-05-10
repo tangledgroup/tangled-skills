@@ -1,6 +1,6 @@
 ---
 name: pulp-3-3-0
-description: Complete toolkit for PuLP 3.3.0, a Python linear and mixed-integer programming (MIP) modeler that generates MPS/LP/JSON files and calls solvers like CBC, GLPK, CPLEX, Gurobi, MOSEK, HiGHS, COPT, SCIP, XPRESS, CHOCO, and MIPCL. Use when formulating optimization problems in Python, solving LP/MIP models, working with variables/constraints/objectives, configuring solver backends, or performing model export/import for external solver use.
+description: Complete toolkit for PuLP 3.3.0, a Python linear and mixed-integer programming modeler generating MPS/LP/JSON files and calling solvers like CBC, GLPK, CPLEX, Gurobi, HiGHS, and SCIP. Use when formulating optimization problems in Python, solving LP/MIP models, configuring solver backends, or performing model export/import.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

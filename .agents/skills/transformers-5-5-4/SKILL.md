@@ -1,6 +1,6 @@
 ---
 name: transformers-5-5-4
-description: Complete toolkit for Hugging Face Transformers 5.5.4 providing state-of-the-art pretrained models for NLP, computer vision, audio, video, and multimodal tasks with Pipeline API, Trainer, generation features, quantization, and support for 1M+ model checkpoints on the Hub. Use when building Python applications that integrate pretrained transformer models for text generation, image classification, speech recognition, chat, fine-tuning, or any task requiring access to the Hugging Face ecosystem.
+description: Complete toolkit for Hugging Face Transformers 5.5.4 providing pretrained models for NLP, vision, audio, video, and multimodal tasks with Pipeline API, Trainer, generation, and quantization. Use when building Python applications that integrate transformer models for text generation, image classification, speech recognition, fine-tuning, or any task requiring the Hugging Face ecosystem.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

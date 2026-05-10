@@ -1,6 +1,6 @@
 ---
 name: ruff-0-4-10
-description: A skill for using Ruff 0.4.10, an extremely fast Python linter and code formatter written in Rust that replaces Flake8 (plus dozens of plugins), Black, isort, pydocstyle, pyupgrade, autoflake, and more with 10x-100x faster performance. Use when linting Python code for style and correctness issues, formatting code consistently, configuring rule selection across 800+ lint rules, suppressing violations with noqa comments, or needing fast incremental analysis in CI/CD pipelines and editors.
+description: Extremely fast Python linter and formatter written in Rust, replacing Flake8, Black, isort, and more with 10x-100x faster performance. Use when linting Python code for style and correctness, formatting code consistently, configuring rule selection across 800+ rules, or needing fast incremental analysis in CI/CD pipelines.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

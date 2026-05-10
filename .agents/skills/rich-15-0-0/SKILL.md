@@ -1,6 +1,6 @@
 ---
 name: rich-15-0-0
-description: Python library for rich text and beautiful formatting in the terminal. Provides color, tables, progress bars, markdown rendering, syntax highlighting, tracebacks, logging handlers, prompts, live displays, layouts, and pretty printing. Use when building CLI applications that need styled output, displaying data in tables or trees, showing progress during long operations, or enhancing debugging with improved tracebacks and pretty-printed data structures.
+description: Python library for rich text and beautiful terminal formatting. Provides color, tables, progress bars, markdown rendering, syntax highlighting, tracebacks, logging handlers, prompts, live displays, and pretty printing. Use when building CLI applications that need styled output, displaying data in tables or trees, or enhancing debugging with improved tracebacks.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

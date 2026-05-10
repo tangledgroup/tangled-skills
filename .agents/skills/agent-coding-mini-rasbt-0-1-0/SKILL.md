@@ -1,6 +1,6 @@
 ---
 name: agent-coding-mini-rasbt-0-1-0
-description: A minimal standalone coding agent framework by Sebastian Raschka backed by Ollama that provides workspace context collection, structured tool execution with approval gates, session persistence, memory distillation, and bounded subagent delegation. Use when building or operating lightweight local coding agents for file manipulation, shell command execution, code editing, test-driven development, and automated workflows without external API dependencies.
+description: Minimal standalone coding agent framework by Sebastian Raschka backed by Ollama, providing workspace context collection, tool execution with approval gates, session persistence, and subagent delegation. Use when building lightweight local coding agents for file manipulation, shell commands, code editing, or automated workflows without external API dependencies.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"
