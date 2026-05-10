@@ -29,31 +29,35 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
+# ── Usage ────────────────────────────────────────────────────────────
+
 usage() {
-  echo "Usage: $0 <PLAN.md> <action> [args...]"
-  echo ""
-  echo "Atomic lock-and-edit for workflow PLAN.md files."
-  echo ""
-  echo "Actions:"
-  echo "  set-task-status <Task X.Y> <emoji>    Set task status"
-  echo "  set-phase-status <Phase X> <emoji>    Set phase status"
-  echo "  get-task-status <Task X.Y>            Print task emoji"
-  echo "  get-phase-status <Phase X>            Print phase emoji"
-  echo "  get-plan-status                       Print plan emoji"
-  echo "  update-timestamp                      Update timestamp to now"
-  echo "  set-current-task <value>              Set Current Task field"
-  echo "  get-current-task                      Print Current Task value"
-  echo "  set-current-phase <value>             Set Current Phase field"
-  echo "  get-current-phase                     Print Current Phase value"
-  echo "  set-plan-title <title>                Set plan title"
-  echo "  get-plan-title                        Print plan title"
-  echo "  set-depends-on <value>                Set Depends On field"
-  echo "  get-depends-on                        Print Depends On value"
-  echo "  get-created                           Print Created timestamp"
-  echo "  get-plan-header                       Print all header fields"
-  echo "  rederive-all                          Re-derive all phase + plan emojis"
-  echo ""
-  echo "Valid emojis: ☐ ❓ ⚙️ ❌ ☑"
+  cat <<EOF
+Usage: $0 <PLAN.md> <action> [args...]
+
+Atomic lock-and-edit for workflow PLAN.md files.
+
+Actions:
+  set-task-status <Task X.Y> <emoji>    Set task status
+  set-phase-status <Phase X> <emoji>    Set phase status
+  get-task-status <Task X.Y>            Print task emoji
+  get-phase-status <Phase X>            Print phase emoji
+  get-plan-status                       Print plan emoji
+  update-timestamp                      Update timestamp to now
+  set-current-task <value>              Set Current Task field
+  get-current-task                      Print Current Task value
+  set-current-phase <value>             Set Current Phase field
+  get-current-phase                     Print Current Phase value
+  set-plan-title <title>                Set plan title
+  get-plan-title                        Print plan title
+  set-depends-on <value>                Set Depends On field
+  get-depends-on                        Print Depends On value
+  get-created                           Print Created timestamp
+  get-plan-header                       Print all header fields
+  rederive-all                          Re-derive all phase + plan emojis
+
+Valid emojis: ☐ ❓ ⚙️ ❌ ☑
+EOF
   exit "${1:-0}"
 }
 
@@ -71,20 +75,17 @@ lockfile="${plan}.lock"
 tmpfile=""
 
 cleanup() {
-  rm -f "$tmpfile" "${tmpfile}.new" 2>/dev/null || true
-  # Remove lock file — flock advisory lock is released when fd closes,
-  # but the physical lock file persists. Clean it up here.
-  rm -f "$lockfile" 2>/dev/null || true
+  cleanup_temp "$tmpfile" "${tmpfile:-}.new"
+  release_lock "$lockfile"
 }
 trap cleanup EXIT INT TERM
 
-# ── Read-only actions (no lock needed) ──────────────────────────────
+# ── Read-only actions (deterministic, no lock) ───────────────────────
 
 do_read() {
   case "$action" in
     get-task-status)
       [[ $# -lt 1 ]] && { echo "✗ Usage: get-task-status <Task X.Y>"; exit 1; }
-      # Match task ID only at the start position, not in dependency refs
       awk -v tid="$1" '
         /^- [^ ]+ / && match($0, /^- [^ ]+ (Task [0-9]+\.[0-9]+) /, arr) {
           if (arr[1] == tid) { print $2; found=1; exit }
@@ -94,7 +95,6 @@ do_read() {
       ;;
     get-phase-status)
       [[ $# -lt 1 ]] && { echo "✗ Usage: get-phase-status <Phase X>"; exit 1; }
-      # Match phase ID only in the heading
       awk -v pid="$1" '
         /^## [^ ]+ Phase [0-9]+/ && match($0, /## [^ ]+ (Phase [0-9]+) /, arr) {
           if (arr[1] == pid) { print $2; found=1; exit }
@@ -106,43 +106,68 @@ do_read() {
       get_plan_emoji_from_file "$plan"
       ;;
     get-current-task)
-      awk '/^\*\*Current Task:\*\*/ { sub(/^\*\*Current Task:\*\* */, ""); print; found=1; exit } END { if (!found) print "" }' "$plan"
+      get_header_field "$plan" "Current Task"
       ;;
     get-current-phase)
-      awk '/^\*\*Current Phase:\*\*/ { sub(/^\*\*Current Phase:\*\* */, ""); print; found=1; exit } END { if (!found) print "" }' "$plan"
+      get_header_field "$plan" "Current Phase"
       ;;
     get-plan-title)
       awk '/^# \S+ Plan:/ { sub(/^# \S+ Plan: */, ""); print; exit }' "$plan"
       ;;
     get-depends-on)
-      awk '/^\*\*Depends On:\*\*/ { sub(/^\*\*Depends On:\*\* */, ""); print; found=1; exit } END { if (!found) print "NONE" }' "$plan"
+      local val
+      val=$(get_header_field "$plan" "Depends On")
+      [[ -z "$val" ]] && echo "NONE" || echo "$val"
       ;;
     get-created)
-      awk '/^\*\*Created:\*\*/ { sub(/^\*\*Created:\*\* */, ""); print; found=1; exit } END { if (!found) print "" }' "$plan"
+      get_header_field "$plan" "Created"
       ;;
     get-plan-header)
-      awk '
-        /^# \S+ Plan:/ { plan_title = substr($0, index($0, "Plan: ")+6) }
-        /^\*\*Depends On:\*\*/ { sub(/^\*\*Depends On:\*\* */, ""); depends = $0 }
-        /^\*\*Created:\*\*/    { sub(/^\*\*Created:\*\* */, ""); created = $0 }
-        /^\*\*Updated:\*\*/    { sub(/^\*\*Updated:\*\* */, ""); updated = $0 }
-        /^\*\*Current Phase:\*\*/ { sub(/^\*\*Current Phase:\*\* */, ""); cur_phase = $0 }
-        /^\*\*Current Task:\*\*/  { sub(/^\*\*Current Task:\*\* */, ""); cur_task = $0 }
-        END {
-          print "plan-title=" plan_title
-          print "depends-on=" depends
-          print "created=" created
-          print "updated=" updated
-          print "current-phase=" cur_phase
-          print "current-task=" cur_task
-        }
-      ' "$plan"
+      echo "plan-title=$(get_header_field_helper_plan_title "$plan")"
+      echo "depends-on=$(get_header_field "$plan" "Depends On")"
+      echo "created=$(get_header_field "$plan" "Created")"
+      echo "updated=$(get_header_field "$plan" "Updated")"
+      echo "current-phase=$(get_header_field "$plan" "Current Phase")"
+      echo "current-task=$(get_header_field "$plan" "Current Task")"
       ;;
     *)
       echo "✗ Unknown read action: $action" >&2
       exit 1
       ;;
   esac
+}
+
+# Helper for plan-title (special format: # [emoji] Plan: title)
+get_header_field_helper_plan_title() {
+  awk '/^# \S+ Plan:/ { sub(/^# \S+ Plan: */, ""); print; exit }' "$1"
+}
+
+# ── Pre-flight validation (before any temp files are created) ───────
+
+preflight() {
+  case "$action" in
+    set-task-status)
+      if [[ $# -lt 2 ]]; then echo "✗ Usage: set-task-status <Task X.Y> <emoji>"; exit 1; fi
+      if ! is_valid_emoji "$2"; then
+        echo "✗ Invalid emoji: $2 (valid: ☐ ❓ ⚙️ ❌ ☑)" >&2
+        exit 1
+      fi
+      ;;
+    set-phase-status)
+      if [[ $# -lt 2 ]]; then echo "✗ Usage: set-phase-status <Phase X> <emoji>"; exit 1; fi
+      if ! is_valid_emoji "$2"; then
+        echo "✗ Invalid emoji: $2 (valid: ☐ ❓ ⚙️ ❌ ☑)" >&2
+        exit 1
+      fi
+      ;;
+    set-current-task|set-current-phase)
+      if [[ $# -lt 1 ]]; then echo "✗ Usage: set-${action#set-} <value>"; exit 1; fi
+      ;;
+    set-plan-title|set-depends-on)
+      if [[ $# -lt 1 ]]; then echo "✗ Usage: $action <value>"; exit 1; fi
+      ;;
+  esac
+  return 0
 }
 
 # ── Write actions (lock + atomic rename) ────────────────────────────
@@ -157,10 +182,8 @@ do_edit() {
 
   case "$action" in
     set-task-status)
-      [[ $# -lt 2 ]] && { echo "✗ Usage: set-task-status <Task X.Y> <emoji>"; exit 1; }
       local task_id="$1" emoji="$2"
       affected_phase=$(printf '%s' "$task_id" | grep -oP '(?<=Task )\d+' || true)
-      # Match task ID only at the start position after "- [emoji] ", not in dependency refs
       if ! awk -v tid="$task_id" -v em="$emoji" '
         /^- [^ ]+ / && match($0, /^- [^ ]+ (Task [0-9]+\.[0-9]+) /, arr) {
           if (arr[1] == tid) { sub(/^- [^ ]+ /, "- " em " "); found=1 }
@@ -168,16 +191,14 @@ do_edit() {
         { print }
         END { if (!found) { print "✗ Task not found: " tid > "/dev/stderr"; exit 1 } }
       ' "$tmpfile" > "${tmpfile}.new"; then
-        rm -f "${tmpfile}.new"
-        exit 1
+        rm -f "${tmpfile}.new" 2>/dev/null || true
+        return 1
       fi
       mv -f "${tmpfile}.new" "$tmpfile"
       ;;
     set-phase-status)
-      [[ $# -lt 2 ]] && { echo "✗ Usage: set-phase-status <Phase X> <emoji>"; exit 1; }
       local phase_id="$1" emoji="$2"
       affected_phase=$(printf '%s' "$phase_id" | grep -oP '(?<=Phase )\d+' || true)
-      # Match phase ID only in the heading, not elsewhere
       if ! awk -v pid="$phase_id" -v em="$emoji" '
         /^## [^ ]+ Phase [0-9]+/ && match($0, /## [^ ]+ (Phase [0-9]+) /, arr) {
           if (arr[1] == pid) { sub(/^## [^ ]+ /, "## " em " "); found=1 }
@@ -185,28 +206,21 @@ do_edit() {
         { print }
         END { if (!found) { print "✗ Phase not found: " pid > "/dev/stderr"; exit 1 } }
       ' "$tmpfile" > "${tmpfile}.new"; then
-        rm -f "${tmpfile}.new"
-        exit 1
+        rm -f "${tmpfile}.new" 2>/dev/null || true
+        return 1
       fi
       mv -f "${tmpfile}.new" "$tmpfile"
       ;;
     update-timestamp)
-      sed -i "s/^\*\*Updated:\*\* .*/\*\*Updated:\*\* $(date -u +%Y-%m-%dT%H:%M:%SZ)/" "$tmpfile"
+      set_header_field_in_file "$tmpfile" "Updated" "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
       ;;
     set-current-task)
-      [[ $# -lt 1 ]] && { echo "✗ Usage: set-current-task <value>"; exit 1; }
-      local safe_val
-      safe_val=$(printf '%s\n' "$1" | sed 's/[&\/\\]/\\&/g')
-      sed -i "s/^\*\*Current Task:\*\* .*/\*\*Current Task:\*\* ${safe_val}/" "$tmpfile"
+      set_header_field_in_file "$tmpfile" "Current Task" "$1"
       ;;
     set-current-phase)
-      [[ $# -lt 1 ]] && { echo "✗ Usage: set-current-phase <value>"; exit 1; }
-      local safe_val
-      safe_val=$(printf '%s\n' "$1" | sed 's/[&\/\\]/\\&/g')
-      sed -i "s/^\*\*Current Phase:\*\* .*/\*\*Current Phase:\*\* ${safe_val}/" "$tmpfile"
+      set_header_field_in_file "$tmpfile" "Current Phase" "$1"
       ;;
     set-plan-title)
-      [[ $# -lt 1 ]] && { echo "✗ Usage: set-plan-title <title>"; exit 1; }
       awk -v title="$1" '{
         if ($0 ~ /^# .* Plan:/) {
           match($0, /^# ([^ ]+) Plan:/, arr)
@@ -217,21 +231,14 @@ do_edit() {
       }' "$tmpfile" > "${tmpfile}.new" && mv -f "${tmpfile}.new" "$tmpfile"
       ;;
     set-depends-on)
-      [[ $# -lt 1 ]] && { echo "✗ Usage: set-depends-on <value>"; exit 1; }
-      local safe_val
-      safe_val=$(printf '%s\n' "$1" | sed 's/[&\/\\]/\\&/g')
-      sed -i "s/^\*\*Depends On:\*\* .*/\*\*Depends On:\*\* ${safe_val}/" "$tmpfile"
+      set_header_field_in_file "$tmpfile" "Depends On" "$1"
       ;;
     rederive-all)
       rederive_all "$tmpfile"
       ;;
-    *)
-      echo "✗ Unknown action: $action" >&2
-      exit 1
-      ;;
   esac
 
-  # Auto-derive phase emoji if a task or phase was changed (skip for rederive-all since it already did)
+  # Auto-derive phase emoji if a task or phase was changed
   if [[ -n "$affected_phase" ]]; then
     local derived current
     derived=$(derive_phase_emoji "$tmpfile" "$affected_phase")
@@ -242,7 +249,7 @@ do_edit() {
     fi
   fi
 
-  # Auto-derive plan emoji from phases (skip for rederive-all)
+  # Auto-derive plan emoji from phases (skip for rederive-all since it already did)
   if [[ "$action" != "rederive-all" ]]; then
     local derived_plan file_plan_emoji
     derived_plan=$(derive_plan_emoji "$tmpfile")
@@ -253,7 +260,8 @@ do_edit() {
     fi
   fi
 
-  mv -f "$tmpfile" "$plan"
+  atomic_write "$plan" "$tmpfile"
+  tmpfile=""
 }
 
 # ── Main dispatch ───────────────────────────────────────────────────
@@ -265,11 +273,20 @@ case "$action" in
     do_read "$@"
     ;;
   *)
+    # Pre-flight validation (before any temp files or locks)
+    preflight "$@"
+
     if [[ -z "${PLAN_SKIP_LOCK:-}" ]]; then
-      (
-        flock -w 30 200 || { echo "✗ Timeout waiting for PLAN.md lock"; exit 1; }
-        do_edit "$@"
-      ) 200>"$lockfile"
+      exec 200>"$lockfile"
+      acquire_lock "$lockfile"
+      set +e
+      do_edit "$@"
+      rc=$?
+      set -e
+      # Ensure tmpfile is cleaned even on failure (cleanup trap handles it)
+      if [[ $rc -ne 0 ]]; then
+        exit $rc
+      fi
     else
       do_edit "$@"
     fi

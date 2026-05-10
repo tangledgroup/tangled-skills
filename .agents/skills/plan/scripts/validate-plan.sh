@@ -3,25 +3,31 @@
 # Usage: validate-plan.sh <PLAN.md>
 # Exit 0 = pass, 1 = errors found
 #
-# Validates:
-#   - Plan header (title line with valid emoji)
-#   - Header fields (Depends On, Created, Updated, Current Phase, Current Task)
-#   - Phase structure (numbering, uniqueness, formatting)
-#   - Task structure (numbering, phase binding, formatting)
-#   - Emoji validity for all phases and tasks
-#   - Emoji derivation correctness (phase from tasks, plan from phases)
-#   - Zero-task phases (warnings)
-#   - Section completeness (each section has required elements)
+# Validates (section by section):
+#   1. Plan Header — title line exists with valid emoji format
+#   2. Header Fields — all required fields present with non-empty values
+#   3. Phases — at least one, sequential numbering from 1, no duplicates
+#   4. Tasks — at least one per phase, sequential numbering, proper phase binding
+#   5. Emoji Validity — all phase/task emojis from allowed set
+#   6. Zero-Task Phases — flagged as warnings
+#   7. Phase Emoji Derivation — each phase emoji matches derived status
+#   8. Plan Emoji Derivation — plan emoji matches derived status from phases
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
+# ── Usage ────────────────────────────────────────────────────────────
+
 usage() {
-  echo "Usage: $0 <PLAN.md>"
-  echo ""
-  echo "Validates structural integrity of a workflow PLAN.md file."
+  cat <<EOF
+Usage: $0 <PLAN.md>
+
+Validates structural integrity of a workflow PLAN.md file.
+Checks 8 sections: header, fields, phases, tasks, emojis, derivation.
+Exit 0 = pass, 1 = errors found.
+EOF
   exit "${1:-0}"
 }
 
@@ -34,32 +40,39 @@ check_plan_file "$plan"
 errors=0
 warnings=0
 
-# ── Helper: report error/warning ────────────────────────────────────
-err() {
-  echo "✗ $1"
-  errors=$((errors + 1))
-}
-
-warn() {
-  echo "⚠ $1"
-  warnings=$((warnings + 1))
-}
+# ── Helpers ──────────────────────────────────────────────────────────
+err() { echo "✗ $1"; errors=$((errors + 1)); }
+warn() { echo "⚠ $1"; warnings=$((warnings + 1)); }
 
 # ═══════════════════════════════════════════════════════════════════
 # Section 1: Plan Header (title line)
 # ═══════════════════════════════════════════════════════════════════
 
+echo "── Section 1: Plan Header ──"
+
 if ! grep -qP '^# \S+ Plan:' "$plan"; then
   err "Missing or invalid plan header (expected: # [emoji] Plan: Title)"
+else
+  header_emoji=$(get_plan_emoji_from_file "$plan")
+  if ! is_valid_emoji "$header_emoji"; then
+    err "Plan header has invalid emoji: '$header_emoji' (valid: ☐ ❓ ⚙️ ❌ ☑)"
+  fi
 fi
 
 # ═══════════════════════════════════════════════════════════════════
 # Section 2: Header Fields
 # ═══════════════════════════════════════════════════════════════════
 
+echo "── Section 2: Header Fields ──"
+
 for field in "Depends On" "Created" "Updated" "Current Phase" "Current Task"; do
   if ! grep -qP "^\*\*${field}:\*\*" "$plan"; then
     err "Missing header field: **${field}:**"
+  else
+    val=$(get_header_field "$plan" "$field")
+    if [[ -z "$val" && "$field" != "Depends On" ]]; then
+      warn "Header field **${field}:** is empty"
+    fi
   fi
 done
 
@@ -67,137 +80,190 @@ done
 # Section 3: Phases
 # ═══════════════════════════════════════════════════════════════════
 
-phases=$(grep -cP '^## \S+ Phase \d+' "$plan" || true)
-if [[ "$phases" -eq 0 ]]; then
-  err "No phases found"
+echo "── Section 3: Phases ──"
+
+phase_nums_raw=$(get_phase_numbers "$plan")
+if [[ -z "$phase_nums_raw" ]]; then
+  phases=0
+  phase_nums=""
+else
+  phase_nums="$phase_nums_raw"
+  phases=$(( $(echo "$phase_nums_raw" | wc -w) ))
 fi
 
-# Check phase numbering is sequential from 1
-phase_nums=$(awk '/^## .* Phase [0-9]+/ { if (match($0, /Phase ([0-9]+)/, arr)) print arr[1] }' "$plan")
-expected=1
-for pn in $phase_nums; do
-  if [[ "$pn" -ne "$expected" ]]; then
-    err "Phase numbering gap: expected Phase $expected, found Phase $pn"
-  fi
-  expected=$((expected + 1))
-done
+if [[ "$phases" -eq 0 ]]; then
+  err "No phases found"
+else
+  # Check sequential numbering from 1
+  expected=1
+  for pn in $phase_nums; do
+    if [[ "$pn" -ne "$expected" ]]; then
+      err "Phase numbering gap: expected Phase $expected, found Phase $pn"
+    fi
+    expected=$((expected + 1))
+  done
 
-# Check for duplicate phase numbers
-dup_phases=$(echo "$phase_nums" | sort | uniq -d)
-if [[ -n "$dup_phases" ]]; then
-  err "Duplicate phase numbers: $dup_phases"
+  # Check for duplicate phase numbers
+  dup_phases=$(echo "$phase_nums" | tr ' ' '\n' | sort -n | uniq -d)
+  if [[ -n "$dup_phases" ]]; then
+    err "Duplicate phase numbers: $dup_phases"
+  fi
+
+  # Check each phase heading format: ## [emoji] Phase N Title
+  while IFS= read -r line; do
+    if ! echo "$line" | grep -qP '^## \S+ Phase \d+ .+'; then
+      err "Phase heading missing title: $line"
+    fi
+  done < <(grep -P '^## .* Phase \d+' "$plan" || true)
 fi
 
 # ═══════════════════════════════════════════════════════════════════
 # Section 4: Tasks
 # ═══════════════════════════════════════════════════════════════════
 
-tasks=$(grep -cP '^- \S+ Task \d+\.\d+' "$plan" || true)
-if [[ "$tasks" -eq 0 ]]; then
-  err "No tasks found"
-fi
+echo "── Section 4: Tasks ──"
 
 # Check task numbering within each phase (sequential, no gaps/dupes)
-awk '
+# Collect errors into a variable to avoid subshell issues with pipe
+task_errors=$(awk '
   /^## .* Phase [0-9]+/ {
     if (match($0, /Phase ([0-9]+)/, arr)) {
       cur_phase = arr[1]
       expected_task = 1
+      phase_has_tasks = 0
     }
   }
   /^- .+ Task [0-9]+\.[0-9]+/ {
     if (match($0, /Task ([0-9]+)\.([0-9]+)/, arr)) {
       tp = arr[1]; tt = arr[2]
+      phase_has_tasks = 1
       if (tp != cur_phase) {
-        print "✗ Task " tp "." tt " is outside any phase context"
+        print "Task " tp "." tt " belongs to Phase " tp " but is under Phase " cur_phase
       } else if (tt != expected_task) {
-        print "✗ Task numbering gap in Phase " cur_phase ": expected Task " cur_phase "." expected_task ", found Task " tp "." tt
+        print "Task numbering gap in Phase " cur_phase ": expected Task " cur_phase "." expected_task ", found Task " tp "." tt
       }
       expected_task++
     }
   }
-' "$plan" | while IFS= read -r line; do err "$line"; done
+' "$plan" || true)
+
+if [[ -n "$task_errors" ]]; then
+  while IFS= read -r line; do
+    err "$line"
+  done <<< "$task_errors"
+fi
+
+total_tasks=$(grep -cP '^- \S+ Task \d+\.\d+' "$plan" || true)
+if [[ "$total_tasks" -eq 0 ]]; then
+  err "No tasks found in any phase"
+fi
 
 # ═══════════════════════════════════════════════════════════════════
 # Section 5: Emoji Validity
 # ═══════════════════════════════════════════════════════════════════
 
+echo "── Section 5: Emoji Validity ──"
+
 # Tasks with invalid emojis
-total_task_lines=$(grep -cP '^- \S+ Task' "$plan" || true)
-valid_task_lines=0
-for _em in "☐" "❓" "⚙️" "❌" "☑"; do
-  cnt=$(grep -cf <(printf '%s' "- ${_em} Task") "$plan" 2>/dev/null || true)
-  valid_task_lines=$((valid_task_lines + cnt))
-done
-if [[ "$total_task_lines" -gt "$valid_task_lines" ]]; then
-  err "$((total_task_lines - valid_task_lines)) task(s) with invalid emoji"
+invalid_tasks=$(awk '
+  /^- .+ Task/ {
+    em = $2
+    if (em != "☐" && em != "❓" && em != "⚙️" && em != "❌" && em != "☑") {
+      print NR ": " $0
+      count++
+    }
+  }
+  END { exit (count + 0 > 0) ? 1 : 0 }
+' "$plan" || true)
+
+if [[ -n "$invalid_tasks" ]]; then
+  while IFS= read -r line; do
+    err "Task with invalid emoji: $line"
+  done <<< "$invalid_tasks"
 fi
 
 # Phases with invalid emojis
-total_phase_lines=$(grep -cP '^## \S+ Phase' "$plan" || true)
-valid_phase_lines=0
-for _em in "☐" "❓" "⚙️" "❌" "☑"; do
-  cnt=$(grep -cf <(printf '%s' "## ${_em} Phase") "$plan" 2>/dev/null || true)
-  valid_phase_lines=$((valid_phase_lines + cnt))
-done
-if [[ "$total_phase_lines" -gt "$valid_phase_lines" ]]; then
-  err "$((total_phase_lines - valid_phase_lines)) phase(s) with invalid emoji"
+invalid_phases=$(awk '
+  /^## .* Phase [0-9]+/ {
+    em = $2
+    if (em != "☐" && em != "❓" && em != "⚙️" && em != "❌" && em != "☑") {
+      print NR ": " $0
+      count++
+    }
+  }
+  END { exit (count + 0 > 0) ? 1 : 0 }
+' "$plan" || true)
+
+if [[ -n "$invalid_phases" ]]; then
+  while IFS= read -r line; do
+    err "Phase with invalid emoji: $line"
+  done <<< "$invalid_phases"
 fi
 
 # ═══════════════════════════════════════════════════════════════════
 # Section 6: Zero-Task Phases
 # ═══════════════════════════════════════════════════════════════════
 
-empty_phases=0
-in_phase=0
-task_count=0
+echo "── Section 6: Zero-Task Phases ──"
 
-while IFS= read -r line; do
-  if echo "$line" | grep -qP '^## \S+ Phase \d+'; then
-    [[ "$in_phase" -eq 1 ]] && [[ "$task_count" -eq 0 ]] && empty_phases=$((empty_phases + 1))
-    in_phase=1
-    task_count=0
-  elif echo "$line" | grep -qP '^- \S+ Task'; then
-    task_count=$((task_count + 1))
-  fi
-done < "$plan"
+empty_phases=$(awk '
+  /^## .* Phase [0-9]+/ {
+    if (phase_seen && task_count == 0) {
+      if (match($prev, /Phase ([0-9]+)/, arr)) print "Phase " arr[1]
+    }
+    phase_seen = 1
+    task_count = 0
+  }
+  /^- .+ Task/ { task_count++ }
+  { prev = $0 }
+  END {
+    if (phase_seen && task_count == 0) {
+      if (match(prev, /Phase ([0-9]+)/, arr)) print "Phase " arr[1]
+    }
+  }
+' "$plan")
 
-[[ "$in_phase" -eq 1 ]] && [[ "$task_count" -eq 0 ]] && empty_phases=$((empty_phases + 1))
-
-if [[ "$empty_phases" -gt 0 ]]; then
-  warn "$empty_phases phase(s) with zero tasks (can never reach ☑)"
+if [[ -n "$empty_phases" ]]; then
+  while IFS= read -r phase; do
+    warn "$phase has zero tasks (can never reach ☑)"
+  done <<< "$empty_phases"
 fi
 
 # ═══════════════════════════════════════════════════════════════════
 # Section 7: Emoji Derivation (Phase from Tasks)
 # ═══════════════════════════════════════════════════════════════════
 
-phase_mismatches=0
-while IFS= read -r pn; do
-  derived=$(derive_phase_emoji "$plan" "$pn")
-  current=$(get_phase_emoji_from_file "$plan" "$pn")
-  if [[ "$derived" != "$current" ]]; then
-    err "Phase $pn: emoji is $current but should be $derived (derived from tasks)"
-    phase_mismatches=$((phase_mismatches + 1))
-  fi
-done <<< "$(awk '/^## .* Phase [0-9]+/ { if (match($0, /Phase ([0-9]+)/, arr)) print arr[1] }' "$plan")"
+echo "── Section 7: Phase Emoji Derivation ──"
+
+if [[ -n "$phase_nums" ]]; then
+  for pn in $phase_nums; do
+    derived=$(derive_phase_emoji "$plan" "$pn")
+    current=$(get_phase_emoji_from_file "$plan" "$pn")
+    if [[ "$derived" != "$current" ]]; then
+      err "Phase $pn: emoji is '$current' but should be '$derived' (derived from tasks)"
+    fi
+  done
+fi
 
 # ═══════════════════════════════════════════════════════════════════
 # Section 8: Emoji Derivation (Plan from Phases)
 # ═══════════════════════════════════════════════════════════════════
 
+echo "── Section 8: Plan Emoji Derivation ──"
+
 derived_plan=$(derive_plan_emoji "$plan")
 file_plan_emoji=$(get_plan_emoji_from_file "$plan")
 if [[ "$derived_plan" != "$file_plan_emoji" ]]; then
-  err "Plan emoji is $file_plan_emoji but should be $derived_plan (derived from phases)"
+  err "Plan emoji is '$file_plan_emoji' but should be '$derived_plan' (derived from phases)"
 fi
 
 # ═══════════════════════════════════════════════════════════════════
 # Summary
 # ═══════════════════════════════════════════════════════════════════
 
+echo ""
 if [[ "$errors" -eq 0 ]]; then
-  echo "✓ PLAN.md passes checks ($tasks tasks, $phases phases)"
+  echo "✓ PLAN.md passes all checks ($total_tasks tasks, $phases phases)"
   [[ "$warnings" -gt 0 ]] && echo "  ($warnings warning(s))"
   exit 0
 else

@@ -3,27 +3,38 @@
 # Source this file; do not execute directly.
 #
 # Provides:
-#   - Allowed emoji constants
-#   - Usage/argument parsing helpers
+#   - Allowed emoji constants and validation
+#   - Deterministic header field read/write helpers
 #   - File existence checks
-#   - Phase number extraction from headings
 #   - Emoji derivation logic (phase and plan) as pure awk functions
+#   - Lock management with stale-lock detection
+#   - Atomic file write helpers
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ── Constants ────────────────────────────────────────────────────────
-# Allowed status emojis
 EM_TODO="☐"
 EM_QUESTION="❓"
 EM_DOING="⚙️"
 EM_ERROR="❌"
 EM_DONE="☑"
 
-# Priority order (highest first): Doing > Question > Error > Done > Todo
+# All valid status emojis (space-separated for membership tests)
+VALID_EMOJIS="$EM_TODO $EM_QUESTION $EM_DOING $EM_ERROR $EM_DONE"
 
-# ── Helpers ──────────────────────────────────────────────────────────
+# Lock timeout in seconds
+LOCK_TIMEOUT="${PLAN_LOCK_TIMEOUT:-30}"
+
+# ── Emoji validation ─────────────────────────────────────────────────
+
+is_valid_emoji() {
+  local em="$1"
+  [[ "$em" == "$EM_TODO" || "$em" == "$EM_QUESTION" || "$em" == "$EM_DOING" || "$em" == "$EM_ERROR" || "$em" == "$EM_DONE" ]]
+}
+
+# ── File helpers ─────────────────────────────────────────────────────
 
 usage_exit() {
   echo "Usage: $0 <PLAN.md> $1" >&2
@@ -38,9 +49,89 @@ check_plan_file() {
   fi
 }
 
-# ── AWK snippet: extract phase number from a phase heading line ─────
-# Expects the line to match /^## .* Phase [0-9]+/
-# Outputs the phase number on stdout.
+# ── Deterministic header field access ────────────────────────────────
+# All header fields use a canonical format: **FieldName:** value
+# Read helpers extract the value after the field marker, trimmed.
+# Write helpers replace the entire line with the canonical format.
+
+# Extract a header field value (deterministic: first match, trimmed)
+# Usage: get_header_field <file> <Field Name>
+get_header_field() {
+  local file="$1" field="$2"
+  awk -v f="**${field}:**" '
+    index($0, f) == 1 {
+      val = substr($0, length(f) + 1)
+      # Trim leading/trailing whitespace
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", val)
+      print val
+      found = 1
+      exit
+    }
+    END { if (!found) print "" }
+  ' "$file"
+}
+
+# Set a header field value (deterministic: replaces entire line, canonical format)
+# Usage: set_header_field_in_file <tmpfile> <Field Name> <value>
+set_header_field_in_file() {
+  local tmpfile="$1" field="$2" value="$3"
+  # Escape special characters for awk string
+  local escaped_val
+  escaped_val=$(printf '%s' "$value" | sed 's/\\/\\\\/g; s/"/\\"/g')
+  awk -v f="**${field}:**" -v val="$escaped_val" '
+    index($0, f) == 1 {
+      print f " " val
+      next
+    }
+    { print }
+  ' "$tmpfile" > "${tmpfile}.new" && mv -f "${tmpfile}.new" "$tmpfile"
+}
+
+# ── Lock management ──────────────────────────────────────────────────
+# Advisory lock with stale-lock detection.
+# A lock file older than LOCK_TIMEOUT seconds is considered stale and removed.
+
+acquire_lock() {
+  local lockfile="$1"
+  # Check for stale lock (older than timeout, no holding process)
+  if [[ -f "$lockfile" ]]; then
+    local age
+    age=$(( $(date +%s) - $(stat -c %Y "$lockfile" 2>/dev/null || echo 0) ))
+    if [[ "$age" -gt "$LOCK_TIMEOUT" ]]; then
+      # Check if any process holds fd on this file
+      if ! fuser "$lockfile" >/dev/null 2>&1; then
+        rm -f "$lockfile"
+      fi
+    fi
+  fi
+  flock -w "$LOCK_TIMEOUT" 200 || { echo "✗ Timeout waiting for lock ($LOCK_TIMEOUT s)"; exit 1; }
+}
+
+release_lock() {
+  local lockfile="$1"
+  rm -f "$lockfile" 2>/dev/null || true
+}
+
+# ── Atomic write helper ──────────────────────────────────────────────
+# Write content to a temp file in the same directory, then atomic rename.
+# Usage: atomic_write <target> <tmpfile>
+atomic_write() {
+  local target="$1" tmpfile="$2"
+  mv -f "$tmpfile" "$target"
+}
+
+cleanup_temp() {
+  rm -f "$@" 2>/dev/null || true
+}
+
+# ── Phase number extraction ─────────────────────────────────────────
+# Extract all phase numbers from a PLAN.md file (one per line)
+get_phase_numbers() {
+  local plan="$1"
+  awk '/^## .* Phase [0-9]+/ {
+    if (match($0, /Phase ([0-9]+)/, arr)) print arr[1]
+  }' "$plan"
+}
 
 # ── AWK: derive phase emoji from tasks within a given phase ─────────
 # Reads PLAN.md, collects task emojis for the given phase number.
@@ -75,16 +166,11 @@ derive_phase_emoji() {
 }
 
 # ── AWK: derive plan emoji from all phases (via their tasks) ────────
-# Reads PLAN.md, re-derives each phase status from its tasks,
-# then aggregates across all phases to produce the plan emoji.
-# Outputs single emoji on stdout.
-
 derive_plan_emoji() {
   local plan="$1"
 
   awk '
     /^## .* Phase [0-9]+/ {
-      # Finalize previous phase if any
       if (phase_seen) {
         _finalize_phase()
       }
@@ -134,8 +220,7 @@ get_plan_emoji_from_file() {
   head -1 "$plan" | grep -oP '^\# \K\S+' || echo "☐"
 }
 
-# ── Update phase emoji in file (awk-based, writes to tmpfile) ────────
-# Usage: update_phase_emoji_in_file <tmpfile> <phase_num> <new_emoji>
+# ── Update phase emoji in file ───────────────────────────────────────
 update_phase_emoji_in_file() {
   local tmpfile="$1" phase_num="$2" new_emoji="$3"
   awk -v pn="$phase_num" -v em="$new_emoji" '
@@ -152,16 +237,12 @@ update_plan_emoji_in_file() {
   sed -i "s/^# ${old_emoji} /# ${new_emoji} /" "$tmpfile"
 }
 
-# ── Re-derive all phase emojis + plan emoji, writing to tmpfile ─────
-# Called after edits. Writes derived emojis back into tmpfile.
+# ── Re-derive all phase emojis + plan emoji ─────────────────────────
 rederive_all() {
   local tmpfile="$1"
-  local script_dir
-  script_dir="$(cd "$(dirname "${BASH_SOURCE[1]:-$0}")" && pwd)"
 
-  # Re-derive each phase
   local phase_nums
-  phase_nums=$(awk '/^## .* Phase [0-9]+/ { if (match($0, /Phase ([0-9]+)/, arr)) print arr[1] }' "$tmpfile")
+  phase_nums=$(get_phase_numbers "$tmpfile")
   for pn in $phase_nums; do
     local derived current
     derived=$(derive_phase_emoji "$tmpfile" "$pn")
@@ -172,7 +253,6 @@ rederive_all() {
     fi
   done
 
-  # Re-derive plan emoji
   local derived_plan file_plan_emoji
   derived_plan=$(derive_plan_emoji "$tmpfile")
   file_plan_emoji=$(get_plan_emoji_from_file "$tmpfile")

@@ -15,10 +15,12 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 usage() {
-  echo "Usage: $0 <PLAN.md>"
-  echo ""
-  echo "Derives the plan emoji from its phases' tasks using priority:"
-  echo "  ⚙️ (Doing) > ❓ (Question) > ❌ (Error) > ☑ (Done) > ☐ (To Do)"
+  cat <<EOF
+Usage: $0 <PLAN.md>
+
+Derives the plan emoji from its phases' tasks using priority:
+  ⚙️ (Doing) > ❓ (Question) > ❌ (Error) > ☑ (Done) > ☐ (To Do)
+EOF
   exit "${1:-0}"
 }
 

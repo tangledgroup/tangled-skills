@@ -31,12 +31,16 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
+# ── Usage ────────────────────────────────────────────────────────────
+
 usage() {
-  echo "Usage: $0 <PLAN.md> <action> [args...]"
-  echo ""
-  echo "Full workflow: lock → edit → derive → validate (atomic)"
-  echo ""
-  echo "Actions: same as update-plan.sh"
+  cat <<EOF
+Usage: $0 <PLAN.md> <action> [args...]
+
+Full workflow: lock → edit → derive → validate (atomic)
+
+Actions: same as update-plan.sh
+EOF
   exit "${1:-0}"
 }
 
@@ -55,10 +59,8 @@ backup="${plan}.bak"
 tmpfile=""
 
 cleanup() {
-  rm -f "$backup" "$tmpfile" "${tmpfile}.new" 2>/dev/null || true
-  # Remove the physical lock file — flock releases the advisory lock
-  # when fd 200 closes, but the file itself persists on disk.
-  rm -f "$lockfile" 2>/dev/null || true
+  cleanup_temp "$backup" "$tmpfile" "${tmpfile:-}.new"
+  release_lock "$lockfile"
 }
 trap cleanup EXIT INT TERM
 
@@ -73,7 +75,7 @@ case "$action" in
 esac
 
 (
-  flock -w 30 200 || { echo "✗ Timeout waiting for PLAN.md lock"; exit 1; }
+  acquire_lock "$lockfile"
 
   # Safety backup
   cp -- "$plan" "$backup"
@@ -88,7 +90,7 @@ esac
   rederive_all "$tmpfile"
 
   # Atomic rename
-  mv -f "$tmpfile" "$plan"
+  atomic_write "$plan" "$tmpfile"
 
   # Validate under lock
   if "$SCRIPT_DIR/validate-plan.sh" "$plan"; then
