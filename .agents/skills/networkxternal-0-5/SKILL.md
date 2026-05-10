@@ -3,7 +3,7 @@ name: networkxternal-0-5
 description: NetworkX-compatible interface for external memory MultiDiGraphs persisted in databases (SQLite, PostgreSQL, MySQL, MongoDB, Neo4J). Use when working with Terabyte-Petabyte graphs that won't fit into RAM, needing multi-edge support with key/label-based edge identity, or building graph applications requiring database-backed storage without changing application code.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.5"
+version: "0.1.0"
 tags:
   - graph
   - database

@@ -8,7 +8,7 @@ description: Comprehensive reference for Docker platform including Docker Engine
   Docker environments.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "2026-04-16"
+version: "0.1.0"
 tags:
 - containers
 - docker-engine

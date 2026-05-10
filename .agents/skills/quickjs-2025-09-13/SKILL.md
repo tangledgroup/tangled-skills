@@ -3,7 +3,7 @@ name: quickjs-2025-09-13
 description: Small and fast JavaScript engine supporting ES2023 with C API for embedding, qjs REPL interpreter, and qjsc bytecode compiler. Use when embedding a lightweight JS engine in C applications, compiling JS to standalone executables, running JS scripts via the qjs command line, or working with QuickJS runtime internals and garbage collection.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "2025-09-13"
+version: "0.1.0"
 tags:
   - javascript
   - engine

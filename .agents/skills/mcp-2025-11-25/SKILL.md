@@ -3,7 +3,7 @@ name: mcp-2025-11-25
 description: Model Context Protocol (MCP) version 2025-11-25 specification covering client-host-server architecture, JSON-RPC messaging, tools, resources, prompts, sampling, elicitation, authorization, and transport mechanisms. Use when building MCP clients or servers, implementing LLM tool integrations, creating AI application connectors, configuring stdio or Streamable HTTP transports, or working with any protocol that connects language models to external data sources and capabilities.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "2025-11-25"
+version: "0.1.0"
 tags:
   - mcp
   - model-context-protocol

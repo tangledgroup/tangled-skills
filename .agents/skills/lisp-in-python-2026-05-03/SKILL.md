@@ -3,7 +3,7 @@ name: lisp-in-python-2026-05-03
 description: "Complete guide to building a minimal Lisp interpreter in Python, synthesized from six independent implementations (Norvig's lispy, ByteGoblin's 16-line proof, Spatters' typed approach, Zstix's tutorial, AlJamal's homoiconic Python, Misfra.me's mini-lisp with tail-call/call/cc). Covers the eval-apply cycle, recursive descent parsing, lexical scoping via environment chains, user-defined closures, special forms (quote, if, define, set!, lambda, begin, cond), built-in procedures, and a REPL. Includes extension patterns: tail-call optimization, call/cc continuations, macros with quasiquote, strings, derived forms (let, when, unless, do). Use when building a Lisp interpreter from scratch in Python, understanding how programming language interpreters work, learning the eval-apply cycle, implementing lexical scoping and closures, or studying homoiconicity where code and data share the same representation."
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "2026-05-03"
+version: "0.1.0"
 tags:
   - lisp
   - interpreter

@@ -3,7 +3,7 @@ name: raft-2026-05-03
 description: Raft consensus algorithm for managing replicated logs across a cluster of servers. Provides leader election, log replication, safety guarantees, cluster membership changes via joint consensus, and log compaction via snapshotting. Use when building fault-tolerant distributed systems, implementing replicated state machines, designing consensus-based coordination services, configuring Raft-based databases (etcd, CockroachDB, TiKV), or reasoning about distributed consistency and safety properties.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "2026-05-03"
+version: "0.1.0"
 tags:
   - raft
   - consensus

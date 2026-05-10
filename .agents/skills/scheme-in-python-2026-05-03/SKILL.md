@@ -3,7 +3,7 @@ name: scheme-in-python-2026-05-03
 description: Build a Scheme interpreter in Python covering tokenization, eval/apply loop, environment frames with lexical and dynamic scoping, special forms (define/lambda/if/let/cond), Pair-based linked lists, built-in procedures, and a REPL. Use when implementing a Scheme dialect in Python, teaching programming language concepts via SICP-style interpreters, or understanding how Lisp evaluates code as data.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "2026-05-03"
+version: "0.1.0"
 tags:
   - scheme
   - interpreter

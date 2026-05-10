@@ -3,7 +3,7 @@ name: chibi-scheme-0-12
 description: Minimal Scheme implementation for embedding in C applications. Provides a tagged-pointer VM with precise non-moving GC, opcode-based execution with simplification optimizer, hygienic macros via syntactic closures, layered module hierarchy, green threads with isolated heaps, full R7RS compliance with complete numeric tower, and a C FFI stubber generating shared libraries from Scheme DSL. Use when embedding Scheme in C programs, studying interpreter design, building extension languages, or wrapping C libraries for use from Scheme.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.12"
+version: "0.1.0"
 tags:
   - chibi-scheme
   - scheme

@@ -3,7 +3,7 @@ name: ot-2026-05-03
 description: Operational Transformation (OT) theory and practice for consistency maintenance in real-time collaborative editing systems. Covers transformation functions (inclusion/exclusion), consistency models (CC, CCI, CSM, CA), system architectures (server-based vs distributed OT), control algorithms, timestamp schemes, and OT vs CRDT comparison. Use when building real-time collaborative editors, resolving concurrent edit conflicts, designing collaboration backends, integrating multi-user editing into existing applications, or choosing between OT and CRDT for a collaborative system.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "2026-05-03"
+version: "0.1.0"
 tags:
   - operational-transformation
   - ot

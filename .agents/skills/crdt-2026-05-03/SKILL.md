@@ -3,7 +3,7 @@ name: crdt-2026-05-03
 description: Conflict-free replicated data types (CRDTs) replicate across distributed nodes without coordination, guaranteeing strong eventual consistency via merge functions. Covers CvRDT/CmRDT theory, counters, registers, sets, sequence CRDTs (RGA/WOOT/Logoot), maps, trees, garbage collection, delta CRDTs, and OT comparison. Use when building collaborative editors, offline-first apps, or distributed systems.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "2026-05-03"
+version: "0.1.0"
 tags:
   - crdt
   - distributed-systems
