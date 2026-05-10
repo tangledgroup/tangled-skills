@@ -1,6 +1,6 @@
 ---
 name: mem0-2-0-1
-description: A skill for using Mem0 v2.0.1, a self-improving memory layer for LLM agents that enables persistent context across sessions with single-pass ADD-only extraction, multi-signal hybrid search (semantic + BM25 + entity linking), and support for both managed platform and open-source deployments.
+description: Self-improving memory layer for LLM agents (Mem0 v2.0.1) enabling persistent context across sessions with single-pass ADD-only extraction, multi-signal hybrid search (semantic + BM25 + entity linking), and support for both managed platform and open-source deployments. Use when building LLM agent workflows requiring persistent memory, semantic recall across conversations, entity-linked memory retrieval, or integrating with managed Mem0 platform.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

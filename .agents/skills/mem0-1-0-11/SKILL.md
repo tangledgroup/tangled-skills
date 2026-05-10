@@ -1,6 +1,6 @@
 ---
 name: mem0-1-0-11
-description: A skill for using Mem0 v1.0.11, a universal self-improving memory layer for LLM applications that enables persistent context across sessions with support for both managed platform and open-source deployments.
+description: Universal self-improving memory layer for LLM applications (Mem0 v1.0.11) enabling persistent context across sessions with support for both managed platform and open-source deployments. Use when building LLM applications requiring memory persistence, semantic recall across conversations, user-specific memory storage, or integrating LangChain/LlamaIndex with external memory backends.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

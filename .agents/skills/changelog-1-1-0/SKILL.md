@@ -1,6 +1,6 @@
 ---
 name: changelog-1-1-0
-description: A skill for creating and maintaining changelogs following the Keep a Changelog specification v1.1.0, providing standardized format guidelines, best practices, and examples for documenting project changes in a human-readable way.
+description: Create and maintain changelogs following the Keep a Changelog specification v1.1.0, providing standardized format guidelines, best practices, and examples for documenting project changes in a human-readable way. Use when creating release notes, documenting version changes, maintaining CHANGELOG.md files, or formatting project updates following the official specification.
 version: "0.1.0"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT

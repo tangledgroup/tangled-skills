@@ -1,6 +1,6 @@
 ---
 name: pacote-21-5-0
-description: Use pacote 21.5 via npx to inspect, download, and extract npm packages without installing them first. Supports registry packages, git repositories, local files, directories, and remote tarballs for package inspection, dependency analysis, manifest retrieval, security verification with Sigstore attestations, and offline extraction workflows.
+description: Inspect, download, and extract npm packages without installing them first using pacote 21.5 via npx. Supports registry packages, git repositories, local files, directories, and remote tarballs for package inspection, dependency analysis, manifest retrieval, security verification with Sigstore attestations, and offline extraction workflows. Use when inspecting npm package contents, extracting tarballs for analysis, retrieving manifests without installation, verifying package attestations, or working with offline package sources.
 version: "0.1.0"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
