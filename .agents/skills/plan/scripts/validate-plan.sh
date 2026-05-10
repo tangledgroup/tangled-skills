@@ -219,6 +219,37 @@ if [[ "$derived_plan" != "$file_plan_emoji" ]]; then
   err "Plan emoji is '$file_plan_emoji' but should be '$derived_plan' (derived from phases)"
 fi
 
+# Section 9: Current Phase/Task Header Consistency
+echo "Checking section 9: Current Phase/Task Consistency"
+
+cur_phase_val=$(get_header_field "$plan" "Current Phase")
+if [[ -n "$cur_phase_val" ]]; then
+  cur_phase_emoji=$(printf '%s' "$cur_phase_val" | awk '{print $1}')
+  cur_phase_id=$(printf '%s' "$cur_phase_val" | sed 's/^[^ ]* //')
+  cur_pn=$(printf '%s' "$cur_phase_id" | grep -oP '(?<=Phase )\d+' || true)
+  if [[ -n "$cur_pn" ]]; then
+    actual_phase_emoji=$(derive_phase_emoji "$plan" "$cur_pn")
+    if [[ "$cur_phase_emoji" != "$actual_phase_emoji" ]]; then
+      err "Current Phase emoji is '$cur_phase_emoji' but actual derived status of $cur_phase_id is '$actual_phase_emoji'"
+    fi
+  fi
+fi
+
+cur_task_val=$(get_header_field "$plan" "Current Task")
+if [[ -n "$cur_task_val" ]]; then
+  cur_task_emoji=$(printf '%s' "$cur_task_val" | awk '{print $1}')
+  cur_task_id=$(printf '%s' "$cur_task_val" | sed 's/^[^ ]* //')
+  actual_task_emoji=$(awk -v tid="$cur_task_id" '
+    /^- [^ ]+ / && match($0, /^- [^ ]+ (Task [0-9]+\.[0-9]+) /, arr) {
+      if (arr[1] == tid) { print $2; found=1; exit }
+    }
+    END { if (!found) exit 1 }
+  ' "$plan" 2>/dev/null || true)
+  if [[ -n "$actual_task_emoji" && "$cur_task_emoji" != "$actual_task_emoji" ]]; then
+    err "Current Task emoji is '$cur_task_emoji' but actual status of $cur_task_id is '$actual_task_emoji'"
+  fi
+fi
+
 # Summary
 echo ""
 if [[ "$errors" -eq 0 ]]; then

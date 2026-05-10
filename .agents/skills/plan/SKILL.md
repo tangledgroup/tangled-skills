@@ -3,7 +3,7 @@ name: plan
 description: Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require structured iteration through Planning, Analysis, Design, Implementation, Testing, Deployment, Maintenance, etc phases with clear dependency graphs.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.8"
+version: "0.1.9"
 tags:
   - meta
   - meta-skill
@@ -51,7 +51,7 @@ to prevent concurrent processes from overwriting each other.
 ### After Writing PLAN.md — Validate Every Section
 
 After writing or structurally editing a PLAN.md file, **always run the validator**
-which checks all 8 sections:
+which checks all 9 sections:
 
 ```bash
 bash scripts/validate-plan.sh path/to/PLAN.md
@@ -99,6 +99,16 @@ Once PLAN.md is written, **all subsequent updates to statuses and header fields 
 
 The scripts auto-derive phase emojis from tasks and plan emojis from phases.
 You never set a phase or plan emoji manually — it is always derived.
+
+**Deterministic status updates**: When you set a task status, the scripts atomically update:
+1. The task emoji in the body
+2. The phase emoji (auto-derived from all tasks in that phase)
+3. The plan emoji (auto-derived from all phases)
+4. The `**Current Task:**` header emoji (synced with actual task status)
+5. The `**Current Phase:**` header emoji (synced with derived phase status)
+6. If the task completed (☑), auto-advance `**Current Task:**` and `**Current Phase:**` to the next pending task
+
+This ensures all three levels (plan, phase, task) and both body and header are always consistent.
 
 **Plan emoji preservation on update:** When editing a PLAN.md for any reason
 other than completing it (e.g., adding tasks, fixing content, updating
@@ -312,6 +322,7 @@ bash scripts/validate-plan.sh path/to/PLAN.md
 6. **Zero-Task Phases** — flagged as warnings (can never reach ☑)
 7. **Phase Emoji Derivation** — each phase emoji matches its derived status from tasks
 8. **Plan Emoji Derivation** — plan emoji matches its derived status from phases
+9. **Current Phase/Task Consistency** — emojis in `**Current Phase:**` and `**Current Task:**` match the actual statuses of the phase/task they reference
 
 **What it does NOT validate (requires LLM judgment):**
 - Dependency references point to existing tasks
@@ -332,11 +343,11 @@ All paths are relative to this skill's directory (where SKILL.md lives).
 
 | Script | Mode | Purpose |
 |--------|------|---------|
-| [scripts/update-plan.sh](scripts/update-plan.sh) | **Execute** | Lock-and-edit with `flock` + atomic rename. Supports all set/get actions for statuses, header fields, and re-derivation. Auto-derives phase and plan emojis after status changes. Read actions (`get-*`) are lock-free and deterministic. |
+| [scripts/update-plan.sh](scripts/update-plan.sh) | **Execute** | Lock-and-edit with `flock` + atomic rename. Supports all set/get actions for statuses, header fields, and re-derivation. Auto-derives phase and plan emojis after status changes. Syncs `**Current Task:**` and `**Current Phase:**` header emojis with actual body statuses. Auto-advances Current Task/Phase on task completion (☑). Read actions (`get-*`) are lock-free and deterministic. |
 | [scripts/derive-phase-emoji.sh](scripts/derive-phase-emoji.sh) | **Execute** | Derive phase emoji from its tasks' emojis using AWK. Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
 | [scripts/derive-plan-emoji.sh](scripts/derive-plan-emoji.sh) | **Execute** | Derive plan emoji from all phases (re-deriving each phase from its tasks). Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
 | [scripts/workflow.sh](scripts/workflow.sh) | **Execute** | Full workflow: lock → edit (via update-plan.sh) → re-derive all phases → validate with automatic rollback on validation failure. Same actions as update-plan.sh plus read-through for `get-*`. |
-| [scripts/common.sh](scripts/common.sh) | **Source** | Shared helpers: emoji constants, derivation functions, header field access, lock management. Sourced by other scripts - do not run directly. |
+| [scripts/common.sh](scripts/common.sh) | **Source** | Shared helpers: emoji constants, derivation functions, header field access, lock management, Current Phase/Task sync, and auto-advance on completion. Sourced by other scripts - do not run directly. |
 
 ### Usage Examples
 

@@ -276,7 +276,7 @@ update_plan_emoji_in_file() {
   ' "$tmpfile" > "${tmpfile}.new" && mv -f "${tmpfile}.new" "$tmpfile"
 }
 
-# Re-derive all phase emojis + plan emoji
+# Re-derive all phase emojis + plan emoji + sync Current Phase/Task headers
 rederive_all() {
   local tmpfile="$1"
 
@@ -299,6 +299,10 @@ rederive_all() {
     echo "  → Plan: $file_plan_emoji → $derived_plan (auto-derived from phases)"
     update_plan_emoji_in_file "$tmpfile" "$file_plan_emoji" "$derived_plan"
   fi
+
+  # Sync Current Task and Current Phase header emojis with actual statuses
+  sync_current_task_emoji "$tmpfile"
+  sync_current_phase_emoji "$tmpfile"
 }
 
 # Pre-flight validation for write actions
@@ -328,6 +332,116 @@ preflight_check() {
       ;;
   esac
   return 0
+}
+
+# Sync Current Task header emoji with the actual task status in the body.
+# Extracts the task ID from **Current Task:**, finds its real emoji, and
+# updates the header if they differ. If the task doesn't exist, leaves it alone.
+sync_current_task_emoji() {
+  local tmpfile="$1"
+  local cur_val
+  cur_val=$(get_header_field "$tmpfile" "Current Task")
+  [[ -z "$cur_val" ]] && return 0
+
+  # Extract emoji and task ID from current value (e.g. "⚙️ Task 2.3")
+  local cur_emoji cur_tid
+  cur_emoji=$(printf '%s' "$cur_val" | awk '{print $1}')
+  cur_tid=$(printf '%s' "$cur_val" | sed 's/^[^ ]* //')
+
+  # Look up actual emoji for this task in the body
+  local actual_emoji
+  actual_emoji=$(awk -v tid="$cur_tid" '
+    /^- [^ ]+ / && match($0, /^- [^ ]+ (Task [0-9]+\.[0-9]+) /, arr) {
+      if (arr[1] == tid) { print $2; found=1; exit }
+    }
+    END { if (!found) exit 1 }
+  ' "$tmpfile" 2>/dev/null) || return 0
+
+  if [[ "$cur_emoji" != "$actual_emoji" ]]; then
+    set_header_field_in_file "$tmpfile" "Current Task" "$actual_emoji $cur_tid"
+    echo "  → Current Task: $cur_emoji → $actual_emoji (synced with actual status)"
+  fi
+}
+
+# Sync Current Phase header emoji with the actual phase status in the body.
+sync_current_phase_emoji() {
+  local tmpfile="$1"
+  local cur_val
+  cur_val=$(get_header_field "$tmpfile" "Current Phase")
+  [[ -z "$cur_val" ]] && return 0
+
+  local cur_emoji cur_pid
+  cur_emoji=$(printf '%s' "$cur_val" | awk '{print $1}')
+  cur_pid=$(printf '%s' "$cur_val" | sed 's/^[^ ]* //')
+
+  # Extract phase number from ID like "Phase 2"
+  local pn
+  pn=$(printf '%s' "$cur_pid" | grep -oP '(?<=Phase )\d+' || true)
+  [[ -z "$pn" ]] && return 0
+
+  local actual_emoji
+  actual_emoji=$(derive_phase_emoji "$tmpfile" "$pn")
+
+  if [[ "$cur_emoji" != "$actual_emoji" ]]; then
+    set_header_field_in_file "$tmpfile" "Current Phase" "$actual_emoji $cur_pid"
+    echo "  → Current Phase: $cur_emoji → $actual_emoji (synced with derived status)"
+  fi
+}
+
+# Auto-advance Current Task and Current Phase when a task completes (☑).
+# Finds the next pending task in priority order: ⚙️ ❓ ❌ ☐ within same phase,
+# then next phases. If completed task was the last overall, keeps pointing to it.
+advance_current_on_completion() {
+  local tmpfile="$1" completed_task="$2"
+
+  local cur_task_val cur_phase_val
+  cur_task_val=$(get_header_field "$tmpfile" "Current Task")
+  cur_phase_val=$(get_header_field "$tmpfile" "Current Phase")
+
+  # Extract current phase number
+  local cur_pn
+  cur_pn=$(printf '%s' "$cur_phase_val" | grep -oP '(?<=Phase )\d+' || true)
+  [[ -z "$cur_pn" ]] && return 0
+
+  # Find the next pending task
+  local next_task next_phase
+  next_task=$(awk -v cpn="$cur_pn" '
+    /^## .* Phase [0-9]+/ {
+      if (match($0, /Phase ([0-9]+)/, arr)) {
+        cur_phase = arr[1] + 0
+      }
+    }
+    cur_phase >= cpn && /^- .+ Task/ {
+      em = $2
+      if (em != "☑") {
+        # Extract task ID
+        if (match($0, /^- [^ ]+ (Task [0-9]+\.[0-9]+) /, arr)) {
+          print em " " arr[1]
+          found = 1
+          exit
+        }
+      }
+    }
+    END { if (!found) print "" }
+  ' "$tmpfile")
+
+  if [[ -n "$next_task" ]]; then
+    local next_emoji next_tid
+    next_emoji=$(printf '%s' "$next_task" | awk '{print $1}')
+    next_tid=$(printf '%s' "$next_task" | sed 's/^[^ ]* //')
+
+    # Determine which phase this task belongs to
+    local next_pn
+    next_pn=$(printf '%s' "$next_tid" | grep -oP '(?<=Task )\d+' || true)
+
+    set_header_field_in_file "$tmpfile" "Current Task" "$next_emoji $next_tid"
+    # Sync Current Phase too — derive its actual emoji
+    local next_phase_emoji
+    next_phase_emoji=$(derive_phase_emoji "$tmpfile" "$next_pn")
+    set_header_field_in_file "$tmpfile" "Current Phase" "$next_phase_emoji Phase $next_pn"
+    echo "  → Current Task: $cur_task_val → $next_emoji $next_tid (advanced to next pending)"
+    echo "  → Current Phase: $cur_phase_val → $next_phase_emoji Phase $next_pn (advanced with task)"
+  fi
 }
 
 # Validate all read-only action names

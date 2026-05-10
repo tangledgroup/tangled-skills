@@ -112,10 +112,13 @@ do_edit() {
   cp -- "$plan" "$tmpfile"
 
   local affected_phase=""
+  local changed_task_id="" changed_task_emoji=""
 
   case "$action" in
     set-task-status)
       local task_id="$1" emoji="$2"
+      changed_task_id="$task_id"
+      changed_task_emoji="$emoji"
       affected_phase=$(printf '%s' "$task_id" | grep -oP '(?<=Task )\d+' || true)
       if ! awk -v tid="$task_id" -v em="$emoji" '
         /^- [^ ]+ / && match($0, /^- [^ ]+ (Task [0-9]+\.[0-9]+) /, arr) {
@@ -193,6 +196,27 @@ do_edit() {
       echo "  → Plan: $file_plan_emoji → $derived_plan (auto-derived from phases)"
       update_plan_emoji_in_file "$tmpfile" "$file_plan_emoji" "$derived_plan"
     fi
+  fi
+
+  # Sync Current Task and Current Phase header emojis with actual statuses
+  if [[ "$action" == "set-task-status" || "$action" == "set-phase-status" || "$action" == "rederive-all" ]]; then
+    sync_current_task_emoji "$tmpfile"
+    sync_current_phase_emoji "$tmpfile"
+
+    # Auto-advance if a task was just completed
+    if [[ "$action" == "set-task-status" && "$changed_task_emoji" == "$EM_DONE" ]]; then
+      advance_current_on_completion "$tmpfile" "$changed_task_id"
+    fi
+  fi
+
+  # Sync Current Phase header when current phase is set manually
+  if [[ "$action" == "set-current-phase" ]]; then
+    sync_current_phase_emoji "$tmpfile"
+  fi
+
+  # Sync Current Task header when current task is set manually
+  if [[ "$action" == "set-current-task" ]]; then
+    sync_current_task_emoji "$tmpfile"
   fi
 
   atomic_write "$plan" "$tmpfile"
