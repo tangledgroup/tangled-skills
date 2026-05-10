@@ -3,7 +3,7 @@ name: pipe
 description: Unix-style pipe expression syntax for chaining multiple agent operations sequentially. Each stage's output becomes the next stage's implicit context, enabling multi-step workflows in a single expression. Use when chaining 2+ operations where intermediate results feed into subsequent steps — e.g., search then summarize, read then analyze, transform then report.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.3"
+version: "0.1.4"
 tags:
   - pipe
   - meta
@@ -57,6 +57,11 @@ Example 2 — Code analysis workflow:
 Example 3 — Long pipe in a code block:
 ```
 /pipe search for "distributed consensus algorithms" | summarize top 5 results | extract key terms from summaries | generate comparison table
+```
+
+Example 4 — Multi-skill composition:
+```
+/pipe websearch tangled group repos | webfetch github | summarize content
 ```
 
 A single-stage pipe is syntactically valid but pointless — use pipes only when chaining 2+ stages.
