@@ -320,7 +320,7 @@ The `aiohttp.web.AppKey` used to store the Jinja2 environment in the application
 
 The `aiohttp.web.AppKey` for storing the static URL root. Set it with `app[aiohttp_jinja2.static_root_key] = '/static'` before using the `static()` template helper.
 
-## Advanced Topics
+## Advanced Usage
 
 ### Context Processor Middleware Internals
 

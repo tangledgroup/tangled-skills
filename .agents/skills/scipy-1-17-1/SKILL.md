@@ -1,6 +1,6 @@
 ---
 name: scipy-1-17-1
-description: Complete SciPy 1.17 toolkit for scientific computing covering optimization, integration, interpolation, eigenvalue problems, algebraic equations, differential equations, statistics, signal processing, linear algebra, FFT, sparse arrays, spatial data structures, special functions, image processing, and more. Use when building Python programs that require numerical computations, scientific analysis, engineering calculations, statistical modeling, or mathematical operations built on NumPy with highly-optimized Fortran/C/C++ backends.
+description: Scientific computing library for Python covering optimization, integration, interpolation, linear algebra, signal processing, statistics, and image processing built on NumPy with highly-optimized Fortran/C/C++ backends. Use when building Python programs requiring numerical computations, scientific analysis, engineering calculations, or statistical modeling.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

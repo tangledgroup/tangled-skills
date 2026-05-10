@@ -1,6 +1,6 @@
 ---
 name: opentelemetry-python-1-41-0
-description: Complete OpenTelemetry Python v1.41.0 toolkit for distributed tracing, metrics collection, and log management with support for OTLP exporters, automatic instrumentation, custom sampling, context propagation, and semantic conventions. Use when instrumenting Python applications for observability, configuring trace/metric/log pipelines, setting up OTLP exporters, implementing custom samplers, or integrating with distributed tracing backends like Jaeger, Zipkin, Prometheus, or the OpenTelemetry Collector.
+description: OpenTelemetry Python toolkit for distributed tracing, metrics collection, and log management with OTLP exporters, automatic instrumentation, custom sampling, and context propagation. Use when instrumenting Python applications for observability, configuring trace/metric/log pipelines, setting up OTLP exporters, or integrating with distributed tracing backends like Jaeger, Zipkin, or Prometheus.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

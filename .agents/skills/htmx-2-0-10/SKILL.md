@@ -29,7 +29,7 @@ The key philosophy: respond with **HTML**, not JSON. This keeps you within the o
 
 htmx 2.x is the current major version. It drops IE11 support, moves all extensions out of core into separate packages, provides ESM/AMD/CJS module builds, and changes `hx-on` to require the `hx-on:` prefix format. Version 1.x continues to be maintained for IE11 compatibility.
 
-Version 2.0.10 is the latest stable release in the 2.x series (as of 2026-05-01), containing incremental bug fixes over 2.0.0–2.0.9.
+Version 2.0.10 contains incremental bug fixes over 2.0.0–2.0.9.
 
 ## When to Use
 

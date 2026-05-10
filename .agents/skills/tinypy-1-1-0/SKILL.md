@@ -1,6 +1,6 @@
 ---
 name: tinypy-1-1-0
-description: A minimalist Python implementation in ~64k of code featuring a fully bootstrapped parser and bytecode compiler written in tinypy itself, a Lua-esque virtual machine with incremental garbage collection written in C, and an easy C API for embedding. Supports a decent subset of Python including classes, single inheritance, variable/keyword arguments, strings, lists, dicts, numbers, modules, list comprehensions, exceptions with full traceback, and some builtins. Cross-platform (Windows/Linux/macOS). Use when building embedded scripting engines, studying VM internals, bootstrapping toolchains, or needing a tiny Python-compatible runtime for games and constrained environments.
+description: Minimalist Python implementation in ~64k of code with a bootstrapped parser, bytecode compiler, and VM with incremental GC. Supports classes, dicts, lists, exceptions, and modules. Cross-platform with C API for embedding. Use when building embedded scripting engines, studying VM internals, or needing a tiny Python-compatible runtime for constrained environments.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

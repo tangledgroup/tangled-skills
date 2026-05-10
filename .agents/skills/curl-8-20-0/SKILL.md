@@ -1,6 +1,6 @@
 ---
 name: curl-8-20-0
-description: Complete toolkit for curl 8.20.0 CLI tool and libcurl C library covering command-line usage, URL syntax, HTTP/HTTPS/FTP/SFTP/multi-protocol transfers, authentication, proxies, SSL/TLS, cookie handling, WebSocket support, MIME API, multi-interface programming with CURLMNWC_CLEAR_ALL, and comprehensive option reference. Use when making HTTP requests from the terminal, writing scripts that download/upload data, building C applications with libcurl, or working with any of curl's 30+ supported protocols including IMAP, SMTP, POP3, LDAP, MQTT, RTMP, and SFTP.
+description: CLI tool and C library for multi-protocol data transfers supporting HTTP/HTTPS, FTP, SFTP, and 30+ protocols. Covers command-line usage, authentication, proxies, SSL/TLS, and WebSocket support. Use when making HTTP requests from the terminal, writing scripts that download/upload data, building C applications with libcurl, or working with curl's supported protocols.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

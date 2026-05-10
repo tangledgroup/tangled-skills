@@ -1,6 +1,6 @@
 ---
 name: nekovm-2-4-1
-description: Stack-based bytecode virtual machine and dynamically typed scripting language designed as a common runtime for multiple languages (Haxe targets it). Provides C FFI for writing primitives, embeddable VM, Apache mod_neko module, standard libraries for I/O/networking/databases, and standalone executable generation. Deprecated since 2021-09-09 — maintained for Haxe compatibility only. Use when embedding Neko as a scripting engine in C applications, writing Neko C primitives (ndll), building Haxe projects targeting the Neko VM, or designing language compilers that target a shared runtime.
+description: Stack-based bytecode VM and dynamically typed scripting language, primarily as a compilation target for Haxe. Provides C FFI, embeddable VM, and standalone executable generation. Deprecated since 2021-09-09, maintained for Haxe compatibility only. Use when embedding Neko as a scripting engine in C applications, writing Neko C primitives, or building Haxe projects targeting the Neko VM.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"
@@ -24,7 +24,7 @@ external_references:
 
 Neko is a high-level dynamically typed programming language with a stack-based bytecode virtual machine. It was designed as a common runtime for multiple languages — most notably as a compilation target for [Haxe](https://haxe.org/). The compiler converts `.neko` source files into `.n` bytecode modules executed by the `neko` VM binary.
 
-Neko is **deprecated as of 2021-09-09**. No new features are planned; it is maintained only for Haxe standard library and language feature compatibility. Version 2.4.1 (2025-04-15) is the latest release.
+Neko is **deprecated as of 2021-09-09**. No new features are planned; it is maintained only for Haxe standard library and language feature compatibility. Version 2.4.1 was released on 2025-04-15.
 
 The VM uses a Boehm conservative garbage collector, supports JIT compilation on select platforms, and can be embedded into C applications via `libneko.so`/`neko.dll`. Extensions are written as C shared libraries (`.ndll`) using the Neko C FFI.
 

@@ -1,6 +1,6 @@
 ---
 name: nginx-1-30-0
-description: Complete toolkit for Nginx 1.30.0 high-performance HTTP server, reverse proxy, and load balancer covering configuration syntax, core modules, HTTP/stream/TCP/UDP proxying, SSL/TLS, caching, compression, rate limiting, WebSocket support, virtual servers, location matching, access control, FastCGI/uWSGI/gRPC proxying, dynamic modules, signal-based process control, logging, and embedded variables. Use when configuring Nginx as web server or reverse proxy, setting up load balancing, implementing HTTPS with TLS, tuning performance, creating virtual hosts, routing to backend application servers, or troubleshooting Nginx configurations.
+description: High-performance HTTP server, reverse proxy, and load balancer supporting HTTP/HTTPS proxying, SSL/TLS termination, caching, rate limiting, WebSocket, and access control. Use when configuring Nginx as web server or reverse proxy, setting up load balancing, implementing HTTPS, routing to backend servers, or tuning performance.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

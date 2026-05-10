@@ -1,6 +1,6 @@
 ---
 name: payloadcms-ecommerce-3-84-1
-description: Complete guide for Payload CMS ecommerce template v3.84.1 providing production-ready online store with products, variants, carts, orders, Stripe payments, multi-currency support with locale-aware formatting, user accounts, guest checkout, and transaction tracking. Use when building e-commerce platforms, online stores, marketplaces, or any digital commerce project requiring product catalogs, shopping carts, order management, payment processing, customer accounts, and inventory management following official Payload best practices.
+description: Payload CMS ecommerce template providing production-ready online store with products, variants, carts, orders, Stripe payments, and user accounts. Use when building e-commerce platforms, online stores, or any digital commerce project requiring product catalogs, shopping carts, order management, payment processing, or inventory management following official Payload best practices.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

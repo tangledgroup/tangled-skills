@@ -81,7 +81,7 @@ While the community pursues multi-agent architectures, Ralph is deliberately mon
 - `jq` installed for JSON processing
 - A git repository for your project
 
-### Option 1: Copy to Your Project
+### Installation
 
 Copy the Ralph files into your project:
 
@@ -98,26 +98,11 @@ cp /path/to/ralph/CLAUDE.md scripts/ralph/CLAUDE.md    # For Claude Code
 chmod +x scripts/ralph/ralph.sh
 ```
 
-### Option 2: Install Skills Globally (Amp)
+**Alternative installation methods:**
 
-```bash
-# For Amp
-cp -r skills/prd ~/.config/amp/skills/
-cp -r skills/ralph ~/.config/amp/skills/
-
-# For Claude Code (manual)
-cp -r skills/prd ~/.claude/skills/
-cp -r skills/ralph ~/.claude/skills/
-```
-
-### Option 3: Claude Code Marketplace
-
-```bash
-/plugin marketplace add snarktank/ralph
-/plugin install ralph-skills@ralph-marketplace
-```
-
-This installs two skills: `/prd` (generate PRDs) and `/ralph` (convert PRDs to prd.json). Skills are automatically invoked when you ask Claude to "create a prd", "write prd for", "plan this feature", "convert this prd", or "turn into ralph format".
+- **Global skills (Amp)**: `cp -r skills/prd ~/.config/amp/skills/ && cp -r skills/ralph ~/.config/amp/skills/`
+- **Global skills (Claude Code)**: `cp -r skills/prd ~/.claude/skills/ && cp -r skills/ralph ~/.claude/skills/`
+- **Claude Code Marketplace**: `/plugin marketplace add snarktank/ralph` then `/plugin install ralph-skills@ralph-marketplace` (installs `/prd` and `/ralph` skills with automatic invocation)
 
 ### Configure Amp Auto-Handoff (Recommended)
 

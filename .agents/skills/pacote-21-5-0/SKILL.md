@@ -28,7 +28,7 @@ compatibility: Node.js ^20.17.0 || >=22.9.0
 
 pacote is the JavaScript package handler used internally by the npm CLI. It fetches package manifests, packuments, and tarballs from any source that npm can install — registry specs (`foo@1.x`), git repositories (`github:user/project`), local files (`./package.tgz`), directories (`./my-package`), and remote URLs (`https://example.com/pkg.tgz`).
 
-Version 21.5 is the latest release (as of 2026-03-09), requiring Node.js `^20.17.0 || >=22.9.0`. It adds Sigstore attestation verification, registry signature validation, granular fetch-type allowlists (`allowGit`, `allowRemote`, `allowFile`, `allowDirectory`, `allowRegistry`), git-subdir support per the npa spec, and git-256 SHA length support.
+Version 21.5 requires Node.js `^20.17.0 || >=22.9.0`. It adds Sigstore attestation verification, registry signature validation, granular fetch-type allowlists (`allowGit`, `allowRemote`, `allowFile`, `allowDirectory`, `allowRegistry`), git-subdir support per the npa spec, and git-256 SHA length support.
 
 Because pacote is what npm itself uses under the hood, anything you can pass to `npm install` you can pass to pacote. It provides a unified API across all package source types — resolve, extract, manifest, packument, and tarball operations work identically regardless of whether the source is a registry, git repo, file, directory, or remote URL.
 

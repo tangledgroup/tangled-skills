@@ -1,6 +1,6 @@
 ---
 name: logfire-4-32-1
-description: Production-grade AI observability platform built on OpenTelemetry by the Pydantic team. Native SDKs for Python, JavaScript/TypeScript, and Rust with support for any OTel-compatible language. Use when instrumenting applications with distributed tracing, spans, metrics, and logs; configuring auto-instrumentation for FastAPI, OpenAI, LangChain, databases, and web frameworks; querying trace data via SQL; scrubbing sensitive data; implementing sampling strategies; deploying self-hosted; or integrating with the Logfire cloud platform.
+description: AI observability platform built on OpenTelemetry by the Pydantic team. Native SDKs for Python, JavaScript/TypeScript, and Rust. Use when instrumenting applications with distributed tracing, metrics, and logs; configuring auto-instrumentation for FastAPI, OpenAI, LangChain, and databases; querying trace data via SQL; or integrating with the Logfire cloud platform.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

@@ -1,6 +1,6 @@
 ---
 name: autoloop-0-4-0
-description: Simpler, opinionated loop harness for inspectable long-running agent workflows. Spinoff of ralph-orchestrator that emphasizes preset-driven multi-role loops with event-based routing, append-only journaling, metareview hygiene passes, worktree isolation, and structured parallelism. Use when building autonomous coding agents that need iterative plan-build-review cycles, quality gates between roles, persistent memory across runs, git worktree isolation for concurrent modifications, or operator visibility into agent execution through inspectable journals and a local dashboard.
+description: Opinionated loop harness for long-running agent workflows. Supports preset-driven multi-role loops with event-based routing, append-only journaling, worktree isolation, and structured parallelism. Use when building autonomous coding agents needing iterative plan-build-review cycles, quality gates between roles, persistent memory across runs, or operator visibility through inspectable journals.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

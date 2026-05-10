@@ -1,6 +1,6 @@
 ---
 name: design-md-0-1-1
-description: "DESIGN.md format for describing visual identity to coding agents. Combines YAML front matter design tokens (colors, typography, spacing, components) with markdown prose rationale. The `@google/design.md` npm package provides linting (8 rules including WCAG contrast checks), version diffing, and export to Tailwind theme config or W3C DTCG tokens.json. Use when creating or validating DESIGN.md files for AI agent consumption, converting design systems between formats, comparing design system versions, or injecting format specification into agent prompts."
+description: Format for describing visual identity to coding agents. Combines YAML front matter design tokens with markdown prose rationale. The @google/design.md npm package provides linting, version diffing, and export to Tailwind theme config or W3C DTCG tokens.json. Use when creating or validating DESIGN.md files for AI agents, converting design systems between formats, or comparing versions.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

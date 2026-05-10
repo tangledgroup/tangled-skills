@@ -1,6 +1,6 @@
 ---
 name: spec-kit-0-8-3
-description: A skill for implementing Spec-Driven Development (SDD) using GitHub's Spec Kit v0.8.3 toolkit, enabling specification-first workflows with AI agents to generate executable specifications, implementation plans, task breakdowns, and automated workflows that drive code generation. Use when building software projects requiring structured specification workflows, integrating AI coding assistants (Claude Code, Copilot, Gemini CLI, Codex, Pi, etc.) with spec-driven methodologies, orchestrating multi-step processes via the new workflow engine, or migrating existing projects to specification-first development practices.
+description: Spec-Driven Development toolkit for specification-first workflows with AI agents. Generate executable specifications, implementation plans, and automated workflows that drive code generation. Use when building software projects requiring structured specification workflows, integrating AI coding assistants with spec-driven methodologies, or migrating to specification-first practices.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

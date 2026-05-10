@@ -1,15 +1,6 @@
 ---
 name: opentelemetry-collector-1-56-0
-description: >-
-  Complete toolkit for OpenTelemetry Collector v1.56.0 covering configuration,
-  deployment patterns (agent, gateway, agent-to-gateway), pipeline architecture,
-  component management, OpAMP fleet management with supervisor, internal telemetry
-  monitoring, scaling strategies, resiliency with sending queues and persistent
-  storage, custom distributions via ocb builder, and TLS/mTLS security. Use when
-  deploying vendor-agnostic telemetry collection infrastructure, configuring OTLP
-  trace/metric/log pipelines, managing collector fleets at scale, building custom
-  collector distributions, or implementing production-ready observability data
-  collection with retries, batching, and encryption.
+description: Vendor-agnostic telemetry collector for OpenTelemetry providing configurable pipelines for traces, metrics, and logs. Supports agent/gateway patterns, OpAMP fleet management, and custom distributions. Use when deploying observability infrastructure, configuring OTLP data collection, managing collector fleets, or implementing production-ready telemetry with retries and batching.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

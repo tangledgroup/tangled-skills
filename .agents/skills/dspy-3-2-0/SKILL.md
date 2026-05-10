@@ -1,6 +1,6 @@
 ---
 name: dspy-3-2-0
-description: DSPy is the framework for programming—rather than prompting—language models. It provides modular AI system components (Signatures, Modules, Adapters) and optimization algorithms that compile declarative LM calls into self-improving pipelines by tuning prompts and/or LM weights to maximize user-defined metrics. Use when building classifiers, RAG pipelines, agents, or any multi-stage LM program where you want automated prompt engineering, few-shot example synthesis, instruction optimization, or model fine-tuning driven by evaluation metrics rather than manual prompt hacking.
+description: Framework for programming rather than prompting language models. Compiles LM calls into self-improving pipelines by tuning prompts or weights to maximize user-defined metrics. Use when building classifiers, RAG pipelines, agents, or any multi-stage LM program requiring automated prompt engineering or model fine-tuning driven by evaluation metrics.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

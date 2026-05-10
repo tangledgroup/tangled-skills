@@ -1,6 +1,6 @@
 ---
 name: ty-0-0-33
-description: A skill for using ty 0.0.33, an extremely fast Python type checker and language server written in Rust that is 10x-100x faster than mypy and Pyright with comprehensive diagnostics, configurable rule levels, and advanced typing features including intersection types, redeclarations, and gradual type support. Use when type checking Python code, setting up editor integrations for real-time type checking, configuring type checking rules, suppressing specific violations, or needing fast incremental analysis in IDEs.
+description: Extremely fast Python type checker and language server written in Rust, 10x-100x faster than mypy and Pyright. Provides comprehensive diagnostics, configurable rule levels, and advanced typing features including intersection types. Use when type checking Python code, setting up editor integrations for real-time type checking, configuring rules, or needing fast incremental analysis in IDEs.
 version: "0.1.0"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT

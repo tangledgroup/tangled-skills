@@ -1,6 +1,6 @@
 ---
 name: d3-7-9-0
-description: Complete toolkit for D3.js 7.9.0, the JavaScript library for bespoke data-driven documents providing SVG and Canvas-based visualizations with scales, axes, shapes, transitions, geo-projections, force simulations, hierarchy layouts, array utilities, color interpolation, formatting, and selection/joining APIs. Use when building custom interactive charts, geographic maps, network diagrams, animated data visualizations, or implementing low-level graphics with direct DOM control instead of charting-library abstractions.
+description: JavaScript library for bespoke data-driven documents providing SVG and Canvas-based visualizations with scales, axes, transitions, geo-projections, force simulations, and hierarchy layouts. Use when building custom interactive charts, geographic maps, network diagrams, animated data visualizations, or implementing low-level graphics with direct DOM control.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"
@@ -28,7 +28,7 @@ D3 (Data-Driven Documents) is a JavaScript library for producing dynamic, intera
 
 D3 is built as a collection of 26+ independent modules that work together but can be used separately. The library supports ES modules, UMD bundles, and CDN delivery. It requires no build tools — you can load it directly from a `<script>` tag or import individual modules with native ES module syntax.
 
-D3 is developed by Observable, Inc., created by Mike Bostock, and released under the ISC license. The current version is 7.9.0 with over 111,000 GitHub stars.
+D3 is developed by Observable, Inc., created by Mike Bostock, and released under the ISC license. Version 7.9.0 has over 111,000 GitHub stars.
 
 ## When to Use
 

@@ -1,6 +1,6 @@
 ---
 name: networkx-3-6-1
-description: A comprehensive toolkit for NetworkX 3.6.1, the Python package for creating, manipulating, and studying complex networks. Use when building graph analysis applications, implementing network algorithms (centrality, community detection, shortest paths, flow), generating random or classic graphs, computing linear algebra representations (adjacency, Laplacian, modularity matrices), reading/writing graphs in multiple formats (GraphML, GEXF, GML, JSON, edge list), performing graph operations (union, complement, subgraph, product), visualizing networks with Matplotlib or Graphviz, or working with directed/undirected/multigraph structures.
+description: Python package for creating, manipulating, and studying complex networks. Supports graph generation, algorithms (centrality, community detection, shortest paths, flow), linear algebra representations, multiple file formats, and visualization. Use when building graph analysis applications, implementing network algorithms, or working with directed/undirected/multigraph structures.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

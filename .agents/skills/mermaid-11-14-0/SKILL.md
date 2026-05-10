@@ -1,16 +1,6 @@
 ---
 name: mermaid-11-14-0
-description: >-
-  JavaScript-based diagramming and charting tool that generates diagrams from
-  Markdown-inspired text definitions. Supports flowcharts, sequence diagrams,
-  Gantt charts, class diagrams, state diagrams, pie charts, git graphs, C4
-  diagrams, mindmaps, ER diagrams, user journeys, block diagrams, architecture
-  diagrams, quadrant charts, timelines, kanban, requirement diagrams, radar
-  charts, sankey diagrams, venn diagrams, treemaps, tree views, wardley maps,
-  packet diagrams, Ishikawa diagrams, event modeling diagrams, xy charts, and
-  ZenUML sequence diagrams. Use when creating visual diagrams from text in
-  documentation, markdown files, HTML pages, or any environment supporting
-  Mermaid rendering via CDN, npm package, or live editor.
+description: JavaScript-based diagramming tool that generates diagrams from Markdown-inspired text definitions. Supports 30+ diagram types including flowcharts, sequence diagrams, Gantt charts, class diagrams, ER diagrams, and mindmaps. Use when creating visual diagrams from text in documentation, markdown files, HTML pages, or any environment supporting Mermaid rendering via CDN or npm.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

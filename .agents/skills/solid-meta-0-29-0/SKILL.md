@@ -385,7 +385,7 @@ interface MetaContextType {
 }
 ```
 
-## Advanced Topics
+## Advanced Usage
 
 ### How Cascading Works Internally
 

@@ -1,6 +1,6 @@
 ---
 name: textual-8-2-5
-description: Rapid application development framework for building sophisticated terminal and browser user interfaces in Python. Provides a widget-based DOM model, CSS styling (.tcss), reactive attributes, event/message system, screen stack, Workers API for concurrency, command palette, theming (including new ansi-dark/ansi-light themes in 8.2.5), inline mode, and pytest-based testing with Pilot simulation. Use when building terminal UIs (TUIs), CLI tools with rich interfaces, data dashboards, interactive forms, file browsers, or any Python application requiring a graphical interface in the terminal.
+description: Python framework for building terminal and browser UIs. Provides widget-based DOM, CSS styling (.tcss), reactive attributes, event system, Workers API for concurrency, command palette, and theming. Use when building terminal UIs, CLI tools with rich interfaces, data dashboards, interactive forms, or any Python application requiring a graphical interface in the terminal.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

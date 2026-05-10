@@ -1,6 +1,6 @@
 ---
 name: podman-5-8-2
-description: Comprehensive toolkit for Podman 5.8.2, a daemonless container engine providing Docker-compatible CLI for managing containers, pods, images, volumes, and networks. Supports rootless operation via user namespaces, Kubernetes integration through kube play/generate, systemd declarative management via Quadlet, virtual machine management on Mac/Windows via podman machine, remote client over SSH, REST API with Docker compatibility layer, OCI artifact support, and SQLite-based storage backend. Use when building, running, or managing containers without a daemon, implementing rootless container workflows, orchestrating pods, integrating with Kubernetes YAML, automating with systemd services, configuring container networking via Netavark and pasta, or migrating from Docker.
+description: Daemonless container engine with Docker-compatible CLI for managing containers, pods, images, volumes, and networks. Supports rootless operation, Kubernetes integration, systemd management, and remote access. Use when building, running, or managing containers without a daemon, implementing rootless workflows, orchestrating pods, or migrating from Docker.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

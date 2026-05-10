@@ -1,6 +1,6 @@
 ---
 name: payloadcms-3-82-1
-description: Complete toolkit for Payload CMS v3.82.1 headless CMS development including collections, fields, access control, authentication, custom components, and Local API operations. Use when building content management systems, creating admin interfaces, implementing role-based access control, developing custom React components, or integrating with Next.js applications using TypeScript-first patterns with proper security practices.
+description: Payload CMS headless CMS toolkit including collections, fields, access control, authentication, custom components, and Local API operations. Use when building content management systems, creating admin interfaces, implementing role-based access control, developing custom React components, or integrating with Next.js applications.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

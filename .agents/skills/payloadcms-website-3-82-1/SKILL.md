@@ -1,6 +1,6 @@
 ---
 name: payloadcms-website-3-82-1
-description: Complete guide for Payload CMS website template v3.82.1 providing production-ready starter for content-driven websites, blogs, and portfolios with Next.js App Router, MongoDB, Lexical editor, SEO optimization, draft/live preview, form builder, search, redirects, scheduled publishing, and on-demand cache revalidation. Use when building personal or enterprise-grade websites requiring publication workflows, layout builders, multi-page sites, or integrating Payload CMS with modern frontend technologies.
+description: Payload CMS website template providing production-ready starter for content-driven websites, blogs, and portfolios with Next.js App Router, MongoDB, Lexical editor, SEO optimization, draft/live preview, and search. Use when building personal or enterprise-grade websites requiring publication workflows, layout builders, multi-page sites, or integrating Payload CMS with modern frontend technologies.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"

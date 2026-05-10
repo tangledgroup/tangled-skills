@@ -312,7 +312,7 @@ Reads identity from the `Authorization: Bearer <token>` header. Requires `PyJWT`
 
 Raises `InvalidAuthorizationScheme` if the `Authorization` header does not use the `Bearer` scheme.
 
-## Advanced Topics
+## Advanced Usage
 
 ### Database-Backed Authorization Policy
 
