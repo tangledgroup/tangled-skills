@@ -36,11 +36,11 @@ tangled-skills/
 
 **Never install packages system-wide.** Always use local or ephemeral environments.
 When running scripts that need dependencies, create a temporary virtual environment,
-or use `uv run --with <pkg> <script>` for one-off executions.
+or use `uvx <tool>` for one-off executions.
 
 ## Tooling Conventions
 
-- **Python packages**: Prefer `uv` over `pip`/`pip-tools`/`poetry`.
-- **Python CLI tools**: Use `uvx <tool>` for one-off runs (ephemeral venv, no persistent install).
-- **Node.js CLI tools**: Prefer `npx` over global installs.
-- **Scripts in this repo**: Run with `python3` (system Python is sufficient for our simple scripts).
+1. Use `uvx <tool>` for Python CLI tools (ephemeral venv, no persistent install).
+2. Use `npx <tool>` for Node.js CLI tools (no global installs).
+3. Write inline bash scripts for simple shell tasks.
+4. Run inline `python3` scripts when system Python suffices.
