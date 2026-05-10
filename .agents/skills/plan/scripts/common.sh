@@ -251,7 +251,7 @@ get_phase_emoji_from_file() {
 # Get plan emoji from file header
 get_plan_emoji_from_file() {
   local plan="$1"
-  head -1 "$plan" | grep -oP '^\# \K\S+' || echo "☐"
+  awk 'NR==1 && /^# \S+ / { print $2; found=1; exit } END { if (!found) print "☐" }' "$plan"
 }
 
 # Update phase emoji in file
@@ -268,7 +268,12 @@ update_phase_emoji_in_file() {
 # Update plan emoji in file header
 update_plan_emoji_in_file() {
   local tmpfile="$1" old_emoji="$2" new_emoji="$3"
-  sed -i "s/^# ${old_emoji} /# ${new_emoji} /" "$tmpfile"
+  awk -v old="$old_emoji" -v new="$new_emoji" '
+    NR==1 && /^# / {
+      if ($2 == old) { $2 = new }
+    }
+    { print }
+  ' "$tmpfile" > "${tmpfile}.new" && mv -f "${tmpfile}.new" "$tmpfile"
 }
 
 # Re-derive all phase emojis + plan emoji
@@ -282,7 +287,7 @@ rederive_all() {
     derived=$(derive_phase_emoji "$tmpfile" "$pn")
     current=$(get_phase_emoji_from_file "$tmpfile" "$pn")
     if [[ "$derived" != "$current" ]]; then
-      echo "  -> Phase $pn: $current -> $derived (auto-derived from tasks)"
+      echo "  → Phase $pn: $current → $derived (auto-derived from tasks)"
       update_phase_emoji_in_file "$tmpfile" "$pn" "$derived"
     fi
   done
@@ -291,7 +296,7 @@ rederive_all() {
   derived_plan=$(derive_plan_emoji "$tmpfile")
   file_plan_emoji=$(get_plan_emoji_from_file "$tmpfile")
   if [[ "$derived_plan" != "$file_plan_emoji" ]]; then
-    echo "  -> Plan: $file_plan_emoji -> $derived_plan (auto-derived from phases)"
+    echo "  → Plan: $file_plan_emoji → $derived_plan (auto-derived from phases)"
     update_plan_emoji_in_file "$tmpfile" "$file_plan_emoji" "$derived_plan"
   fi
 }

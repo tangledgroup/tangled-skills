@@ -154,7 +154,9 @@ do_edit() {
       set_header_field_in_file "$tmpfile" "Current Phase" "$1"
       ;;
     set-plan-title)
-      awk -v title="$1" '{
+      local escaped_title
+      escaped_title=$(printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g')
+      awk -v title="$escaped_title" '{
         if ($0 ~ /^# .* Plan:/) {
           match($0, /^# ([^ ]+) Plan:/, arr)
           print "# " arr[1] " Plan: " title
@@ -177,7 +179,7 @@ do_edit() {
     derived=$(derive_phase_emoji "$tmpfile" "$affected_phase")
     current=$(get_phase_emoji_from_file "$tmpfile" "$affected_phase")
     if [[ "$derived" != "$current" ]]; then
-      echo "  -> Phase $affected_phase: $current -> $derived (auto-derived from tasks)"
+      echo "  → Phase $affected_phase: $current → $derived (auto-derived from tasks)"
       update_phase_emoji_in_file "$tmpfile" "$affected_phase" "$derived"
     fi
   fi
@@ -188,7 +190,7 @@ do_edit() {
     derived_plan=$(derive_plan_emoji "$tmpfile")
     file_plan_emoji=$(get_plan_emoji_from_file "$tmpfile")
     if [[ "$derived_plan" != "$file_plan_emoji" ]]; then
-      echo "  -> Plan: $file_plan_emoji -> $derived_plan (auto-derived from phases)"
+      echo "  → Plan: $file_plan_emoji → $derived_plan (auto-derived from phases)"
       update_plan_emoji_in_file "$tmpfile" "$file_plan_emoji" "$derived_plan"
     fi
   fi

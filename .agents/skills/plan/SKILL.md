@@ -3,7 +3,7 @@ name: plan
 description: Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require structured iteration through Planning, Analysis, Design, Implementation, Testing, Deployment, Maintenance, etc phases with clear dependency graphs.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.7"
+version: "0.1.8"
 tags:
   - meta
   - meta-skill
@@ -335,7 +335,7 @@ All paths are relative to this skill's directory (where SKILL.md lives).
 | [scripts/update-plan.sh](scripts/update-plan.sh) | **Execute** | Lock-and-edit with `flock` + atomic rename. Supports all set/get actions for statuses, header fields, and re-derivation. Auto-derives phase and plan emojis after status changes. Read actions (`get-*`) are lock-free and deterministic. |
 | [scripts/derive-phase-emoji.sh](scripts/derive-phase-emoji.sh) | **Execute** | Derive phase emoji from its tasks' emojis using AWK. Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
 | [scripts/derive-plan-emoji.sh](scripts/derive-plan-emoji.sh) | **Execute** | Derive plan emoji from all phases (re-deriving each phase from its tasks). Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
-| [scripts/workflow.sh](scripts/workflow.sh) | **Execute** | Full workflow: lock -> edit (via update-plan.sh) -> re-derive all phases -> validate with automatic rollback on validation failure. Same actions as update-plan.sh plus read-through for `get-*`. |
+| [scripts/workflow.sh](scripts/workflow.sh) | **Execute** | Full workflow: lock → edit (via update-plan.sh) → re-derive all phases → validate with automatic rollback on validation failure. Same actions as update-plan.sh plus read-through for `get-*`. |
 | [scripts/common.sh](scripts/common.sh) | **Source** | Shared helpers: emoji constants, derivation functions, header field access, lock management. Sourced by other scripts - do not run directly. |
 
 ### Usage Examples

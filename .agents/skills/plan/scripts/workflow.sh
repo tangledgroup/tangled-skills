@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# workflow.sh - Full workflow: lock -> edit -> derive -> validate (atomic)
+# workflow.sh - Full workflow: lock → edit → derive → validate (atomic)
 # Usage: workflow.sh <PLAN.md> <action> [args...]
 #
 # Wraps update-plan.sh with automatic validation and rollback.
@@ -85,3 +85,4 @@ fi
   fi
 
 ) 200>"$lockfile"
+exit "$?"
