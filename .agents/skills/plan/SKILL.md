@@ -3,10 +3,11 @@ name: plan
 description: Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require structured iteration through Planning, Analysis, Design, Implementation, Testing, Deployment, Maintenance, etc phases with clear dependency graphs.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.6"
+version: "0.1.7"
 tags:
   - meta
   - meta-skill
+  - plan
   - workflow
   - task-management
 category: meta
@@ -334,8 +335,8 @@ All paths are relative to this skill's directory (where SKILL.md lives).
 | [scripts/update-plan.sh](scripts/update-plan.sh) | **Execute** | Lock-and-edit with `flock` + atomic rename. Supports all set/get actions for statuses, header fields, and re-derivation. Auto-derives phase and plan emojis after status changes. Read actions (`get-*`) are lock-free and deterministic. |
 | [scripts/derive-phase-emoji.sh](scripts/derive-phase-emoji.sh) | **Execute** | Derive phase emoji from its tasks' emojis using AWK. Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
 | [scripts/derive-plan-emoji.sh](scripts/derive-plan-emoji.sh) | **Execute** | Derive plan emoji from all phases (re-deriving each phase from its tasks). Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
-| [scripts/workflow.sh](scripts/workflow.sh) | **Execute** | Full workflow: lock → edit (via update-plan.sh) → re-derive all phases → validate with automatic rollback on validation failure. Same actions as update-plan.sh plus read-through for `get-*`. |
-| [scripts/common.sh](scripts/common.sh) | **Source** | Shared helpers: emoji constants, derivation functions, header field access, lock management. Sourced by other scripts — do not run directly. |
+| [scripts/workflow.sh](scripts/workflow.sh) | **Execute** | Full workflow: lock -> edit (via update-plan.sh) -> re-derive all phases -> validate with automatic rollback on validation failure. Same actions as update-plan.sh plus read-through for `get-*`. |
+| [scripts/common.sh](scripts/common.sh) | **Source** | Shared helpers: emoji constants, derivation functions, header field access, lock management. Sourced by other scripts - do not run directly. |
 
 ### Usage Examples
 
@@ -377,13 +378,13 @@ bash scripts/validate-plan.sh PLAN.md
 ```
 
 ### Properties
-- **`flock -w 30`** — blocks other writers, times out after 30s to avoid deadlocks (configurable via `PLAN_LOCK_TIMEOUT`)
-- **Stale lock detection** — locks older than timeout with no holding process are automatically removed
-- **`mktemp` + `mv -f`** — write to temp then atomic rename, so PLAN.md is never left partial
-- **Advisory lock** — readers can still read PLAN.md while locked (they see the old version)
-- **Automatic rollback** — `workflow.sh` backs up the file and restores it if validation fails
-- **Cleanup on exit** — temp files, backups, and lock files are removed via trap on normal exit, INT, and TERM
-- **Lock-free reads** — `get-*` actions skip locking entirely (read-only)
-- **Lock file cleanup** — the physical `.lock` file is removed after each operation (flock advisory lock is released when the file descriptor closes; the script also removes the lock file itself via trap)
-- **Nested lock safety** — `workflow.sh` sets `PLAN_SKIP_LOCK` when calling `update-plan.sh` to avoid deadlocks
-- **Deterministic header access** — all `get-*` and `set-*` for header fields use canonical parsing/writing via `common.sh`, ensuring values are always read and written in a consistent format
+- **`flock -w 30`** - blocks other writers, times out after 30s to avoid deadlocks (configurable via `PLAN_LOCK_TIMEOUT`)
+- **Stale lock detection** - locks older than timeout with no holding process are automatically removed
+- **`mktemp` + `mv -f`** - write to temp then atomic rename, so PLAN.md is never left partial
+- **Advisory lock** - readers can still read PLAN.md while locked (they see the old version)
+- **Automatic rollback** - `workflow.sh` backs up the file and restores it if validation fails
+- **Cleanup on exit** - temp files, backups, and lock files are removed via trap on normal exit, INT, and TERM
+- **Lock-free reads** - `get-*` actions skip locking entirely (read-only)
+- **Lock file cleanup** - the physical `.lock` file is removed after each operation (flock advisory lock is released when the file descriptor closes; the script also removes the lock file itself via `release_lock` in the cleanup trap)
+- **Nested lock safety** - `workflow.sh` sets `PLAN_SKIP_LOCK` when calling `update-plan.sh` to avoid deadlocks
+- **Deterministic header access** - all `get-*` and `set-*` for header fields use canonical parsing/writing via `common.sh`, ensuring values are always read and written in a consistent format

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# common.sh — Shared helpers for PLAN.md scripts
+# common.sh - Shared helpers for PLAN.md scripts
 # Source this file; do not execute directly.
 #
 # Provides:
@@ -14,7 +14,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# ── Constants ────────────────────────────────────────────────────────
+# Constants
 EM_TODO="☐"
 EM_QUESTION="❓"
 EM_DOING="⚙️"
@@ -27,15 +27,13 @@ VALID_EMOJIS="$EM_TODO $EM_QUESTION $EM_DOING $EM_ERROR $EM_DONE"
 # Lock timeout in seconds
 LOCK_TIMEOUT="${PLAN_LOCK_TIMEOUT:-30}"
 
-# ── Emoji validation ─────────────────────────────────────────────────
-
+# Emoji validation
 is_valid_emoji() {
   local em="$1"
   [[ "$em" == "$EM_TODO" || "$em" == "$EM_QUESTION" || "$em" == "$EM_DOING" || "$em" == "$EM_ERROR" || "$em" == "$EM_DONE" ]]
 }
 
-# ── File helpers ─────────────────────────────────────────────────────
-
+# File helpers
 usage_exit() {
   echo "Usage: $0 <PLAN.md> $1" >&2
   exit "${2:-1}"
@@ -44,12 +42,43 @@ usage_exit() {
 check_plan_file() {
   local plan="$1"
   if [[ ! -f "$plan" ]]; then
-    echo "✗ File not found: $plan" >&2
+    echo "ERROR: File not found: $plan" >&2
     exit 1
   fi
 }
 
-# ── Deterministic header field access ────────────────────────────────
+# Print usage for a script, showing supported actions
+print_usage() {
+  local script_name="$1"
+  shift
+  cat <<EOF
+Usage: $script_name <PLAN.md> <action> [args...]
+
+Actions:
+  set-task-status <Task X.Y> <emoji>    Set task status
+  set-phase-status <Phase X> <emoji>    Set phase status
+  get-task-status <Task X.Y>            Print task emoji
+  get-phase-status <Phase X>            Print phase emoji
+  get-plan-status                       Print plan emoji
+  update-timestamp                      Update timestamp to now
+  set-current-task <value>              Set Current Task field
+  get-current-task                      Print Current Task value
+  set-current-phase <value>             Set Current Phase field
+  get-current-phase                     Print Current Phase value
+  set-plan-title <title>                Set plan title
+  get-plan-title                        Print plan title
+  set-depends-on <value>                Set Depends On field
+  get-depends-on                        Print Depends On value
+  get-created                           Print Created timestamp
+  get-plan-header                       Print all header fields
+  rederive-all                          Re-derive all phase + plan emojis
+
+Valid emojis: ☐ ❓ ⚙️ ❌ ☑
+EOF
+  exit "${1:-0}"
+}
+
+# Deterministic header field access
 # All header fields use a canonical format: **FieldName:** value
 # Read helpers extract the value after the field marker, trimmed.
 # Write helpers replace the entire line with the canonical format.
@@ -87,7 +116,13 @@ set_header_field_in_file() {
   ' "$tmpfile" > "${tmpfile}.new" && mv -f "${tmpfile}.new" "$tmpfile"
 }
 
-# ── Lock management ──────────────────────────────────────────────────
+# Extract plan title from header line: # [emoji] Plan: Title
+get_plan_title_from_file() {
+  local file="$1"
+  awk '/^# \S+ Plan:/ { sub(/^# \S+ Plan: */, ""); print; exit }' "$file"
+}
+
+# Lock management
 # Advisory lock with stale-lock detection.
 # A lock file older than LOCK_TIMEOUT seconds is considered stale and removed.
 
@@ -104,7 +139,7 @@ acquire_lock() {
       fi
     fi
   fi
-  flock -w "$LOCK_TIMEOUT" 200 || { echo "✗ Timeout waiting for lock ($LOCK_TIMEOUT s)"; exit 1; }
+  flock -w "$LOCK_TIMEOUT" 200 || { echo "ERROR: Timeout waiting for lock ($LOCK_TIMEOUT s)"; exit 1; }
 }
 
 release_lock() {
@@ -112,7 +147,7 @@ release_lock() {
   rm -f "$lockfile" 2>/dev/null || true
 }
 
-# ── Atomic write helper ──────────────────────────────────────────────
+# Atomic write helper
 # Write content to a temp file in the same directory, then atomic rename.
 # Usage: atomic_write <target> <tmpfile>
 atomic_write() {
@@ -124,7 +159,7 @@ cleanup_temp() {
   rm -f "$@" 2>/dev/null || true
 }
 
-# ── Phase number extraction ─────────────────────────────────────────
+# Phase number extraction
 # Extract all phase numbers from a PLAN.md file (one per line)
 get_phase_numbers() {
   local plan="$1"
@@ -133,11 +168,10 @@ get_phase_numbers() {
   }' "$plan"
 }
 
-# ── AWK: derive phase emoji from tasks within a given phase ─────────
+# AWK: derive phase emoji from tasks within a given phase
 # Reads PLAN.md, collects task emojis for the given phase number.
 # Outputs single emoji on stdout.
-# Priority: ⚙️ > ❓ > ❌ > ☑ > ☐
-
+# Priority: Doing > Question > Error > Done > Not Started
 derive_phase_emoji() {
   local plan="$1" phase_num="$2"
 
@@ -165,7 +199,7 @@ derive_phase_emoji() {
   ' "$plan"
 }
 
-# ── AWK: derive plan emoji from all phases (via their tasks) ────────
+# AWK: derive plan emoji from all phases (via their tasks)
 derive_plan_emoji() {
   local plan="$1"
 
@@ -204,7 +238,7 @@ derive_plan_emoji() {
   ' "$plan"
 }
 
-# ── Get current emoji of a phase from the file ───────────────────────
+# Get current emoji of a phase from the file
 get_phase_emoji_from_file() {
   local plan="$1" phase_num="$2"
   awk -v pn="$phase_num" '
@@ -214,13 +248,13 @@ get_phase_emoji_from_file() {
   ' "$plan"
 }
 
-# ── Get plan emoji from file header ──────────────────────────────────
+# Get plan emoji from file header
 get_plan_emoji_from_file() {
   local plan="$1"
   head -1 "$plan" | grep -oP '^\# \K\S+' || echo "☐"
 }
 
-# ── Update phase emoji in file ───────────────────────────────────────
+# Update phase emoji in file
 update_phase_emoji_in_file() {
   local tmpfile="$1" phase_num="$2" new_emoji="$3"
   awk -v pn="$phase_num" -v em="$new_emoji" '
@@ -231,13 +265,13 @@ update_phase_emoji_in_file() {
   ' "$tmpfile" > "${tmpfile}.new" && mv -f "${tmpfile}.new" "$tmpfile"
 }
 
-# ── Update plan emoji in file header ─────────────────────────────────
+# Update plan emoji in file header
 update_plan_emoji_in_file() {
   local tmpfile="$1" old_emoji="$2" new_emoji="$3"
   sed -i "s/^# ${old_emoji} /# ${new_emoji} /" "$tmpfile"
 }
 
-# ── Re-derive all phase emojis + plan emoji ─────────────────────────
+# Re-derive all phase emojis + plan emoji
 rederive_all() {
   local tmpfile="$1"
 
@@ -248,7 +282,7 @@ rederive_all() {
     derived=$(derive_phase_emoji "$tmpfile" "$pn")
     current=$(get_phase_emoji_from_file "$tmpfile" "$pn")
     if [[ "$derived" != "$current" ]]; then
-      echo "  → Phase $pn: $current → $derived (auto-derived from tasks)"
+      echo "  -> Phase $pn: $current -> $derived (auto-derived from tasks)"
       update_phase_emoji_in_file "$tmpfile" "$pn" "$derived"
     fi
   done
@@ -257,7 +291,51 @@ rederive_all() {
   derived_plan=$(derive_plan_emoji "$tmpfile")
   file_plan_emoji=$(get_plan_emoji_from_file "$tmpfile")
   if [[ "$derived_plan" != "$file_plan_emoji" ]]; then
-    echo "  → Plan: $file_plan_emoji → $derived_plan (auto-derived from phases)"
+    echo "  -> Plan: $file_plan_emoji -> $derived_plan (auto-derived from phases)"
     update_plan_emoji_in_file "$tmpfile" "$file_plan_emoji" "$derived_plan"
   fi
+}
+
+# Pre-flight validation for write actions
+preflight_check() {
+  local action="$1"
+  shift
+  case "$action" in
+    set-task-status)
+      if [[ $# -lt 2 ]]; then echo "ERROR: Usage: set-task-status <Task X.Y> <emoji>"; exit 1; fi
+      if ! is_valid_emoji "$2"; then
+        echo "ERROR: Invalid emoji: $2 (valid: ☐ ❓ ⚙️ ❌ ☑)" >&2
+        exit 1
+      fi
+      ;;
+    set-phase-status)
+      if [[ $# -lt 2 ]]; then echo "ERROR: Usage: set-phase-status <Phase X> <emoji>"; exit 1; fi
+      if ! is_valid_emoji "$2"; then
+        echo "ERROR: Invalid emoji: $2 (valid: ☐ ❓ ⚙️ ❌ ☑)" >&2
+        exit 1
+      fi
+      ;;
+    set-current-task|set-current-phase)
+      if [[ $# -lt 1 ]]; then echo "ERROR: Usage: set-${action#set-} <value>"; exit 1; fi
+      ;;
+    set-plan-title|set-depends-on)
+      if [[ $# -lt 1 ]]; then echo "ERROR: Usage: $action <value>"; exit 1; fi
+      ;;
+  esac
+  return 0
+}
+
+# Validate all read-only action names
+is_read_action() {
+  local action="$1"
+  case "$action" in
+    get-task-status|get-phase-status|get-plan-status|\
+    get-current-task|get-current-phase|get-plan-title|get-depends-on|\
+    get-created|get-plan-header)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
 }

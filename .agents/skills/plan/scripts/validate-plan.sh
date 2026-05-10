@@ -1,38 +1,25 @@
 #!/usr/bin/env bash
-# validate-plan.sh — Structural validation of a PLAN.md file
+# validate-plan.sh - Structural validation of a PLAN.md file
 # Usage: validate-plan.sh <PLAN.md>
 # Exit 0 = pass, 1 = errors found
 #
 # Validates (section by section):
-#   1. Plan Header — title line exists with valid emoji format
-#   2. Header Fields — all required fields present with non-empty values
-#   3. Phases — at least one, sequential numbering from 1, no duplicates
-#   4. Tasks — at least one per phase, sequential numbering, proper phase binding
-#   5. Emoji Validity — all phase/task emojis from allowed set
-#   6. Zero-Task Phases — flagged as warnings
-#   7. Phase Emoji Derivation — each phase emoji matches derived status
-#   8. Plan Emoji Derivation — plan emoji matches derived status from phases
+#   1. Plan Header - title line exists with valid emoji format
+#   2. Header Fields - all required fields present with non-empty values
+#   3. Phases - at least one, sequential numbering from 1, no duplicates
+#   4. Tasks - at least one per phase, sequential numbering, proper phase binding
+#   5. Emoji Validity - all phase/task emojis from allowed set
+#   6. Zero-Task Phases - flagged as warnings
+#   7. Phase Emoji Derivation - each phase emoji matches derived status
+#   8. Plan Emoji Derivation - plan emoji matches derived status from phases
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
-# ── Usage ────────────────────────────────────────────────────────────
-
-usage() {
-  cat <<EOF
-Usage: $0 <PLAN.md>
-
-Validates structural integrity of a workflow PLAN.md file.
-Checks 8 sections: header, fields, phases, tasks, emojis, derivation.
-Exit 0 = pass, 1 = errors found.
-EOF
-  exit "${1:-0}"
-}
-
-[[ $# -eq 0 ]] && usage 1
-[[ "$1" == "--help" || "$1" == "-h" ]] && usage 0
+[[ $# -eq 0 ]] && { echo "Usage: $0 <PLAN.md>" >&2; exit 1; }
+[[ "$1" == "--help" || "$1" == "-h" ]] && { echo "Usage: $0 <PLAN.md>"; echo ""; echo "Validates structural integrity of a workflow PLAN.md file."; echo "Checks 8 sections: header, fields, phases, tasks, emojis, derivation."; echo "Exit 0 = pass, 1 = errors found."; exit 0; }
 
 plan="$1"
 check_plan_file "$plan"
@@ -40,15 +27,12 @@ check_plan_file "$plan"
 errors=0
 warnings=0
 
-# ── Helpers ──────────────────────────────────────────────────────────
-err() { echo "✗ $1"; errors=$((errors + 1)); }
-warn() { echo "⚠ $1"; warnings=$((warnings + 1)); }
+# Helpers
+err() { echo "FAIL: $1"; errors=$((errors + 1)); }
+warn() { echo "WARN: $1"; warnings=$((warnings + 1)); }
 
-# ═══════════════════════════════════════════════════════════════════
 # Section 1: Plan Header (title line)
-# ═══════════════════════════════════════════════════════════════════
-
-echo "── Section 1: Plan Header ──"
+echo "Checking section 1: Plan Header"
 
 if ! grep -qP '^# \S+ Plan:' "$plan"; then
   err "Missing or invalid plan header (expected: # [emoji] Plan: Title)"
@@ -59,11 +43,8 @@ else
   fi
 fi
 
-# ═══════════════════════════════════════════════════════════════════
 # Section 2: Header Fields
-# ═══════════════════════════════════════════════════════════════════
-
-echo "── Section 2: Header Fields ──"
+echo "Checking section 2: Header Fields"
 
 for field in "Depends On" "Created" "Updated" "Current Phase" "Current Task"; do
   if ! grep -qP "^\*\*${field}:\*\*" "$plan"; then
@@ -76,11 +57,8 @@ for field in "Depends On" "Created" "Updated" "Current Phase" "Current Task"; do
   fi
 done
 
-# ═══════════════════════════════════════════════════════════════════
 # Section 3: Phases
-# ═══════════════════════════════════════════════════════════════════
-
-echo "── Section 3: Phases ──"
+echo "Checking section 3: Phases"
 
 phase_nums_raw=$(get_phase_numbers "$plan")
 if [[ -z "$phase_nums_raw" ]]; then
@@ -117,14 +95,10 @@ else
   done < <(grep -P '^## .* Phase \d+' "$plan" || true)
 fi
 
-# ═══════════════════════════════════════════════════════════════════
 # Section 4: Tasks
-# ═══════════════════════════════════════════════════════════════════
-
-echo "── Section 4: Tasks ──"
+echo "Checking section 4: Tasks"
 
 # Check task numbering within each phase (sequential, no gaps/dupes)
-# Collect errors into a variable to avoid subshell issues with pipe
 task_errors=$(awk '
   /^## .* Phase [0-9]+/ {
     if (match($0, /Phase ([0-9]+)/, arr)) {
@@ -158,11 +132,8 @@ if [[ "$total_tasks" -eq 0 ]]; then
   err "No tasks found in any phase"
 fi
 
-# ═══════════════════════════════════════════════════════════════════
 # Section 5: Emoji Validity
-# ═══════════════════════════════════════════════════════════════════
-
-echo "── Section 5: Emoji Validity ──"
+echo "Checking section 5: Emoji Validity"
 
 # Tasks with invalid emojis
 invalid_tasks=$(awk '
@@ -200,11 +171,8 @@ if [[ -n "$invalid_phases" ]]; then
   done <<< "$invalid_phases"
 fi
 
-# ═══════════════════════════════════════════════════════════════════
 # Section 6: Zero-Task Phases
-# ═══════════════════════════════════════════════════════════════════
-
-echo "── Section 6: Zero-Task Phases ──"
+echo "Checking section 6: Zero-Task Phases"
 
 empty_phases=$(awk '
   /^## .* Phase [0-9]+/ {
@@ -225,15 +193,12 @@ empty_phases=$(awk '
 
 if [[ -n "$empty_phases" ]]; then
   while IFS= read -r phase; do
-    warn "$phase has zero tasks (can never reach ☑)"
+    warn "$phase has zero tasks (can never reach Done)"
   done <<< "$empty_phases"
 fi
 
-# ═══════════════════════════════════════════════════════════════════
 # Section 7: Emoji Derivation (Phase from Tasks)
-# ═══════════════════════════════════════════════════════════════════
-
-echo "── Section 7: Phase Emoji Derivation ──"
+echo "Checking section 7: Phase Emoji Derivation"
 
 if [[ -n "$phase_nums" ]]; then
   for pn in $phase_nums; do
@@ -245,11 +210,8 @@ if [[ -n "$phase_nums" ]]; then
   done
 fi
 
-# ═══════════════════════════════════════════════════════════════════
 # Section 8: Emoji Derivation (Plan from Phases)
-# ═══════════════════════════════════════════════════════════════════
-
-echo "── Section 8: Plan Emoji Derivation ──"
+echo "Checking section 8: Plan Emoji Derivation"
 
 derived_plan=$(derive_plan_emoji "$plan")
 file_plan_emoji=$(get_plan_emoji_from_file "$plan")
@@ -257,17 +219,18 @@ if [[ "$derived_plan" != "$file_plan_emoji" ]]; then
   err "Plan emoji is '$file_plan_emoji' but should be '$derived_plan' (derived from phases)"
 fi
 
-# ═══════════════════════════════════════════════════════════════════
 # Summary
-# ═══════════════════════════════════════════════════════════════════
-
 echo ""
 if [[ "$errors" -eq 0 ]]; then
-  echo "✓ PLAN.md passes all checks ($total_tasks tasks, $phases phases)"
-  [[ "$warnings" -gt 0 ]] && echo "  ($warnings warning(s))"
+  echo "PASS: PLAN.md passes all checks ($total_tasks tasks, $phases phases)"
+  if [[ "$warnings" -gt 0 ]]; then
+    echo "  ($warnings warning(s))"
+  fi
   exit 0
 else
-  echo "✗ $errors error(s) found"
-  [[ "$warnings" -gt 0 ]] && echo "  ($warnings warning(s))"
+  echo "FAIL: $errors error(s) found"
+  if [[ "$warnings" -gt 0 ]]; then
+    echo "  ($warnings warning(s))"
+  fi
   exit 1
 fi
