@@ -6,6 +6,7 @@
 - How Backtracking Works
 - Using Assertions in Programs
 - Activating Assertions
+- Compiling with Assertions
 
 ## Overview
 
@@ -13,19 +14,13 @@
 
 Two primary constructs:
 
-- **`dspy.Assert`** — Hard constraint; initiates retry upon failure. If failures persist past `max_backtracking_attempts`, halts execution and raises `dspy.AssertionError`.
-- **`dspy.Suggest`** — Soft constraint; encourages self-refinement through retries without enforcing hard stops. Logs failures after max backtracking and continues execution.
+- **`dspy.Assert`** — Hard constraint; initiates retry upon failure. If failures persist past `max_backtracking_attempts`, halts execution and raises `dspy.AssertionError`. Best used as "checkers" during development.
+- **`dspy.Suggest`** — Soft constraint; encourages self-refinement through retries without enforcing hard stops. Logs failures after max backtracking and continues execution. Best used as "helpers" during evaluation.
 
-## dspy.Assert vs dspy.Suggest
-
-| Aspect | `dspy.Assert` | `dspy.Suggest` |
-|--------|---------------|----------------|
-| Failure behavior | Halts with `AssertionError` | Logs and continues |
-| Best for | Development ("checkers") | Evaluation ("helpers") |
-| Backtracking | Yes | Yes |
-| Hard stop | After max retries | Never |
-
-Unlike conventional Python `assert` statements that terminate the program, `dspy.Assert` conducts a sophisticated retry mechanism allowing the pipeline to adjust.
+Both accept:
+- `constraint (bool)` — Outcome of a Python-defined boolean validation check
+- `msg (Optional[str])` — User-defined feedback message providing correction guidance
+- `backtrack (Optional[module])` — Target module for retry (defaults to last module before the assertion)
 
 ## How Backtracking Works
 
@@ -36,7 +31,9 @@ When a constraint is not met:
    - **Past Output**: The model's past output that failed validation
    - **Instruction**: Your user-defined feedback message on what went wrong
 
-If the error continues past `max_backtracking_attempts`, `dspy.Assert` halts with an `AssertionError`.
+If the error continues past `max_backtracking_attempts`, `dspy.Assert` halts with an `AssertionError`. `dspy.Suggest` logs the failure and continues.
+
+Unlike conventional Python `assert` statements that terminate the program, `dspy.Assert` conducts a sophisticated retry mechanism allowing the pipeline to adjust.
 
 ## Using Assertions in Programs
 
@@ -104,7 +101,7 @@ import functools
 # Method 1: Using activate_assertions (default max_backtracks=2)
 baleen_with_assertions = SimplifiedBaleenAssertions().activate_assertions()
 
-# Method 2: Manual transform with custom settings
+# Method 2: Manual transform with default settings
 baleen_with_assertions = assert_transform_module(
     SimplifiedBaleenAssertions(),
     backtrack_handler,
@@ -118,3 +115,35 @@ baleen_retry_once = assert_transform_module(
 ```
 
 The `backtrack_handler` is parameterized over settings for the backtracking mechanism. Default `max_backtracks=2`.
+
+## Compiling with Assertions
+
+Assertions work with DSPy optimizers, particularly `BootstrapFewShotWithRandomSearch`:
+
+```python
+from dspy.teleprompt import BootstrapFewShotWithRandomSearch
+
+teleprompter = BootstrapFewShotWithRandomSearch(
+    metric=validate_context_and_answer_and_hops,
+    max_bootstrapped_demos=max_bootstrapped_demos,
+    num_candidate_programs=6,
+)
+
+# Compilation with Assertions (teacher uses assertions, student does not at inference)
+compiled_with_assertions = teleprompter.compile(
+    student=baleen,
+    teacher=baleen_with_assertions,
+    trainset=trainset,
+    valset=devset,
+)
+
+# Compilation + Inference with Assertions (both teacher and student use assertions)
+compiled_baleen_with_assertions = teleprompter.compile(
+    student=baleen_with_assertions,
+    teacher=baleen_with_assertions,
+    trainset=trainset,
+    valset=devset,
+)
+```
+
+This enables assertion-driven example bootstrapping and counterexample bootstrapping during compilation, where the teacher model uses assertions to generate robust demonstrations for the student.

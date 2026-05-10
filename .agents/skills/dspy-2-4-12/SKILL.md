@@ -3,7 +3,7 @@ name: dspy-2-4-12
 description: Framework for programming rather than prompting language models. Compiles LM calls into self-improving pipelines by tuning prompts and/or weights to maximize user-defined metrics. Use when building classifiers, RAG pipelines, agents, or any multi-stage LM program requiring automated prompt engineering, few-shot bootstrapping, or model fine-tuning driven by evaluation metrics.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
+version: "0.2.0"
 tags:
   - llm-programming
   - prompt-optimization
@@ -28,8 +28,6 @@ DSPy provides three core abstractions:
 - **Signatures** — Declarative specifications of input/output behavior that tell the LM _what_ to do without specifying _how_.
 - **Modules** — Building blocks that abstract prompting techniques (chain-of-thought, ReAct, program-of-thought) and can be composed into larger programs.
 - **Optimizers** (formerly Teleprompters) — Algorithms that tune prompts and/or LM weights to maximize user-defined metrics like accuracy.
-
-**Note:** DSPy 2.4.x uses `dspy.OpenAI`, `dspy.Cohere`, etc. for LM clients directly — not the `dspy.LM()` LiteLLM-style unified interface introduced in later versions. Optimizers are imported from `dspy.teleprompt`.
 
 ## When to Use
 
@@ -75,7 +73,7 @@ classify = dspy.Predict("sentence -> sentiment")
 classify = dspy.Predict("context, question -> answer")
 ```
 
-**Class-based signatures** provide more control:
+**Class-based signatures** provide more control with docstrings, field descriptions, and prefixes:
 
 ```python
 class Emotion(dspy.Signature):
@@ -87,16 +85,20 @@ classify = dspy.Predict(Emotion)
 result = classify(sentence="i started feeling a little vulnerable")
 ```
 
+Fields support `desc` (description), `prefix` (placeholder text in the prompt), and `format` (handling non-string inputs).
+
 ### Modules
 
 A **Module** is a building block that abstracts a prompting technique:
 
-- **`dspy.Predict`** — Basic predictor
-- **`dspy.ChainOfThought`** — Adds step-by-step reasoning
-- **`dspy.ProgramOfThought`** — Generates and executes code
-- **`dspy.ReAct`** — Agent with tool use
+- **`dspy.Predict`** — Basic predictor; foundation all other modules build on
+- **`dspy.ChainOfThought`** — Adds step-by-step reasoning before output
+- **`dspy.ChainOfThoughtWithHint`** — Chain-of-thought with an additional hint input
+- **`dspy.ProgramOfThought`** — Generates and executes Python code to solve problems
+- **`dspy.ReAct`** — Agent with tool use (Thought/Action/Observation loop, max 1 output field)
 - **`dspy.MultiChainComparison`** — Compares multiple ChainOfThought outputs
-- **`dspy.majority`** — Voting over predictions
+- **`dspy.majority`** — Voting over a set of predictions
+- **`dspy.Retrieve(k=N)`** — Retrieves top-k passages from a configured retrieval model
 
 **Composing modules into programs:**
 
@@ -115,6 +117,8 @@ rag = RAG()
 result = rag(question="When was the first FIFA World Cup?")
 ```
 
+DSPy programs are just Python code with any control flow you like — loops, conditionals, recursion. No special chaining abstractions needed.
+
 ### Language Models
 
 Configure DSPy with provider-specific LM clients:
@@ -125,9 +129,6 @@ import dspy
 # OpenAI
 gpt3 = dspy.OpenAI(model='gpt-3.5-turbo-1106', max_tokens=300)
 dspy.configure(lm=gpt3)
-
-# GPT-4
-gpt4 = dspy.OpenAI(model='gpt-4-1106-preview', max_tokens=300)
 
 # Cohere
 cohere = dspy.Cohere(model='command')
@@ -154,10 +155,29 @@ hf = dspy.HFModel(model='mistralai/Mistral-7B-Instruct-v0.2')
 response = qa(question="How many floors are in the castle?")
 print('GPT-3.5:', response.answer)
 
+gpt4 = dspy.OpenAI(model='gpt-4-1106-preview', max_tokens=300)
 with dspy.context(lm=gpt4):
     response = qa(question="How many floors are in the castle?")
     print('GPT-4:', response.answer)
 ```
+
+**Generating multiple completions:** Use `n=5` in the module constructor or pass `config=dict(n=5)` when invoking. Access via `response.completions.answer`.
+
+**Inspecting LM history:** Call `lm.inspect_history(n=3)` after running a program to see the last N prompts/responses.
+
+### Retrieval Models
+
+Configure a retrieval model for `dspy.Retrieve` to use:
+
+```python
+colbertv2 = dspy.ColBERTv2(url='http://20.102.90.50:2017/wiki17_abstracts')
+dspy.configure(rm=colbertv2)
+
+retriever = dspy.Retrieve(k=3)
+passages = retriever("When was the first FIFA World Cup?").passages
+```
+
+Custom RM clients can inherit from `dspy.Retrieve` and implement a `forward` method returning `dspy.Prediction(passages=...)`.
 
 ### Optimizers (Teleprompters)
 
@@ -185,90 +205,37 @@ loaded_program = YOUR_PROGRAM_CLASS()
 loaded_program.load(path="path/to/program.json")
 ```
 
-## Usage Examples
+### Data and Metrics
 
-### Example 1: Simple Classification
-
-```python
-import dspy
-
-dspy.configure(lm=dspy.OpenAI(model='gpt-3.5-turbo-1106', max_tokens=300))
-
-classify = dspy.Predict('sentence -> sentiment')
-result = classify(sentence="It's a charming and often affecting journey.")
-print(result.sentiment)  # 'Positive'
-```
-
-### Example 2: RAG Pipeline
+**`dspy.Example` objects** are the core data type — similar to dicts with utilities for marking inputs vs labels:
 
 ```python
-import dspy
-
-dspy.configure(lm=dspy.OpenAI(model='gpt-3.5-turbo-1106', max_tokens=300))
-
-class RAG(dspy.Module):
-    def __init__(self, num_passages=3):
-        super().__init__()
-        self.retrieve = dspy.Retrieve(k=num_passages)
-        self.generate_answer = dspy.ChainOfThought("context, question -> answer")
-
-    def forward(self, question):
-        context = self.retrieve(question).passages
-        return self.generate_answer(context=context, question=question)
-
-rag = RAG()
-result = rag(question="What castle did David Gregory inherit?")
+qa_pair = dspy.Example(question="Q?", answer="A.").with_inputs("question")
+input_only = qa_pair.inputs()    # fields marked as inputs
+label_only = qa_pair.labels()    # remaining fields
 ```
 
-### Example 3: Compiling a Program
+**Metrics** are Python functions taking `example`, `pred`, and optional `trace`, returning a score:
 
 ```python
-import dspy
-from dspy.teleprompt import BootstrapFewShot
-
-dspy.configure(lm=dspy.OpenAI(model='gpt-3.5-turbo-1106', max_tokens=300))
-
-qa = dspy.ChainOfThought("question -> answer")
-trainset = [dspy.Example(question=f"Q{i}", answer=f"A{i}").with_inputs("question") for i in range(50)]
-
-optimizer = BootstrapFewShot(metric=dspy.evaluate.metrics.answer_exact_match)
-optimized_qa = optimizer.compile(student=qa, trainset=trainset)
-result = optimized_qa(question="What is the capital of France?")
+def validate_answer(example, pred, trace=None):
+    return example.answer.lower() == pred.answer.lower()
 ```
 
-### Example 4: ReAct Agent
+When `trace is None`, the metric is used for evaluation. When `trace` is provided, it's used during bootstrapping to validate intermediate steps.
+
+**Built-in metrics:** `dspy.evaluate.metrics.answer_exact_match`, `dspy.evaluate.metrics.answer_passage_match`.
+
+**Evaluation utility:**
 
 ```python
-import dspy
+from dspy.evaluate import Evaluate
 
-dspy.configure(lm=dspy.OpenAI(model='gpt-3.5-turbo-1106', max_tokens=300))
-
-class BasicQA(dspy.Signature):
-    """Answer questions with short factoid answers."""
-    question = dspy.InputField()
-    answer = dspy.OutputField(desc="often between 1 and 5 words")
-
-react = dspy.ReAct(BasicQA)
-result = react(question="What is the color of the sky?")
+evaluator = Evaluate(devset=devset, num_threads=1, display_progress=True, display_table=5)
+evaluator(your_program, metric=validate_answer)
 ```
 
-### Example 5: ProgramOfThought for Math
-
-```python
-import dspy
-
-dspy.configure(lm=dspy.OpenAI(model='gpt-3.5-turbo-1106', max_tokens=300))
-
-class GenerateAnswer(dspy.Signature):
-    """Answer questions with short factoid answers."""
-    question = dspy.InputField()
-    answer = dspy.OutputField(desc="often between 1 and 5 words")
-
-pot = dspy.ProgramOfThought(GenerateAnswer)
-result = pot(question="Sarah has 5 apples. She buys 7 more. How many does she have?")
-```
-
-## Tips and Best Practices
+### Tips and Best Practices
 
 - **Start simple** — Begin with `dspy.Predict` and a basic signature. Swap to `ChainOfThought` if quality is insufficient.
 - **Don't over-engineer signatures** — Let the DSPy compiler optimize keywords rather than hand-tuning them.
@@ -285,7 +252,11 @@ result = pot(question="Sarah has 5 apples. She buys 7 more. How many does she ha
 
 **Optimizers Reference**: Detailed optimizer configurations, parameters, and selection guide → [Optimizers Reference](reference/03-optimizers-reference.md)
 
-**Data & Metrics**: Example objects, training data patterns, and metric design → [Data & Metrics](reference/04-data-and-metrics.md)
+**Data & Metrics**: Example objects, training data patterns, DataLoader, and metric design → [Data & Metrics](reference/04-data-and-metrics.md)
+
+**Retrieval Models**: Configuring retrieval backends and building custom RM clients → [Retrieval Models](reference/05-retrieval-models.md)
+
+**Advanced Signatures**: Signature internals, `replace` context manager, and prompt inspection → [Advanced Signatures](reference/06-advanced-signatures.md)
 
 ## References
 

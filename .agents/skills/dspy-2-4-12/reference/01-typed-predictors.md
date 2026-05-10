@@ -102,7 +102,7 @@ prediction = answer(doc_query_pair=doc_query_pair)
 
 ## Composing Functional Typed Predictors in Modules
 
-Use decorators within `dspy.Module` subclasses for full pipeline composition:
+Use decorators within `FunctionalModule` subclasses for full pipeline composition:
 
 ```python
 from dspy.functional import FunctionalModule, cot
@@ -141,10 +141,14 @@ Typed predictors can be optimized on Signature instructions through the `optimiz
 
 ```python
 from dspy.teleprompt.signature_opt_typed import optimize_signature
+from dspy.evaluate import Evaluate
+from dspy.evaluate.metrics import answer_exact_match
 
 turbo = dspy.OpenAI(model='gpt-3.5-turbo', max_tokens=4000)
 gpt4 = dspy.OpenAI(model='gpt-4', max_tokens=4000)
-dspy.settings.configure(lm=turbo)
+dspy.configure(lm=turbo)
+
+evaluator = Evaluate(devset=devset, metric=answer_exact_match, num_threads=10, display_progress=True)
 
 result = optimize_signature(
     student=dspy.TypedPredictor(QASignature),
@@ -155,4 +159,16 @@ result = optimize_signature(
     verbose=True,
     prompt_model=gpt4,
 )
+```
+
+Or use the simpler functional form:
+
+```python
+from dspy.functional import TypedChainOfThought
+
+compiled_program = optimize_signature(
+    student=TypedChainOfThought("question -> answer"),
+    evaluator=Evaluate(devset=devset, metric=answer_exact_match, num_threads=10, display_progress=True),
+    n_iterations=50,
+).program
 ```

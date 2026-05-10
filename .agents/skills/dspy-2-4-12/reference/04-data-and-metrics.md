@@ -4,6 +4,8 @@
 - Example Objects
 - Specifying Input Keys
 - Training Data Patterns
+- DataLoader
+- Built-in Datasets
 - Defining Metrics
 - Simple Metrics
 - AI Feedback Metrics
@@ -12,7 +14,7 @@
 
 ## Example Objects
 
-The core data type in DSPy is `dspy.Example`. Examples are similar to Python dicts but have useful utilities for marking inputs vs labels.
+The core data type in DSPy is `dspy.Example`. Examples are similar to Python dicts but have useful utilities for marking inputs vs labels. Modules return `Prediction`, a special subclass of `Example`.
 
 ```python
 qa_pair = dspy.Example(question="This is a question?", answer="This is an answer.")
@@ -20,6 +22,8 @@ qa_pair = dspy.Example(question="This is a question?", answer="This is an answer
 print(qa_pair.question)  # 'This is a question?'
 print(qa_pair.answer)    # 'This is an answer.'
 ```
+
+Examples support dictionary-style iteration via `keys()`, `values()`, `items()`.
 
 ## Specifying Input Keys
 
@@ -42,6 +46,15 @@ input_only = article.inputs()    # Example with input fields only
 label_only = article.labels()    # Example with non-input fields only
 ```
 
+Exclude keys with `without()`:
+
+```python
+example = dspy.Example(context="...", question="?", answer="A.", rationale="R.").with_inputs("context", "question")
+reduced = example.without("answer", "rationale")
+```
+
+Update values with dot notation: `example.context = "new context"`.
+
 ## Training Data Patterns
 
 ```python
@@ -60,6 +73,59 @@ trainset = [ex.with_inputs("report") for ex in trainset]
 - Minimum: ~10 example inputs (even without labels)
 - Recommended: 50-100 examples
 - Best results: 300-500 examples
+
+## DataLoader
+
+DSPy provides a `DataLoader` for loading datasets from various sources:
+
+```python
+from dspy.datasets import DataLoader
+
+dl = DataLoader()
+```
+
+**Loading from HuggingFace:**
+
+```python
+code_alpaca = dl.from_huggingface("HuggingFaceH4/CodeAlpaca_20K")
+train_dataset = code_alpaca['train']
+
+# Specific splits
+code_alpaca = dl.from_huggingface("HuggingFaceH4/CodeAlpaca_20K", split=["train", "test"])
+
+# Single split returns a list of Examples
+code_alpaca = dl.from_huggingface("HuggingFaceH4/CodeAlpaca_20K", split="train")
+
+# Slicing
+code_alpaca_80 = dl.from_huggingface("HuggingFaceH4/CodeAlpaca_20K", split="train[:80%]")
+```
+
+**Loading from CSV:**
+
+```python
+dataset = dl.from_csv("data.csv", fields=("instruction", "context", "response"), input_keys=("instruction", "context"))
+```
+
+**Splitting and sampling:**
+
+```python
+splits = dl.train_test_split(dataset, train_size=0.8)
+sampled = dl.sample(dataset, n=5)
+```
+
+## Built-in Datasets
+
+DSPy provides built-in dataset loaders:
+
+```python
+from dspy.datasets import HotPotQA
+
+dataset = HotPotQA(train_seed=1, train_size=5, eval_seed=2023, dev_size=50, test_size=0)
+trainset = [x.with_inputs('question') for x in dataset.train]
+devset = [x.with_inputs('question') for x in dataset.dev]
+```
+
+Available built-in datasets: **HotPotQA** (multi-hop QA), **GSM8K** (math questions), **Color** (basic color dataset).
 
 ## Defining Metrics
 
@@ -155,7 +221,7 @@ Run evaluations with DSPy's built-in `Evaluate` utility:
 from dspy.evaluate import Evaluate
 
 # Set up the evaluator
-evaluator = Evaluate(devset=devset, num_threads=1, display_progress=True, display_table=5)
+evaluator = Evaluate(devset=devset, metric=your_metric, num_threads=1, display_progress=True, display_table=5)
 
 # Launch evaluation
 evaluator(your_program)
