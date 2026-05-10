@@ -6,6 +6,8 @@ Collection of Skills for Agents by Tangled
 
 All skills in this repository are automatically generated using the `skill` skill. Each skill is created from public references, official documentation URLs, and other publicly available resources to ensure accuracy and completeness.
 
+This repository also includes meta skills that govern agent behavior and workflows: `skman`, `git`, `tzip`, `plan`, `pipe`, `webfetch`, and `websearch`.
+
 ## Install / Update
 <!-- IMPORTANT: never change this section and code block -->
 ```bash
