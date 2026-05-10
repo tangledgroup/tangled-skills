@@ -11,6 +11,9 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/common.sh"
+
 usage() {
   echo "Usage: $0 <PLAN.md>"
   echo ""
@@ -24,65 +27,6 @@ usage() {
 
 plan="$1"
 
-if [[ ! -f "$plan" ]]; then
-  echo "✗ File not found: $plan" >&2
-  exit 1
-fi
+check_plan_file "$plan"
 
-awk '
-  /^## .* Phase [0-9]+/ {
-    # Finalize previous phase if any
-    if (phase_seen) {
-      # Determine this phases derived status
-      if (pt_doing)       max_status = "doing"
-      else if (pt_quest)  max_status = "question"
-      else if (pt_error)  max_status = "error"
-      else if (pt_done == pt_total && pt_total > 0) max_status = "done"
-      else max_status = "notstarted"
-
-      # Track global highest status
-      if (max_status == "doing")       g_doing++
-      else if (max_status == "question") g_question++
-      else if (max_status == "error")  g_error++
-      else if (max_status == "done")   g_done++
-      else                             g_notstarted++
-      g_total++
-    }
-
-    # Reset for new phase
-    phase_seen = 1
-    pt_doing = 0; pt_quest = 0; pt_error = 0; pt_done = 0; pt_total = 0
-  }
-  phase_seen && /^- .+ Task/ {
-    em = $2
-    if (em == "⚙️") pt_doing++
-    else if (em == "❓") pt_quest++
-    else if (em == "❌") pt_error++
-    else if (em == "☑") pt_done++
-    pt_total++
-  }
-  END {
-    # Finalize last phase
-    if (phase_seen) {
-      if (pt_doing)       max_status = "doing"
-      else if (pt_quest)  max_status = "question"
-      else if (pt_error)  max_status = "error"
-      else if (pt_done == pt_total && pt_total > 0) max_status = "done"
-      else max_status = "notstarted"
-
-      if (max_status == "doing")       g_doing++
-      else if (max_status == "question") g_question++
-      else if (max_status == "error")  g_error++
-      else if (max_status == "done")   g_done++
-      else                             g_notstarted++
-      g_total++
-    }
-
-    # Derive plan emoji from aggregated phase statuses
-    if (g_doing + 0)              print "⚙️"
-    else if (g_question + 0)      print "❓"
-    else if (g_error + 0)         print "❌"
-    else if (g_total > 0 && g_done + 0 == g_total) print "☑"
-    else                          print "☐"
-  }
-' "$plan"
+derive_plan_emoji "$plan"

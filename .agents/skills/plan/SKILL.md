@@ -34,25 +34,47 @@ Strict task numbering (`[emoji-of-task] Task X.Y Task Title`), inline phase/task
 
 When this skill is invoked, follow these steps:
 
-1. **PLAN.md doesn't exist?** → Create `PLAN.md` with all phases based on given requirements. There are no predefined phases — determine them from context. Calibrate phase/task granularity to the requirements complexity and detect whether the requester is a beginner, advanced, or expert user. Ask clarifying questions before finalizing the plan. If unable to ask (non-interactive mode), proceed with best-effort assumptions and document them in the plan.
+1. **PLAN.md doesn't exist?** → Create `PLAN.md` with all phases based on given requirements. There are no predefined phases — determine them from context. Calibrate phase/task granularity to the requirements complexity and detect whether the requester is a beginner, advanced, or expert user. Ask clarifying questions before finalizing the plan. If unable to ask (non-interactive mode), proceed with best-effort assumptions and document them in the plan. After creating, run the validator (see ## Validation).
 2. **PLAN.md exists?** → Open it. Examine `**Current Phase:**` and `**Current Task:**` and propose a continuation point (hint: the next pending task could be one of the lowest-numbered but in this order ⚙️ ❓ ❌ ☐). All running tasks have to be re-run with status ⚙️ because they were probably interrupted.
 
 ## Status Update Rules (MANDATORY)
 
 **ALL status changes MUST use scripts. NEVER use `edit` or `write` to change
-task, phase, or plan emojis.** The `edit` and `write` tools may only be used
-for structural changes: adding/removing phases or tasks, changing titles,
-updating dependencies, adding sub-bullets, or modifying non-status content.
+task, phase, plan emojis, or header fields.** The `edit` and `write` tools may only be used for structural changes: adding/removing phases or tasks, changing titles, updating dependencies, adding sub-bullets, or modifying non-status content.
 
-| Operation | Tool |
-|-----------|------|
-| Set task status | `bash scripts/update-plan.sh PLAN.md set-task-status "Task X.Y" "⚙️"` |
-| Set phase status | `bash scripts/update-plan.sh PLAN.md set-phase-status "Phase X" "⚙️"` |
+After every PLAN.md edit (structural or status), run the validator (see ## Validation). If errors are reported, fix them before proceeding.
+
+All PLAN.md edits must go through the atomic update pattern (see ## Atomic Updates)
+to prevent concurrent processes from overwriting each other.
+
+### Script Operations Reference
+
+| Operation | Command |
+|-----------|---------|
+| **Status reads (lock-free)** | |
 | Get task status | `bash scripts/update-plan.sh PLAN.md get-task-status "Task X.Y"` |
 | Get phase status | `bash scripts/update-plan.sh PLAN.md get-phase-status "Phase X"` |
 | Get plan status | `bash scripts/update-plan.sh PLAN.md get-plan-status` |
+| **Header reads (lock-free)** | |
+| Get current task | `bash scripts/update-plan.sh PLAN.md get-current-task` |
+| Get current phase | `bash scripts/update-plan.sh PLAN.md get-current-phase` |
+| Get plan title | `bash scripts/update-plan.sh PLAN.md get-plan-title` |
+| Get depends-on | `bash scripts/update-plan.sh PLAN.md get-depends-on` |
+| Get created timestamp | `bash scripts/update-plan.sh PLAN.md get-created` |
+| Get all header fields | `bash scripts/update-plan.sh PLAN.md get-plan-header` |
+| **Status writes (atomic, auto-derives emojis)** | |
+| Set task status | `bash scripts/update-plan.sh PLAN.md set-task-status "Task X.Y" "⚙️"` |
+| Set phase status | `bash scripts/update-plan.sh PLAN.md set-phase-status "Phase X" "⚙️"` |
+| **Header writes (atomic)** | |
+| Set current task | `bash scripts/update-plan.sh PLAN.md set-current-task "⚙️ Task 2.3"` |
+| Set current phase | `bash scripts/update-plan.sh PLAN.md set-current-phase "⚙️ Phase 2"` |
+| Set plan title | `bash scripts/update-plan.sh PLAN.md set-plan-title "My Project"` |
+| Set depends-on | `bash scripts/update-plan.sh PLAN.md set-depends-on "../other/PLAN.md"` |
 | Update timestamp | `bash scripts/update-plan.sh PLAN.md update-timestamp` |
-| Full workflow (with validation + rollback) | `bash scripts/workflow.sh PLAN.md set-task-status "Task X.Y" "☑"` |
+| **Re-derivation** | |
+| Re-derive all emojis | `bash scripts/update-plan.sh PLAN.md rederive-all` |
+| **Full workflow (edit + validate + rollback)** | |
+| Any action with validation | `bash scripts/workflow.sh PLAN.md <action> [args...]` |
 
 The scripts auto-derive phase emojis from tasks and plan emojis from phases.
 You never set a phase or plan emoji manually — it is always derived.
@@ -62,13 +84,6 @@ other than completing it (e.g., adding tasks, fixing content, updating
 dependencies), only change the plan emoji to ☐ if it was previously ☑.
 Otherwise preserve whatever status is present. The only statuses that persist
 across non-completion edits are: ❓ ⚙️ ❌.
-
-After every PLAN.md edit, run the validator (see ## Validation). If errors
-are reported, fix them before proceeding. This catches structural problems
-that manual editing can introduce.
-
-All PLAN.md edits must go through the atomic update pattern (see ## Atomic Updates)
-to prevent concurrent processes from overwriting each other.
 
 Two rules govern `**Current Phase:**` and `**Current Task:**`:
 
@@ -255,10 +270,10 @@ All are available on Linux/macOS. On minimal containers, ensure `util-linux` (fl
 
 ## Validation
 
-After updating PLAN.md, run the validator script. This catches structural
-problems that manual editing can introduce. Emoji derivation (does phase emoji
-match its tasks?) is checked by the LLM during edits — the validator focuses on
-things that fail silently.
+After **every** PLAN.md edit (initial creation or subsequent updates), run the
+validator script. This catches structural problems that manual editing can
+introduce. Emoji derivation (does phase emoji match its tasks?) is checked
+automatically — the validator focuses on things that fail silently.
 
 Scripts live in `scripts/` relative to this SKILL.md. Use paths relative to
 the skill directory:
@@ -267,13 +282,15 @@ the skill directory:
 bash scripts/validate-plan.sh path/to/PLAN.md
 ```
 
-**What it validates:**
-- Plan header exists with valid emoji
-- At least one phase and one task present
-- All phase/task emojis are from the allowed set {☐ ❓ ⚙️ ❌ ☑}
-- Zero-task phases flagged as warnings
-- Phase emojis match their derived status from tasks (auto-checked)
-- Plan emoji matches its derived status from phases (auto-checked)
+**What it validates (section by section):**
+1. **Plan Header** — title line exists with valid emoji format (`# [emoji] Plan: Title`)
+2. **Header Fields** — all required fields present (`Depends On`, `Created`, `Updated`, `Current Phase`, `Current Task`)
+3. **Phases** — at least one phase, sequential numbering from 1, no duplicates
+4. **Tasks** — at least one task, sequential numbering within each phase, proper phase binding
+5. **Emoji Validity** — all phase/task emojis are from the allowed set {☐ ❓ ⚙️ ❌ ☑}
+6. **Zero-Task Phases** — flagged as warnings (can never reach ☑)
+7. **Phase Emoji Derivation** — each phase emoji matches its derived status from tasks
+8. **Plan Emoji Derivation** — plan emoji matches its derived status from phases
 
 **What it does NOT validate (requires LLM judgment):**
 - Dependency references point to existing tasks
@@ -294,7 +311,7 @@ All paths are relative to this skill's directory (where SKILL.md lives).
 
 | Script | Mode | Purpose |
 |--------|------|---------|
-| [scripts/update-plan.sh](scripts/update-plan.sh) | **Execute** | Lock-and-edit with `flock` + atomic rename. Supports `set-task-status`, `set-phase-status`, `get-task-status`, `get-phase-status`, `get-plan-status`, `update-timestamp`, `set-current-task`, `set-current-phase`. Auto-derives phase and plan emojis after status changes. Read actions (`get-*`) are lock-free. |
+| [scripts/update-plan.sh](scripts/update-plan.sh) | **Execute** | Lock-and-edit with `flock` + atomic rename. Supports all set/get actions for statuses, header fields, and re-derivation. Auto-derives phase and plan emojis after status changes. Read actions (`get-*`) are lock-free. |
 | [scripts/derive-phase-emoji.sh](scripts/derive-phase-emoji.sh) | **Execute** | Derive phase emoji from its tasks' emojis using AWK. Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
 | [scripts/derive-plan-emoji.sh](scripts/derive-plan-emoji.sh) | **Execute** | Derive plan emoji from all phases (re-deriving each phase from its tasks). Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
 | [scripts/workflow.sh](scripts/workflow.sh) | **Execute** | Full workflow: lock → edit (via update-plan.sh) → re-derive all phases → validate with automatic rollback on validation failure. Same actions as update-plan.sh plus read-through for `get-*`. |
@@ -302,24 +319,39 @@ All paths are relative to this skill's directory (where SKILL.md lives).
 ### Usage Examples
 
 ```bash
-# ── Status reads (deterministic, no lock) ───────────────────────────
+# Status reads (deterministic, no lock)
 bash scripts/update-plan.sh PLAN.md get-task-status "Task 2.3"
 bash scripts/update-plan.sh PLAN.md get-phase-status "Phase 2"
 bash scripts/update-plan.sh PLAN.md get-plan-status
 
-# ── Status writes (atomic, auto-derives phase + plan emojis) ───────
+# Header reads (deterministic, no lock)
+bash scripts/update-plan.sh PLAN.md get-current-task
+bash scripts/update-plan.sh PLAN.md get-current-phase
+bash scripts/update-plan.sh PLAN.md get-plan-title
+bash scripts/update-plan.sh PLAN.md get-depends-on
+bash scripts/update-plan.sh PLAN.md get-created
+bash scripts/update-plan.sh PLAN.md get-plan-header
+
+# Status writes (atomic, auto-derives phase + plan emojis)
 bash scripts/update-plan.sh PLAN.md set-task-status "Task 2.3" "⚙️"
 bash scripts/update-plan.sh PLAN.md update-timestamp
 bash scripts/update-plan.sh PLAN.md set-current-task "⚙️ Task 2.3"
 
-# ── Full workflow (edit + re-derive all phases + validate + rollback) ─
+# Header writes (atomic)
+bash scripts/update-plan.sh PLAN.md set-plan-title "My Project"
+bash scripts/update-plan.sh PLAN.md set-depends-on "../other/PLAN.md"
+
+# Re-derive all emojis (fix stale phase/plan emojis)
+bash scripts/update-plan.sh PLAN.md rederive-all
+
+# Full workflow (edit + re-derive all phases + validate + rollback)
 bash scripts/workflow.sh PLAN.md set-task-status "Task 2.3" "☑"
 
-# ── Standalone derivation (read-only, no file changes) ─────────────
+# Standalone derivation (read-only, no file changes)
 echo "Phase 2 emoji: $(bash scripts/derive-phase-emoji.sh PLAN.md 2)"
 echo "Plan emoji: $(bash scripts/derive-plan-emoji.sh PLAN.md)"
 
-# ── Validation ─────────────────────────────────────────────────────
+# Validation
 bash scripts/validate-plan.sh PLAN.md
 ```
 
@@ -330,4 +362,5 @@ bash scripts/validate-plan.sh PLAN.md
 - **Automatic rollback** — `workflow.sh` backs up the file and restores it if validation fails
 - **Cleanup on exit** — temp files, backups, and lock files are removed via trap on normal exit, INT, and TERM
 - **Lock-free reads** — `get-*` actions skip locking entirely (read-only)
+- **Lock file cleanup** — the physical `.lock` file is removed after each operation (flock advisory lock is released when the file descriptor closes; the script also removes the lock file itself via trap)
 - **Nested lock safety** — `workflow.sh` sets `PLAN_SKIP_LOCK` when calling `update-plan.sh` to avoid deadlocks

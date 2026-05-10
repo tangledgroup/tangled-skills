@@ -10,7 +10,16 @@
 #   get-plan-status                      Print current plan emoji
 #   update-timestamp                     Update **Updated:** to current UTC time
 #   set-current-task <value>             Set **Current Task:** field
+#   get-current-task                     Print **Current Task:** value
 #   set-current-phase <value>            Set **Current Phase:** field
+#   get-current-phase                    Print **Current Phase:** value
+#   set-plan-title <title>               Set plan title (after "# [emoji] Plan: ")
+#   get-plan-title                       Print plan title
+#   set-depends-on <value>               Set **Depends On:** field
+#   get-depends-on                       Print **Depends On:** value
+#   get-created                          Print **Created:** timestamp
+#   get-plan-header                      Print all header fields as key=value
+#   rederive-all                         Re-derive all phase + plan emojis
 #
 # After set-task-status / set-phase-status, this script auto-derives the
 # affected phase emoji and the plan emoji from their tasks/phases.
@@ -18,6 +27,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/common.sh"
 
 usage() {
   echo "Usage: $0 <PLAN.md> <action> [args...]"
@@ -32,7 +42,16 @@ usage() {
   echo "  get-plan-status                       Print plan emoji"
   echo "  update-timestamp                      Update timestamp to now"
   echo "  set-current-task <value>              Set Current Task field"
+  echo "  get-current-task                      Print Current Task value"
   echo "  set-current-phase <value>             Set Current Phase field"
+  echo "  get-current-phase                     Print Current Phase value"
+  echo "  set-plan-title <title>                Set plan title"
+  echo "  get-plan-title                        Print plan title"
+  echo "  set-depends-on <value>                Set Depends On field"
+  echo "  get-depends-on                        Print Depends On value"
+  echo "  get-created                           Print Created timestamp"
+  echo "  get-plan-header                       Print all header fields"
+  echo "  rederive-all                          Re-derive all phase + plan emojis"
   echo ""
   echo "Valid emojis: ☐ ❓ ⚙️ ❌ ☑"
   exit "${1:-0}"
@@ -46,16 +65,16 @@ plan="$1"
 action="$2"
 shift 2
 
-if [[ ! -f "$plan" ]]; then
-  echo "✗ File not found: $plan" >&2
-  exit 1
-fi
+check_plan_file "$plan"
 
 lockfile="${plan}.lock"
 tmpfile=""
 
 cleanup() {
   rm -f "$tmpfile" "${tmpfile}.new" 2>/dev/null || true
+  # Remove lock file — flock advisory lock is released when fd closes,
+  # but the physical lock file persists. Clean it up here.
+  rm -f "$lockfile" 2>/dev/null || true
 }
 trap cleanup EXIT INT TERM
 
@@ -65,22 +84,59 @@ do_read() {
   case "$action" in
     get-task-status)
       [[ $# -lt 1 ]] && { echo "✗ Usage: get-task-status <Task X.Y>"; exit 1; }
-      local task_id="$1"
-      awk -v tid="$task_id" '
-        $0 ~ ("^- .* " tid " ") { print $2; found=1; exit }
+      # Match task ID only at the start position, not in dependency refs
+      awk -v tid="$1" '
+        /^- [^ ]+ / && match($0, /^- [^ ]+ (Task [0-9]+\.[0-9]+) /, arr) {
+          if (arr[1] == tid) { print $2; found=1; exit }
+        }
         END { if (!found) { print "✗ Task not found: " tid > "/dev/stderr"; exit 1 } }
       ' "$plan"
       ;;
     get-phase-status)
       [[ $# -lt 1 ]] && { echo "✗ Usage: get-phase-status <Phase X>"; exit 1; }
-      local phase_id="$1"
-      awk -v pid="$phase_id" '
-        $0 ~ ("^## .* " pid " ") { print $2; found=1; exit }
+      # Match phase ID only in the heading
+      awk -v pid="$1" '
+        /^## [^ ]+ Phase [0-9]+/ && match($0, /## [^ ]+ (Phase [0-9]+) /, arr) {
+          if (arr[1] == pid) { print $2; found=1; exit }
+        }
         END { if (!found) { print "✗ Phase not found: " pid > "/dev/stderr"; exit 1 } }
       ' "$plan"
       ;;
     get-plan-status)
-      head -1 "$plan" | grep -oP '^\# \K\S+' || { echo "✗ Could not read plan status" >&2; exit 1; }
+      get_plan_emoji_from_file "$plan"
+      ;;
+    get-current-task)
+      awk '/^\*\*Current Task:\*\*/ { sub(/^\*\*Current Task:\*\* */, ""); print; found=1; exit } END { if (!found) print "" }' "$plan"
+      ;;
+    get-current-phase)
+      awk '/^\*\*Current Phase:\*\*/ { sub(/^\*\*Current Phase:\*\* */, ""); print; found=1; exit } END { if (!found) print "" }' "$plan"
+      ;;
+    get-plan-title)
+      awk '/^# \S+ Plan:/ { sub(/^# \S+ Plan: */, ""); print; exit }' "$plan"
+      ;;
+    get-depends-on)
+      awk '/^\*\*Depends On:\*\*/ { sub(/^\*\*Depends On:\*\* */, ""); print; found=1; exit } END { if (!found) print "NONE" }' "$plan"
+      ;;
+    get-created)
+      awk '/^\*\*Created:\*\*/ { sub(/^\*\*Created:\*\* */, ""); print; found=1; exit } END { if (!found) print "" }' "$plan"
+      ;;
+    get-plan-header)
+      awk '
+        /^# \S+ Plan:/ { plan_title = substr($0, index($0, "Plan: ")+6) }
+        /^\*\*Depends On:\*\*/ { sub(/^\*\*Depends On:\*\* */, ""); depends = $0 }
+        /^\*\*Created:\*\*/    { sub(/^\*\*Created:\*\* */, ""); created = $0 }
+        /^\*\*Updated:\*\*/    { sub(/^\*\*Updated:\*\* */, ""); updated = $0 }
+        /^\*\*Current Phase:\*\*/ { sub(/^\*\*Current Phase:\*\* */, ""); cur_phase = $0 }
+        /^\*\*Current Task:\*\*/  { sub(/^\*\*Current Task:\*\* */, ""); cur_task = $0 }
+        END {
+          print "plan-title=" plan_title
+          print "depends-on=" depends
+          print "created=" created
+          print "updated=" updated
+          print "current-phase=" cur_phase
+          print "current-task=" cur_task
+        }
+      ' "$plan"
       ;;
     *)
       echo "✗ Unknown read action: $action" >&2
@@ -94,7 +150,6 @@ do_read() {
 do_edit() {
   local plan_dir
   plan_dir=$(dirname "$plan")
-  local tmpfile
   tmpfile=$(mktemp "${plan_dir}/.plan-edit.$$-XXXXXX")
   cp -- "$plan" "$tmpfile"
 
@@ -104,24 +159,36 @@ do_edit() {
     set-task-status)
       [[ $# -lt 2 ]] && { echo "✗ Usage: set-task-status <Task X.Y> <emoji>"; exit 1; }
       local task_id="$1" emoji="$2"
-      # Extract phase number from task ID (e.g., "Task 2.3" → 2)
       affected_phase=$(printf '%s' "$task_id" | grep -oP '(?<=Task )\d+' || true)
-      # Use awk for precise single-line match (accounts for emoji between "- " and task ID)
-      awk -v tid="$task_id" -v em="$emoji" '
-        $0 ~ ("^- .* " tid " ") { sub(/^- [^ ]+ /, "- " em " "); found=1 }
+      # Match task ID only at the start position after "- [emoji] ", not in dependency refs
+      if ! awk -v tid="$task_id" -v em="$emoji" '
+        /^- [^ ]+ / && match($0, /^- [^ ]+ (Task [0-9]+\.[0-9]+) /, arr) {
+          if (arr[1] == tid) { sub(/^- [^ ]+ /, "- " em " "); found=1 }
+        }
         { print }
         END { if (!found) { print "✗ Task not found: " tid > "/dev/stderr"; exit 1 } }
-      ' "$tmpfile" > "${tmpfile}.new" && mv -f "${tmpfile}.new" "$tmpfile"
+      ' "$tmpfile" > "${tmpfile}.new"; then
+        rm -f "${tmpfile}.new"
+        exit 1
+      fi
+      mv -f "${tmpfile}.new" "$tmpfile"
       ;;
     set-phase-status)
       [[ $# -lt 2 ]] && { echo "✗ Usage: set-phase-status <Phase X> <emoji>"; exit 1; }
       local phase_id="$1" emoji="$2"
       affected_phase=$(printf '%s' "$phase_id" | grep -oP '(?<=Phase )\d+' || true)
-      awk -v pid="$phase_id" -v em="$emoji" '
-        $0 ~ ("^## .* " pid " ") { sub(/^## [^ ]+ /, "## " em " "); found=1 }
+      # Match phase ID only in the heading, not elsewhere
+      if ! awk -v pid="$phase_id" -v em="$emoji" '
+        /^## [^ ]+ Phase [0-9]+/ && match($0, /## [^ ]+ (Phase [0-9]+) /, arr) {
+          if (arr[1] == pid) { sub(/^## [^ ]+ /, "## " em " "); found=1 }
+        }
         { print }
         END { if (!found) { print "✗ Phase not found: " pid > "/dev/stderr"; exit 1 } }
-      ' "$tmpfile" > "${tmpfile}.new" && mv -f "${tmpfile}.new" "$tmpfile"
+      ' "$tmpfile" > "${tmpfile}.new"; then
+        rm -f "${tmpfile}.new"
+        exit 1
+      fi
+      mv -f "${tmpfile}.new" "$tmpfile"
       ;;
     update-timestamp)
       sed -i "s/^\*\*Updated:\*\* .*/\*\*Updated:\*\* $(date -u +%Y-%m-%dT%H:%M:%SZ)/" "$tmpfile"
@@ -138,37 +205,52 @@ do_edit() {
       safe_val=$(printf '%s\n' "$1" | sed 's/[&\/\\]/\\&/g')
       sed -i "s/^\*\*Current Phase:\*\* .*/\*\*Current Phase:\*\* ${safe_val}/" "$tmpfile"
       ;;
+    set-plan-title)
+      [[ $# -lt 1 ]] && { echo "✗ Usage: set-plan-title <title>"; exit 1; }
+      awk -v title="$1" '{
+        if ($0 ~ /^# .* Plan:/) {
+          match($0, /^# ([^ ]+) Plan:/, arr)
+          print "# " arr[1] " Plan: " title
+          next
+        }
+        print
+      }' "$tmpfile" > "${tmpfile}.new" && mv -f "${tmpfile}.new" "$tmpfile"
+      ;;
+    set-depends-on)
+      [[ $# -lt 1 ]] && { echo "✗ Usage: set-depends-on <value>"; exit 1; }
+      local safe_val
+      safe_val=$(printf '%s\n' "$1" | sed 's/[&\/\\]/\\&/g')
+      sed -i "s/^\*\*Depends On:\*\* .*/\*\*Depends On:\*\* ${safe_val}/" "$tmpfile"
+      ;;
+    rederive-all)
+      rederive_all "$tmpfile"
+      ;;
     *)
       echo "✗ Unknown action: $action" >&2
       exit 1
       ;;
   esac
 
-  # Auto-derive phase emoji if a task or phase was changed
+  # Auto-derive phase emoji if a task or phase was changed (skip for rederive-all since it already did)
   if [[ -n "$affected_phase" ]]; then
-    derived=$(bash "$SCRIPT_DIR/derive-phase-emoji.sh" "$tmpfile" "$affected_phase")
-    current=$(awk -v pn="$affected_phase" '
-      /^## .* Phase [0-9]+/ {
-        if (match($0, /Phase ([0-9]+)/, arr) && arr[1] == pn) { print $2; exit }
-      }
-    ' "$tmpfile")
+    local derived current
+    derived=$(derive_phase_emoji "$tmpfile" "$affected_phase")
+    current=$(get_phase_emoji_from_file "$tmpfile" "$affected_phase")
     if [[ "$derived" != "$current" ]]; then
       echo "  → Phase $affected_phase: $current → $derived (auto-derived from tasks)"
-      awk -v pn="$affected_phase" -v em="$derived" '
-        /^## .* Phase [0-9]+/ && match($0, /Phase ([0-9]+)/, arr) && arr[1] == pn {
-          sub(/^## [^ ]+ /, "## " em " "); print; next
-        }
-        { print }
-      ' "$tmpfile" > "${tmpfile}.new" && mv -f "${tmpfile}.new" "$tmpfile"
+      update_phase_emoji_in_file "$tmpfile" "$affected_phase" "$derived"
     fi
   fi
 
-  # Auto-derive plan emoji from phases
-  derived_plan=$(bash "$SCRIPT_DIR/derive-plan-emoji.sh" "$tmpfile")
-  file_plan_emoji=$(head -1 "$tmpfile" | grep -oP '^\# \K\S+')
-  if [[ "$derived_plan" != "$file_plan_emoji" ]]; then
-    echo "  → Plan: $file_plan_emoji → $derived_plan (auto-derived from phases)"
-    sed -i "s/^# ${file_plan_emoji} /# ${derived_plan} /" "$tmpfile"
+  # Auto-derive plan emoji from phases (skip for rederive-all)
+  if [[ "$action" != "rederive-all" ]]; then
+    local derived_plan file_plan_emoji
+    derived_plan=$(derive_plan_emoji "$tmpfile")
+    file_plan_emoji=$(get_plan_emoji_from_file "$tmpfile")
+    if [[ "$derived_plan" != "$file_plan_emoji" ]]; then
+      echo "  → Plan: $file_plan_emoji → $derived_plan (auto-derived from phases)"
+      update_plan_emoji_in_file "$tmpfile" "$file_plan_emoji" "$derived_plan"
+    fi
   fi
 
   mv -f "$tmpfile" "$plan"
@@ -177,7 +259,9 @@ do_edit() {
 # ── Main dispatch ───────────────────────────────────────────────────
 
 case "$action" in
-  get-task-status|get-phase-status|get-plan-status)
+  get-task-status|get-phase-status|get-plan-status|\
+  get-current-task|get-current-phase|get-plan-title|get-depends-on|\
+  get-created|get-plan-header)
     do_read "$@"
     ;;
   *)

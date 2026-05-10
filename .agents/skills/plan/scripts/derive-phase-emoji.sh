@@ -7,6 +7,9 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/common.sh"
+
 usage() {
   echo "Usage: $0 <PLAN.md> <phase-number>"
   echo ""
@@ -21,32 +24,6 @@ usage() {
 plan="$1"
 phase_num="$2"
 
-if [[ ! -f "$plan" ]]; then
-  echo "✗ File not found: $plan" >&2
-  exit 1
-fi
+check_plan_file "$plan"
 
-awk -v pn="$phase_num" '
-  /^## .* Phase [0-9]+/ {
-    # Extract phase number robustly via regex match
-    if (match($0, /Phase ([0-9]+)/, arr)) {
-      current = arr[1]
-    }
-  }
-  current == pn && /^- .+ Task/ {
-    # The emoji is the second field on the task line
-    em = $2
-    if (em == "⚙️") found_doing++
-    else if (em == "❓") found_question++
-    else if (em == "❌") found_error++
-    else if (em == "☑") found_done++
-    total++
-  }
-  END {
-    if (found_doing) print "⚙️"
-    else if (found_question) print "❓"
-    else if (found_error) print "❌"
-    else if (total && found_done == total) print "☑"
-    else print "☐"
-  }
-' "$plan"
+derive_phase_emoji "$plan" "$phase_num"

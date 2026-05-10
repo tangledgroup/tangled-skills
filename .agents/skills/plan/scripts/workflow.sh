@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# workflow.sh — Full workflow: lock → edit → derive → validate
+# workflow.sh — Full workflow: lock → edit → derive → validate (atomic)
 # Usage: workflow.sh <PLAN.md> <action> [args...]
 #
 # Wraps update-plan.sh with automatic validation and rollback.
@@ -15,26 +15,28 @@
 #   get-plan-status
 #   update-timestamp
 #   set-current-task <value>
+#   get-current-task
 #   set-current-phase <value>
+#   get-current-phase
+#   set-plan-title <title>
+#   get-plan-title
+#   set-depends-on <value>
+#   get-depends-on
+#   get-created
+#   get-plan-header
+#   rederive-all
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/common.sh"
 
 usage() {
   echo "Usage: $0 <PLAN.md> <action> [args...]"
   echo ""
   echo "Full workflow: lock → edit → derive → validate (atomic)"
   echo ""
-  echo "Actions:"
-  echo "  set-task-status <Task X.Y> <emoji>"
-  echo "  set-phase-status <Phase X> <emoji>"
-  echo "  get-task-status <Task X.Y>"
-  echo "  get-phase-status <Phase X>"
-  echo "  get-plan-status"
-  echo "  update-timestamp"
-  echo "  set-current-task <value>"
-  echo "  set-current-phase <value>"
+  echo "Actions: same as update-plan.sh"
   exit "${1:-0}"
 }
 
@@ -46,10 +48,7 @@ plan="$1"
 action="$2"
 shift 2
 
-if [[ ! -f "$plan" ]]; then
-  echo "✗ File not found: $plan" >&2
-  exit 1
-fi
+check_plan_file "$plan"
 
 lockfile="${plan}.lock"
 backup="${plan}.bak"
@@ -57,12 +56,17 @@ tmpfile=""
 
 cleanup() {
   rm -f "$backup" "$tmpfile" "${tmpfile}.new" 2>/dev/null || true
+  # Remove the physical lock file — flock releases the advisory lock
+  # when fd 200 closes, but the file itself persists on disk.
+  rm -f "$lockfile" 2>/dev/null || true
 }
 trap cleanup EXIT INT TERM
 
 # Read-only actions pass through without locking
 case "$action" in
-  get-task-status|get-phase-status|get-plan-status)
+  get-task-status|get-phase-status|get-plan-status|\
+  get-current-task|get-current-phase|get-plan-title|get-depends-on|\
+  get-created|get-plan-header)
     bash "$SCRIPT_DIR/update-plan.sh" "$plan" "$action" "$@"
     exit $?
     ;;
@@ -77,35 +81,11 @@ esac
   # Delegate the edit + per-phase derive to update-plan.sh (skip its lock — we hold it)
   PLAN_SKIP_LOCK=1 bash "$SCRIPT_DIR/update-plan.sh" "$plan" "$action" "$@"
 
-  # --- Re-derive ALL phase emojis (not just affected) for robustness ---
+  # --- Re-derive ALL phase emojis + plan emoji for robustness ---
   plan_dir=$(dirname "$plan")
   tmpfile=$(mktemp "${plan_dir}/.plan-edit.$$-XXXXXX")
   cp -- "$plan" "$tmpfile"
-
-  phase_nums=$(awk '/^## .* Phase [0-9]+/ { if (match($0, /Phase ([0-9]+)/, arr)) print arr[1] }' "$tmpfile")
-  for pn in $phase_nums; do
-    derived=$(bash "$SCRIPT_DIR/derive-phase-emoji.sh" "$tmpfile" "$pn")
-    current=$(awk -v pn="$pn" '/^## .* Phase [0-9]+/ {
-      if (match($0, /Phase ([0-9]+)/, arr) && arr[1] == pn) { print $2; exit }
-    }' "$tmpfile")
-    if [[ "$derived" != "$current" ]]; then
-      echo "  → Phase $pn: $current → $derived (auto-derived from tasks)"
-      awk -v pn="$pn" -v em="$derived" '
-        /^## .* Phase [0-9]+/ && match($0, /Phase ([0-9]+)/, arr) && arr[1] == pn {
-          sub(/^## [^ ]+ /, "## " em " "); print; next
-        }
-        { print }
-      ' "$tmpfile" > "${tmpfile}.new" && mv -f "${tmpfile}.new" "$tmpfile"
-    fi
-  done
-
-  # --- Re-derive plan emoji from phases ---
-  derived_plan=$(bash "$SCRIPT_DIR/derive-plan-emoji.sh" "$tmpfile")
-  file_plan_emoji=$(head -1 "$tmpfile" | grep -oP '^\# \K\S+')
-  if [[ "$derived_plan" != "$file_plan_emoji" ]]; then
-    echo "  → Plan: $file_plan_emoji → $derived_plan (auto-derived from phases)"
-    sed -i "s/^# ${file_plan_emoji} /# ${derived_plan} /" "$tmpfile"
-  fi
+  rederive_all "$tmpfile"
 
   # Atomic rename
   mv -f "$tmpfile" "$plan"
