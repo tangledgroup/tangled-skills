@@ -3,7 +3,7 @@ name: aiohttp-session-2-12-1
 description: Server-side sessions for aiohttp.web applications using aiohttp-session 2.12, providing multiple storage backends including encrypted cookies (Fernet/NaCl), Redis, and Memcached for persistent user state management. Use when building aiohttp.web applications that require session-based authentication, shopping carts, user preferences, or any per-request user-specific data persistence.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "2.12.1"
+version: "0.1.0"
 tags:
   - aiohttp
   - sessions

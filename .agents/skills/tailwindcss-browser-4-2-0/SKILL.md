@@ -1,7 +1,7 @@
 ---
 name: tailwindcss-browser-4-2-0
 description: A skill for using Tailwind CSS v4.2 browser build (@tailwindcss/browser) that enables in-browser Tailwind compilation without a build step. Use when prototyping, creating documentation sites, building static pages, or learning Tailwind CSS without setting up Node.js tooling.
-version: "4.2.0"
+version: "0.1.0"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:

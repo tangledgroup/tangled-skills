@@ -3,7 +3,7 @@ name: pi-mono-0-71-0
 description: Complete implementation guide for pi-mono monorepo architecture covering provider abstraction, agent runtime, terminal UI rendering, extension system, session management, and tool implementation patterns. Use when building, debugging, or extending the pi coding agent — a minimal terminal-based AI coding harness that runs in interactive, print, JSON, RPC, and SDK embedding modes.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.71.0"
+version: "0.1.0"
 tags:
   - ai-coding-agent
   - terminal-harness

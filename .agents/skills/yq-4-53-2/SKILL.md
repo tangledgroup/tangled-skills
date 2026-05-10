@@ -8,7 +8,7 @@ description: >-
   containers without needing Python or Node.js dependencies.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "4.53.2"
+version: "0.1.0"
 tags:
   - yaml
   - json

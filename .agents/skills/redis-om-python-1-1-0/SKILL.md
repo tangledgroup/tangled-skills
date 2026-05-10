@@ -7,7 +7,7 @@ description: A skill for using Redis OM Python v1.1, an object mapping library t
   queries, vector similarity search (KNN), or complex nested document storage.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "1.1.0"
+version: "0.1.0"
 tags:
   - redis
   - orm

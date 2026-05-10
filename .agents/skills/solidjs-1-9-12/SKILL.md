@@ -10,7 +10,7 @@ description: >-
   minimal virtual DOM overhead.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "1.9.12"
+version: "0.1.0"
 tags:
   - solidjs
   - reactivity

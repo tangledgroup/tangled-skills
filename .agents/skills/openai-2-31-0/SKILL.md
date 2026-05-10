@@ -3,7 +3,7 @@ name: openai-2-31-0
 description: Python SDK for OpenAI API v2.31 providing type-safe access to Responses API, Chat Completions, embeddings, audio transcription/synthesis, image generation, assistants, fine-tuning, and batch operations with sync/async clients. Use when building Python applications that integrate with OpenAI models for text generation, vision, audio processing, or automated assistants.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "2.31.0"
+version: "0.1.0"
 tags:
   - openai
   - llm

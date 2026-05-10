@@ -10,7 +10,7 @@ description: >-
   packing executables for embedded and resource-constrained environments.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "5.1.1"
+version: "0.1.0"
 tags:
   - compression
   - executable-packer

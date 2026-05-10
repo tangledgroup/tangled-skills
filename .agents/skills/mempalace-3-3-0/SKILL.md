@@ -3,7 +3,7 @@ name: mempalace-3-3-0
 description: Local AI memory system that mines projects and conversations into a searchable palace using ChromaDB for vector search and SQLite for knowledge graph storage. Achieves 96.6% LongMemEval recall without API keys or cloud dependencies. Use when building AI agents requiring persistent memory across sessions, mining conversation exports for decisions, creating searchable indexes of codebases, implementing local RAG, needing temporal knowledge graphs, or migrating from paid memory systems to self-hosted alternatives.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "3.3.0"
+version: "0.1.0"
 tags:
   - ai-memory
   - local-rag

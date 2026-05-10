@@ -7,7 +7,7 @@ description: Complete HAProxy 3.3.0 toolkit for load balancing, reverse proxying
   production-grade reverse proxy and load balancer.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "3.3.0"
+version: "0.1.0"
 tags:
   - load balancing
   - reverse proxy

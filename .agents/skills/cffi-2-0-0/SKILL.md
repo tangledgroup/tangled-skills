@@ -6,7 +6,7 @@ description: Python C Foreign Function Interface for calling C libraries from Py
   C integration without writing traditional C extension modules.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: 2.0.0
+version: "0.1.0"
 tags:
 - cffi
 - c-integration

@@ -1,7 +1,7 @@
 ---
 name: oat-0-6-1
 description: Ultra-lightweight semantic UI component library with zero dependencies (~8KB). Use when building web applications with vanilla HTML/CSS/JS, needing accessible components without framework overhead or build tools.
-version: "0.6.1"
+version: "0.1.0"
 author: Tangled <noreply@tangledgroup.com>
 license: MIT
 tags:

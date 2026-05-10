@@ -4,7 +4,7 @@ description: >-
   Complete toolkit for Paramiko 4.0.0, a pure-Python SSHv2 protocol implementation providing both client and server functionality. Use when building Python applications that require SSH connections, remote command execution, SFTP file transfers, SSH tunneling/port forwarding, running an in-Python sshd, or programmatic SSH authentication with password, public key, agent, certificate, or GSS-API/Kerberos methods.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "4.0.0"
+version: "0.1.0"
 tags:
   - ssh
   - sshv2

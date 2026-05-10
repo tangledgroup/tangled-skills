@@ -6,7 +6,7 @@ description: Fast state-of-the-art tokenizers library for NLP written in Rust wi
   models requiring efficient text preprocessing with alignment tracking.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: 0.22.3
+version: "0.1.0"
 tags:
 - nlp
 - tokenization

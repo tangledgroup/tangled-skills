@@ -3,7 +3,7 @@ name: numba-0-65-1
 description: Just-in-time compiler for Python that translates numerical and array-oriented code into optimized machine code using LLVM. Supports @jit, @njit, @vectorize, @guvectorize, @stencil, @jitclass, and @cfunc decorators with CPU parallelization (prange), SIMD vectorization, NVIDIA CUDA GPU targets, typed containers, C interoperability via ctypes/CFFI, and ahead-of-time compilation. Use when accelerating Python numerical loops, creating NumPy-compatible ufuncs, parallelizing array operations, compiling classes for performance, generating C callbacks, or targeting GPU execution from pure Python.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.65.1"
+version: "0.1.0"
 tags:
   - jit
   - compiler

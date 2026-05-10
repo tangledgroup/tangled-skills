@@ -12,7 +12,7 @@ description: >-
   collection with retries, batching, and encryption.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "1.56.0"
+version: "0.1.0"
 tags:
   - opentelemetry
   - collector

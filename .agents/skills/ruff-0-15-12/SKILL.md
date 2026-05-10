@@ -3,7 +3,7 @@ name: ruff-0-15-12
 description: An extremely fast Python linter and code formatter written in Rust that replaces Flake8 (plus dozens of plugins), Black, isort, pydocstyle, pyupgrade, autoflake, and more with 10x-100x faster performance. Supports 900+ rules, block-level suppressions, Markdown code formatting, lazy imports (PEP 798), Python 3.14/3.15 compatibility, and the 2026 style guide. Use when linting Python code for style and correctness issues, formatting code consistently, configuring rule selection across 900+ lint rules, suppressing violations with noqa comments or block suppressions, or needing fast incremental analysis in CI/CD pipelines and editors.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.15.12"
+version: "0.1.0"
 tags:
   - python
   - linter

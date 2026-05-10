@@ -9,7 +9,7 @@ description: >
   integrating with its tool system, or deploying it as a coding agent in CI/CD.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.2.89"
+version: "0.1.0"
 tags:
   - coding-agent
   - hash-anchored-edits

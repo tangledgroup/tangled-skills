@@ -3,7 +3,7 @@ name: aiohttp-jinja2-1-6-0
 description: Jinja2 template renderer for aiohttp.web applications providing decorator-based rendering, context processors, URL helpers, and async template support. Use when building Python web applications with aiohttp that require HTML templating, dynamic content generation, or server-side rendering with Jinja2 syntax.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "1.6.0"
+version: "0.1.0"
 tags:
   - aiohttp
   - jinja2

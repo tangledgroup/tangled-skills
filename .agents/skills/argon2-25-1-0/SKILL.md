@@ -3,7 +3,7 @@ name: argon2-25-1-0
 description: Python toolkit for password hashing and verification using the Argon2 algorithm via argon2-cffi 25.x. Use when implementing secure password storage, user authentication systems, migrating legacy password hashes to modern standards, or benchmarking Argon2 parameters for your environment.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "25.1.0"
+version: "0.1.0"
 tags:
   - password-hashing
   - authentication

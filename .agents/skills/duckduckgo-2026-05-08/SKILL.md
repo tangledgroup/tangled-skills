@@ -3,7 +3,7 @@ name: duckduckgo-2026-05-08
 description: Searches DuckDuckGo using the HTML endpoint (default, html→markdown via scrapling) and JSON API (--format json), returning clean markdown results, quick answers, abstracts, result links, and related topics. Use when performing web searches from the terminal, fetching Wikipedia-style summaries for a topic, or gathering search results into clean LLM context.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.2"
+version: "0.1.0"
 tags:
   - web-search
   - web search

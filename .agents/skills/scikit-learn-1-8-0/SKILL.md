@@ -3,7 +3,7 @@ name: scikit-learn-1-8-0
 description: Complete scikit-learn 1.8 toolkit for machine learning covering supervised and unsupervised algorithms, pipelines, preprocessing, model selection, metrics, and datasets. Use when building ML models in Python, performing classification/regression/clustering, feature engineering, hyperparameter tuning, or evaluating model performance with scikit-learn 1.8+.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "1.8.0"
+version: "0.1.0"
 tags:
   - machine-learning
   - classification

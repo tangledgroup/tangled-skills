@@ -3,7 +3,7 @@ name: hnswlib-0-9-0
 description: Header-only C++ library implementing Hierarchical Navigable Small World graphs for fast approximate nearest neighbor (ANN) search with Python bindings via pybind11. Supports L2, inner product, and cosine distance spaces with SIMD-optimized distance computation (SSE/AVX/AVX512). Use when building vector search indexes requiring sub-millisecond latency at scale, implementing incremental index construction with updates and soft deletions, or needing a lightweight dependency-free ANN library as an alternative to FAISS or Annoy.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.9.0"
+version: "0.1.0"
 tags:
   - ann
   - vector-search

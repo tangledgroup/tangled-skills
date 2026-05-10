@@ -3,7 +3,7 @@ name: chonkie-1-6-4
 description: Lightweight text chunking library for fast, efficient RAG pipelines. Provides 12+ chunkers (token, sentence, recursive, semantic, code, late, neural, slumber, fast, table, TeraflopAI), pipeline API, refineries, vector DB handshakes, and a self-hosted REST API. Use when building document ingestion pipelines for retrieval-augmented generation, splitting text into semantically meaningful chunks, or constructing end-to-end CHOMP workflows (fetch, clean, chunk, refine, store).
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "1.6.4"
+version: "0.1.0"
 tags:
   - text-chunking
   - rag

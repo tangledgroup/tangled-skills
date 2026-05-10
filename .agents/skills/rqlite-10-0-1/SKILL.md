@@ -3,7 +3,7 @@ name: rqlite-10-0-1
 description: Comprehensive toolkit for rqlite 10.0.1, a lightweight distributed relational database built on SQLite with Raft consensus. Use when deploying fault-tolerant databases, building edge/IoT applications with SQL, creating globally distributed read-intensive systems, configuring Change Data Capture pipelines, loading SQLite extensions for vector search, or needing simple high-availability without complex administration.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "10.0.1"
+version: "0.1.0"
 tags:
   - database
   - distributed-systems

@@ -3,7 +3,7 @@ name: jq-1-8-1
 description: Complete toolkit for jq 1.8.1, the lightweight and flexible command-line JSON processor. Use when parsing, transforming, filtering, or generating JSON data from the shell, piping between commands, processing API responses, or writing reusable JSON transformation scripts with a concise declarative query language.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "1.8.1"
+version: "0.1.0"
 tags:
   - json
   - cli

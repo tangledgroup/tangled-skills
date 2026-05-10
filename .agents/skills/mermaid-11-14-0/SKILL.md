@@ -13,7 +13,7 @@ description: >-
   Mermaid rendering via CDN, npm package, or live editor.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "11.14.0"
+version: "0.1.0"
 tags:
   - diagramming
   - visualization

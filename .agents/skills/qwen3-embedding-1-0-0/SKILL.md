@@ -9,7 +9,7 @@ description: Complete toolkit for Qwen3 Embedding models (0.6B, 4B, 8B) and Qwen
   models.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: 1.0.0
+version: "0.1.0"
 tags:
 - embedding
 - semantic-search

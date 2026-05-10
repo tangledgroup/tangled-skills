@@ -3,7 +3,7 @@ name: aiohttp-sse-2-2-0
 description: Python library for Server-Sent Events (SSE) support in aiohttp applications. Use when building real-time streaming endpoints that push data from server to clients using the EventSource API, implementing chat applications, live notifications, or continuous data feeds without WebSocket complexity.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "2.2.0"
+version: "0.1.0"
 tags:
   - aiohttp
   - server-sent-events

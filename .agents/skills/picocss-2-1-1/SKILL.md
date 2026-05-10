@@ -3,7 +3,7 @@ name: picocss-2-1-1
 description: A skill for using Pico CSS v2.1, a minimalist CSS framework that styles semantic HTML elements elegantly by default with responsive typography, automatic light/dark modes, and over 130 customizable CSS variables. Use when building clean, lightweight web interfaces with pure HTML markup, creating class-light designs without JavaScript dependencies, or implementing accessible design systems with minimal CSS overhead.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "2.1.1"
+version: "0.1.0"
 tags:
   - css-framework
   - semantic-html

@@ -3,7 +3,7 @@ name: nltk-3-9-2
 description: Complete toolkit for Natural Language Processing with NLTK 3.9.2, covering tokenization, stemming, lemmatization, POS tagging, parsing, WordNet integration, corpus access, text classification, and semantic analysis for Python applications. Use when building Python programs that work with human language data including text preprocessing, linguistic analysis, sentiment scoring, machine translation evaluation, or educational NLP workflows.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "3.9.2"
+version: "0.1.0"
 tags:
   - nlp
   - natural-language-processing

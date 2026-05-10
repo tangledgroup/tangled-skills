@@ -12,7 +12,7 @@ description: Ultra-fast mixed-precision vector similarity and distance library w
   zero hidden allocations or thread pools.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: 7.6.0
+version: "0.1.0"
 tags:
 - vector-similarity
 - simd

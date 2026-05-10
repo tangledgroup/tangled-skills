@@ -3,7 +3,7 @@ name: scrapling-0-4-7
 description: Web scraping tool that converts web pages to Markdown using Scrapling v0.4.7's CLI. Use when extracting content from URLs, converting web pages to readable Markdown for AI context or documentation, scraping JS-rendered pages with browser automation, or bypassing anti-bot protections with stealthy fetching.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.2"
+version: "0.1.0"
 tags:
   - web-search
   - web scrape

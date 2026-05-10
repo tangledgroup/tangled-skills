@@ -3,7 +3,7 @@ name: yjs-13-6-30
 description: CRDT framework that exposes shared types (Y.Map, Y.Array, Y.Text, Y.XmlFragment) for conflict-free collaborative editing. Provides network-agnostic document synchronization via binary updates, awareness/presence tracking, undo/redo with selective scoping, relative positions for stable cursors, lazy-loaded subdocuments, and a delta-format event system. Use when building real-time collaborative editors, multi-user data sync, offline-first applications, shared cursors, or any app requiring concurrent editing without merge conflicts across WebSocket, WebRTC, or custom transports.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "13.6.30"
+version: "0.1.0"
 tags:
   - yjs
   - crdt

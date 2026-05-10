@@ -3,7 +3,7 @@ name: hy-1-2-0
 description: Lisp dialect embedded in Python providing prefix S-expression syntax, compile-time macros, quasiquoting, reader macros, and seamless access to all Python built-ins and third-party libraries. Use when writing Hy programs, creating or using Hy macros, converting between Python and Hy code with hy2py/py2hy, debugging Hy compilation or bytecode caching issues, configuring the Hy REPL, or building Lisp-style metaprogramming on the Python platform.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "1.2.0"
+version: "0.1.0"
 tags:
   - hy
   - hylang

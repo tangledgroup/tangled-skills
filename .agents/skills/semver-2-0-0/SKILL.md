@@ -3,7 +3,7 @@ name: semver-2-0-0
 description: Implement and validate Semantic Versioning 2.0.0 to manage software version numbers, determine compatibility, compare version precedence, and validate version strings against the official specification. Use when bumping versions, writing version constraints for dependency managers, comparing release ordering, or validating that a version string conforms to SemVer.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "2.0.0"
+version: "0.1.0"
 tags:
   - versioning
   - semver

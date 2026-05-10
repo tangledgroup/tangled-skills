@@ -3,7 +3,7 @@ name: stanza-1-11-1
 description: Stanford NLP Group's official Python NLP library for 80+ languages providing tokenization, POS tagging, lemmatization, dependency parsing, NER, sentiment analysis, constituency parsing, coreference resolution, and language identification via a neural pipeline built on PyTorch. Also includes a Python wrapper for the Java Stanford CoreNLP server. Use when building multilingual NLP pipelines, performing linguistic analysis across many human languages, training custom models on annotated data, or integrating biomedical/clinical NER and syntactic analysis.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "1.11.1"
+version: "0.1.0"
 tags:
   - nlp
   - natural-language-processing

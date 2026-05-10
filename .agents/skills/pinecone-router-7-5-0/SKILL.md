@@ -3,7 +3,7 @@ name: pinecone-router-7-5-0
 description: A comprehensive toolkit for building client-side routing in Alpine.js applications using Pinecone Router v7.5, providing route matching, template rendering, handlers, navigation history, and TypeScript support for single-page applications. Use when building SPAs with Alpine.js that require declarative HTML-based routing, external template loading, async data fetching in route handlers, hash or history-based navigation, or programmatic route management without a build step.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "7.5.0"
+version: "0.1.0"
 tags:
   - alpinejs
   - router

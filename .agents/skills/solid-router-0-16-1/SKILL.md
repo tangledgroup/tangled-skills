@@ -3,7 +3,7 @@ name: solid-router-0-16-1
 description: The universal router for SolidJS providing fine-grained reactivity for route navigation with support for history-based, hash-based, static (SSR), and memory-based routing modes. Use when building single-page applications in SolidJS that require client-side routing, nested routes, data loading APIs, form actions, or universal rendering across server and client environments.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.16.1"
+version: "0.1.0"
 tags:
   - solidjs
   - router

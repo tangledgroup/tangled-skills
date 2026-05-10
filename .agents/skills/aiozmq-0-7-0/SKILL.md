@@ -3,7 +3,7 @@ name: aiozmq-0-7-0
 description: Async ZeroMQ integration for Python asyncio providing transport-level APIs, stream abstraction, and RPC frameworks for building distributed applications with request-reply, push-pull, and pub-sub patterns. Use when building async Python applications requiring message-oriented middleware, remote procedure calls over ZeroMQ, or event-driven distributed systems with high-performance messaging.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.7.0"
+version: "0.1.0"
 tags:
   - zeromq
   - asyncio

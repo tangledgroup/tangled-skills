@@ -3,7 +3,7 @@ name: tokenizers-0-23-1
 description: Fast state-of-the-art tokenizers library for NLP written in Rust with Python, Node.js, and Ruby bindings. Use when training custom vocabularies, implementing BPE/WordPiece/Unigram tokenization, building NLP pipelines, or working with transformer models requiring efficient text preprocessing with alignment tracking.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.23.1"
+version: "0.1.0"
 tags:
   - nlp
   - tokenization

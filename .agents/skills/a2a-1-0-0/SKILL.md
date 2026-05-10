@@ -3,7 +3,7 @@ name: a2a-1-0-0
 description: The Agent2Agent (A2A) Protocol v1.0.0 is an open standard enabling communication and interoperability between independent, opaque AI agent systems. Use when building multi-agent systems where agents need to discover each other's capabilities via Agent Cards, negotiate interaction modalities (text, files, structured data), securely collaborate on long-running tasks with streaming (SSE) and push notifications, and exchange information without exposing internal state, memory, or tools. Covers JSON-RPC 2.0, gRPC, and HTTP+JSON/REST protocol bindings, custom binding guidelines, extensions, and enterprise security patterns.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "1.0.0"
+version: "0.1.0"
 tags:
   - agent-communication
   - multi-agent

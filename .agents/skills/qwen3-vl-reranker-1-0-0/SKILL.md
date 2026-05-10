@@ -3,7 +3,7 @@ name: qwen3-vl-reranker-1-0-0
 description: Complete toolkit for Qwen3-VL-Reranker (2B and 8B) multimodal reranking models that score relevance of text, image, video, and mixed-modality document pairs against queries. Use when building multimodal retrieval pipelines, re-ranking search results with cross-modal understanding, implementing two-stage retrieval systems with embedding+reranking, or performing visual document retrieval tasks.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "1.0.0"
+version: "0.1.0"
 tags:
   - reranker
   - multimodal

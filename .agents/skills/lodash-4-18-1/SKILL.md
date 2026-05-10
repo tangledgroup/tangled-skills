@@ -3,7 +3,7 @@ name: lodash-4-18-1
 description: Complete toolkit for Lodash 4.18 utility library providing 300+ helper functions for arrays, collections, objects, strings, numbers, dates, and functions. Use when building JavaScript applications requiring robust data manipulation, functional programming patterns, type checking, or cross-platform compatibility without native ES6+ features.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "4.18.1"
+version: "0.1.0"
 tags:
   - javascript
   - utility-library

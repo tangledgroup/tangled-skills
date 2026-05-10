@@ -3,7 +3,7 @@ name: agent-ralph-wiggum-fstandhartinger-0-3-0
 description: Autonomous AI coding with spec-driven development combining iterative bash loops and SpecKit-style specifications for fully autonomous AI-assisted software development. Use when building projects that require hands-free AI implementation, working from specification files, or running autonomous development loops with completion verification.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.3.0"
+version: "0.1.0"
 tags:
   - autonomous-development
   - spec-driven

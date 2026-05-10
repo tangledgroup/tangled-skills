@@ -3,7 +3,7 @@ name: acp-0-12-2
 description: The Agent Client Protocol (ACP) standardizes communication between code editors/IDEs and AI coding agents using JSON-RPC 2.0 over stdio. Similar to how LSP standardized language servers, ACP decouples agents from editors so any ACP-compatible agent works with any ACP-compatible client. Use when building or integrating AI coding agents that need editor interoperability, implementing persistent sessions with tool calls and permission requests, connecting agents via MCP server delegation, or working with the official SDKs in TypeScript, Python, Rust, Java, or Kotlin.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.12.2"
+version: "0.1.0"
 tags:
   - agent-protocol
   - json-rpc

@@ -3,7 +3,7 @@ name: zeromq-zguide-3-2-0
 description: Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and distributed computing architectures. Use when building asynchronous message-driven applications, implementing request-reply patterns, pub-sub systems, load balancing, or designing scalable distributed systems with ZeroMQ/3.2+.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "3.2.0"
+version: "0.1.0"
 tags:
   - zeromq
   - zmq

@@ -3,7 +3,7 @@ name: aiohttp-security-0-5-0
 description: Authentication and authorization toolkit for aiohttp.web applications providing identity policies (cookies, sessions, JWT) and custom authorization policies with permission-based access control. Use when building aiohttp.web applications that require session-based authentication, protecting routes with permission checks, implementing login/logout flows, or integrating JWT bearer token authentication.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.5.0"
+version: "0.1.0"
 tags:
   - aiohttp
   - authentication

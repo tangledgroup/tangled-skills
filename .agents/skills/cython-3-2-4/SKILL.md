@@ -9,7 +9,7 @@ description: A skill for using Cython 3.2.4, an optimizing Python compiler that 
   to low-level C optimizations.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: 3.2.4
+version: "0.1.0"
 tags:
 - python
 - compiler
