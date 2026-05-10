@@ -3,7 +3,7 @@ name: skman
 description: Skill Package Manager, skman, it is meta skill for skill authoring and skill package manager for AI agents.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.2.0"
+version: "0.3.0"
 tags:
   - meta
   - meta skill
@@ -139,7 +139,7 @@ Determine whether this is a **new skill** or an **update**:
 
 ### Step 1: Validate Input
 
-Check that the skill name matches `^[a-z0-9]+(-[a-z0-9]+)*$` and version is a non-empty string matching the upstream project's versioning scheme (SemVer, date-based, two-part, or pre-release).
+Check that the skill name matches `^[a-z0-9]+(-[a-z0-9]+)*$`. The upstream project version goes into the skill name/directory (e.g., `curl-8-20-0`). The YAML `version` field tracks the skill file's own version, starting at `0.1.0` and following SemVer.
 
 ### Step 2: Crawl and Collect Content
 
@@ -188,7 +188,7 @@ name: <skill-name>
 description: <1-1024 char description, third person, includes WHAT and WHEN>
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "<upstream-version>"
+version: "0.1.0"
 tags:
   - <tag1>
   - <tag2>
@@ -199,11 +199,11 @@ external_references:
 ```
 
 Field Rules:
-- `name` — **Required**. 1-64 chars, regex `^[a-z0-9]+(-[a-z0-9]+)*$`, matches directory name.
+- `name` — **Required**. 1-64 chars, regex `^[a-z0-9]+(-[a-z0-9]+)*$`, matches directory name. Include the upstream version hyphenated in the name (e.g., `curl-8-20-0`, `pacote-21-5-0`).
 - `description` — **Required**. 1-1024 chars, third person, includes WHAT and WHEN.
 - `license` — **Always MIT** — this is the skill file's license, never the upstream project's.
 - `author` — Format: `Name <email@example.com>`.
-- `version` — Non-empty string — preserve upstream version as-is (SemVer, date, two-part, pre-release).
+- `version` — The **skill file's own version**, independent of the upstream project version. Always start at `0.1.0`. Follows SemVer 2.0.0: bump patch for corrections/typos, minor for new content or sections, major for structural rewrites.
 - `tags` — Array of string tags, 3-7 recommended. Mix broad and specific. Include the upstream project name when distinctive.
 - `category` — Skill category classification. Common values: `tooling`, `networking`, `database`, `language-runtime`, `ml-ai`, `web-framework`, `cli-tool`, `library`, `protocol`, `devops`.
 - `external_references` — User-provided starting URLs only.
@@ -223,15 +223,15 @@ Invalid: `PDF-Processing`, `-pdf`, `pdf--processing`, `pdf processing`
 
 Version Field Rules:
 
-The `version` field records the upstream project's version — **preserve it as-is**. Do not force it into a specific format. Acceptable formats:
+The `version` field tracks the **skill file's own version**, independent of the upstream project version. The upstream version lives in the skill name/directory (e.g., `curl-8-20-0` means curl v8.20.0).
 
-- **SemVer 2.0.0**: `1.2.3` (strict three-part `MAJOR.MINOR.PATCH`)
-- **SemVer pre-release**: `1.0.0-alpha`, `1.0.0-beta.2`, `1.0.0-rc.1`
-- **SemVer with build metadata**: `1.0.0+20130313144700` (ignored in precedence)
-- **Date-based**: `2025-11-25`, `2026-04-16` (for specs, snapshots, documentation releases)
-- **Two-part**: `0.16`, `0.5` (some projects only use `MAJOR.MINOR`)
+- **Always start at `0.1.0`** for new skills
+- **SemVer 2.0.0**: `MAJOR.MINOR.PATCH`
+- **Patch bump** (`0.1.0` → `0.1.1`): typo fixes, minor corrections
+- **Minor bump** (`0.1.0` → `0.2.0`): new content, new sections, substantive improvements
+- **Major bump** (`0.2.0` → `1.0.0`): structural rewrites, breaking changes to instruction semantics
 
-When constructing the **directory name**, hyphenate version components: `project-1-2-3`, `project-0-16`, `project-2025-11-25`. The `name` field in YAML must match the directory name exactly.
+When constructing the **directory name**, include the upstream version hyphenated: `project-1-2-3`, `project-0-16`, `project-2025-11-25`. The `name` field in YAML must match the directory name exactly.
 
 Description Formula — Construct descriptions using this pattern:
 
@@ -274,7 +274,7 @@ name: <skill-name>
 description: <specific description with WHAT and WHEN>
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "<upstream-version>"
+version: "0.1.0"
 tags:
   - <tag1>
   - <tag2>
@@ -398,7 +398,7 @@ After the structural validator passes, review these items manually:
 - `description` present (1-1024 characters)
 - `license` is "MIT" (always — this is the skill file's license, not the upstream project's)
 - `author` format: `Name <email@example.com>`
-- `version` is non-empty and matches the upstream project's version string
+- `version` is valid SemVer (skill file version, starts at `0.1.0`, not the upstream project version)
 - Header ends with `---` before main content
 
 #### 2. Structure

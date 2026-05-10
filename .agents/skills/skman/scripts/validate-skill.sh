@@ -265,9 +265,11 @@ else
   pass "'author' format is valid"
 fi
 
-# version: required, non-empty
+# version: required, must be valid SemVer (skill file version, not upstream project version)
 if [[ -z "$yaml_version" ]]; then
   fail "Missing 'version' field in YAML header"
+elif ! echo "$yaml_version" | grep -qP '^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$'; then
+  fail "'version' '$yaml_version' is not valid SemVer (expected MAJOR.MINOR.PATCH, e.g. '0.1.0'). This is the skill file's own version, not the upstream project version."
 else
   pass "'version' present ('$yaml_version')"
 fi
