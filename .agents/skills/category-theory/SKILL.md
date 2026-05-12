@@ -1,127 +1,169 @@
 ---
 name: category-theory
-description: Mathematical framework for abstract structures and their relationships via categories, functors, natural transformations, limits, adjunctions, and monads. Use when reasoning about compositional program structure, understanding Haskell typeclasses (Functor/Monad/Applicative), designing abstractions in functional programming, or connecting mathematical concepts to type theory and programming language semantics.
+description: Mathematical framework for abstract structures and their relationships via categories, functors, natural transformations, limits, adjunctions, and monads. Provides dual mathematical and programming perspectives with Haskell typeclasses (Functor/Monad/Applicative) and Python libraries (pycategories, category-theory-python). Use when reasoning about compositional program structure, understanding functional abstractions, connecting algebraic concepts to code, working with monadic effects or F-algebras for recursive data, or following the Category Theory for Programmers curriculum.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
+version: "0.2.0"
 tags:
   - category-theory
-  - mathematics
   - functional-programming
   - type-theory
   - monads
   - functors
+  - ctfp
+  - pycategories
 category: mathematics
 external_references:
-  - https://en.wikipedia.org/wiki/Category_theory
-  - https://en.wikipedia.org/wiki/Higher_category_theory
-  - https://github.com/prathyvsh/category-theory-resources
   - https://github.com/hmemcpy/milewski-ctfp-pdf
   - https://bartoszmilewski.com/2014/10/28/category-theory-for-programmers-the-preface/
   - https://pycategories.readthedocs.io/en/latest/index.html
   - https://finsberg.github.io/category-theory-python/README.html
 ---
 
-# Category Theory
+# Category Theory for Programmers
 
 ## Overview
 
-Category theory is a general theory of mathematical structures and their relationships. Introduced by Samuel Eilenberg and Saunders Mac Lane in the mid-20th century for algebraic topology, it now underpins functional programming, type theory, semantics, and applied mathematics across physics, systems science, and music theory.
+Category theory studies mathematical structures through their relationships rather than internal composition. Every concept has a dual perspective: a precise mathematical definition and a direct programming interpretation.
 
-A **category** consists of objects and morphisms (arrows) between them. Morphisms compose associatively and every object has an identity morphism. A **functor** maps one category to another while preserving structure. A **natural transformation** relates two functors, providing a uniform way to transform their outputs across all objects.
+**Core thesis (Milewski):** Composition is the essence of programming, and composition is at the root of category theory — it is part of the definition of a category. The historical progression from subroutines to structured programming to OOP to functional programming reflects increasing composability. Side effects break composition; category theory provides the framework for making effects explicit (monads) and composition principled (adjunctions, universal properties).
 
-Category theory treats structures abstractly — objects are atomic, defined only by how they relate to other objects via morphisms. This "universal property" approach lets the same patterns (products, coproducts, limits) appear uniformly across sets, groups, topological spaces, and programming types.
+A **category** has objects and morphisms (arrows) that compose associatively with identity morphisms. In programming, the prototypical category is **Hask**: Haskell/Python types as objects, functions as morphisms. A **functor** maps between categories preserving structure — in code, `fmap` lifts a function into a container context. A **natural transformation** relates two functors uniformly across all objects — in code, a function that converts one container type to another regardless of contents.
 
 ## When to Use
 
-- Understanding or designing Haskell typeclasses (Functor, Monad, Applicative)
+- Understanding or designing Haskell typeclasses (Functor, Applicative, Monad)
+- Using Python category theory libraries (pycategories, category-theory-python)
 - Reasoning about compositional program structure and algebraic data types
-- Connecting mathematical structures (monoids, groups, adjunctions) to code
+- Connecting mathematical structures (monoids, adjunctions, F-algebras) to code
+- Designing APIs using universal properties as interface contracts
+- Working with monadic effects, recursion schemes, or free constructions
 - Studying type theory semantics via cartesian closed categories
-- Working with monadic effects, free constructions, or F-algebras for recursive data
-- Exploring higher-category concepts (2-categories, infinity-categories) in homotopy type theory
+- Following the Category Theory for Programmers (CTFP) curriculum
 
 ## Core Concepts
 
 ### Categories
 
-A category **C** has:
-- A class of **objects**
-- For each pair of objects *a*, *b*, a class **Hom(a, b)** of **morphisms**
-- **Composition**: for *f* : *a* → *b* and *g* : *b* → *c*, the composite *g* ∘ *f* : *a* → *c*
-- **Identity**: for each object *x*, an identity morphism 1*x* : *x* → *x*
+A category **C** has objects and morphisms with associative composition and identity morphisms.
 
-Axioms: composition is associative, and identities are left/right units.
+| Perspective | Description |
+|-------------|-------------|
+| **Math** | Objects + Hom-classes + composition satisfying associativity and unit axioms |
+| **Code** | **Hask**: types as objects, functions as morphisms. `f : A -> B` is a morphism |
 
-**Prototypical example — Set**: objects are sets, morphisms are functions. Every set has an identity function, and function composition is associative.
+**Key examples:** **Set** (sets/functions), **Grp** (groups/homomorphisms), a monoid as a single-object category, a preorder as a category with at most one morphism per pair.
 
-**Other examples:**
-- **Grp**: groups and group homomorphisms
-- **Top**: topological spaces and continuous maps
-- A **monoid** as a single-object category (morphisms = monoid elements)
-- A **preorder** as a category with at most one morphism between any two objects
+### Semigroups and Monoids
+
+Foundational algebraic structures that precede functors and monads in the abstraction hierarchy.
+
+| Perspective | Description |
+|-------------|-------------|
+| **Math** | Semigroup: set + associative binary operation. Monoid: semigroup + identity element |
+| **Code** | `mappend(a, b)` is associative; `mempty` is the identity. Strings under concatenation, integers under addition |
+
+A monoid is the simplest categorical structure — a single-object category where morphisms are the monoid elements and composition is the binary operation.
 
 ### Functors
 
-A **covariant functor** *F* : **C** → **D** maps:
-- Each object *x* in **C** to an object *F(x)* in **D**
-- Each morphism *f* : *x* → *y* to *F(f)* : *F(x)* → *F(y)*
+| Perspective | Description |
+|-------------|-------------|
+| **Math** | Maps objects to objects, morphisms to morphisms, preserving identities and composition |
+| **Code** | Type constructor `F` with `fmap(f, F(a)) -> F(b)`. Laws: `fmap(id) == id`, `fmap(g∘f) == fmap(g)∘fmap(f)` |
 
-Preserving identities and composition: *F(1*x*) = 1*F(x)*, *F(g ∘ f) = F(g) ∘ F(f)*.
-
-A **contravariant functor** reverses arrow direction: *f* : *x* → *y* maps to *F(f)* : *F(y)* → *F(x)*. Equivalently, a covariant functor from the opposite category **C**op.
+Covariant functors preserve arrow direction; contravariant functors reverse it (equivalently, covariant from the opposite category). Forgetful functors strip structure (Grp → Set); free functors build it (Set → Grp via free groups).
 
 ### Natural Transformations
 
-Given functors *F*, *G* : **C** → **D**, a **natural transformation** *η* : *F* ⇒ *G* assigns to each object *X* in **C** a morphism *η*X* : *F(X)* → *G(X)* in **D** such that for every *f* : *X* → *Y*:
+| Perspective | Description |
+|-------------|-------------|
+| **Math** | Family of morphisms η_X : F(X) → G(X) satisfying the naturality square: η_Y ∘ F(f) = G(f) ∘ η_X |
+| **Code** | Uniform conversion between container types. E.g., `list :: Maybe a -> [a]` where `list(Just x) = [x]`, `list(Nothing) = []` |
 
-```
-η_Y ∘ F(f) = G(f) ∘ η_X
-```
+When each component is an isomorphism, the functors are naturally isomorphic — "the same" up to canonical identification.
 
-This "naturality square" commutes, meaning the transformation works uniformly regardless of which morphism you apply first. When each *η*X* is an isomorphism, *F* and *G* are **naturally isomorphic**.
+### Monads (Preview)
+
+A monad is a monoid in the category of endofunctors: endofunctor T with unit η : Id → T and multiplication μ : T² → T satisfying associativity and unit laws. In programming, monads model computational effects (Maybe for failure, List for nondeterminism, State for mutable state). Full treatment in reference files.
 
 ## Usage Examples
 
-### Haskell: Functor Typeclass
+### Haskell: Functor and Monad Typeclasses
 
 ```haskell
 class Functor f where
     fmap :: (a -> b) -> f a -> f b
-```
+-- Laws: fmap id == id; fmap (g . f) == fmap g . fmap f
 
-`fmap` is the action of a functor on morphisms. The type constructor `f` forms an endofunctor on **Hask** (the category of Haskell types and functions).
-
-### Haskell: Monad Typeclass
-
-```haskell
 class Monad m where
     return :: a -> m a
     (>>=)  :: m a -> (a -> m b) -> m b
+-- Laws: return a >>= f == f a
+--       m >>= return == m
+--       (m >>= f) >>= g == m >>= (\x -> f x >>= g)
 ```
 
-A monad is a monoid in the category of endofunctors — `return` is the unit, `(>>=)` encodes multiplication via the Kleisli composition.
-
-### Python: Using pycategories
+### Python: pycategories — Maybe with fmap
 
 ```python
-from categories import apply
+from categories import fmap
 from categories.maybe import Just, Nothing
 
-f = Just(lambda x: x ** 2)
-x = Just(17)
-print(apply(f, x))       # Just(289)
-print(apply(f, Nothing()))  # Nothing
+# Lifting a function into the Maybe context
+result = fmap(lambda x: x.upper(), Just("hello"))
+print(result)  # Just("HELLO")
+
+# Short-circuiting on Nothing
+result = fmap(lambda x: x.upper(), Nothing())
+print(result)  # Nothing
+```
+
+### Python: pycategories — Custom Monoid Instance with Law Checking
+
+```python
+from categories import monoid, mappend, mempty
+
+# Define a monoid instance for dict (merge by keys)
+monoid.instance(dict, lambda: {}, lambda a, b: dict(**a, **b))
+
+# Use it
+result = mappend({'x': 1}, {'y': 2})
+print(result)  # {'x': 1, 'y': 2}
+
+# Verify laws
+print(monoid.identity_law({'a': 1}))           # True
+print(monoid.associativity_law({'a': 1}, {'b': 2}, {'c': 3}))  # True
+```
+
+### Python: category-theory-python — Monoids with Property-Based Testing
+
+```python
+from category_theory.monoid import IntPlus, String
+
+# IntPlus monoid (integers under addition, identity 0)
+a, b = IntPlus(3), IntPlus(5)
+print(a + b)           # IntPlus(8)
+print(a + IntPlus.e()) # IntPlus(3) — identity law
+
+# Fold a list of monoids
+from category_theory.operations import fold
+values = [IntPlus(v) for v in [1, 2, 3, 4]]
+print(fold(values, IntPlus))  # IntPlus(10)
 ```
 
 ## Advanced Topics
 
-**Basic Concepts**: Categories, morphisms, functors, natural transformations in detail → [Basic Concepts](reference/01-basic-concepts.md)
+**Categories and Morphisms**: Categories, morphism types, functors, natural transformations, semigroups, monoids → [Categories and Morphisms](reference/01-categories-and-morphisms.md)
 
-**Limits and Colimits**: Universal properties, products, coproducts, adjunctions, Yoneda lemma → [Limits and Colimits](reference/02-limits-and-colimits.md)
+**Universal Properties**: Products, coproducts, limits, colimits, adjunctions, Yoneda lemma → [Universal Properties](reference/02-universal-properties.md)
 
-**Monads and Beyond**: Monads, comonads, monoidal categories, F-algebras, Lawvere theories → [Monads and Beyond](reference/03-monads-and-allegories.md)
+**Monads and Algebras**: Monads, comonads, monoidal categories, F-algebras, Lawvere theories → [Monads and Algebras](reference/03-monads-and-algebras.md)
 
-**Higher Category Theory**: 2-categories, n-categories, bicategories, quasi-categories, infinity-categories → [Higher Category Theory](reference/04-higher-category-theory.md)
+**Higher Category Theory**: 2-categories, bicategories, quasi-categories, infinity-groupoids, topoi → [Higher Category Theory](reference/04-higher-category-theory.md)
 
-**Programming Applications**: Haskell typeclasses, Python libraries, CTFP curriculum, practical connections → [Programming Applications](reference/05-programming-applications.md)
+**CTFP Curriculum**: Milewski's "Category Theory for Programmers" — thesis, structure, and chapter guide → [CTFP Curriculum](reference/05-ctfp-curriculum.md)
+
+**Python Category Theory**: pycategories and category-theory-python libraries with deep API coverage → [Python Category Theory](reference/06-python-category-theory.md)
+
+**Design Patterns**: Practical CT-inspired patterns for API design and code architecture → [Design Patterns](reference/07-design-patterns.md)
