@@ -1,5 +1,5 @@
 ---
-name: lambda-calculus-3-1-0
+name: python-lambda-calculus-3-1-0
 description: Python library implementing Lambda calculus operations including term construction (Variable, Abstraction, Application), beta/eta reduction, alpha conversion, substitution, and visitor-based traversal. Provides Church encodings for booleans, arithmetic, pairs, and common combinators (Y, S, K, I). Use when building lambda calculus interpreters, performing symbolic term manipulation, encoding computation in pure lambda terms, or teaching functional programming concepts with Python.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
