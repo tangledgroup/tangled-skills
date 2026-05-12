@@ -1,6 +1,6 @@
 ---
 name: websearch
-description: Meta skill that delegates web search tasks to the local duckduckgo-2026-05-08 skill. Use when performing web searches, fetching Wikipedia summaries, or gathering search results into LLM context.
+description: Meta skill that delegates web search tasks to the local duckduckgo skill. Use when performing web searches, fetching Wikipedia summaries, or gathering search results into LLM context.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
 version: "0.1.0"
@@ -17,7 +17,7 @@ category: meta
 
 ## Overview
 
-This is a meta skill that delegates all web search operations to the `duckduckgo-2026-05-08` skill. Always load that skill first to access DuckDuckGo's HTML and JSON search endpoints.
+This is a meta skill that delegates all web search operations to the `duckduckgo` skill. Always load that skill first to access DuckDuckGo's HTML and JSON search endpoints.
 
 ## When to Use
 
@@ -27,7 +27,7 @@ This is a meta skill that delegates all web search operations to the `duckduckgo
 
 ## Usage
 
-Load the `duckduckgo-2026-05-08` skill and follow its instructions for:
+Load the `duckduckgo` skill and follow its instructions for:
 
 - **HTML endpoint** — full search results converted to markdown (default)
 - **JSON API** — structured data with abstracts, infoboxes, and definitions (`--format json`)

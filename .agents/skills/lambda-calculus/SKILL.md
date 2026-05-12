@@ -1,5 +1,5 @@
 ---
-name: lambda-calculus-2026-05-12
+name: lambda-calculus
 description: Formal system for expressing computation via function abstraction and application. Covers untyped lambda calculus (syntax, reduction, Church encoding), typed variants (STLC, System F), currying, and the Curry-Howard isomorphism. Use when reasoning about functions, understanding functional programming foundations, type theory, proof assistants, or implementing interpreters and compilers for functional languages.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
