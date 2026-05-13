@@ -217,7 +217,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 188 | scrapling-0-4-7 | scrapling | 0.1.0 | web-search, web scrape, web scraping, browser automation | Web scraping tool that converts web pages to Markdown using Scrapling v0.4.7's CLI. Use when extracting content from ... |
 | 189 | semver-2-0-0 | semver | 0.1.0 | versioning, semver, semantic-versioning, releases, dependency-management | Implement and validate Semantic Versioning 2.0.0 to manage software version numbers, determine compatibility, ... |
 | 190 | sentence-transformers-5-4-1 | sentence-transformers | 0.1.0 | embeddings, semantic-search, reranking, nlp, sentence-embeddings | Comprehensive toolkit for computing text embeddings, semantic search, and reranking using Sentence Transformers ... |
-| 191 | s-expression | s-expression | 0.1.0 | s-expression, sexp, lisp, data-format, tree | S-expressions (symbolic expressions) are a minimal notation for nested tree-structured data using atoms and lists. ...
+| 191 | s-expression | s-expression | 0.1.0 | s-expression, sexp, lisp, data-format, tree | S-expressions (symbolic expressions) are a minimal notation for nested tree-structured data using atoms and lists. ... |
 | 192 | skman | skman | 0.3.0 | meta, meta skill, skill manager, skill package manager, authoring | Skill Package Manager, skman, it is meta skill for skill authoring and skill package manager for AI agents. |
 | 193 | solidjs-1-9-12 | solidjs | 0.1.0 | solidjs, reactivity, signals, jsx, fine-grained | >- |
 | 194 | solid-meta-0-29-0 | solid-meta | 0.1.0 | solidjs, meta-tags, document-head, ssr, seo | Manages document head tags in SolidJS applications with @solidjs/meta v0.29, providing SSR-ready Document Head ... |
