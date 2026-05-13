@@ -1,4 +1,4 @@
-# Minimal Scheme Interpreter in Python with Comment Support
+# Full Scheme Interpreter in Python with Comment Support
 
 ## Contents
 - Design Goals
