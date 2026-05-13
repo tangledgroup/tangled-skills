@@ -68,9 +68,10 @@ This skill covers three implementation approaches:
 
 ### Python Interpreter Implementations
 
-- **Minimal Scheme with comments**: Complete tokenize→parse→eval→REPL with `;` comment support, closures, Scheme truth semantics → [Minimal Scheme Interpreter in Python](reference/12-minimal-scheme-interpreter-python.md)
-- **Full Lisp with defun/if/format**: Complete interpreter with SymbolTable scoping, user-defined functions, recursion → [Full Lisp Interpreter in Python](reference/01-lwcarani-full-lisp-python.md)
 - **Minimal 16-line proof-of-concept**: Ultra-concise tokenize→parse→eval pipeline for add/sub only → [Minimal 16-Line Lisp in Python](reference/02-bytegoblin-minimal-lisp-python.md)
+- **Minimal Scheme with comments**: ~25 lines, bytegoblin pattern plus `;` line comment support, four arithmetic ops → [Minimal Scheme with Comments in Python](reference/13-minimal-scheme-comments-python.md)
+- **Full Scheme with closures**: Complete tokenize→parse→eval→REPL with `;` comment support, SymbolTable scoping, closures, Scheme truth semantics → [Full Scheme Interpreter in Python](reference/12-full-scheme-interpreter-python.md)
+- **Full Lisp with defun/if/format**: Complete interpreter with SymbolTable scoping, user-defined functions, recursion → [Full Lisp Interpreter in Python](reference/01-lwcarani-full-lisp-python.md)
 - **Scheme with Lark parser**: Modern grammar-based parsing, tuple data model, TDD workflow → [Scheme Interpreter with Lark Parser](reference/03-johnj-scheme-python.md)
 
 ### C S-Expression Implementations
