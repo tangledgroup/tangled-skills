@@ -98,7 +98,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 69 | dspy-2-4-12 | dspy | 0.2.0 | llm-programming, prompt-optimization, ai-compilation, few-shot-learning, instruction-tuning | Framework for programming rather than prompting language models. Compiles LM calls into self-improving pipelines by ... |
 | 70 | dspy-3-2-0 | dspy | 0.1.0 | llm-programming, prompt-optimization, ai-compilation, few-shot-learning, instruction-tuning | Framework for programming rather than prompting language models. Compiles LM calls into self-improving pipelines by ... |
 | 71 | duckdb-1-5-2 | duckdb | 0.1.0 | analytics, olap, embedded-database, sql, data-science | High-performance analytical SQL database with support for nested types, vectorized execution, and seamless ... |
-| 72 | duckduckgo | duckduckgo | 0.1.0 | web-search, web search, duckduckgo | Searches DuckDuckGo using the HTML endpoint (default, html→markdown via scrapling) and JSON API (--format json), ... |
+| 72 | duckduckgo | duckduckgo | 0.1.0 | duckduckgo, search, web-search, scrapling, scraping | Searches DuckDuckGo via its HTML endpoint using scrapling. Returns results as markdown (default), raw HTML, compact ... |
 | 73 | esbuild-0-28-0 | esbuild | 0.1.0 | javascript, bundler, typescript, jsx, css | Complete toolkit for esbuild v0.28 JavaScript bundler providing CLI, JavaScript API, and Go API access for bundling, ... |
 | 74 | fetch-api | fetch-api | 0.1.0 | fetch, http, javascript, web-api, browser | JavaScript Fetch API for making HTTP requests from browsers and workers using promise-based fetch(). Covers ... |
 | 75 | fltk-1-4-5 | fltk | 0.1.0 | fltk, gui, c++, desktop, widgets | Cross-platform C++ GUI toolkit with ~80 widget classes, OpenGL/GLUT integration, drawing primitives, image support, ... |
@@ -217,7 +217,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 188 | scheme-in-python-2026-05-03 | scheme-in-python | 0.1.0 | scheme, interpreter, lisp, python, eval-apply | Build a Scheme interpreter in Python covering tokenization, eval/apply loop, environment frames with lexical and ... |
 | 189 | scikit-learn-1-8-0 | scikit-learn | 0.1.0 | machine-learning, classification, regression, clustering, pipelines | Complete scikit-learn 1.8 toolkit for machine learning covering supervised and unsupervised algorithms, pipelines, ... |
 | 190 | scipy-1-17-1 | scipy | 0.1.0 | scipy, scientific-computing, optimization, integration, statistics | Scientific computing library for Python covering optimization, integration, interpolation, linear algebra, signal ... |
-| 191 | scrapling-0-4-7 | scrapling | 0.1.0 | web-search, web scrape, web scraping, browser automation | Web scraping tool that converts web pages to Markdown using Scrapling v0.4.7's CLI. Use when extracting content from ... |
+| 191 | scrapling-0-4-8 | scrapling | 0.1.0 | scrapling, web-scraping, html-parsing, crawler, anti-bot | Adaptive web scraping framework for Python providing HTML parsing with CSS/XPath/text/regex selection, HTTP and ... |
 | 192 | semver-2-0-0 | semver | 0.1.0 | versioning, semver, semantic-versioning, releases, dependency-management | Implement and validate Semantic Versioning 2.0.0 to manage software version numbers, determine compatibility, ... |
 | 193 | sentence-transformers-5-4-1 | sentence-transformers | 0.1.0 | embeddings, semantic-search, reranking, nlp, sentence-embeddings | Comprehensive toolkit for computing text embeddings, semantic search, and reranking using Sentence Transformers ... |
 | 194 | s-expression | s-expression | 0.1.0 | s-expression, sexp, lisp, data-format, tree | S-expressions (symbolic expressions) are a minimal notation for nested tree-structured data using atoms and lists. ... |
@@ -243,31 +243,30 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 214 | tailwindcss-browser-4-2-0 | tailwindcss-browser | 0.1.0 | css, tailwind, browser, prototyping, no-build | In-browser Tailwind CSS v4.2 build (@tailwindcss/browser) that compiles utility classes at runtime without a build ... |
 | 215 | tailwindcss-browser-4-2-4 | tailwindcss-browser | 0.1.0 | css, tailwind, browser, prototyping, no-build | In-browser Tailwind CSS v4.2 build (@tailwindcss/browser) that compiles utility classes at runtime without a build ... |
 | 216 | tea-0-14-0 | tea | 0.1.0 | gitea, cli, git, devops, ci-cd | Official CLI for Gitea servers. Manage repositories, issues, pull requests, releases, and admin operations from the ... |
-| 217 | textblob-0-20-0 | textblob | 0.1.0 | nlp, text-processing, sentiment-analysis, pos-tagging, tokenization | Python library for simplified natural language processing providing POS tagging, noun phrase extraction, sentiment ... |
-| 218 | textual-8-2-4 | textual | 0.1.0 | tui, terminal-ui, python, framework, reactive | Python framework for building terminal and browser UIs. Provides widget-based DOM, CSS styling (.tcss), reactive ... |
-| 219 | textual-8-2-5 | textual | 0.1.0 | tui, terminal-ui, python, framework, reactive | Python framework for building terminal and browser UIs. Provides widget-based DOM, CSS styling (.tcss), reactive ... |
-| 220 | tinycc-0-9-27 | tinycc | 0.1.0 | c-compiler, code-generation, dynamic-compilation, x86, arm | Complete toolkit for TinyCC 0.9.27, a small hyper-fast C compiler generating native x86/x86_64/ARM code without an ... |
-| 221 | tinypy-1-1-0 | tinypy | 0.1.0 | python, vm, embedding, scripting, minimal | Minimalist Python implementation in ~64k of code with a bootstrapped parser, bytecode compiler, and VM with ... |
-| 222 | tinyscheme-1-41 | tinyscheme | 0.1.0 | tinyscheme, scheme, lisp, interpreter, embedded | Lightweight Scheme interpreter (R5RS subset) in ~5000 lines of C, designed as an embeddable scripting engine. ... |
-| 223 | tokenizers-0-22-3 | tokenizers | 0.1.0 | nlp, tokenization, rust, python, transformers | Fast state-of-the-art tokenizers library for NLP written in Rust with |
-| 224 | tokenizers-0-23-1 | tokenizers | 0.1.0 | nlp, tokenization, rust, python, transformers | Fast state-of-the-art tokenizers library for NLP written in Rust with Python, Node.js, and Ruby bindings. Use when ... |
-| 225 | transformers-5-5-4 | transformers | 0.1.0 | nlp, machine-learning, deep-learning, pytorch, huggingface | Complete toolkit for Hugging Face Transformers 5.5.4 providing pretrained models for NLP, vision, audio, video, and ... |
-| 226 | transformers-5-7-0 | transformers | 0.1.0 | nlp, machine-learning, deep-learning, pytorch, huggingface | Complete toolkit for Hugging Face Transformers 5.7.0 providing pretrained models for NLP, vision, audio, video, and ... |
-| 227 | ty-0-0-29 | ty | 0.1.0 | python, type-checking, static-analysis, language-server, mypy-alternative | Extremely fast Python type checker and language server written in Rust, 10x-100x faster than mypy and Pyright. ... |
-| 228 | ty-0-0-33 | ty | 0.1.0 | python, type-checking, static-analysis, language-server, mypy-alternative | Extremely fast Python type checker and language server written in Rust, 10x-100x faster than mypy and Pyright. ... |
-| 229 | tzip | tzip | 0.4.0 | meta, meta-skill, token-prune, efficiency, guidelines | Lightweight token-pruning communication mode that drops filler and hedging while keeping full sentences and ... |
-| 230 | upx-5-1-1 | upx | 0.1.0 | compression, executable-packer, distribution, size-optimization, cross-platform | >- |
-| 231 | usearch-2-24-0 | usearch | 0.1.0 | vector-search, hnsw, similarity-search, approximate-nearest-neighbors, embedding-search | High-performance single-file similarity search engine for vectors using HNSW with user-defined metrics, ... |
-| 232 | usearch-2-25-1 | usearch | 0.1.0 | vector-search, ann, hnsw, similarity-search, clustering | High-performance single-file similarity search engine for vectors using HNSW with user-defined metrics, ... |
-| 233 | uv-0-11-6 | uv | 0.1.0 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | Extremely fast Python package and project manager written in Rust, replacing pip, pip-tools, pipx, poetry, pyenv, ... |
-| 234 | uv-0-11-8 | uv | 0.1.0 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | Extremely fast Python package and project manager written in Rust, replacing pip, pip-tools, pipx, poetry, pyenv, ... |
-| 235 | webfetch | webfetch | 0.1.0 | meta, meta-skill, webfetch, scraping, markdown | Fetches web pages and converts them to clean Markdown. Delegates to the local scrapling-0-4-7 skill for all URL ... |
-| 236 | websearch | websearch | 0.1.0 | meta, meta-skill, websearch, search, meta-skill | Meta skill that delegates web search tasks to the local duckduckgo skill. Use when performing web searches, fetching ... |
-| 237 | yjs-13-6-30 | yjs | 0.1.0 | yjs, crdt, collaborative-editing, real-time, shared-types | CRDT framework for conflict-free collaborative editing with shared types (Y.Map, Y.Array, Y.Text). Provides ... |
-| 238 | yq-4-53-2 | yq | 0.1.0 | yaml, json, xml, ini, csv | >- |
-| 239 | zeromq-wiki-3-2-0 | zeromq-wiki | 0.1.0 | zeromq, messaging, distributed-systems, networking, sockets | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and ... |
-| 240 | zeromq-zguide-3-2-0 | zeromq-zguide | 0.1.0 | zeromq, zmq, messaging, sockets, distributed-systems | Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and ... |
+| 217 | temporal-api | temporal-api | 0.1.0 | temporal, date-time, timezone, calendar, javascript | ECMAScript Temporal API for date/time management replacing legacy Date. Provides timezone-aware arithmetic, calendar ... |
+| 218 | textblob-0-20-0 | textblob | 0.1.0 | nlp, text-processing, sentiment-analysis, pos-tagging, tokenization | Python library for simplified natural language processing providing POS tagging, noun phrase extraction, sentiment ... |
+| 219 | textual-8-2-4 | textual | 0.1.0 | tui, terminal-ui, python, framework, reactive | Python framework for building terminal and browser UIs. Provides widget-based DOM, CSS styling (.tcss), reactive ... |
+| 220 | textual-8-2-5 | textual | 0.1.0 | tui, terminal-ui, python, framework, reactive | Python framework for building terminal and browser UIs. Provides widget-based DOM, CSS styling (.tcss), reactive ... |
+| 221 | tinycc-0-9-27 | tinycc | 0.1.0 | c-compiler, code-generation, dynamic-compilation, x86, arm | Complete toolkit for TinyCC 0.9.27, a small hyper-fast C compiler generating native x86/x86_64/ARM code without an ... |
+| 222 | tinypy-1-1-0 | tinypy | 0.1.0 | python, vm, embedding, scripting, minimal | Minimalist Python implementation in ~64k of code with a bootstrapped parser, bytecode compiler, and VM with ... |
+| 223 | tinyscheme-1-41 | tinyscheme | 0.1.0 | tinyscheme, scheme, lisp, interpreter, embedded | Lightweight Scheme interpreter (R5RS subset) in ~5000 lines of C, designed as an embeddable scripting engine. ... |
+| 224 | tokenizers-0-22-3 | tokenizers | 0.1.0 | nlp, tokenization, rust, python, transformers | Fast state-of-the-art tokenizers library for NLP written in Rust with |
+| 225 | tokenizers-0-23-1 | tokenizers | 0.1.0 | nlp, tokenization, rust, python, transformers | Fast state-of-the-art tokenizers library for NLP written in Rust with Python, Node.js, and Ruby bindings. Use when ... |
+| 226 | transformers-5-5-4 | transformers | 0.1.0 | nlp, machine-learning, deep-learning, pytorch, huggingface | Complete toolkit for Hugging Face Transformers 5.5.4 providing pretrained models for NLP, vision, audio, video, and ... |
+| 227 | transformers-5-7-0 | transformers | 0.1.0 | nlp, machine-learning, deep-learning, pytorch, huggingface | Complete toolkit for Hugging Face Transformers 5.7.0 providing pretrained models for NLP, vision, audio, video, and ... |
+| 228 | ty-0-0-29 | ty | 0.1.0 | python, type-checking, static-analysis, language-server, mypy-alternative | Extremely fast Python type checker and language server written in Rust, 10x-100x faster than mypy and Pyright. ... |
+| 229 | ty-0-0-33 | ty | 0.1.0 | python, type-checking, static-analysis, language-server, mypy-alternative | Extremely fast Python type checker and language server written in Rust, 10x-100x faster than mypy and Pyright. ... |
+| 230 | tzip | tzip | 0.4.0 | meta, meta-skill, token-prune, efficiency, guidelines | Lightweight token-pruning communication mode that drops filler and hedging while keeping full sentences and ... |
+| 231 | upx-5-1-1 | upx | 0.1.0 | compression, executable-packer, distribution, size-optimization, cross-platform | >- |
+| 232 | usearch-2-24-0 | usearch | 0.1.0 | vector-search, hnsw, similarity-search, approximate-nearest-neighbors, embedding-search | High-performance single-file similarity search engine for vectors using HNSW with user-defined metrics, ... |
+| 233 | usearch-2-25-1 | usearch | 0.1.0 | vector-search, ann, hnsw, similarity-search, clustering | High-performance single-file similarity search engine for vectors using HNSW with user-defined metrics, ... |
+| 234 | uv-0-11-6 | uv | 0.1.0 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | Extremely fast Python package and project manager written in Rust, replacing pip, pip-tools, pipx, poetry, pyenv, ... |
+| 235 | uv-0-11-8 | uv | 0.1.0 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | Extremely fast Python package and project manager written in Rust, replacing pip, pip-tools, pipx, poetry, pyenv, ... |
+| 236 | yjs-13-6-30 | yjs | 0.1.0 | yjs, crdt, collaborative-editing, real-time, shared-types | CRDT framework for conflict-free collaborative editing with shared types (Y.Map, Y.Array, Y.Text). Provides ... |
+| 237 | yq-4-53-2 | yq | 0.1.0 | yaml, json, xml, ini, csv | >- |
+| 238 | zeromq-wiki-3-2-0 | zeromq-wiki | 0.1.0 | zeromq, messaging, distributed-systems, networking, sockets | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and ... |
+| 239 | zeromq-zguide-3-2-0 | zeromq-zguide | 0.1.0 | zeromq, zmq, messaging, sockets, distributed-systems | Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and ... |
 
 ## Statistics
 
-- **Total Skills**: 240
+- **Total Skills**: 239
