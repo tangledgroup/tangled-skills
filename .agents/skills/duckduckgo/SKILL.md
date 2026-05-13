@@ -3,7 +3,7 @@ name: duckduckgo
 description: Searches DuckDuckGo via its HTML endpoint using scrapling. Returns results as markdown (default), raw HTML, compact JSON, or YAML. Use when performing web searches from within an agent workflow without requiring a search API key or external service.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
+version: "0.2.0"
 tags:
   - duckduckgo
   - search
@@ -99,8 +99,8 @@ All four formats use the same source — DuckDuckGo's HTML endpoint:
 
 1. `search.sh` constructs the URL: `https://html.duckduckgo.com/html/?q=<encoded-query>`
 2. `uvx 'scrapling[shell]' extract get` fetches and isolates `.web-result` elements
-3. For **markdown**: scrapling's `--ai-targeted` flag produces clean output directly
-4. For **html**: raw HTML passed through to stdout
+3. For **markdown/json/yaml**: scrapling's `--ai-targeted` flag produces clean, AI-friendly output
+4. For **html**: raw HTML passed through without `--ai-targeted` to preserve original DOM structure
 5. For **json/yaml**: HTML saved to a temp file, then `format.py` parses it using Python's built-in `html.parser`
 
 ### Temp File Handling
@@ -109,7 +109,7 @@ When json or yaml format is requested, `search.sh` creates a temporary HTML file
 
 ### Query Encoding
 
-Spaces in queries are URL-encoded using Python's `urllib.parse.quote`. Multi-word queries are handled correctly — `"tangled group"` becomes `tangled%20group`.
+Query is passed to Python via stdin (not shell argument expansion) to prevent shell injection. `urllib.parse.quote` URL-encodes the query. Multi-word queries are handled correctly — `"tangled group"` becomes `tangled%20group`.
 
 ### Dependencies
 

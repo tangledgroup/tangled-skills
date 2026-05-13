@@ -67,32 +67,34 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-# URL-encode the query (spaces → +, other chars percent-encoded)
-ENCODED_QUERY=$(python3 -c "import urllib.parse, sys; print(urllib.parse.quote(' '.join(sys.argv[1:]), safe=''))" $QUERY)
+# URL-encode the query safely via stdin to avoid shell injection
+# (unquoted $QUERY expansion was vulnerable to shell metacharacters)
+ENCODED_QUERY=$(printf '%s' "$QUERY" | python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.stdin.read().strip(), safe=''))")
 SEARCH_URL="${DDG_HTML_URL}?q=${ENCODED_QUERY}"
 
 case "$FORMAT" in
     md)
-        # Default: markdown output via scrapling's --ai-targeted flag
-        # Output goes directly to stdout, no temp file needed
-        uvx 'scrapling[shell]' extract get \
-            "$SEARCH_URL" \
-            - \
-            --css-selector "$CSS_SELECTOR" \
-            --follow-redirects \
-            --impersonate "$IMPERSONATE" \
-            --ai-targeted
-        ;;
-
-    html)
-        # Raw HTML output — save to temp file, then cat to stdout
-        TEMP_FILE=$(mktemp /tmp/ddg-search-XXXXXX.html)
+        # Markdown output via scrapling's --ai-targeted flag
+        # scrapling requires a .md file path (rejects '-' for stdout)
+        TEMP_FILE=$(mktemp /tmp/ddg-search-XXXXXX.md)
         uvx 'scrapling[shell]' extract get \
             "$SEARCH_URL" \
             "$TEMP_FILE" \
             --css-selector "$CSS_SELECTOR" \
             --impersonate "$IMPERSONATE" \
             --ai-targeted
+        cat "$TEMP_FILE"
+        ;;
+
+    html)
+        # Raw HTML output — save to temp file, then cat to stdout
+        # NOTE: --ai-targeted is intentionally omitted to preserve raw DOM structure
+        TEMP_FILE=$(mktemp /tmp/ddg-search-XXXXXX.html)
+        uvx 'scrapling[shell]' extract get \
+            "$SEARCH_URL" \
+            "$TEMP_FILE" \
+            --css-selector "$CSS_SELECTOR" \
+            --impersonate "$IMPERSONATE"
         cat "$TEMP_FILE"
         ;;
 
