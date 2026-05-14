@@ -1,5 +1,12 @@
 # Configuration and Events
 
+## Contents
+- PodmanConfig
+- ServiceConnection Properties
+- PodmanClient.from_env()
+- System Information
+- Events
+
 ## PodmanConfig
 
 Read connection configuration from `containers.conf` in XDG_CONFIG_HOME.
@@ -81,7 +88,6 @@ info = client.info()
 # - Images count
 # - Storage driver info
 # - Security options
-# etc.
 ```
 
 ### Disk Usage

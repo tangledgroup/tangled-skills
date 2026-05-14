@@ -3,7 +3,7 @@ name: podman-py-5-8-0
 description: Python client library for Podman container engine providing programmatic access to containers, images, pods, networks, volumes, manifests, secrets, and quadlets via RESTful API. Use when building Python applications that require container orchestration, automation scripts, CI/CD integration, or container management without Docker dependency.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
+version: "0.2.0"
 tags:
   - podman
   - containers
@@ -12,7 +12,7 @@ tags:
   - container-management
 category: container-runtime
 external_references:
-  - https://github.com/containers/podman-py
+  - https://github.com/containers/podman-py/tree/v5.8.0
   - https://podman-py.readthedocs.io/en/latest/
 ---
 
@@ -123,7 +123,7 @@ with PodmanClient() as client:
 ## Core Concepts
 
 - **PodmanClient** — Main entry point, implements context manager protocol. Access resource managers via properties: `containers`, `images`, `networks`, `volumes`, `pods`, `manifests`, `secrets`, `quadlets`.
-- **Manager pattern** — Each resource type has a Manager (e.g., `ContainersManager`) providing `list()`, `get()`, `exists()`, `create()`, and `remove()` operations.
+- **Manager pattern** — Each resource type has a Manager (e.g. `ContainersManager`) providing `list()`, `get()`, `exists()`, `create()`, and `remove()` operations.
 - **Resource objects** — Individual entities (Container, Image, Network, etc.) expose properties and methods for inspection and lifecycle control. All inherit from `PodmanResource` with common `id`, `short_id`, `reload()`.
 - **Connection URL schemes** — `unix://`, `http+unix://`, `ssh://`, `http+ssh://`, `tcp://` determine transport. Default falls back to local Unix socket at `$XDG_RUNTIME_DIR/podman/podman.sock`.
 - **Docker compatibility** — API mirrors Docker SDK for Python. `from_env()` classmethod reads `CONTAINER_HOST`/`DOCKER_HOST` environment variables for connection configuration.

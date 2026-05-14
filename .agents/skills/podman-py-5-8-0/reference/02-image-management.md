@@ -1,5 +1,18 @@
 # Image Management
 
+## Contents
+- Pulling Images
+- Listing Images
+- Getting and Checking Images
+- Building Images
+- Pushing Images
+- Saving and Loading Images
+- Tagging Images
+- Removing Images
+- Pruning Images
+- Image History
+- Image Properties
+
 ## Pulling Images
 
 ```python
@@ -107,6 +120,13 @@ Build parameters:
 - `output` (str): Build output destination
 - `outputformat` (str): Output image format
 - `pull` (bool): Pull base images during build
+
+Returns tuple of `(Image, Iterator[bytes])` — the built image and build logs.
+
+Raises:
+- `BuildError` — when there is an error during the build
+- `APIError` — when service returns an error
+- `TypeError` — when neither `path` nor `fileobj` is specified
 
 ## Pushing Images
 

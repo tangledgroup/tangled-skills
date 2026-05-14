@@ -1,18 +1,28 @@
 # Error Handling
 
+## Contents
+- Exception Hierarchy
+- APIError
+- BuildError
+- ContainerError
+- NotFound and ImageNotFound
+- InvalidArgument
+- Best Practices
+
 ## Exception Hierarchy
 
 ```
-PodmanError (base)
-├── BuildError        — Error during image build
-├── ContainerError    — Container exited with non-zero code
-├── ImageNotFound     — Image not found on service
-├── InvalidArgument   — Invalid argument to API call
-├── NotFound          — Resource not found
-└── StreamParseError  — Error parsing streamed response
+DockerException (docker-py)
+└── PodmanError (base)
+    ├── BuildError        — Error during image build
+    ├── ContainerError    — Container exited with non-zero code
+    ├── InvalidArgument   — Invalid argument to API call
+    └── StreamParseError  — Error parsing streamed response
 
 HTTPError (stdlib)
-└── APIError          — Wraps HTTP errors from Podman service
+└── APIError              — Wraps HTTP errors from Podman service
+    ├── NotFound          — Resource not found on service
+    └── ImageNotFound     — Image not found on service
 ```
 
 ## APIError
@@ -80,7 +90,7 @@ Properties:
 
 ## NotFound
 
-Raised when a resource does not exist:
+Raised when a resource does not exist. Inherits from `APIError`:
 
 ```python
 from podman.errors import NotFound
@@ -93,7 +103,7 @@ except NotFound:
 
 ## ImageNotFound
 
-Specialized for image operations:
+Specialized for image operations. Inherits from `APIError`:
 
 ```python
 from podman.errors import ImageNotFound

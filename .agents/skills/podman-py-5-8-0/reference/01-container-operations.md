@@ -1,5 +1,18 @@
 # Container Operations
 
+## Contents
+- Container Lifecycle
+- Executing Commands
+- Container Logs
+- Container Statistics
+- File Operations
+- Container Inspection and Properties
+- Commit Container to Image
+- Update Container Configuration
+- Wait for Container State
+- Rename and Resize
+- ContainersManager Operations
+
 ## Container Lifecycle
 
 ### Create a container
@@ -241,20 +254,70 @@ exit_code = container.wait(
 
 Conditions: `"configured"`, `"created"`, `"running"`, `"stopped"`, `"paused"`, `"exited"`, `"removing"`, `"stopping"`.
 
-## Rename Container
+## Rename and Resize
 
 ```python
 container.rename("new-name")
-```
-
-## Resize TTY
-
-```python
 container.resize(height=40, width=120)
 ```
 
-## Init Container
+### Init Container
 
 ```python
 container.init()  # Initialize container (run init process)
 ```
+
+## ContainersManager Operations
+
+```python
+# List containers
+containers = client.containers.list()
+containers = client.containers.list(all=True)
+containers = client.containers.list(filters={"status": "running"})
+
+# Get by name or ID
+container = client.containers.get("my-container")
+
+# Check existence
+exists = client.containers.exists("my-container")
+
+# Prune stopped containers
+result = client.containers.prune()
+```
+
+## Run a Container (RunMixin)
+
+```python
+# Run and wait for completion, return logs
+container = client.containers.run("alpine", ["echo", "hello"])
+
+# Run detached
+container = client.containers.run(
+    "alpine:latest",
+    ["sleep", "3600"],
+    detach=True,
+    name="long-running",
+)
+
+# Auto-remove after exit
+container = client.containers.run(
+    "alpine",
+    ["echo", "temporary"],
+    remove=True,
+)
+```
+
+Parameters beyond `create()`:
+- `stdout` (bool): Include stdout, default True
+- `stderr` (bool): Include stderr, default False
+- `remove` (bool): Delete container on client side after exit
+
+Pull parameters (when image not found locally):
+- `auth_config` (dict): Override credentials with `username` and `password`
+- `platform` (str): Platform format `os[/arch[/variant]]`
+- `policy` (str): Pull policy — `"missing"` (default), `"always"`, `"never"`, `"newer"`
+
+Raises:
+- `ContainerError` — when container exits with non-zero code
+- `ImageNotFound` — when image not found by Podman service
+- `APIError` — when Podman service reports an error

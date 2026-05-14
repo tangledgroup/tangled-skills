@@ -1,5 +1,10 @@
 # Manifests, Secrets, and Quadlets
 
+## Contents
+- Manifest Lists
+- Secrets
+- Quadlets
+
 ## Manifest Lists
 
 Manifest lists enable multi-architecture image support.
@@ -58,6 +63,13 @@ print(manifest.media_type)  # Media/MIME type
 print(manifest.version)    # Schema version
 ```
 
+### Listing and Getting Manifests
+
+```python
+manifests = client.manifests.list()
+manifest = client.manifests.get("my-manifest")
+```
+
 ## Secrets
 
 Secrets store sensitive data for container use.
@@ -112,7 +124,7 @@ print(secret.short_id) # Truncated ID
 
 ## Quadlets
 
-Quadlets are systemd unit files that describe Podman resources. The QuadletsManager provides programmatic access to quadlet lifecycle operations.
+Quadlets are systemd unit files that describe Podman resources. The `QuadletsManager` provides programmatic access to quadlet lifecycle operations. Available via `client.quadlets`.
 
 ### Listing Quadlets
 
@@ -177,6 +189,11 @@ Parameters:
 
 Returns dict with `InstalledQuadlets` (path mappings) and `QuadletErrors` (error messages).
 
+Raises:
+- `APIError` — when service reports an error
+- `FileNotFoundError` — when provided file path does not exist
+- `TypeError` / `ValueError` — for invalid file types or empty inputs
+
 ### Deleting Quadlets
 
 ```python
@@ -196,6 +213,8 @@ Parameters:
 - `force` (bool): Stop running quadlet first, default False
 - `ignore` (bool): Don't error if not found, default False
 - `reload_systemd` (bool): Reload systemd after removal, default True
+
+Returns list of removed quadlet names.
 
 ### Quadlet Properties
 
