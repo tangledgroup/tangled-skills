@@ -76,7 +76,7 @@ case "$FORMAT" in
     md)
         # Markdown output via scrapling's --ai-targeted flag
         # scrapling requires a .md file path (rejects '-' for stdout)
-        TEMP_FILE=$(mktemp /tmp/ddg-search-XXXXXX.md)
+        TEMP_FILE=$(mktemp /tmp/ddg-search-${$}-XXXXXX.md)
         uvx 'scrapling[shell]' extract get \
             "$SEARCH_URL" \
             "$TEMP_FILE" \
@@ -89,7 +89,7 @@ case "$FORMAT" in
     html)
         # Raw HTML output — save to temp file, then cat to stdout
         # NOTE: --ai-targeted is intentionally omitted to preserve raw DOM structure
-        TEMP_FILE=$(mktemp /tmp/ddg-search-XXXXXX.html)
+        TEMP_FILE=$(mktemp /tmp/ddg-search-${$}-XXXXXX.html)
         uvx 'scrapling[shell]' extract get \
             "$SEARCH_URL" \
             "$TEMP_FILE" \
@@ -100,7 +100,7 @@ case "$FORMAT" in
 
     json|yaml)
         # Parse HTML via format.py — save HTML to temp file first
-        TEMP_FILE=$(mktemp /tmp/ddg-search-XXXXXX.html)
+        TEMP_FILE=$(mktemp /tmp/ddg-search-${$}-XXXXXX.html)
         uvx 'scrapling[shell]' extract get \
             "$SEARCH_URL" \
             "$TEMP_FILE" \

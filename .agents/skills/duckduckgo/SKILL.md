@@ -10,7 +10,7 @@ tags:
   - web-search
   - scrapling
   - scraping
-category: tooling
+category: web
 external_references:
   - https://html.duckduckgo.com/html/
 ---
@@ -105,7 +105,7 @@ All four formats use the same source — DuckDuckGo's HTML endpoint:
 
 ### Temp File Handling
 
-When json or yaml format is requested, `search.sh` creates a temporary HTML file in `/tmp/`. The file is automatically cleaned up on exit via a bash `trap` handler (covers normal exit, SIGINT, SIGTERM).
+All formats create temporary files in `/tmp/` using `mktemp` with PID-based prefixes (`ddg-search-${$}-XXXXXX`) to ensure uniqueness under parallel execution. Files are automatically cleaned up on exit via a bash `trap` handler (covers normal exit, SIGINT, SIGTERM).
 
 ### Query Encoding
 
