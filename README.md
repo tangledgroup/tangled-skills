@@ -263,8 +263,8 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 234 | usearch-2-25-1 | usearch | 0.1.0 | vector-search, ann, hnsw, similarity-search, clustering | High-performance single-file similarity search engine for vectors using HNSW with user-defined metrics, ... |
 | 235 | uv-0-11-6 | uv | 0.1.0 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | Extremely fast Python package and project manager written in Rust, replacing pip, pip-tools, pipx, poetry, pyenv, ... |
 | 236 | uv-0-11-8 | uv | 0.1.0 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | Extremely fast Python package and project manager written in Rust, replacing pip, pip-tools, pipx, poetry, pyenv, ... |
-| 237 | webfetch | webfetch | 0.2.0 | webfetch, web-scraping, url-fetch, markdown, scrapling | Fetches any URL and converts the full page to clean AI-targeted markdown using scrapling. Use when scraping ... |
-| 238 | websearch | websearch | 0.2.0 | websearch, web-search, duckduckgo, yaml-output, scrapling | Searches DuckDuckGo via its HTML endpoint and outputs results as raw YAML. Uses a deterministic bash script that ... |
+| 237 | webfetch | webfetch | 0.2.1 | webfetch, web-scraping, url-fetch, markdown, scrapling | Fetches any URL and converts the full page to clean AI-targeted markdown using scrapling. Use when scraping ... |
+| 238 | websearch | websearch | 0.2.1 | websearch, web-search, duckduckgo, yaml-output, scrapling | Searches DuckDuckGo via its HTML endpoint and outputs results as raw YAML. Uses a deterministic bash script, ... |
 | 239 | yjs-13-6-30 | yjs | 0.1.0 | yjs, crdt, collaborative-editing, real-time, shared-types | CRDT framework for conflict-free collaborative editing with shared types (Y.Map, Y.Array, Y.Text). Provides ... |
 | 240 | yq-4-53-2 | yq | 0.1.0 | yaml, json, xml, ini, csv | >- |
 | 241 | zeromq-wiki-3-2-0 | zeromq-wiki | 0.1.0 | zeromq, messaging, distributed-systems, networking, sockets | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and ... |

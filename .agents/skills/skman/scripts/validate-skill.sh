@@ -355,19 +355,40 @@ else
   pass "No reference/ directory (simple skill)"
 fi
 
-# Check for scripts/ and assets/ directories
+# Check for scripts/ and assets/ directories (opt-in, expected when requested)
 if [[ -d "${SKILL_DIR}/scripts" ]]; then
   has_scripts=1
-  warn "scripts/ directory exists (ensure this was intentional)"
+  pass "scripts/ directory exists (opt-in)"
 else
   has_scripts=0
   pass "No scripts/ directory"
 fi
 
 if [[ -d "${SKILL_DIR}/assets" ]]; then
-  warn "assets/ directory exists (ensure this was intentional)"
+  pass "assets/ directory exists (opt-in)"
 else
   pass "No assets/ directory"
+fi
+
+# Check for unexpected files in skill root (e.g. PLAN.md, TODO.md, etc.)
+unexpected_files=""
+while IFS= read -r f; do
+  [[ -z "$f" ]] && continue
+  fname=$(basename "$f")
+  # Skip known-good entries
+  [[ "$fname" == "SKILL.md" ]] && continue
+  [[ "$fname" == "reference" ]] && continue
+  [[ "$fname" == "scripts" ]] && continue
+  [[ "$fname" == "assets" ]] && continue
+  # Hidden files handled by disallowed check above
+  [[ "$fname" == .* ]] && continue
+  unexpected_files="${unexpected_files} ${fname}"
+done < <(find "${SKILL_DIR}" -maxdepth 1 -not -type d 2>/dev/null)
+
+if [[ -n "$unexpected_files" ]]; then
+  warn "Unexpected files in skill root:${unexpected_files}"
+else
+  pass "No unexpected files in skill root"
 fi
 
 # Check for disallowed files/directories

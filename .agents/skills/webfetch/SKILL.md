@@ -3,7 +3,7 @@ name: webfetch
 description: Fetches any URL and converts the full page to clean AI-targeted markdown using scrapling. Use when scraping arbitrary web pages, documentation, articles, or HTML content into a format suitable for AI context without requiring an API key.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.2.0"
+version: "0.2.1"
 tags:
   - webfetch
   - web-scraping

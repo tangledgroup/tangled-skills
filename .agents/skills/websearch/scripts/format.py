@@ -7,8 +7,7 @@ Usage:
 Reads HTML from a file (produced by search.sh via scrapling) and extracts
 search result fields using only Python builtins (html.parser).
 
-Outputs YAML to stdout. Output is never summarized or transformed —
-exact extracted data is written as YAML.
+Outputs raw YAML to stdout.
 
 Output fields per result (only present if available in the HTML):
     title   — Text of the result title link (.result__a)
@@ -108,7 +107,6 @@ def format_yaml(results):
     """Format results as simple YAML using only builtins.
 
     Produces a clean list of mappings, one result per block.
-    Output is exact data — no summarization or transformation.
     """
     lines = []
     for i, r in enumerate(results):

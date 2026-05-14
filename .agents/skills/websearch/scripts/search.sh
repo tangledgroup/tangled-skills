@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
-# search.sh — DuckDuckGo search via HTML API, outputs raw YAML only
+# search.sh — DuckDuckGo search via HTML API, outputs raw YAML
 #
 # Usage:
 #   search.sh <query> [--limit N]
-#
-# Always outputs YAML to stdout. Output is never summarized or transformed.
-# The agent runs this script and shows its exact output to the user.
 #
 # Dependencies: bash, uvx (scrapling[shell]), python3
 
@@ -76,7 +73,7 @@ uvx 'scrapling[shell]' extract get \
     --impersonate "$IMPERSONATE" \
     --ai-targeted
 
-# Parse HTML and output YAML — exact data, no summarization
+# Parse HTML and output YAML
 # Determine the path to format.py relative to this script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [[ -n "$LIMIT" ]]; then

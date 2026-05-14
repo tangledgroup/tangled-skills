@@ -1,9 +1,9 @@
 ---
 name: websearch
-description: Searches DuckDuckGo via its HTML endpoint and outputs results as raw YAML. Uses a deterministic bash script that always hits `html.duckduckgo.com/html`, extracts search results, and prints exact YAML output.
+description: Searches DuckDuckGo via its HTML endpoint and outputs results as raw YAML. Uses a deterministic bash script, extracts search results, and prints exact YAML output.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.2.0"
+version: "0.2.1"
 tags:
   - websearch
   - web-search
@@ -20,7 +20,7 @@ external_references:
 
 ## Overview
 
-Searches DuckDuckGo via its HTML endpoint (`html.duckduckgo.com/html/`) and outputs results as raw YAML. Final output of skill is complete YAML shown to the user **exactly as produced — never summarized, never transformed**.
+Searches DuckDuckGo via its HTML endpoint `https://html.duckduckgo.com/html/` and outputs results as raw YAML. Final output of skill is complete YAML shown to the user **exactly as produced — never summarized, never transformed**.
 
 A deterministic bash script handles all search execution — the agent always runs `bash scripts/search.sh <query>` and never constructs commands on the fly. This ensures consistent behavior and prevents command-generation errors.
 
@@ -29,9 +29,8 @@ No API key or external service required. Uses `uvx 'scrapling[shell]'` for ephem
 ## When to Use
 
 - Performing web searches from within an agent workflow
-- Gathering titles, URLs, and snippets as structured YAML
 - Research tasks that need exact web search results shown to the user
-- Web search and show results as original YAML **exactly as produced — never summarized, never transformed**
+- Gathering search results as structured YAML
 
 ### API Limitations
 
@@ -68,22 +67,15 @@ The script output is shown to the user exactly as produced — raw YAML:
   domain: 'linkedin.com'
   snippet: |
     Software engineering services and consulting...
+
+...
 ```
 
 ## Core Concepts
 
-### Deterministic Script Execution
-
-The agent always runs `bash scripts/search.sh <query>` — it never constructs `uvx` or `scrapling` commands on the fly. This ensures:
-
-- **Consistent endpoint**: Always uses DuckDuckGo's HTML endpoint
-- **No command errors**: No risk of malformed `uvx` invocations
-- **Exact output**: Script output is shown to the user as-is, never summarized or transformed
-- **Clean output**: No scrapling INFO logs or delimiter noise
-
 ### YAML Output Format
 
-The script output is shown to the user exactly as produced — no changes, no summarization. Each result in the YAML list contains these fields (only present if available in the HTML):
+Each result in the YAML output contains these fields (only present if available in the HTML):
 
 - title
 - url

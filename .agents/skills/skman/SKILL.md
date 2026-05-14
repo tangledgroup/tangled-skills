@@ -3,7 +3,7 @@ name: skman
 description: Skill Package Manager, skman, it is meta skill for skill authoring and skill package manager for AI agents.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.3.0"
+version: "0.3.1"
 tags:
   - meta
   - meta skill
