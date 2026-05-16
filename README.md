@@ -157,12 +157,12 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 128 | prometheus-3-11-3 | prometheus | 0.1.0 | prometheus, monitoring, promql, metrics, alerting | Complete toolkit for Prometheus 3.11.3 covering configuration, PromQL querying, service discovery, rules, alerting, ... |
 | 129 | pulp-3-3-0 | pulp | 0.1.0 | optimization, linear-programming, mixed-integer-programming, lp, mip | Complete toolkit for PuLP 3.3.0, a Python linear and mixed-integer programming modeler generating MPS/LP/JSON files ... |
 | 130 | pycrdt-0-12-50 | pycrdt | 0.1.0 | pycrdt, crdt, yjs, yrs, collaborative-editing | Python bindings for Yrs, the Rust port of the Yjs CRDT framework. Provides shared data types (Text, Array, Map, XML) ... |
-| 131 | pyomo-6-10-0 | pyomo | 0.1.0 | pyomo, optimization, modeling, lp, nlp | >- |
+| 131 | pyomo-6-10-0 | pyomo | 0.1.0 | pyomo, optimization, mathematical-programming, modeling, linear-programming | Python-based open-source optimization modeling language supporting LP, NLP, MINLP, MILP, QP, GDP, DAE, MPEC, and ... |
 | 132 | python-lambda-calculus-3-1-0 | python-lambda-calculus | 0.1.0 | lambda-calculus, lambda-calculus-3-1-0, functional-programming, symbolic-computation, church-encoding | Python library implementing Lambda calculus operations including term construction (Variable, Abstraction, ... |
 | 133 | python-louvain-0-16 | python-louvain | 0.1.0 | community-detection, louvain, graph-algorithms, networkx, modularity | Python implementation of the Louvain algorithm for community detection in graphs. Produces modularity-optimized ... |
 | 134 | python-prometheus-0-25-0 | python-prometheus | 0.1.0 | prometheus, python, metrics, instrumentation, monitoring | Official Prometheus Python client library v0.25.0 for instrumenting Python applications with metrics. Provides ... |
 | 135 | python-scrypt-0-9-4 | python-scrypt | 0.1.0 | scrypt, password-hashing, key-derivation, cryptography, pbkdf | Python toolkit for scrypt-based key derivation and password hashing. Use when implementing secure password storage, ... |
-| 136 | pytorch-2-12-0 | pytorch | 0.1.0 | pytorch, deep-learning, tensors, autograd, torch-compile | >- |
+| 136 | pytorch-2-12-0 | pytorch | 0.2.0 | pytorch, deep-learning, tensors, autograd, torch-compile | >- |
 | 137 | pywebview-6-2-1 | pywebview | 0.1.0 | python, gui, webview, desktop, cross-platform | Cross-platform wrapper around native webview components that lets Python applications display HTML content in a ... |
 | 138 | pyzmq-27-1-0 | pyzmq | 0.1.0 | zeromq, zmq, messaging, networking, sockets | Complete toolkit for Python bindings to ZeroMQ (pyzmq 27.x) covering socket types, messaging patterns, async/await ... |
 | 139 | quickjs-2025-09-13 | quickjs | 0.1.0 | javascript, engine, es2023, c-api, embedding | Small and fast JavaScript engine supporting ES2023 with C API for embedding, qjs REPL interpreter, and qjsc bytecode ... |
