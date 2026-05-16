@@ -70,6 +70,28 @@ model = torch.nn.Sequential(
 - `torch.nn.functional.scaled_dot_product_attention(query, key, value, attn_mask=None, dropout_p=0.0)`
 - FlexAttention for custom attention patterns (causal, sliding window, ALiBi)
 
+**Embedding**:
+- `torch.nn.Embedding(num_embeddings, embedding_dim, padding_idx=None)`
+- `torch.nn.EmbeddingBag(num_embeddings, embedding_dim, mode='mean')` — for variable-length sequences
+
+**Dropout and Regularization**:
+- `torch.nn.Dropout(p=0.5)` — standard dropout
+- `torch.nn.Dropout2d(p=0.5)` — drops entire feature maps
+- `torch.nn.AlphaDropout(p=0.5)` — preserves mean/variance (compatible with BatchNorm)
+
+**ModuleList and ModuleDict**:
+Use these instead of Python lists/dicts so submodules are properly registered:
+
+```python
+self.layers = torch.nn.ModuleList([
+    torch.nn.Linear(128, 64),
+    torch.nn.ReLU(),
+    torch.nn.Linear(64, 10)
+])
+for layer in self.layers:
+    x = layer(x)
+```
+
 ## Loss Functions
 
 | Loss | Use Case |
@@ -157,3 +179,24 @@ init.normal_(weight, mean=0.0, std=0.01)
 ```
 
 Default initializations in PyTorch layers are generally appropriate; customize only when defaults cause convergence issues.
+
+## State Dict and Serialization
+
+```python
+# Save/load model weights
+torch.save(model.state_dict(), "model.pth")
+model.load_state_dict(torch.load("model.pth", weights_only=True))
+
+# Partial loading (transfer learning)
+pretrained = torch.load("pretrained.pth", weights_only=True)
+model.load_state_dict(pretrained, strict=False)  # ignore missing/extra keys
+
+# Save optimizer state too (for resuming training)
+torch.save({
+    "epoch": epoch,
+    "model_state_dict": model.state_dict(),
+    "optimizer_state_dict": optimizer.state_dict(),
+}, "checkpoint.pth")
+```
+
+**Parameters vs Buffers**: `nn.Parameter` registers trainable parameters (appear in `model.parameters()`). Use `model.register_buffer()` for non-trainable persistent state like BatchNorm's `running_mean` — buffers appear in `state_dict` but not in `model.parameters()`.

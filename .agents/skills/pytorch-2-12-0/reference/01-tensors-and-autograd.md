@@ -164,3 +164,39 @@ class MyLinear(torch.autograd.Function):
 Use `torch.autograd.Function` when you need a custom backward pass not covered by existing operations. Register with `@staticmethod` for both `forward` and `backward`. Save intermediate values with `ctx.save_for_backward()` for use in the backward pass.
 
 For simpler cases, compose existing PyTorch operations instead — they already have optimized kernels and correct gradients.
+
+## Gradient Accumulation and Clipping
+
+**Gradient accumulation** simulates larger batch sizes by accumulating gradients across multiple steps:
+
+```python
+accumulation_steps = 4
+for i, (batch, labels) in enumerate(dataloader):
+    loss = criterion(model(batch), labels) / accumulation_steps  # scale loss
+    loss.backward()  # accumulates into .grad
+
+    if (i + 1) % accumulation_steps == 0:
+        optimizer.step()
+        optimizer.zero_grad(set_to_none=True)  # free grad memory
+```
+
+**Gradient clipping** prevents gradient explosion:
+
+```python
+# Clip by global norm (recommended)
+torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+
+# Clip by value
+torch.nn.utils.clip_grad_value_(model.parameters(), clip_value=1.0)
+```
+
+Place gradient clipping between `loss.backward()` and `optimizer.step()`.
+
+**Per-parameter optimizer config** for different learning rates per component:
+
+```python
+optimizer = torch.optim.AdamW([
+    {"params": model.backbone.parameters(), "lr": 1e-4},
+    {"params": model.head.parameters(), "lr": 1e-3},
+], lr=1e-3, weight_decay=0.01)
+```

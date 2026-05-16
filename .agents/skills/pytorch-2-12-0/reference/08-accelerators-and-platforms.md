@@ -150,3 +150,25 @@ with profiler:
 ```
 
 Profiler integration is part of the accelerator framework — custom backends can register their own activity types for unified tracing.
+
+## Reproducibility
+
+Enable deterministic algorithms for reproducible results across runs:
+
+```python
+import random
+import numpy as np
+
+torch.manual_seed(42)
+torch.cuda.manual_seed_all(42)
+numpy.random.seed(42)
+random.seed(42)
+
+# Deterministic algorithms (may be slower or unavailable for some ops)
+torch.use_deterministic_algorithms(True)
+
+# Concurrency control
+torch.set_num_threads(1)  # single-threaded CPU ops
+```
+
+Some operations (certain CUDA reductions, dropout) are inherently non-deterministic. `torch.use_deterministic_algorithms(True)` raises an error if a non-deterministic operation is encountered, helping identify the source.

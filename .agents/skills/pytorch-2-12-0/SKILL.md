@@ -9,7 +9,7 @@ description: >-
   distributed training with DDP/FSDP/tensor parallelism.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
+version: "0.2.0"
 tags:
   - pytorch
   - deep-learning
@@ -161,6 +161,34 @@ with autocast(device_type="cuda", dtype=torch.bfloat16):
 scaler.scale(loss).backward()
 scaler.step(optimizer)
 scaler.update()
+```
+
+### Checkpoint Save and Load
+
+```python
+# Save checkpoint
+checkpoint = {
+    "epoch": epoch,
+    "model_state_dict": model.state_dict(),
+    "optimizer_state_dict": optimizer.state_dict(),
+    "loss": loss.item(),
+}
+torch.save(checkpoint, "checkpoint.pth")
+
+# Resume training
+ckpt = torch.load("checkpoint.pth", weights_only=True)
+model.load_state_dict(ckpt["model_state_dict"])
+optimizer.load_state_dict(ckpt["optimizer_state_dict"])
+```
+
+### Distributed Training (DDP) — Minimal Example
+
+```python
+import torch.distributed as dist
+from torch.nn.parallel import DistributedDataParallel as DDP
+dist.init_process_group("nccl")
+model = DDP(MyModel().cuda(dist.get_rank()), device_ids=[dist.get_rank()])
+# Training loop is identical to single-GPU
 ```
 
 ## Advanced Topics

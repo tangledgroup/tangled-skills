@@ -66,6 +66,37 @@ Key parameters:
 - `pin_memory` — allocate in pinned memory for faster GPU transfer
 - `collate_fn` — custom batching logic
 - `drop_last` — discard incomplete final batch
+- `persistent_workers` — keep workers alive across epochs (use with `num_workers > 0`)
+
+### Custom collate_fn for Variable-Length Data
+
+```python
+def collate_fn(batch):
+    """Batch sequences of variable length with padding."""
+    texts, labels = zip(*batch)
+    max_len = max(len(t) for t in texts)
+    padded = [torch.nn.functional.pad(t, (0, max_len - len(t))) for t in texts]
+    return torch.stack(padded), torch.tensor(labels)
+
+loader = DataLoader(dataset, batch_size=32, collate_fn=collate_fn)
+```
+
+## Dataset Utilities
+
+Combine, split, and subset datasets:
+
+```python
+from torch.utils.data import ConcatDataset, Subset, random_split
+
+# Combine datasets
+combined = ConcatDataset([train_set, val_set])
+
+# Train/test split (preserves order)
+train, test = random_split(dataset, [0.8, 0.2], generator=torch.Generator().manual_seed(42))
+
+# Subset (e.g., for debugging)
+subset = Subset(full_dataset, list(range(100)))
+```
 
 ## Custom Datasets
 

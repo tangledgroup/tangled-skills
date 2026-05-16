@@ -180,3 +180,22 @@ Common issues and solutions:
 | Slow first iteration | Compilation happens on first call — warm up before benchmarking |
 
 Set `TORCH_LOGS="+dynamo,inductor,recompiles"` for detailed compiler logging.
+
+## Gradient Checkpointing with torch.compile
+
+Combine activation checkpointing with torch.compile for memory-efficient training of large models:
+
+```python
+from torch.utils.checkpoint import checkpoint
+
+class CheckpointedBlock(torch.nn.Module):
+    def __init__(self, block):
+        super().__init__()
+        self.block = block
+
+    def forward(self, x):
+        return checkpoint(self.block, x)
+
+# Works with torch.compile — Dynamo captures the checkpoint boundary
+model = torch.compile(model_with_checkpointing)
+```
