@@ -1,9 +1,9 @@
 ---
 name: pyomo-6-10-0
-description: Python-based open-source optimization modeling language supporting LP, NLP, MINLP, MILP, QP, GDP, DAE, MPEC, and network flow models with commercial (Gurobi, CPLEX) and open-source (CBC, HiGHS, IPOPT) solver interfaces. Use when formulating mathematical optimization models in Python, connecting code to solvers, building abstract or concrete models, or needing advanced features like disjunctive programming, dynamic optimization, robust optimization, or sensitivity analysis.
+description: Python-based open-source optimization modeling language supporting LP, QP, NLP, MILP, MIQP, MINLP, stochastic programming, GDP, DAE, bilevel programming, MPEC, and network flow models with commercial (Gurobi, CPLEX) and open-source (CBC, HiGHS, IPOPT) solver interfaces. Use when formulating mathematical optimization models in Python, connecting code to solvers, building abstract or concrete models, or needing advanced features like disjunctive programming, stochastic optimization, dynamic optimization, bilevel optimization, robust optimization, or sensitivity analysis.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
+version: "0.1.1"
 tags:
   - pyomo
   - optimization
@@ -25,7 +25,7 @@ external_references:
 
 Pyomo is a Python-based, open-source optimization modeling language supporting a diverse set of optimization capabilities for formulating, solving, and analyzing optimization models. It defines general symbolic problems, creates specific problem instances with data, and solves them using commercial (Gurobi, CPLEX, Xpress) and open-source (CBC, HiGHS, IPOPT, GLPK) solvers.
 
-Pyomo supports: Linear Programs (LP), Nonlinear Programs (NLP), Mixed-Integer LP/MINLP, Quadratic Programs (QP), Generalized Disjunctive Programming (GDP), Differential-Algebraic Equations (DAE), Mathematical Programs with Equilibrium Constraints (MPEC), network flow models, and constraint programming via z3.
+Pyomo supports a wide range of problem types: Linear Programs (LP), Quadratic Programs (QP), Nonlinear Programs (NLP), Mixed-Integer LP (MILP), Mixed-Integer Quadratic Programming (MIQP), Mixed-Integer Nonlinear Programming (MINLP), Stochastic Programming, Generalized Disjunctive Programming (GDP), Differential-Algebraic Equations (DAE), Bilevel Programming, Mathematical Programs with Equilibrium Constraints (MPEC), network flow models, and constraint programming via z3.
 
 ## When to Use
 
@@ -33,7 +33,9 @@ Pyomo supports: Linear Programs (LP), Nonlinear Programs (NLP), Mixed-Integer LP
 - Connecting Python code to optimization solvers (persistent or file-based)
 - Building abstract models with external data files or concrete models with inline data
 - Modeling discrete decisions with logical constraints (GDP)
+- Stochastic programming with scenario trees and parallel solvers (PySP)
 - Dynamic optimization with differential equations (DAE)
+- Bilevel optimization with nested optimization problems
 - Robust optimization under uncertainty (PyROS)
 - Global optimization of nonconvex MINLP (MindtPy, McPP, multistart)
 - Sensitivity analysis, parameter estimation, or design of experiments
