@@ -5,7 +5,7 @@
 - Common Layers
 - Loss Functions
 - Activation Functions
-- Optimizers
+- Optimizers (see [Optimizers and Scheduling](reference/09-optimizers-and-scheduling.md))
 - Weight Initialization
 
 ## nn.Module Patterns
@@ -127,37 +127,16 @@ Common activations: `ReLU`, `GELU`, `SiLU` (Swish), `LeakyReLU`, `Tanh`, `Sigmoi
 
 ## Optimizers
 
-All optimizers take model parameters and hyperparameters:
+`torch.optim` provides 15 optimization algorithms (SGD, Adam, AdamW, RMSprop, Adagrad, etc.) with foreach/fused implementations, learning rate schedulers, SWA/EMA averaging, and hooks. See dedicated reference for full coverage.
+
+Quick usage:
 
 ```python
 import torch.optim as optim
-
-# SGD with momentum
-optimizer = optim.SGD(model.parameters(), lr=1e-2, momentum=0.9, weight_decay=1e-4)
-
-# AdamW (decoupled weight decay)
 optimizer = optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-2)
-
-# RMSprop
-optimizer = optim.RMSprop(model.parameters(), lr=1e-3, alpha=0.9)
-
-# Adagrad with fused kernel (new in 2.12)
-optimizer = optim.Adagrad(model.parameters(), lr=1e-2, fused=True)
 ```
 
-Fused optimizers (`fused=True`) perform the entire optimizer step in a single CUDA kernel, reducing kernel launch overhead and memory traffic. Supported: SGD, Adam, AdamW, Adagrad (new in 2.12).
-
-Learning rate scheduling:
-
-```python
-scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
-# or step-based
-scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.1)
-
-for epoch in range(100):
-    train_one_epoch()
-    scheduler.step()
-```
+→ Full optimizer guide: [Optimizers and Scheduling](reference/09-optimizers-and-scheduling.md)
 
 ## Weight Initialization
 

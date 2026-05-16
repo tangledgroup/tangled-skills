@@ -3,13 +3,15 @@ name: pytorch-2-12-0
 description: >-
   Complete toolkit for PyTorch 2.12 providing n-dimensional tensors, automatic
   differentiation, neural network modules, data loading, torch.compile optimization,
-  and torch.export serialization. Use when building deep learning models, training
-  neural networks on CPU/CUDA/XPU/MPS/ROCm, compiling models for performance with
-  torch.compile, exporting models for deployment with torch.export, or implementing
-  distributed training with DDP/FSDP/tensor parallelism.
+  torch.export serialization, and comprehensive torch.optim coverage (15 algorithms,
+  LR schedulers, SWA/EMA). Use when building deep learning models, training neural
+  networks on CPU/CUDA/XPU/MPS/ROCm, selecting optimization algorithms (SGD, AdamW,
+  Adafactor, Muon, etc.), configuring learning rate schedules, compiling models with
+  torch.compile, exporting models with torch.export, or implementing distributed
+  training with DDP/FSDP/tensor parallelism.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.2.0"
+version: "0.3.0"
 tags:
   - pytorch
   - deep-learning
@@ -22,6 +24,7 @@ category: ml-ai
 external_references:
   - https://pytorch.org/
   - https://github.com/pytorch/pytorch/tree/v2.12.0
+  - https://docs.pytorch.org/docs/2.12/optim.html
 ---
 
 # PyTorch 2.12.0
@@ -208,3 +211,5 @@ model = DDP(MyModel().cuda(dist.get_rank()), device_ids=[dist.get_rank()])
 **Quantization & AMP**: Automatic mixed precision, PTQ, QAT, Microscaling (MX) formats, fused optimizers → [Quantization and AMP](reference/07-quantization-and-amp.md)
 
 **Accelerators & Platforms**: CUDA, ROCm, Intel XPU, Apple MPS, device management, profiler integration → [Accelerators and Platforms](reference/08-accelerators-and-platforms.md)
+
+**Optimizers & Scheduling**: All 15 torch.optim algorithms (SGD, Adam, AdamW, RMSprop, Adafactor, Muon, etc.), foreach/fused implementations, LR schedulers, SWA/EMA, optimizer hooks → [Optimizers and Scheduling](reference/09-optimizers-and-scheduling.md)
