@@ -129,12 +129,16 @@ Two rules govern `**Current Phase:**` and `**Current Task:**`:
 
 <!-- default NONE if doesn't have dependencies, or relative paths to other PLAN.md files -->
 **Depends On:** ...
+
 <!-- ISO 8601 / UTC (YYYY-MM-DDTHH:MM:SSZ) -->
 **Created:** ...
+
 <!-- ISO 8601 / UTC (YYYY-MM-DDTHH:MM:SSZ) -->
 **Updated:** ...
+
 <!-- [emoji-of-phase] Phase X Phase Title -->
 **Current Phase:** ...
+
 <!-- [emoji-of-phase] Phase X - [emoji-of-task] Task X.Y -->
 **Current Task:** ...
 
