@@ -1,7 +1,7 @@
 ---
 name: htmx-2-0-10
-version: 1.0.0
-author: tangled-skills
+version: "1.0.0"
+author: Tangled <noreply@tangledgroup.com>
 license: MIT
 category: frontend-library
 tags:
