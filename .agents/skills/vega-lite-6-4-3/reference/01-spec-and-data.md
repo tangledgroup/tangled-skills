@@ -1,239 +1,253 @@
-# Spec and Data
+# Spec Structure & Data Sources
 
-## Contents
+## Specification Types
 
-- Specification Structure
-- Top-Level Properties
-- Single View Specification
-- Data Sources
-- Format Options
-- Data Generators
-- Named Datasets
+Vega-Lite specifications are JSON objects. There are three tiers:
 
-## Specification Structure
+### Top-Level Properties
 
-Vega-Lite specifications are JSON objects. The compiler compiles them into
-lower-level Vega specifications for rendering. Every spec should include
-`$schema` pointing to the JSON schema for editor validation and autocomplete.
+Present on all spec types (single view, layered, multi-view):
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `$schema` | string | Schema URL, e.g., `"https://vega.github.io/schema/vega-lite/v6.json"` |
+| `background` | string | Canvas background color (CSS color) |
+| `padding` | number \| object | View padding; `{top, right, bottom, left}` or single number |
+| `autosize` | string \| object | Auto-sizing: `"pad"`, `"fit"`, `"none"`, `"fit-x"`, `"fit-y"` |
+| `config` | object | Global configuration overrides |
+| `usermeta` | object | Arbitrary metadata passed through to Vega |
+
+### Common Properties
+
+Present on all view specifications (single, layered, multi-view):
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `name` | string | Unique view name (for composition referencing) |
+| `description` | string | Human-readable description |
+| `title` | string \| object | Chart title with formatting options |
+| `data` | object \| array | Data source definition(s) |
+| `transform` | array | Data transformation operations |
+| `params` | array | Named parameters for interactivity |
+
+### Single-View Specification
+
+The simplest spec — one mark type, one encoding:
 
 ```json
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "data": { ... },
+  "description": "A simple bar chart",
+  "data": {"url": "data/cars.json"},
   "mark": "bar",
-  "encoding": { ... }
+  "encoding": {
+    "x": {"field": "Origin", "type": "nominal"},
+    "y": {"aggregate": "count", "type": "quantitative"}
+  }
 }
 ```
 
-### Spec Types
+Additional single-view properties:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `mark` | string \| object | Mark type or mark definition |
+| `encoding` | object | Data-to-visual-channel mappings |
+| `width` / `height` | number \| string \| object | View dimensions |
+| `view` | object | View background styling |
+| `projection` | object | Geographic projection settings |
+
+### Layered Specification
+
+Overlays multiple mark types on the same view:
+
+```json
+{
+  "data": {"url": "data/seattle-temps.csv"},
+  "layer": [
+    {
+      "mark": "line",
+      "encoding": {
+        "x": {"field": "date", "type": "temporal"},
+        "y": {"field": "temperature", "type": "quantitative"}
+      }
+    },
+    {
+      "mark": "point",
+      "encoding": {
+        "x": {"field": "date", "type": "temporal"},
+        "y": {"field": "temperature", "type": "quantitative"},
+        "color": {"value": "red"}
+      }
+    }
+  ]
+}
+```
+
+### Multi-View Specifications
 
 | Type | Description |
 |------|-------------|
-| Single View | One mark type with encoding |
-| Layer (`layer`) | Multiple marks sharing data/view |
-| Facet (`facet`/`row`/`column`) | Trellis/small multiples |
-| Concat (`hconcat`/`vconcat`/`concat`) | Side-by-side or stacked views |
-| Repeat (`repeat`) | Iterate encoding across fields |
+| `facet` | Split into grid of small multiples (row/column) |
+| `hconcat` | Horizontal concatenation |
+| `vconcat` | Vertical concatenation |
+| `concat` | General 2D grid concatenation |
+| `repeat` | Repeat spec across fields |
 
-## Top-Level Properties
+Composition specs add:
 
-Properties available on all top-level specifications:
+- **Layout**: `align`, `bounds`, `center`, `spacing`
+- **Resolve**: `resolve.scale`, `resolve.axis`, `resolve.legend` for independent scales/guides
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `$schema` | String | JSON schema URL (use `v6.json` for v6) |
-| `background` | Color | Canvas background color. Default: `"white"` |
-| `padding` | Number \| Object | Padding from canvas edge to data rect. Default: `5`. Object form: `{"left": 5, "top": 5, "right": 5, "bottom": 5}` |
-| `autosize` | String \| Object | How size is determined. `"pad"` (default), `"fit"`, or `"none"`. Object values can specify `type`, `resize`, `contains` |
-| `config` | Config | Top-level configuration object |
-| `usermeta` | Object | Custom metadata passed to Vega, ignored by Vega-Lite |
+## Title Configuration
 
-Properties available on all specifications (including nested):
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `name` | String | Name for later reference |
-| `description` | String | Comment/description |
-| `title` | TitleParams | Plot title |
-| `data` | Data | **Required.** Data source. Set to `null` to ignore parent data |
-| `transform` | Transform[] | Array of data transformations |
-| `params` | Parameter[] | Parameters for variables and selections |
-
-Layout properties (facet, concat, repeat):
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `align` | String \| Object | Grid alignment: `"all"` (default), `"each"`, `"none"`. Object: `{"row": ..., "column": ...}` |
-| `bounds` | String | Bounds method: `"full"` (default) or `"flush"` |
-| `center` | Boolean \| Object | Center subviews. Default: `false` |
-| `spacing` | Number \| Object | Spacing between sub-views. Default from config (`20`) |
-
-## Single View Specification
-
-A single view spec describes one mark type and its encoding:
+Title can be a string or object with formatting properties:
 
 ```json
 {
-  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "data": { ... },
-  "transform": [ ... ],
-  "mark": "bar",
-  "encoding": { ... },
-  "width": 400,
-  "height": 300,
-  "view": { ... },
-  "projection": { ... }
+  "title": {
+    "text": "Monthly Precipitation",
+    "subtitle": "1948-2012",
+    "anchor": "start",
+    "orient": "top",
+    "fontSize": 16,
+    "fontWeight": "bold"
+  }
 }
 ```
 
+Key title properties: `text`, `subtitle`, `align`, `anchor`, `angle`, `baseline`, `color`, `dx`, `dy`, `font`, `fontSize`, `fontStyle`, `fontWeight`, `orient`, `style`.
+
+Set global defaults via `config.title`.
+
+## View Sizing
+
 ### Width and Height
 
-- For continuous x-field: `width` should be a number
-- For discrete x-field: `width` can be a number or `{step: number}` (width per step)
-- Set to `"container"` for responsive sizing
-- Same rules apply for `height` with y-field
+`width` and `height` set the data rectangle (plotting area), not total visualization size.
 
-### View Background
+| Approach | Example | Behavior |
+|----------|---------|----------|
+| Fixed pixels | `"width": 400` | Exact pixel width of plot area |
+| Responsive | `"width": "container"` | Matches parent container |
+| Per-step | `{"step": 20}` | Width per discrete band/point |
+| Default | _(omit)_ | From config: `continuousWidth` (200) or `discreteWidth` (step-based, default step 20) |
 
-The `view` property defines the data rectangle background:
+### Autosize Types
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `style` | String \| String[] | Style name(s). Default: `"cell"` |
-| `fill` | Color | Fill color. Default: `undefined` (transparent) |
-| `stroke` | Color | Stroke color. Default: `"#ddd"` |
-| `opacity` | Number | Overall opacity. Default: `0.7` for non-aggregate point/circle/square/tick, `1` otherwise |
-| `cornerRadius` | Number | Rounded corner radius in pixels |
+The `autosize` property controls total visualization size vs. plot area:
+
+| Type | Behavior |
+|------|----------|
+| `"pad"` (default) | Grow view to fit all content (axes, legends, titles may extend beyond width/height) |
+| `"fit"` | Shrink plot area to fit within width + padding; axes/legends included |
+| `"none"` | No auto-sizing; content outside width/height is clipped |
+| `"fit-x"` | Fit only horizontally |
+| `"fit-y"` | Fit only vertically |
+
+Autosize object: `{type: "pad", resize: true, contains: "view"}`. `contains` can be `"view"` or `"padding"`.
+
+**Limitations**: `fit` only works on single-view and layered specs (not facet/concat/repeat). Explicit step sizes override fit in that dimension.
+
+### Default Size Rules
+
+- **Continuous x-field**: width = `config.view.continuousWidth` (200 default)
+- **Discrete x-field**: width = cardinality × `config.view.step` (20 default)
+- **Continuous y-field**: height = `config.view.continuousHeight` (200 default)
+- **Discrete y-field**: height = cardinality × `config.view.step`
+
+### Multi-View Sizing
+
+Width/height of facet/concat/repeat is determined by the composed unit views. Set `width`/`height` on inner specs to control overall size.
 
 ## Data Sources
 
-Vega-Lite uses tabular data (collections of records with named fields).
+### Inline Values
 
-### Inline Data
-
-Embed data directly using `values`:
+Embed data directly as an array of objects:
 
 ```json
 {
   "data": {
     "values": [
-      {"a": "A", "b": 28},
-      {"a": "B", "b": 55},
-      {"a": "C", "b": 43}
+      {"category": "A", "value": 28},
+      {"category": "B", "value": 55}
     ]
   }
 }
 ```
 
-Arrays of primitive values are mapped to `{"data": value}` objects.
+Properties: `values`, `name` (for referencing), `format`.
 
-### Data from URL
+Primitive arrays (`[5, 3, 8]`) are auto-mapped to `{"data": value}`.
 
-Load data from a remote or local URL:
+### URL
 
-```json
-{
-  "data": {
-    "url": "data/cars.json"
-  }
-}
-```
-
-Format is inferred from file extension. Override with `format`:
+Load external data:
 
 ```json
 {
   "data": {
-    "url": "data/weather.csv",
-    "format": {"type": "csv"}
+    "url": "data/cars.json",
+    "format": {"type": "json"}
   }
 }
 ```
+
+Format types:
+
+| Type | Description | Extra Properties |
+|------|-------------|------------------|
+| `json` (default) | Row-oriented JSON objects | `property` (nested path) |
+| `csv` | Comma-separated values | — |
+| `tsv` | Tab-separated values | — |
+| `dsv` | Custom delimiter | `delimiter` |
+| `topojson` | TopoJSON → GeoJSON | `feature`, `mesh` |
 
 ### Named Data Sources
 
-Reference data bound at runtime via Vega's View API:
+Declare empty named sources for runtime population via Vega View API:
 
 ```json
-{
-  "data": {"name": "myData"}
-}
+{"data": {"name": "myData"}}
 ```
 
-### Multiple Data Sources
+Populate at runtime:
 
-Use `datasets` for top-level named data, or inline data objects within transforms/layers:
+```js
+vegaEmbed('#vis', spec).then((res) =>
+  res.view.insert('myData', [{/* data */}]).run()
+);
+```
+
+### Datasets
+
+Top-level `datasets` for shared inline data:
 
 ```json
 {
   "datasets": {
-    "table1": [{"x": 1, "y": 2}, {"x": 2, "y": 3}]
+    "shared": [1, 2, 3]
   },
-  "data": {"name": "table1"},
-  ...
+  "data": {"name": "shared"}
 }
 ```
 
-## Format Options
+### Data Generators
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `type` | String | Format: `"json"` (default), `"csv"`, `"tsv"`, `"dsv"`, `"topojson"`, `"stats"`, `"table"` |
-| `property` | String | For topojson, the feature property name (e.g., `"counties"`) |
-| `parse` | Object \| String | For CSV/TSV: field-to-type mapping (`{"date": "date"}`) or `"all"` to auto-parse all fields |
-| `delimiter` | String | Custom delimiter for `"dsv"` format |
-
-## Data Generators
-
-Generate data programmatically without external files.
-
-### Sequence Generator
+| Generator | Purpose | Properties |
+|-----------|---------|------------|
+| `sequence` | Numeric sequences | `start`, `stop`, `step`, `as` |
+| `graticule` | GeoJSON lat/lon grid | `extent`, `step`, `precision` |
+| `sphere` | GeoJSON sphere (globe) | `true` or `{}` |
 
 ```json
-{
-  "data": {
-    "name": "table",
-    "values": {"sequence": {"start": 0, "stop": 10, "step": 0.5}}
-  }
-}
+// Sequence example
+{"data": {"sequence": {"start": 0, "stop": 10, "step": 0.1, "as": "x"}}}
+
+// Graticule example
+{"data": {"graticule": true}}
+
+// Sphere example
+{"data": {"sphere": true}}
 ```
-
-### Sphere Generator
-
-Generates a GeoJSON sphere object (useful for maps):
-
-```json
-{
-  "data": {"name": "sphere", "sphere": true}
-}
-```
-
-### Graticule Generator
-
-Generates a GeoJSON graticule (grid lines for maps):
-
-```json
-{
-  "data": {"name": "graticule", "graticule": true}
-}
-```
-
-## Named Datasets
-
-Vega-Lite includes built-in datasets accessible via relative paths:
-
-- `data/cars.json` — Car attributes (Horsepower, MPG, Cylinders, Origin)
-- `data/seattle-weather.csv` — Seattle weather (date, temp_max, temp_min, precipitation, weather)
-- `data/weather.csv` — Multi-city weather
-- `data/movies.json` — Movie data (IMDB Rating, Rotten Tomatoes, Gross)
-- `data/stocks.csv` — Stock prices (date, symbol, price)
-- `data/barley.json` — Barley yield by site and year
-- `data/penguins.json` — Penguin measurements
-- `data/population.json` — US population by age, sex, year
-- `data/unemployment-across-industries.json` — Unemployment time series
-- `data/us-10m.json` — US TopoJSON (states, counties)
-- `data/airports.csv` — Airport locations
-- `data/zipcodes.csv` — US zipcode coordinates
-- `data/gapminder-health-income.csv` — Global health/income data
-- `data/flights-2k.json` — Flight data
-- `data/unemployment.tsv` — County unemployment rates
