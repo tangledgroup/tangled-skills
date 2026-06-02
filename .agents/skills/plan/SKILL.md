@@ -149,19 +149,19 @@ blank line, and field so markdown renders consistently across all editors.
 # ☐ Plan: Plan Title
 
 <!-- default NONE if doesn't have dependencies, or relative paths to other PLAN.md files -->
-**Depends On:** NONE
+**Depends On:** ...
 
 <!-- ISO 8601 / UTC (YYYY-MM-DDTHH:MM:SSZ) -->
-**Created:** 2026-06-02T11:28:39Z
+**Created:** ...
 
 <!-- ISO 8601 / UTC (YYYY-MM-DDTHH:MM:SSZ) -->
-**Updated:** 2026-06-02T11:28:39Z
+**Updated:** ...
 
 <!-- [emoji-of-phase] Phase X Phase Title -->
-**Current Phase:**
+**Current Phase:** ...
 
 <!-- [emoji-of-phase] Phase X - [emoji-of-task] Task X.Y -->
-**Current Task:**
+**Current Task:** ...
 
 <!-- required: PHASES with TASKS start here -->
 ```
