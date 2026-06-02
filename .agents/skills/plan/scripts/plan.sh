@@ -22,6 +22,7 @@
 #   set-depends-on <value>               Set Depends On field
 #   get-depends-on                       Print Depends On value
 #   get-created                          Print Created timestamp
+#   get-updated                          Print Updated timestamp
 #   get-plan-header                      Print all header fields as key=value
 #   rederive-all                         Re-derive all phase + plan emojis
 #
@@ -128,6 +129,9 @@ do_read() {
       ;;
     get-created)
       get_header_field "$plan" "Created"
+      ;;
+    get-updated)
+      get_header_field "$plan" "Updated"
       ;;
     get-plan-header)
       echo "plan-title=$(get_plan_title_from_file "$plan")"

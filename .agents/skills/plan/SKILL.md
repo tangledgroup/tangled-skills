@@ -99,6 +99,7 @@ Once PLAN.md is written, **all subsequent updates to statuses and header fields 
 | Get plan title | `bash scripts/plan.sh PLAN.md get-plan-title` |
 | Get depends-on | `bash scripts/plan.sh PLAN.md get-depends-on` |
 | Get created timestamp | `bash scripts/plan.sh PLAN.md get-created` |
+| Get updated timestamp | `bash scripts/plan.sh PLAN.md get-updated` |
 | Get all header fields | `bash scripts/plan.sh PLAN.md get-plan-header` |
 | **Status writes (atomic, auto-derives emojis)** | |
 | Set task status | `bash scripts/plan.sh PLAN.md set-task-status "Task X.Y" "⚙️"` |
@@ -390,6 +391,7 @@ bash scripts/plan.sh PLAN.md get-current-phase
 bash scripts/plan.sh PLAN.md get-plan-title
 bash scripts/plan.sh PLAN.md get-depends-on
 bash scripts/plan.sh PLAN.md get-created
+bash scripts/plan.sh PLAN.md get-updated
 bash scripts/plan.sh PLAN.md get-plan-header
 
 # Status writes (atomic, auto-derives phase + plan emojis)
