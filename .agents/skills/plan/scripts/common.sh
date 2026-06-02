@@ -55,6 +55,7 @@ print_usage() {
 Usage: $script_name <PLAN.md> <action> [args...]
 
 Actions:
+  create <title> [depends_on]           Create a new PLAN.md with canonical header
   set-task-status <Task X.Y> <emoji>    Set task status
   set-phase-status <Phase X> <emoji>    Set phase status
   get-task-status <Task X.Y>            Print task emoji
@@ -310,6 +311,9 @@ preflight_check() {
   local action="$1"
   shift
   case "$action" in
+    create)
+      if [[ $# -lt 1 ]]; then echo "ERROR: Usage: create <title> [depends_on]"; exit 1; fi
+      ;;
     set-task-status)
       if [[ $# -lt 2 ]]; then echo "ERROR: Usage: set-task-status <Task X.Y> <emoji>"; exit 1; fi
       if ! is_valid_emoji "$2"; then

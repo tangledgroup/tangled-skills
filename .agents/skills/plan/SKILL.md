@@ -39,7 +39,7 @@ When this skill is invoked, follow these steps:
 
    ```bash
    # Single call — writes header directly to file
-   bash scripts/create-plan-header.sh path/to/PLAN.md "My Project" "../dep/PLAN.md"
+   bash scripts/plan.sh path/to/PLAN.md create "My Project" "../dep/PLAN.md"
 
    # Append phases and tasks after the header
    cat >> path/to/PLAN.md <<'EOF'
@@ -49,7 +49,7 @@ When this skill is invoked, follow these steps:
 EOF
    ```
 
-   The script accepts two required arguments and one optional:
+   The `create` action accepts two required arguments and one optional:
    - `PLAN.md` — file to write header to (required)
    - `title` — plan title (required)
    - `depends_on` — dependency path(s), defaults to `NONE`
@@ -140,7 +140,7 @@ Two rules govern `**Current Phase:**` and `**Current Task:**`:
 
 ## PLAN.md Header Template
 
-The header block is generated deterministically by `create-plan-header.sh` — never hand-write it.
+The header block is generated deterministically by `plan.sh create` — never hand-write it.
 See ## Initial Setup for usage. The script ensures exact positioning of every comment line,
 blank line, and field so markdown renders consistently across all editors.
 
@@ -367,7 +367,7 @@ All paths are relative to this skill's directory (where SKILL.md lives).
 
 | Script | Mode | Purpose |
 |--------|------|---------|
-| [scripts/plan.sh](scripts/plan.sh) | **Execute** | Lock-and-edit with `flock` + atomic rename. Supports all set/get actions for statuses, header fields, and re-derivation. Auto-derives phase and plan emojis after status changes. Syncs `**Current Task:**` and `**Current Phase:**` header emojis with actual body statuses. Auto-advances Current Task/Phase on task completion (☑). Read actions (`get-*`) are lock-free and deterministic. |
+| [scripts/plan.sh](scripts/plan.sh) | **Execute** | Lock-and-edit with `flock` + atomic rename. Supports `create` for new plans, and all set/get actions for statuses, header fields, and re-derivation. Auto-derives phase and plan emojis after status changes. Syncs `**Current Task:**` and `**Current Phase:**` header emojis with actual body statuses. Auto-advances Current Task/Phase on task completion (☑). Read actions (`get-*`) are lock-free and deterministic. |
 | [scripts/derive-phase-emoji.sh](scripts/derive-phase-emoji.sh) | **Execute** | Derive phase emoji from its tasks' emojis using AWK. Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
 | [scripts/derive-plan-emoji.sh](scripts/derive-plan-emoji.sh) | **Execute** | Derive plan emoji from all phases (re-deriving each phase from its tasks). Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
 | [scripts/workflow.sh](scripts/workflow.sh) | **Execute** | Full workflow: lock → edit (via plan.sh) → re-derive all phases → validate with automatic rollback on validation failure. Same actions as plan.sh plus read-through for `get-*`. |
@@ -377,8 +377,8 @@ All paths are relative to this skill's directory (where SKILL.md lives).
 
 ```bash
 # Create a new PLAN.md (deterministic header, single call)
-bash scripts/create-plan-header.sh path/to/PLAN.md "My Project"
-bash scripts/create-plan-header.sh path/to/PLAN.md "Dependent Plan" "../other/PLAN.md"
+bash scripts/plan.sh path/to/PLAN.md create "My Project"
+bash scripts/plan.sh path/to/PLAN.md create "Dependent Plan" "../other/PLAN.md"
 
 # Status reads (deterministic, no lock)
 bash scripts/plan.sh PLAN.md get-task-status "Task 2.3"

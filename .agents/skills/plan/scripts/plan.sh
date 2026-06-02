@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# plan.sh - Atomic lock-and-edit for PLAN.md files
+# plan.sh - PLAN.md lifecycle: create, read, update, derive
 # Usage: plan.sh <PLAN.md> <action> [args...]
 #
 # Actions:
+#   create <title> [depends_on]          Create a new PLAN.md with canonical header
 #   set-task-status <Task X.Y> <emoji>   Set task status (NotStarted Question Doing Error Done)
 #   set-phase-status <Phase X> <emoji>   Set phase status (NotStarted Question Doing Error Done)
 #   get-task-status <Task X.Y>           Print current task emoji
@@ -37,7 +38,10 @@ plan="$1"
 action="$2"
 shift 2
 
-check_plan_file "$plan"
+# "create" writes a new file — skip existence check
+if [[ "$action" != "create" ]]; then
+  check_plan_file "$plan"
+fi
 
 lockfile="${plan}.lock"
 tmpfile=""
@@ -47,6 +51,38 @@ cleanup() {
   release_lock "$lockfile"
 }
 trap cleanup EXIT INT TERM
+
+# Create a new PLAN.md with canonical header
+do_create() {
+  local title="$1"
+  local depends="${2:-NONE}"
+  local timestamp
+  timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+  mkdir -p "$(dirname "$plan")"
+
+  cat > "$plan" <<HEADER_EOF
+<!-- Plan Title is short but descriptive title of current plan -->
+# ☐ Plan: ${title}
+
+<!-- default NONE if doesn't have dependencies, or relative paths to other PLAN.md files -->
+**Depends On:** ${depends}
+
+<!-- ISO 8601 / UTC (YYYY-MM-DDTHH:MM:SSZ) -->
+**Created:** ${timestamp}
+
+<!-- ISO 8601 / UTC (YYYY-MM-DDTHH:MM:SSZ) -->
+**Updated:** ${timestamp}
+
+<!-- [emoji-of-phase] Phase X Phase Title -->
+**Current Phase:**
+
+<!-- [emoji-of-phase] Phase X - [emoji-of-task] Task X.Y -->
+**Current Task:**
+
+<!-- required: PHASES with TASKS start here -->
+HEADER_EOF
+}
 
 # Read-only actions (deterministic, no lock)
 do_read() {
@@ -224,25 +260,33 @@ do_edit() {
 }
 
 # Main dispatch
-if is_read_action "$action"; then
-  do_read "$@"
-else
-  # Pre-flight validation (before any temp files or locks)
-  preflight_check "$action" "$@"
+case "$action" in
+  create)
+    if [[ $# -lt 1 ]]; then echo "ERROR: Usage: create <title> [depends_on]"; exit 1; fi
+    do_create "$@"
+    ;;
+  *)
+    if is_read_action "$action"; then
+      do_read "$@"
+    else
+      # Pre-flight validation (before any temp files or locks)
+      preflight_check "$action" "$@"
 
-  if [[ -z "${PLAN_SKIP_LOCK:-}" ]]; then
-    exec 200>"$lockfile"
-    acquire_lock "$lockfile"
-    set +e
-    do_edit "$@"
-    rc=$?
-    set -e
-    # Ensure tmpfile is cleaned even on failure (cleanup trap handles it)
-    if [[ $rc -ne 0 ]]; then
-      exit $rc
+      if [[ -z "${PLAN_SKIP_LOCK:-}" ]]; then
+        exec 200>"$lockfile"
+        acquire_lock "$lockfile"
+        set +e
+        do_edit "$@"
+        rc=$?
+        set -e
+        # Ensure tmpfile is cleaned even on failure (cleanup trap handles it)
+        if [[ $rc -ne 0 ]]; then
+          exit $rc
+        fi
+      else
+        do_edit "$@"
+      fi
+      echo "OK: Applied '$action' to $plan"
     fi
-  else
-    do_edit "$@"
-  fi
-  echo "OK: Applied '$action' to $plan"
-fi
+    ;;
+esac
