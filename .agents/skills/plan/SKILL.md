@@ -35,7 +35,24 @@ Strict task numbering (`[emoji-of-task] Task X.Y Task Title`), inline phase/task
 
 When this skill is invoked, follow these steps:
 
-1. **PLAN.md doesn't exist?** → Create `PLAN.md` with all phases based on given requirements. There are no predefined phases — determine them from context. Calibrate phase/task granularity to the requirements complexity and detect whether the requester is a beginner, advanced, or expert user. Ask clarifying questions before finalizing the plan. If unable to ask (non-interactive mode), proceed with best-effort assumptions and document them in the plan. After creating, run the validator (see ## Validation).
+1. **PLAN.md doesn't exist?** → Generate the header deterministically using the header script, then append phases/tasks:
+
+   ```bash
+   # Generate canonical header (prints to stdout)
+   bash scripts/create-plan-header.sh "Plan Title" [depends-on] [emoji]
+   
+   # Example: write header + phases to a new PLAN.md
+   {
+     bash scripts/create-plan-header.sh "My Project" "../dep/PLAN.md"
+     echo ""
+     echo "## ☐ Phase 1 Planning"
+     echo "- ☐ Task 1.1 Define requirements"
+   } > path/to/PLAN.md
+   ```
+
+   The `create-plan-header.sh` script ensures every comment, blank line, and field is exactly positioned — no variation between runs. Arguments: `<title>` (required), `[depends-on]` (default: NONE), `[emoji]` (default: ☐).
+
+   Then add all phases based on given requirements. There are no predefined phases — determine them from context. Calibrate phase/task granularity to the requirements complexity and detect whether the requester is a beginner, advanced, or expert user. Ask clarifying questions before finalizing the plan. If unable to ask (non-interactive mode), proceed with best-effort assumptions and document them in the plan. After creating, run the validator (see ## Validation).
 2. **PLAN.md exists?** → Open it. Examine `**Current Phase:**` and `**Current Task:**` and propose a continuation point (hint: the next pending task could be one of the lowest-numbered but in this order ⚙️ ❓ ❌ ☐). All running tasks have to be re-run with status ⚙️ because they were probably interrupted.
 
 ## Status Update Rules (MANDATORY)
@@ -121,7 +138,11 @@ Two rules govern `**Current Phase:**` and `**Current Task:**`:
 1. **During work** — point to whichever phase/task is currently being worked on (not necessarily the last in list order).
 2. **On completion** — when a task transitions to ☑ (Done), auto-advance both `**Current Phase:**` and `**Current Task:**` to the next pending task (lowest-numbered but in this order ❓❌☐ within the same phase, or the next phase if no pending tasks remain in the current phase). If the completed task was the last one overall, keep both fields pointing to it.
 
-## PLAN.md template
+## PLAN.md Header Template
+
+The header block is generated deterministically by `create-plan-header.sh` — never hand-write it.
+See ## Initial Setup for usage. The script ensures exact positioning of every comment line,
+blank line, and field so markdown renders consistently across all editors.
 
 ```markdown
 <!-- Plan Title is short but descriptive title of current plan -->
@@ -347,6 +368,7 @@ All paths are relative to this skill's directory (where SKILL.md lives).
 
 | Script | Mode | Purpose |
 |--------|------|---------|
+| [scripts/create-plan-header.sh](scripts/create-plan-header.sh) | **Execute** | Deterministic PLAN.md header generator. Prints canonical header to stdout with exact positioning of every comment, blank line, and field. Use on creation: pipe output into new PLAN.md then append phases/tasks. Arguments: `<title>` (required), `[depends-on]` (default: NONE), `[emoji]` (default: ☐). |
 | [scripts/update-plan.sh](scripts/update-plan.sh) | **Execute** | Lock-and-edit with `flock` + atomic rename. Supports all set/get actions for statuses, header fields, and re-derivation. Auto-derives phase and plan emojis after status changes. Syncs `**Current Task:**` and `**Current Phase:**` header emojis with actual body statuses. Auto-advances Current Task/Phase on task completion (☑). Read actions (`get-*`) are lock-free and deterministic. |
 | [scripts/derive-phase-emoji.sh](scripts/derive-phase-emoji.sh) | **Execute** | Derive phase emoji from its tasks' emojis using AWK. Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
 | [scripts/derive-plan-emoji.sh](scripts/derive-plan-emoji.sh) | **Execute** | Derive plan emoji from all phases (re-deriving each phase from its tasks). Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
@@ -356,6 +378,14 @@ All paths are relative to this skill's directory (where SKILL.md lives).
 ### Usage Examples
 
 ```bash
+# Create a new PLAN.md (deterministic header + phases)
+{
+  bash scripts/create-plan-header.sh "My Project" "../dep/PLAN.md"
+  echo ""
+  echo "## ☐ Phase 1 Planning"
+  echo "- ☐ Task 1.1 Define requirements"
+} > path/to/PLAN.md
+
 # Status reads (deterministic, no lock)
 bash scripts/update-plan.sh PLAN.md get-task-status "Task 2.3"
 bash scripts/update-plan.sh PLAN.md get-phase-status "Phase 2"
