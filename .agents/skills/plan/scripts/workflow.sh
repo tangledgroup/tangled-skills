@@ -2,12 +2,12 @@
 # workflow.sh - Full workflow: lock → edit → derive → validate (atomic)
 # Usage: workflow.sh <PLAN.md> <action> [args...]
 #
-# Wraps update-plan.sh with automatic validation and rollback.
+# Wraps plan.sh with automatic validation and rollback.
 # After applying the edit, it re-derives ALL phase emojis from tasks
 # (not just the affected one), derives the plan emoji, validates,
 # and rolls back if validation fails.
 #
-# Actions are the same as update-plan.sh:
+# Actions are the same as plan.sh:
 #   set-task-status <Task X.Y> <emoji>
 #   set-phase-status <Phase X> <emoji>
 #   get-task-status <Task X.Y>
@@ -52,7 +52,7 @@ trap cleanup EXIT INT TERM
 
 # Read-only actions pass through without locking
 if is_read_action "$action"; then
-  bash "$SCRIPT_DIR/update-plan.sh" "$plan" "$action" "$@"
+  bash "$SCRIPT_DIR/plan.sh" "$plan" "$action" "$@"
   exit $?
 fi
 
@@ -62,8 +62,8 @@ fi
   # Safety backup
   cp -- "$plan" "$backup"
 
-  # Delegate the edit + per-phase derive to update-plan.sh (skip its lock - we hold it)
-  PLAN_SKIP_LOCK=1 bash "$SCRIPT_DIR/update-plan.sh" "$plan" "$action" "$@"
+  # Delegate the edit + per-phase derive to plan.sh (skip its lock - we hold it)
+  PLAN_SKIP_LOCK=1 bash "$SCRIPT_DIR/plan.sh" "$plan" "$action" "$@"
 
   # Re-derive ALL phase emojis + plan emoji for robustness
   plan_dir=$(dirname "$plan")

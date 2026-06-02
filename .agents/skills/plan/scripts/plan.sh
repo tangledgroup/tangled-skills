@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# update-plan.sh - Atomic lock-and-edit for PLAN.md files
-# Usage: update-plan.sh <PLAN.md> <action> [args...]
+# plan.sh - Atomic lock-and-edit for PLAN.md files
+# Usage: plan.sh <PLAN.md> <action> [args...]
 #
 # Actions:
 #   set-task-status <Task X.Y> <emoji>   Set task status (NotStarted Question Doing Error Done)
