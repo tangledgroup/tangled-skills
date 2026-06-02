@@ -243,11 +243,12 @@ bash scripts/plan.sh PLAN.md get-phase-status "Phase 2" # returns `[emoji-of-pha
 bash scripts/plan.sh PLAN.md get-task-status "Task 2.3" # returns `[emoji-of-task]` of "Task 2.3"
 
 # Status writes
-bash scripts/plan.sh PLAN.md set-plan-status "⚙️" # sets `[emoji-of-plan]` for plan
-bash scripts/plan.sh PLAN.md set-phase-status "Phase 2" "⚙️" # sets `[emoji-of-phase]` for "Phase 2"
-bash scripts/plan.sh PLAN.md set-task-status "Task 2.3" "⚙️" # sets `[emoji-of-task]` for "Task 2.3"
+bash scripts/plan.sh PLAN.md set-all-statuses ☐ # set plan, all phases, and all tasks status to be the same - use with caution
+bash scripts/plan.sh PLAN.md set-plan-status ⚙️ # sets `[emoji-of-plan]` for plan
+bash scripts/plan.sh PLAN.md set-phase-status "Phase 2" ⚙️ # sets `[emoji-of-phase]` for "Phase 2"
+bash scripts/plan.sh PLAN.md set-task-status "Task 2.3" ⚙️ # sets `[emoji-of-task]` for "Task 2.3"
 
-# CRUD
+# Phase/Task CRUD
 bash scripts/plan.sh PLAN.md add-phase "Phase 2" "Description of phase..." # sets phase status to ☐
 bash scripts/plan.sh PLAN.md add-task "Phase 2" "Task 2.4" "Description of task..." # sets task status to ☐, phase status ❓
 bash scripts/plan.sh PLAN.md update-phase "Phase 2" "New description of phase..." # sets phase status to ❓
