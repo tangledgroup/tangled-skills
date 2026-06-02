@@ -236,9 +236,9 @@ python3 -B scripts/plan.py PLAN.md set-plan-title "My Project"
 python3 -B scripts/plan.py PLAN.md set-plan-depends-on NONE
 python3 -B scripts/plan.py PLAN.md set-plan-depends-on "../other/PLAN.md"
 python3 -B scripts/plan.py PLAN.md set-plan-depends-on "../a/PLAN.md" "../../b/PLAN.md"
-python3 -B scripts/plan.py PLAN.md set-plan-created --now
+python3 -B scripts/plan.py PLAN.md set-plan-created --now # UTC ISO format "%Y-%m-%dT%H:%M:%SZ"
 python3 -B scripts/plan.py PLAN.md set-plan-created $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-python3 -B scripts/plan.py PLAN.md set-plan-updated --now
+python3 -B scripts/plan.py PLAN.md set-plan-updated --now # UTC ISO format "%Y-%m-%dT%H:%M:%SZ"
 python3 -B scripts/plan.py PLAN.md set-plan-updated $(date -u +"%Y-%m-%dT%H:%M:%SZ")
 python3 -B scripts/plan.py PLAN.md set-plan-current-phase "Phase 2" # copies `[emoji-of-phase]` of "Phase 2"
 python3 -B scripts/plan.py PLAN.md set-plan-current-task "Task 2.3" # copies `[emoji-of-task]` of "Task 2.3"
