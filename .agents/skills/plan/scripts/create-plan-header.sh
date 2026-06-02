@@ -2,44 +2,43 @@
 # create-plan-header.sh - Deterministic PLAN.md header generator
 #
 # Usage:
-#   bash create-plan-header.sh <title> [output_path] [depends_on]
+#   bash create-plan-header.sh <PLAN.md> <title> [depends_on]
 #
 # Arguments:
+#   PLAN.md      — File to write header to (required)
 #   title        — Plan title (required, e.g. "My Project")
-#   output_path  — File to write to. Defaults to stdout if omitted.
-#                  When given, the header is written directly to the file.
 #   depends_on   — Relative path(s) to other PLAN.md files.
 #                  Defaults to "NONE" if omitted.
 #                  Multiple deps: "../a/PLAN.md , ../b/PLAN.md"
 #
 # Output:
-#   Prints (or writes) a canonical PLAN.md header with all required fields.
+#   Writes a canonical PLAN.md header with all required fields.
 #   Phases and tasks are NOT included — they are appended separately.
 #
 # Example:
-#   bash create-plan-header.sh "My Project" path/to/PLAN.md "../dep/PLAN.md"
+#   bash create-plan-header.sh path/to/PLAN.md "My Project" "../dep/PLAN.md"
 
 set -euo pipefail
 
 usage() {
   cat <<'EOF' >&2
-Usage: create-plan-header.sh <title> [output_path] [depends_on]
+Usage: create-plan-header.sh <PLAN.md> <title> [depends_on]
 
 Arguments:
+  PLAN.md      File to write header to (required)
   title        Plan title (required)
-  output_path  File to write header to (optional, prints to stdout if omitted)
   depends_on   Relative path(s) to other PLAN.md files (optional, default: NONE)
 
 Example:
-  bash create-plan-header.sh "My Project" path/to/PLAN.md "../dep/PLAN.md"
+  bash create-plan-header.sh path/to/PLAN.md "My Project" "../dep/PLAN.md"
 EOF
   exit 1
 }
 
 # --- Argument parsing ---
-[[ $# -lt 1 ]] && usage
-title="$1"
-output="${2:-}"
+[[ $# -lt 2 ]] && usage
+output="$1"
+title="$2"
 depends="${3:-NONE}"
 
 # --- Timestamps ---

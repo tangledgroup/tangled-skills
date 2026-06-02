@@ -39,7 +39,7 @@ When this skill is invoked, follow these steps:
 
    ```bash
    # Single call — writes header directly to file
-   bash scripts/create-plan-header.sh "My Project" path/to/PLAN.md "../dep/PLAN.md"
+   bash scripts/create-plan-header.sh path/to/PLAN.md "My Project" "../dep/PLAN.md"
 
    # Append phases and tasks after the header
    cat >> path/to/PLAN.md <<'EOF'
@@ -49,9 +49,9 @@ When this skill is invoked, follow these steps:
 EOF
    ```
 
-   The script accepts three arguments:
+   The script accepts two required arguments and one optional:
+   - `PLAN.md` — file to write header to (required)
    - `title` — plan title (required)
-   - `output_path` — file to write to (optional, prints to stdout if omitted)
    - `depends_on` — dependency path(s), defaults to `NONE`
 2. **PLAN.md exists?** → Open it. Examine `**Current Phase:**` and `**Current Task:**` and propose a continuation point (hint: the next pending task could be one of the lowest-numbered but in this order ⚙️ ❓ ❌ ☐). All running tasks have to be re-run with status ⚙️ because they were probably interrupted.
 
@@ -377,8 +377,8 @@ All paths are relative to this skill's directory (where SKILL.md lives).
 
 ```bash
 # Create a new PLAN.md (deterministic header, single call)
-bash scripts/create-plan-header.sh "My Project" path/to/PLAN.md
-bash scripts/create-plan-header.sh "Dependent Plan" path/to/PLAN.md "../other/PLAN.md"
+bash scripts/create-plan-header.sh path/to/PLAN.md "My Project"
+bash scripts/create-plan-header.sh path/to/PLAN.md "Dependent Plan" "../other/PLAN.md"
 
 # Status reads (deterministic, no lock)
 bash scripts/update-plan.sh PLAN.md get-task-status "Task 2.3"
