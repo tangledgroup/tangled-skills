@@ -142,23 +142,4 @@ bash scripts/mermaid-validate.sh --json docs/
 
 Exit code `0` passes, `1` fails — no additional tooling needed.
 
-## Programmatic API
 
-Import from `@zabaca/mermaid-validate` in a TypeScript or JavaScript project:
-
-```typescript
-import { validateDiagram, validateFile, extractMermaidBlocks } from "@zabaca/mermaid-validate";
-
-// Validate a single diagram string
-const result = await validateDiagram(`graph TD
-    A[Start] --> B[End]`);
-// { valid: true }
-
-// Validate all mermaid blocks in a markdown file
-const fileResult = await validateFile("docs/architecture.md");
-// { filePath: "...", blocks: [...], totalBlocks: 2, validBlocks: 2, invalidBlocks: 0 }
-
-// Extract mermaid code blocks from raw markdown content
-const blocks = extractMermaidBlocks(markdownContent);
-// [{ code: "graph TD...", startLine: 10 }, ...]
-```
