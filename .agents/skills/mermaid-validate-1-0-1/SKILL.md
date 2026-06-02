@@ -3,7 +3,7 @@ name: mermaid-validate-1-0-1
 description: Lightweight Mermaid diagram syntax validator using the official mermaid parser with jsdom. Validates diagrams in markdown files, standalone .mmd files, directories, and stdin with JSON output support. Use when checking Mermaid diagram syntax for correctness before rendering, validating documentation containing Mermaid charts, or integrating diagram validation into CI/CD pipelines.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.2.0"
+version: "0.3.0"
 tags:
   - mermaid
   - validator
@@ -24,19 +24,11 @@ external_references:
 
 `@zabaca/mermaid-validate` is a lightweight Mermaid diagram syntax validator that uses the official `mermaid` parser with `jsdom` for minimal DOM simulation. It validates diagram syntax accurately without requiring a full browser or puppeteer setup.
 
-Run it as a one-off with `bun x`:
+Use the wrapper script which handles runner detection (`bun x` preferred, `npx -y` fallback) and fixes the upstream tool's broken directory mode:
 
 ```bash
-bun x @zabaca/mermaid-validate@1.0.1 <file|directory|->
+bash scripts/mermaid-validate.sh <file|directory|->
 ```
-
-If `bun` is not available on the system, fall back to `npx -y`:
-
-```bash
-npx -y @zabaca/mermaid-validate@1.0.1 <file|directory|->
-```
-
-Always try `bun x` first. Use `npx -y` only when `bun` is confirmed absent.
 
 ## When to Use
 
@@ -51,6 +43,7 @@ Always try `bun x` first. Use `npx -y` only when `bun` is confirmed absent.
 
 - `0` — All diagrams valid (or no mermaid blocks found)
 - `1` — One or more diagrams have syntax errors
+- `2` — Usage error (no input, missing file, unknown option)
 
 ### Supported Inputs
 
@@ -69,7 +62,6 @@ All diagram types supported by mermaid: flowchart/graph, sequence, class, state,
 | Option | Description |
 |--------|-------------|
 | `-h, --help` | Show usage help |
-| `-v, --version` | Show version |
 | `-q, --quiet` | Only output errors (suppress valid file markers) |
 | `--json` | Output results as JSON |
 
@@ -78,7 +70,7 @@ All diagram types supported by mermaid: flowchart/graph, sequence, class, state,
 ### Validate a single markdown file
 
 ```bash
-bun x @zabaca/mermaid-validate@1.0.1 README.md
+bash scripts/mermaid-validate.sh README.md
 ```
 
 Output for valid diagrams:
@@ -101,25 +93,25 @@ Summary: 1 valid, 1 invalid
 ### Validate a standalone .mmd file
 
 ```bash
-bun x @zabaca/mermaid-validate@1.0.1 diagram.mmd
+bash scripts/mermaid-validate.sh diagram.mmd
 ```
 
 ### Validate all files in a directory
 
 ```bash
-bun x @zabaca/mermaid-validate@1.0.1 docs/
+bash scripts/mermaid-validate.sh docs/
 ```
 
 ### Validate from stdin
 
 ```bash
-echo "graph TD; A-->B" | bun x @zabaca/mermaid-validate@1.0.1 -
+echo "graph TD; A-->B" | bash scripts/mermaid-validate.sh -
 ```
 
 ### JSON output (for CI integration)
 
 ```bash
-bun x @zabaca/mermaid-validate@1.0.1 --json README.md
+bash scripts/mermaid-validate.sh --json README.md
 ```
 
 Output:
@@ -137,7 +129,7 @@ Output:
 ### Quiet mode (only errors)
 
 ```bash
-bun x @zabaca/mermaid-validate@1.0.1 -q docs/
+bash scripts/mermaid-validate.sh -q docs/
 ```
 
 ### CI/CD integration
@@ -145,7 +137,7 @@ bun x @zabaca/mermaid-validate@1.0.1 -q docs/
 Use the exit code to fail pipeline runs when diagrams are invalid:
 
 ```bash
-bun x @zabaca/mermaid-validate@1.0.1 --json docs/
+bash scripts/mermaid-validate.sh --json docs/
 ```
 
 Exit code `0` passes, `1` fails — no additional tooling needed.
