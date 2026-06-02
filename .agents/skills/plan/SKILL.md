@@ -377,8 +377,8 @@ All paths are relative to this skill's directory (where SKILL.md lives).
 
 ```bash
 # Create a new PLAN.md (deterministic header, single call)
-bash scripts/plan.sh path/to/PLAN.md create "My Project"
-bash scripts/plan.sh path/to/PLAN.md create "Dependent Plan" "../other/PLAN.md"
+bash scripts/plan.sh PLAN.md create "My Project"
+bash scripts/plan.sh PLAN.md create "Dependent Plan" "../other/PLAN.md"
 
 # Status reads (deterministic, no lock)
 bash scripts/plan.sh PLAN.md get-task-status "Task 2.3"
