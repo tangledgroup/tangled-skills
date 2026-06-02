@@ -1,58 +1,71 @@
-# ☑ Plan: Create Vega 6.2.0 Skill
-<!-- Plan Title is short but descriptive title of current plan -->
+# ☑ Plan: Create vega-embed 7.1.0 Skill
 
 **Depends On:** NONE
 
-**Created:** 2026-06-02T09:30:00Z
+**Created:** 2026-06-02T00:00:00Z
 
-**Updated:** 2026-06-02T09:30:00Z
+**Updated:** 2026-06-02T00:00:00Z
 
 <!-- [emoji-of-phase] Phase X Phase Title -->
 **Current Phase:** ☑ Phase 4
 
 <!-- [emoji-of-phase] Phase X - [emoji-of-task] Task X.Y -->
-**Current Task:** ☑ Task 4.4
+**Current Task:** ☑ Task 4.3
 
-## ☑ Phase 1 Research & Planning
+## Phases and Tasks
 
-Gather all source material, analyze structure, and plan the skill layout.
+## ☑ Phase 1 Planning
 
-- ☑ Task 1.1 Fetch and review npm page for Vega 6.2.0
-- ☑ Task 1.2 Fetch and review GitHub repo tree at v6.2.0 tag
-- ☑ Task 1.3 Fetch core documentation: specification, data, transforms, marks, scales, signals, expressions, event streams, config
-- ☑ Task 1.4 Analyze content scope and determine reference file structure
-- ☑ Task 1.5 Create detailed task plan for skill generation
+- ☑ Task 1.1 Analyze sources and determine skill structure (simple vs complex)
+  - Review npm page, GitHub README, source code (embed.ts, types.ts, container.ts, index.ts), CHANGELOG
+  - Identify distinct subtopics for reference files
+  - Determine what goes in SKILL.md vs reference/
 
-## ☑ Phase 2 Generate SKILL.md
+- ☑ Task 1.2 Draft and validate PLAN.md structure
+  - Create PLAN.md with phases and tasks
+  - Run validator script
+  - Get approval to proceed
 
-Write the main SKILL.md with YAML header, overview, when to use, core concepts, and navigation to references.
+## ☑ Phase 2 Content Gathering
 
-- ☑ Task 2.1 Write YAML header with validated metadata (name: vega-6-2-0, description, version 0.1.0)
-- ☑ Task 2.2 Write Overview section covering what Vega is, its JSON spec format, Canvas/SVG rendering
-- ☑ Task 2.3 Write When to Use section with specific scenarios
-- ☑ Task 2.4 Write Core Concepts section covering the visualization grammar paradigm and spec structure
-- ☑ Task 2.5 Write Advanced Topics navigation hub linking to all reference files
+- ☑ Task 2.1 Fetch all source material for vega-embed v7.1.0
+  - npm page (v7.1.0) — already fetched
+  - GitHub README.md at v7.1.0 tag — already fetched
+  - Source files: embed.ts, types.ts, container.ts, index.ts, util.ts, post.ts — already fetched
+  - package.json for dependencies/peer deps — already fetched
+  - CHANGELOG.md for version history — already fetched
 
-## ☑ Phase 3 Generate Reference Files
+- ☑ Task 2.2 Analyze and organize content into skill sections
+  - Map embed() function, container(), EmbedOptions interface, Result type
+  - Organize options by category (view config, actions, styling, locale, extensibility)
+  - Identify code examples to include
 
-Create numbered reference files covering distinct subtopics of Vega's specification.
+## ☑ Phase 3 Implementation
 
-- ☑ Task 3.1 Generate reference/01-specification-and-data.md — top-level spec properties, autosize, data sources and formats
-- ☑ Task 3.2 Generate reference/02-scales-and-projections.md — all scale types, domains, ranges, projections
-- ☑ Task 3.3 Generate reference/03-marks-and-encoding.md — mark types, encode sets (enter/update/exit/hover), visual encodings
-- ☑ Task 3.4 Generate reference/04-transforms.md — basic, geographic, layout, hierarchy, cross-filter transforms
-- ☑ Task 3.5 Generate reference/05-signals-and-events.md — signal definitions, event streams, handlers, triggers
-- ☑ Task 3.6 Generate reference/06-expressions.md — expression language, bound variables, functions (math, string, date, color, etc.)
-- ☑ Task 3.7 Generate reference/07-axes-legends-title.md — axes, legends, title configuration and properties
-- ☑ Task 3.8 Generate reference/08-configuration-and-theming.md — config object, view/mark/axis/legend defaults, styles
-- ☑ Task 3.9 Generate reference/09-api-and-embedding.md — View API, parse/render methods, embedding in web pages, Node.js usage
-- ☑ Task 3.10 Generate reference/10-usage-examples.md — practical examples: bar chart, line chart, scatterplot, interactive tooltip
+- ☑ Task 3.1 Write SKILL.md with YAML header, overview, when-to-use, core concepts
+  - Structure as complex skill: SKILL.md + reference/
+  - SKILL.md: Overview, When to Use, Quick Start (browser + npm), API summary, Options overview
+  - Reference files for deep-dive content
 
-## ☑ Phase 4 Validate & Finalize
+- ☑ Task 3.2 Write reference files
+  - reference/01-api-reference.md — Full embed(), container(), EmbedOptions, Result type documentation
+  - reference/02-options-reference.md — All options organized by category with types and defaults
+  - reference/03-integration-patterns.md — Browser CDN, bundlers (webpack/rollup), Observable, CSP mode, patches, themes
 
-Run structural validation, check for anti-patterns, and regenerate README table.
+- ☑ Task 3.3 Run structural validator (validate-skill.sh)
+  - Check YAML header validity
+  - Verify directory structure
+  - Fix any issues found
 
-- ☑ Task 4.1 Run validate-skill.sh structural validator
-- ☑ Task 4.2 Perform LLM judgment checks (content accuracy, no hallucination, concise writing)
-- ☑ Task 4.3 Fix any issues found during validation
-- ☑ Task 4.4 Regenerate README.md skills table using gen-skills-table.sh
+## ☑ Phase 4 Finalization
+
+- ☑ Task 4.1 Perform LLM judgment checks on all files
+  - Verify no hallucinated content
+  - Check terminology consistency
+  - Ensure single recommended approach per topic
+  - Verify forward slashes only
+
+- ☑ Task 4.2 Regenerate README.md skills table
+  - Run gen-skills-table.sh script
+
+- ☑ Task 4.3 Report completion with file tree and validation results
