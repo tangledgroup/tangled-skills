@@ -22,7 +22,7 @@
 #   On failure:    Detailed per-path error list from check-jsonschema.
 #
 # Dependencies:
-#   uvx (provides check-jsonschema), bash 4+
+#   uvx or pipx (provides check-jsonschema), bash 4+
 
 set -euo pipefail
 
@@ -54,6 +54,20 @@ if [[ ! -f "$INSTANCE_FILE" ]]; then
     exit 2
 fi
 
+# --- Runtime selection --------------------------------------------------------
+# Prefer uvx (faster, ephemeral venv), fall back to pipx if unavailable.
+if command -v uvx &>/dev/null; then
+    RUNNER="uvx"
+elif command -v pipx &>/dev/null; then
+    RUNNER="pipx run"
+else
+    echo "Error: Neither uvx nor pipx found." >&2
+    echo "Install one of them to provide check-jsonschema:" >&2
+    echo "  uvx:   https://docs.astral.sh/uv/" >&2
+    echo "  pipx:  https://pipx.pypa.io/" >&2
+    exit 2
+fi
+
 # --- Validation ----------------------------------------------------------------
 
-uvx check-jsonschema --schemafile "$SCHEMA_FILE" "$INSTANCE_FILE"
+$RUNNER check-jsonschema --schemafile "$SCHEMA_FILE" "$INSTANCE_FILE"

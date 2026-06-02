@@ -1,5 +1,5 @@
 ---
-name: vega-lite-validate
+name: vega-lite-validate-0-1-0
 description: >-
   Validates Vega-Lite 6.4.3 JSON specifications against the official JSON Schema
   using check-jsonschema. Catches structural errors, invalid field types, and
@@ -118,11 +118,13 @@ It is a JSON Schema Draft-07 document referencing `#/definitions/TopLevelSpec`.
 
 ### Validation Tool
 
-`check-jsonschema` is invoked via `uvx`, which provides an ephemeral virtual
-environment without persistent installation. The command pattern is:
+`check-jsonschema` is invoked via `uvx` (preferred) or `pipx` (fallback), both
+of which provide ephemeral execution without persistent installation. The script
+auto-detects whichever runtime is available.
 
 ```
 uvx check-jsonschema --schemafile <schema> <instance>
+pipx run check-jsonschema --schemafile <schema> <instance>
 ```
 
 No additional packages or format-checking libraries are required — the default
