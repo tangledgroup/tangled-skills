@@ -141,5 +141,3 @@ bash scripts/mermaid-validate.sh --json docs/
 ```
 
 Exit code `0` passes, `1` fails — no additional tooling needed.
-
-

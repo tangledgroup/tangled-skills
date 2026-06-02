@@ -122,7 +122,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 91 | mem0-2-0-1 | mem0 | 0.1.0 | memory, llm, ai-agents, vector-search, hybrid-search | Self-improving memory layer for LLM agents (Mem0 v2.0.1) enabling persistent context across sessions with ... |
 | 92 | mempalace-3-3-4 | mempalace | 0.1.0 | ai-memory, local-rag, chromadb, knowledge-graph, mcp | Local AI memory system that mines projects and conversations into a searchable index using ChromaDB for vector ... |
 | 93 | mermaid-11-15-0 | mermaid | 0.1.0 | mermaid, diagrams, flowchart, visualization, documentation | >- |
-| 94 | mermaid-validate-1-0-1 | mermaid-validate | 0.2.0 | mermaid, validator, diagram, syntax-checking, bun | Lightweight Mermaid diagram syntax validator using the official mermaid parser with jsdom. Validates diagrams in ... |
+| 94 | mermaid-validate-1-0-1 | mermaid-validate | 0.3.0 | mermaid, validator, diagram, syntax-checking, bun | Lightweight Mermaid diagram syntax validator using the official mermaid parser with jsdom. Validates diagrams in ... |
 | 95 | nekovm-2-4-1 | nekovm | 0.1.0 | nekovm, neko, virtual-machine, scripting-language, haxe | Stack-based bytecode VM and dynamically typed scripting language, primarily as a compilation target for Haxe. ... |
 | 96 | networkx-3-6-1 | networkx | 0.1.0 | graph-theory, network-analysis, complex-networks, centrality, community-detection | Python package for creating, manipulating, and studying complex networks. Supports graph generation, algorithms ... |
 | 97 | networkxternal-0-5 | networkxternal | 0.1.0 | graph, database, networkx, external-memory, sql | NetworkX-compatible interface for external memory MultiDiGraphs persisted in databases (SQLite, PostgreSQL, MySQL, ... |
