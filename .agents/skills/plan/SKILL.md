@@ -212,12 +212,16 @@ No third-party packages needed.
 Always use scripts to update `PLAN.md`.
 
 ```bash
+#
 # Create a new PLAN.md with header
+#
 python3 -B scripts/plan.py PLAN.md create "My Project"
 python3 -B scripts/plan.py PLAN.md create "Plan ABC" "../other/PLAN.md"
 python3 -B scripts/plan.py PLAN.md create "Plan XYZ" "../a/PLAN.md" "../../b/PLAN.md"
 
+#
 # Header reads
+#
 python3 -B scripts/plan.py PLAN.md get-plan-title
 python3 -B scripts/plan.py PLAN.md get-plan-depends-on
 python3 -B scripts/plan.py PLAN.md get-plan-created
@@ -225,7 +229,9 @@ python3 -B scripts/plan.py PLAN.md get-plan-updated
 python3 -B scripts/plan.py PLAN.md get-plan-current-phase
 python3 -B scripts/plan.py PLAN.md get-plan-current-task
 
+#
 # Header writes
+#
 python3 -B scripts/plan.py PLAN.md set-plan-title "My Project"
 python3 -B scripts/plan.py PLAN.md set-plan-depends-on NONE
 python3 -B scripts/plan.py PLAN.md set-plan-depends-on "../other/PLAN.md"
@@ -237,22 +243,58 @@ python3 -B scripts/plan.py PLAN.md set-plan-updated $(date -u +"%Y-%m-%dT%H:%M:%
 python3 -B scripts/plan.py PLAN.md set-plan-current-phase "Phase 2" # copies `[emoji-of-phase]` of "Phase 2"
 python3 -B scripts/plan.py PLAN.md set-plan-current-task "Task 2.3" # copies `[emoji-of-task]` of "Task 2.3"
 
+#
 # Status reads
+#
 python3 -B scripts/plan.py PLAN.md get-plan-status # returns `[emoji-of-plan]` of plan
 python3 -B scripts/plan.py PLAN.md get-phase-status "Phase 2" # returns `[emoji-of-phase]` of "Phase 2"
 python3 -B scripts/plan.py PLAN.md get-task-status "Task 2.3" # returns `[emoji-of-task]` of "Task 2.3"
 
+#
 # Status writes
+#
 python3 -B scripts/plan.py PLAN.md set-all-statuses ☐ # set plan, all phases, and all tasks status to be the same - use with caution
 python3 -B scripts/plan.py PLAN.md set-plan-status ⚙️ # sets `[emoji-of-plan]` for plan
 python3 -B scripts/plan.py PLAN.md set-phase-status "Phase 2" ⚙️ # sets `[emoji-of-phase]` for "Phase 2"
 python3 -B scripts/plan.py PLAN.md set-task-status "Task 2.3" ⚙️ # sets `[emoji-of-task]` for "Task 2.3"
 
-# Phase/Task CRUD
-python3 -B scripts/plan.py PLAN.md add-phase "Phase 2" "Description of phase..." # sets phase status to ☐
-python3 -B scripts/plan.py PLAN.md add-task "Phase 2" "Task 2.4" "Description of task..." # sets task status to ☐, phase status ❓
-python3 -B scripts/plan.py PLAN.md update-phase "Phase 2" "New description of phase..." # sets phase status to ❓
-python3 -B scripts/plan.py PLAN.md update-task "Phase 2" "Task 2.4" "New description of task..." # sets status to ❓
-python3 -B scripts/plan.py PLAN.md remove-phase "Phase 2" "Description of phase..." # sets plan status to ❓
-python3 -B scripts/plan.py PLAN.md remove-task "Phase 2" "Task 2.4" "Description of task..." # sets plan and phase status to ❓
+# 
+# add-phase
+# 
+python3 -B scripts/plan.py PLAN.md add-phase "Phase 2 - Description of phase..." # sets phase status to ☐
+
+#
+# add-task
+#
+python3 -B scripts/plan.py PLAN.md add-task "Phase 2" "Task 2.4 - Description of task..." # sets task status to ☐, phase status ❓
+# or
+python3 -B scripts/plan.py PLAN.md add-task "Phase 2 - Description of phase..." "Task 2.4 - Description of task..." # sets task status to ☐, phase status ❓
+
+#
+# update-phase
+#
+python3 -B scripts/plan.py PLAN.md update-phase "Phase 2 - New description of phase..." # sets phase status to ❓
+
+#
+# update-task
+#
+python3 -B scripts/plan.py PLAN.md update-task "Phase 2" "Task 2.4 - New description of task..." # sets status to ❓
+# or
+python3 -B scripts/plan.py PLAN.md update-task "Phase 2 - New description of phase..." "Task 2.4 - New description of task..." # sets status to ❓
+
+#
+# remove-phase
+#
+python3 -B scripts/plan.py PLAN.md remove-phase "Phase 2" # sets plan status to ❓
+# or
+python3 -B scripts/plan.py PLAN.md remove-phase "Phase 2 - Description of phase..." # sets plan status to ❓
+
+#
+# remove-task
+#
+python3 -B scripts/plan.py PLAN.md remove-task "Phase 2" "Task 2.4" # sets plan and phase status to ❓
+# or
+python3 -B scripts/plan.py PLAN.md remove-task "Phase 2" "Task 2.4 - Description of task..." # sets plan and phase status to ❓
+# or
+python3 -B scripts/plan.py PLAN.md remove-task "Phase 2 - Description of phase..." "Task 2.4 - Description of task..." # sets plan and phase status to ❓
 ```
