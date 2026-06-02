@@ -23,7 +23,6 @@
 #   get-depends-on                       Print Depends On value
 #   get-created                          Print Created timestamp
 #   get-updated                          Print Updated timestamp
-#   get-plan-header                      Print all header fields as key=value
 #   rederive-all                         Re-derive all phase + plan emojis
 #
 # After set-task-status / set-phase-status, this script auto-derives the
@@ -132,14 +131,6 @@ do_read() {
       ;;
     get-updated)
       get_header_field "$plan" "Updated"
-      ;;
-    get-plan-header)
-      echo "plan-title=$(get_plan_title_from_file "$plan")"
-      echo "depends-on=$(get_header_field "$plan" "Depends On")"
-      echo "created=$(get_header_field "$plan" "Created")"
-      echo "updated=$(get_header_field "$plan" "Updated")"
-      echo "current-phase=$(get_header_field "$plan" "Current Phase")"
-      echo "current-task=$(get_header_field "$plan" "Current Task")"
       ;;
     *)
       echo "ERROR: Unknown read action: $action" >&2

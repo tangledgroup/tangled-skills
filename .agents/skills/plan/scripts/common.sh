@@ -75,7 +75,6 @@ Actions:
   get-depends-on                        Print Depends On value
   get-created                           Print Created timestamp
   get-updated                           Print Updated timestamp
-  get-plan-header                       Print all header fields
   rederive-all                          Re-derive all phase + plan emojis
 
 Valid emojis: ☐ ❓ ⚙️ ❌ ☑
@@ -458,7 +457,7 @@ is_read_action() {
   case "$action" in
     get-task-status|get-phase-status|get-plan-status|\
     get-current-task|get-current-phase|get-plan-title|get-depends-on|\
-    get-created|get-updated|get-plan-header)
+    get-created|get-updated)
       return 0
       ;;
     *)

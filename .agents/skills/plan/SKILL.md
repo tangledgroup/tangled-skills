@@ -100,7 +100,6 @@ Once PLAN.md is written, **all subsequent updates to statuses and header fields 
 | Get depends-on | `bash scripts/plan.sh PLAN.md get-depends-on` |
 | Get created timestamp | `bash scripts/plan.sh PLAN.md get-created` |
 | Get updated timestamp | `bash scripts/plan.sh PLAN.md get-updated` |
-| Get all header fields | `bash scripts/plan.sh PLAN.md get-plan-header` |
 | **Status writes (atomic, auto-derives emojis)** | |
 | Set task status | `bash scripts/plan.sh PLAN.md set-task-status "Task X.Y" "⚙️"` |
 | Set phase status | `bash scripts/plan.sh PLAN.md set-phase-status "Phase X" "⚙️"` |
@@ -392,7 +391,6 @@ bash scripts/plan.sh PLAN.md get-plan-title
 bash scripts/plan.sh PLAN.md get-depends-on
 bash scripts/plan.sh PLAN.md get-created
 bash scripts/plan.sh PLAN.md get-updated
-bash scripts/plan.sh PLAN.md get-plan-header
 
 # Status writes (atomic, auto-derives phase + plan emojis)
 bash scripts/plan.sh PLAN.md set-task-status "Task 2.3" "⚙️"
@@ -405,9 +403,6 @@ bash scripts/plan.sh PLAN.md set-depends-on "../other/PLAN.md"
 
 # Re-derive all emojis (fix stale phase/plan emojis)
 bash scripts/plan.sh PLAN.md rederive-all
-
-# Full workflow (edit + re-derive all phases + validate + rollback)
-bash scripts/plan.sh PLAN.md set-task-status "Task 2.3" "☑"
 
 # Standalone derivation (read-only, no file changes)
 echo "Phase 2 emoji: $(bash scripts/derive-phase-emoji.sh PLAN.md 2)"
