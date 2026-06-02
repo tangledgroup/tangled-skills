@@ -127,10 +127,70 @@ def _strip_header_comment(line: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Helpers — argument parsing (phase_ref / task_ref with optional description)
+# ---------------------------------------------------------------------------
+
+def parse_phase_arg(arg: str) -> int:
+    """Extract phase number from a phase argument.
+
+    Accepts: 'Phase 2', 'Phase 2 - Description...'
+    Returns: phase number (int).
+    """
+    # Split on first ' - ' to strip optional description
+    id_part = arg.split(" - ", 1)[0].strip()
+    m = re.match(r"Phase\s+(\d+)", id_part)
+    if not m:
+        print(f"Error: invalid phase ref: {arg!r}", file=sys.stderr)
+        sys.exit(1)
+    return int(m.group(1))
+
+
+def parse_task_arg(arg: str) -> tuple[int, int]:
+    """Extract (phase_num, task_num) from a task argument.
+
+    Accepts: 'Task 2.4', 'Task 2.4 - Description...'
+    Returns: (phase_num, task_num).
+    """
+    id_part = arg.split(" - ", 1)[0].strip()
+    m = re.match(r"Task\s+(\d+)\.(\d+)", id_part)
+    if not m:
+        print(f"Error: invalid task ref: {arg!r}", file=sys.stderr)
+        sys.exit(1)
+    return int(m.group(1)), int(m.group(2))
+
+
+def parse_phase_add_arg(arg: str) -> tuple[int, str]:
+    """Parse add-phase argument. Returns (phase_num, title).
+
+    If arg matches 'Phase N - Title...', use explicit N.
+    Otherwise treat entire arg as the title and return (0, title) for auto-numbering.
+    """
+    m = re.match(r"^Phase\s+\d+\s+-\s+(.+)$", arg.strip())
+    if m:
+        # Has explicit phase number
+        num_m = re.match(r"Phase\s+(\d+)", arg.strip())
+        return int(num_m.group(1)), m.group(1).strip()
+    return 0, arg.strip()
+
+
+def parse_task_add_arg(arg: str) -> tuple[int, int, str]:
+    """Parse add-task argument. Returns (phase_num, task_num, title).
+
+    If arg matches 'Task X.Y - Title...', use explicit numbers.
+    Otherwise treat entire arg as the title and return (0, 0, title) for auto-numbering.
+    """
+    m = re.match(r"^Task\s+\d+\.\d+\s+-\s+(.+)$", arg.strip())
+    if m:
+        num_m = re.match(r"Task\s+(\d+)\.(\d+)", arg.strip())
+        return int(num_m.group(1)), int(num_m.group(2)), m.group(1).strip()
+    return 0, 0, arg.strip()
+
+
+# ---------------------------------------------------------------------------
 # Helpers — plan title parsing
 # ---------------------------------------------------------------------------
 
-_TITLE_RE = re.compile(r"^#\s*(\u2610|\u2753|\u2699\uFE0F|\u274C|\u2611)?\s*Plan:\s*(.+)$")
+_TITLE_RE = re.compile(r"^#\s*(\u2610|\u2753|\u2699\uFE0F|\u274C|\u2611)?\s*Plan\s*-\s*(.+)$")
 
 
 def parse_plan_title(line: str) -> tuple[str, str]:
@@ -146,14 +206,14 @@ def parse_plan_title(line: str) -> tuple[str, str]:
 
 def format_plan_title(emoji: str, title: str) -> str:
     """Format plan title line."""
-    return f"# {emoji} Plan: {title}"
+    return f"# {emoji} Plan - {title}"
 
 
 # ---------------------------------------------------------------------------
 # Helpers — phase parsing
 # ---------------------------------------------------------------------------
 
-_PHASE_RE = re.compile(r"^##\s*(\u2610|\u2753|\u2699\uFE0F|\u274C|\u2611)?\s*Phase\s+(\d+)\s+(.+)$")
+_PHASE_RE = re.compile(r"^##\s*(\u2610|\u2753|\u2699\uFE0F|\u274C|\u2611)?\s*Phase\s+(\d+)\s*-\s*(.+)$")
 
 
 def parse_phase_heading(line: str) -> tuple[str, int, str] | None:
@@ -168,7 +228,7 @@ def parse_phase_heading(line: str) -> tuple[str, int, str] | None:
 
 
 def format_phase_heading(emoji: str, num: int, title: str) -> str:
-    return f"## {emoji} Phase {num} {title}"
+    return f"## {emoji} Phase {num} - {title}"
 
 
 # ---------------------------------------------------------------------------
@@ -176,7 +236,7 @@ def format_phase_heading(emoji: str, num: int, title: str) -> str:
 # ---------------------------------------------------------------------------
 
 _TASK_RE = re.compile(
-    r"^- (\u2610|\u2753|\u2699\uFE0F|\u274C|\u2611) Task (\d+)\.(\d+)\s+(.+)$"
+    r"^- (\u2610|\u2753|\u2699\uFE0F|\u274C|\u2611) Task (\d+)\.(\d+)\s*-\s+(.+)$"
 )
 
 
@@ -194,7 +254,7 @@ def parse_task_line(line: str) -> tuple[str, int, int, str] | None:
 
 def format_task_line(emoji: str, phase_num: int, task_num: int, title: str) -> str:
     """Format a task line. Title may already include (depends on: ...) suffix."""
-    return f"- {emoji} Task {phase_num}.{task_num} {title}"
+    return f"- {emoji} Task {phase_num}.{task_num} - {title}"
 
 
 # ---------------------------------------------------------------------------
@@ -390,7 +450,7 @@ def cmd_create(args: argparse.Namespace) -> None:
     if depends:
         deps_str = " , ".join(depends)
 
-    content = f"""# {STATUS_TODO} Plan: {title}
+    content = f"""# {STATUS_TODO} Plan - {title}
 
 **Depends On:** {deps_str}
 
@@ -527,7 +587,8 @@ def cmd_set_plan_updated(args: argparse.Namespace) -> None:
 
 def cmd_set_plan_current_phase(args: argparse.Namespace) -> None:
     content = read_plan(args.path)
-    phase_ref = args.phase_ref  # e.g. "Phase 2"
+    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
+    target = parse_phase_arg(phase_ref)
     lines = content.splitlines()
 
     # Find the phase and copy its emoji + full heading
@@ -537,7 +598,7 @@ def cmd_set_plan_current_phase(args: argparse.Namespace) -> None:
         m = parse_phase_heading(line)
         if m:
             emoji, num, title = m
-            if f"Phase {num}" == phase_ref.strip():
+            if num == target:
                 target_emoji = emoji
                 target_text = f"{emoji} Phase {num}"
                 break
@@ -555,16 +616,10 @@ def cmd_set_plan_current_phase(args: argparse.Namespace) -> None:
 
 def cmd_set_plan_current_task(args: argparse.Namespace) -> None:
     content = read_plan(args.path)
-    task_ref = args.task_ref  # e.g. "Task 2.3"
+    task_ref = args.task_ref  # e.g. "Task 2.3" or "Task 2.3 - Description..."
     lines = content.splitlines()
 
-    # Parse task ref
-    m = re.match(r"Task\s+(\d+)\.(\d+)", task_ref.strip())
-    if not m:
-        print(f"Error: invalid task ref: {task_ref!r}", file=sys.stderr)
-        sys.exit(1)
-    target_phase = int(m.group(1))
-    target_task = int(m.group(2))
+    target_phase, target_task = parse_task_arg(task_ref)
 
     # Find the task and copy its emoji + full reference
     target_text = None
@@ -602,13 +657,9 @@ def cmd_get_plan_status(args: argparse.Namespace) -> None:
 
 def cmd_get_phase_status(args: argparse.Namespace) -> None:
     content = read_plan(args.path)
-    phase_ref = args.phase_ref  # e.g. "Phase 2"
+    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
     lines = content.splitlines()
-    m = re.match(r"Phase\s+(\d+)", phase_ref.strip())
-    if not m:
-        print(f"Error: invalid phase ref: {phase_ref!r}", file=sys.stderr)
-        sys.exit(1)
-    target = int(m.group(1))
+    target = parse_phase_arg(phase_ref)
 
     for line in lines:
         p = parse_phase_heading(line)
@@ -621,14 +672,9 @@ def cmd_get_phase_status(args: argparse.Namespace) -> None:
 
 def cmd_get_task_status(args: argparse.Namespace) -> None:
     content = read_plan(args.path)
-    task_ref = args.task_ref  # e.g. "Task 2.3"
+    task_ref = args.task_ref  # e.g. "Task 2.3" or "Task 2.3 - Description..."
     lines = content.splitlines()
-    m = re.match(r"Task\s+(\d+)\.(\d+)", task_ref.strip())
-    if not m:
-        print(f"Error: invalid task ref: {task_ref!r}", file=sys.stderr)
-        sys.exit(1)
-    target_phase = int(m.group(1))
-    target_task = int(m.group(2))
+    target_phase, target_task = parse_task_arg(task_ref)
 
     for line in lines:
         t = parse_task_line(line)
@@ -706,18 +752,14 @@ def cmd_set_plan_status(args: argparse.Namespace) -> None:
 def cmd_set_phase_status(args: argparse.Namespace) -> None:
     """Set phase status (emoji in heading)."""
     content = read_plan(args.path)
-    phase_ref = args.phase_ref
+    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
     new_status = args.status
 
     if new_status not in ALL_STATUSES:
         print(f"Error: invalid status {new_status!r}", file=sys.stderr)
         sys.exit(1)
 
-    m = re.match(r"Phase\s+(\d+)", phase_ref.strip())
-    if not m:
-        print(f"Error: invalid phase ref: {phase_ref!r}", file=sys.stderr)
-        sys.exit(1)
-    target = int(m.group(1))
+    target = parse_phase_arg(phase_ref)
 
     lines = content.splitlines()
     found = False
@@ -748,19 +790,14 @@ def cmd_set_phase_status(args: argparse.Namespace) -> None:
 def cmd_set_task_status(args: argparse.Namespace) -> None:
     """Set task status (emoji in task line)."""
     content = read_plan(args.path)
-    task_ref = args.task_ref
+    task_ref = args.task_ref  # e.g. "Task 2.3" or "Task 2.3 - Description..."
     new_status = args.status
 
     if new_status not in ALL_STATUSES:
         print(f"Error: invalid status {new_status!r}", file=sys.stderr)
         sys.exit(1)
 
-    m = re.match(r"Task\s+(\d+)\.(\d+)", task_ref.strip())
-    if not m:
-        print(f"Error: invalid task ref: {task_ref!r}", file=sys.stderr)
-        sys.exit(1)
-    target_phase = int(m.group(1))
-    target_task = int(m.group(2))
+    target_phase, target_task = parse_task_arg(task_ref)
 
     lines = content.splitlines()
     found = False
@@ -797,19 +834,23 @@ def cmd_set_task_status(args: argparse.Namespace) -> None:
 def cmd_add_phase(args: argparse.Namespace) -> None:
     """Add a new phase at the end of the plan."""
     content = read_plan(args.path)
-    phase_title = args.phase_title
+    phase_arg = args.phase_title  # e.g. "Phase 2 - Description..." or just "Description..."
     description = getattr(args, "description", "") or ""
 
     lines = content.splitlines()
     phases = extract_phases(content)
 
-    # Determine next phase number
-    next_num = len(phases) + 1
+    # Parse phase argument: explicit number or auto-number
+    explicit_num, title = parse_phase_add_arg(phase_arg)
+    if explicit_num > 0:
+        phase_num = explicit_num
+    else:
+        phase_num = len(phases) + 1
 
     # Build new phase section
     new_phase_lines = [
         "",
-        format_phase_heading(STATUS_TODO, next_num, phase_title),
+        format_phase_heading(STATUS_TODO, phase_num, title),
     ]
     if description:
         new_phase_lines.append(description)
@@ -817,20 +858,16 @@ def cmd_add_phase(args: argparse.Namespace) -> None:
     content = "\n".join(lines) + "\n" + "\n".join(new_phase_lines) + "\n"
     content = _touch_updated(args.path, content)
     write_plan(args.path, content)
-    print(f"Added Phase {next_num} ({phase_title}) with status {STATUS_TODO}")
+    print(f"Added Phase {phase_num} ({title}) with status {STATUS_TODO}")
 
 
 def cmd_update_phase(args: argparse.Namespace) -> None:
     """Update phase description/title."""
     content = read_plan(args.path)
-    phase_ref = args.phase_ref
+    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
     new_description = args.description
 
-    m = re.match(r"Phase\s+(\d+)", phase_ref.strip())
-    if not m:
-        print(f"Error: invalid phase ref: {phase_ref!r}", file=sys.stderr)
-        sys.exit(1)
-    target = int(m.group(1))
+    target = parse_phase_arg(phase_ref)
 
     lines = content.splitlines()
     found = False
@@ -865,13 +902,9 @@ def cmd_update_phase(args: argparse.Namespace) -> None:
 def cmd_remove_phase(args: argparse.Namespace) -> None:
     """Remove a phase and all its tasks."""
     content = read_plan(args.path)
-    phase_ref = args.phase_ref
+    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
 
-    m = re.match(r"Phase\s+(\d+)", phase_ref.strip())
-    if not m:
-        print(f"Error: invalid phase ref: {phase_ref!r}", file=sys.stderr)
-        sys.exit(1)
-    target = int(m.group(1))
+    target = parse_phase_arg(phase_ref)
 
     lines = content.splitlines()
     phase_ranges = extract_phases_lines("\n".join(lines))
@@ -911,36 +944,32 @@ def cmd_remove_phase(args: argparse.Namespace) -> None:
 def cmd_add_task(args: argparse.Namespace) -> None:
     """Add a new task to an existing phase."""
     content = read_plan(args.path)
-    phase_ref = args.phase_ref
-    task_title = args.task_title  # e.g. "Task 2.4" or just the title text
+    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
+    task_arg = args.task_title  # e.g. "Task 2.4 - Do thing" or just "Do thing"
 
-    m = re.match(r"Task\s+(\d+)\.(\d+)", task_title.strip())
-    if not m:
-        # User provided just a description, auto-number
-        phase_m = re.match(r"Phase\s+(\d+)", phase_ref.strip())
-        if not phase_m:
-            print(f"Error: invalid phase ref: {phase_ref!r}", file=sys.stderr)
-            sys.exit(1)
-        target_phase = int(phase_m.group(1))
+    lines = content.splitlines()
+    phases = extract_phases(content)
+
+    # Parse phase reference
+    target_phase = parse_phase_arg(phase_ref)
+
+    # Parse task argument: explicit numbers or auto-number
+    explicit_p, explicit_t, title = parse_task_add_arg(task_arg)
+    if explicit_p > 0 and explicit_t > 0:
+        task_phase = explicit_p
+        task_num = explicit_t
+    else:
+        task_phase = target_phase
         # Find max task number in this phase
-        phases = extract_phases(content)
         max_task = 0
-        for emoji, num, title, tasks in phases:
+        for emoji, num, t_title, tasks in phases:
             if num == target_phase:
                 for t in tasks:
                     if t[2] > max_task:
                         max_task = t[2]
-        next_task = max_task + 1
-        task_title = f"Task {target_phase}.{next_task} {task_title}"
+        task_num = max_task + 1
 
-    lines = content.splitlines()
-
-    # Find the phase and add task after its last task (or right after heading)
-    phase_m = re.match(r"Phase\s+(\d+)", phase_ref.strip())
-    if not phase_m:
-        print(f"Error: invalid phase ref: {phase_ref!r}", file=sys.stderr)
-        sys.exit(1)
-    target_phase = int(phase_m.group(1))
+    task_title = f"Task {task_phase}.{task_num} {title}"
 
     insert_idx = None
     for i, line in enumerate(lines):
@@ -972,7 +1001,7 @@ def cmd_add_task(args: argparse.Namespace) -> None:
         print(f"Error: {phase_ref} not found", file=sys.stderr)
         sys.exit(1)
 
-    task_line = f"- {STATUS_TODO} {task_title}"
+    task_line = format_task_line(STATUS_TODO, task_phase, task_num, title)
     lines.insert(insert_idx, task_line)
 
     content = "\n".join(lines)
@@ -985,16 +1014,11 @@ def cmd_add_task(args: argparse.Namespace) -> None:
 def cmd_update_task(args: argparse.Namespace) -> None:
     """Update task description."""
     content = read_plan(args.path)
-    phase_ref = args.phase_ref
-    task_ref = args.task_ref
+    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
+    task_ref = args.task_ref  # e.g. "Task 2.4" or "Task 2.4 - Description..."
     new_description = args.description
 
-    m = re.match(r"Task\s+(\d+)\.(\d+)", task_ref.strip())
-    if not m:
-        print(f"Error: invalid task ref: {task_ref!r}", file=sys.stderr)
-        sys.exit(1)
-    target_phase = int(m.group(1))
-    target_task = int(m.group(2))
+    target_phase, target_task = parse_task_arg(task_ref)
 
     lines = content.splitlines()
     found = False
@@ -1021,15 +1045,10 @@ def cmd_update_task(args: argparse.Namespace) -> None:
 def cmd_remove_task(args: argparse.Namespace) -> None:
     """Remove a task from a phase."""
     content = read_plan(args.path)
-    phase_ref = args.phase_ref
-    task_ref = args.task_ref
+    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
+    task_ref = args.task_ref  # e.g. "Task 2.4" or "Task 2.4 - Description..."
 
-    m = re.match(r"Task\s+(\d+)\.(\d+)", task_ref.strip())
-    if not m:
-        print(f"Error: invalid task ref: {task_ref!r}", file=sys.stderr)
-        sys.exit(1)
-    target_phase = int(m.group(1))
-    target_task = int(m.group(2))
+    target_phase, target_task = parse_task_arg(task_ref)
 
     lines = content.splitlines()
     remove_start = None

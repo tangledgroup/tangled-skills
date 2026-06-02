@@ -3,7 +3,7 @@ name: plan
 description: Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require structured iteration through Planning, Analysis, Design, Implementation, Testing, Deployment, Maintenance, etc phases with clear dependency graphs.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.1.9"
+version: "0.2.0"
 tags:
   - meta
   - meta-skill
@@ -37,7 +37,7 @@ Command `python3 -B scripts/plan.py PLAN.md create ...` creates PLAN.md like:
 
 ```markdown
 <!-- Plan Title is short but descriptive title of current plan -->
-# ☐ Plan: Plan Title
+# ☐ Plan - Plan Title
 
 <!-- default NONE if doesn't have dependencies, or relative paths to other PLAN.md files -->
 **Depends On:** ...
@@ -66,7 +66,7 @@ Strictly use only the following emojis for statuses: ☐ ❓ ⚙️ ❌ ☑
 
 The plan itself carries a status via `[emoji-of-plan]` in its title:
 ```
-# [emoji-of-plan] Plan: Plan Title
+# [emoji-of-plan] Plan - Plan Title
 ```
 
 Strictly use following emojis for `[emoji-of-plan]` status:
@@ -117,7 +117,7 @@ They form a directed acyclic graph (DAG) via the required `**Depends On:**` head
 
 ## Phases
 
-Phase is strictly formatted as `## [emoji-of-phase] Phase X Phase Title`, where X is unique ID (X = phase number, starting from 1).
+Phase is strictly formatted as `## [emoji-of-phase] Phase X - Phase Title`, where X is unique ID (X = phase number, starting from 1).
 Every Phase **MUST** have a unique ID in the exact format `## [emoji-of-phase] Phase X` (X = phase number, starting from 1).
 All phases, tasks and their additions, changes, removals, transitions and dependencies live ONLY in `PLAN.md` file.
 
@@ -128,7 +128,7 @@ If a phase has zero tasks, emit a warning — it can never reach ☑ (Done) and 
 Tasks are markdown list items. Each task is strictly formatted as:
 
 ```
-- [emoji-of-task] Task X.Y Task Title (depends on: ...)
+- [emoji-of-task] Task X.Y - Task Title (depends on: ...)
   - optional sub-bullet: acceptance criteria, notes, or implementation details
   - optional sub-bullet: additional context
 ```
@@ -191,6 +191,19 @@ These are valid state transitions:
 - ❓ → ⚙️ — question resolved, resume working
 - ❌ → ⚙️ — error state, decide to retry based on experience
 - ❌ → ❓ — error state, need clarification to proceed
+
+## Argument Parsing Convention
+
+The `" - "` (space-dash-space) delimiter separates IDs from descriptions in command arguments:
+
+- **phase_title** = `{phase_id} - {phase_desc}` → e.g. `"Phase 2 - Description of phase..."`
+- **task_title** = `{task_id} - {task_desc}` → e.g. `"Task 2.4 - Description of task..."`
+
+The ID is always required; the description after `" - "` is optional. Commands accept both forms:
+- `set-phase-status "Phase 2" ⚙️` — ID only
+- `remove-task "Phase 2 - Desc..." "Task 2.4 - Desc..."` — full form with descriptions
+
+For `add-phase` and `add-task`: if the argument starts with an explicit ID (`Phase N` or `Task X.Y`), that number is used; otherwise, the next sequential number is auto-assigned.
 
 ## Plan Completion
 
