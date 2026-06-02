@@ -1,5 +1,5 @@
 ---
-name: vega-lite-validate-0-1-0
+name: vega-lite-validator-0-1-0
 description: >-
   Validates Vega-Lite 6.4.3 JSON specifications against the official JSON Schema
   using check-jsonschema. Catches structural errors, invalid field types, and

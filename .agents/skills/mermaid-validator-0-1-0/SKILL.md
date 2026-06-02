@@ -1,5 +1,5 @@
 ---
-name: mermaid-validate-1-0-1
+name: mermaid-validator-0-1-0
 description: Lightweight Mermaid diagram syntax validator using the official mermaid parser with jsdom. Validates diagrams in markdown files, standalone .mmd files, directories, and stdin with JSON output support. Use when checking Mermaid diagram syntax for correctness before rendering, validating documentation containing Mermaid charts, or integrating diagram validation into CI/CD pipelines.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>

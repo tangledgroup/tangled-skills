@@ -123,7 +123,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 92 | mem0-2-0-1 | mem0 | 0.1.0 | memory, llm, ai-agents, vector-search, hybrid-search | Self-improving memory layer for LLM agents (Mem0 v2.0.1) enabling persistent context across sessions with ... |
 | 93 | mempalace-3-3-4 | mempalace | 0.1.0 | ai-memory, local-rag, chromadb, knowledge-graph, mcp | Local AI memory system that mines projects and conversations into a searchable index using ChromaDB for vector ... |
 | 94 | mermaid-11-15-0 | mermaid | 0.1.0 | mermaid, diagrams, flowchart, visualization, documentation | >- |
-| 95 | mermaid-validate-1-0-1 | mermaid-validate | 0.3.0 | mermaid, validator, diagram, syntax-checking, bun | Lightweight Mermaid diagram syntax validator using the official mermaid parser with jsdom. Validates diagrams in ... |
+| 95 | mermaid-validator-0-1-0 | mermaid-validator | 0.3.0 | mermaid, validator, diagram, syntax-checking, bun | Lightweight Mermaid diagram syntax validator using the official mermaid parser with jsdom. Validates diagrams in ... |
 | 96 | nekovm-2-4-1 | nekovm | 0.1.0 | nekovm, neko, virtual-machine, scripting-language, haxe | Stack-based bytecode VM and dynamically typed scripting language, primarily as a compilation target for Haxe. ... |
 | 97 | networkx-3-6-1 | networkx | 0.1.0 | graph-theory, network-analysis, complex-networks, centrality, community-detection | Python package for creating, manipulating, and studying complex networks. Supports graph generation, algorithms ... |
 | 98 | networkxternal-0-5 | networkxternal | 0.1.0 | graph, database, networkx, external-memory, sql | NetworkX-compatible interface for external memory MultiDiGraphs persisted in databases (SQLite, PostgreSQL, MySQL, ... |
@@ -235,7 +235,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 204 | uv-0-11-8 | uv | 0.1.0 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | Extremely fast Python package and project manager written in Rust, replacing pip, pip-tools, pipx, poetry, pyenv, ... |
 | 205 | vega-6-2-0 | vega | 0.1.0 | vega, visualization, charts, grammar-of-graphics, data-viz | Vega 6.2.0 — declarative visualization grammar for creating interactive charts in JSON. Define data, scales, marks, ... |
 | 206 | vega-lite-6-4-3 | vega-lite | 0.1.0 | vega-lite, visualization, charts, grammar-of-graphics, data-viz | Vega-Lite 6.4.3 — high-level grammar of interactive graphics. Generate, author, and debug Vega-Lite specifications ... |
-| 207 | vega-lite-validate-0-1-0 | vega-lite-validate | 0.1.0 | vega-lite, validation, json-schema, check-jsonschema, data-viz | >- |
+| 207 | vega-lite-validator-0-1-0 | vega-lite-validator | 0.1.0 | vega-lite, validation, json-schema, check-jsonschema, data-viz | >- |
 | 208 | voidauth-1-12-3 | voidauth | 0.1.0 | voidauth, sso, oidc, authentication, selfhosted | Open-source SSO authentication and user management provider for self-hosted applications. Provides OIDC Provider, ... |
 | 209 | webfetch | webfetch | 0.2.1 | webfetch, web-scraping, url-fetch, markdown, scrapling | Fetches any URL and converts the full page to clean AI-targeted markdown using scrapling. Use when scraping ... |
 | 210 | websearch | websearch | 0.2.1 | websearch, web-search, duckduckgo, yaml-output, scrapling | Searches DuckDuckGo via its HTML endpoint and outputs results as raw YAML. Uses a deterministic bash script, ... |
