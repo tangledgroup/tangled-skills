@@ -52,7 +52,10 @@ print_usage() {
   local script_name="$1"
   shift
   cat <<EOF
-Usage: $script_name <PLAN.md> <action> [args...]
+Usage: $script_name [--validate] <PLAN.md> <action> [args...]
+
+--validate — wrap write actions with backup + re-derive all + validate
+             and automatic rollback on validation failure.
 
 Actions:
   create <title> [depends_on]           Create a new PLAN.md with canonical header
@@ -252,7 +255,7 @@ get_phase_emoji_from_file() {
 # Get plan emoji from file header
 get_plan_emoji_from_file() {
   local plan="$1"
-  awk 'NR==1 && /^# \S+ / { print $2; found=1; exit } END { if (!found) print "☐" }' "$plan"
+  awk '/^# \S+ Plan:/ { print $2; found=1; exit } END { if (!found) print "☐" }' "$plan"
 }
 
 # Update phase emoji in file
@@ -270,8 +273,8 @@ update_phase_emoji_in_file() {
 update_plan_emoji_in_file() {
   local tmpfile="$1" old_emoji="$2" new_emoji="$3"
   awk -v old="$old_emoji" -v new="$new_emoji" '
-    NR==1 && /^# / {
-      if ($2 == old) { $2 = new }
+    /^# \S+ Plan:/ && $2 == old {
+      $2 = new
     }
     { print }
   ' "$tmpfile" > "${tmpfile}.new" && mv -f "${tmpfile}.new" "$tmpfile"

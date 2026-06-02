@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
-# plan.sh - PLAN.md lifecycle: create, read, update, derive
-# Usage: plan.sh <PLAN.md> <action> [args...]
+# plan.sh - PLAN.md lifecycle: create, read, update, derive, validate
+# Usage: plan.sh [--validate] <PLAN.md> <action> [args...]
+#
+# --validate — wrap write actions with backup + re-derive all + validate
+#              and automatic rollback on validation failure.
 #
 # Actions:
 #   create <title> [depends_on]          Create a new PLAN.md with canonical header
@@ -30,6 +33,13 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
+# --- Argument parsing ---
+validate_mode=0
+if [[ "${1:-}" == "--validate" ]]; then
+  validate_mode=1
+  shift
+fi
+
 [[ $# -eq 0 ]] && print_usage "$0" 1
 [[ "$1" == "--help" || "$1" == "-h" ]] && print_usage "$0" 0
 [[ $# -lt 2 ]] && print_usage "$0" 1
@@ -45,9 +55,10 @@ fi
 
 lockfile="${plan}.lock"
 tmpfile=""
+backup=""
 
 cleanup() {
-  cleanup_temp "$tmpfile" "${tmpfile:-}.new"
+  cleanup_temp "$tmpfile" "${tmpfile:-}.new" "$backup"
   release_lock "$lockfile"
 }
 trap cleanup EXIT INT TERM
@@ -272,21 +283,54 @@ case "$action" in
       # Pre-flight validation (before any temp files or locks)
       preflight_check "$action" "$@"
 
-      if [[ -z "${PLAN_SKIP_LOCK:-}" ]]; then
+      if [[ "$validate_mode" -eq 1 ]]; then
+        # --- Validate mode: lock → backup → edit → re-derive all → validate → rollback ---
         exec 200>"$lockfile"
         acquire_lock "$lockfile"
-        set +e
-        do_edit "$@"
-        rc=$?
-        set -e
-        # Ensure tmpfile is cleaned even on failure (cleanup trap handles it)
-        if [[ $rc -ne 0 ]]; then
-          exit $rc
+
+        # Safety backup
+        backup="${plan}.bak"
+        cp -- "$plan" "$backup"
+
+        # Edit (skip inner lock — we hold it)
+        PLAN_SKIP_LOCK=1 bash "$SCRIPT_DIR/plan.sh" "$plan" "$action" "$@"
+
+        # Re-derive ALL phase emojis + plan emoji for robustness
+        plan_dir=$(dirname "$plan")
+        tmpfile=$(mktemp "${plan_dir}/.plan-edit.$$-XXXXXX")
+        cp -- "$plan" "$tmpfile"
+        rederive_all "$tmpfile"
+        atomic_write "$plan" "$tmpfile"
+        tmpfile=""
+
+        # Validate
+        if "$SCRIPT_DIR/validate-plan.sh" "$plan"; then
+          echo "OK: Edit applied and validated: $plan"
+          rm -f "$backup"
+          backup=""
+        else
+          echo "ERROR: Validation failed — rolling back" >&2
+          mv -f "$backup" "$plan"
+          exit 1
         fi
       else
-        do_edit "$@"
+        # --- Standard mode: lock → edit only ---
+        if [[ -z "${PLAN_SKIP_LOCK:-}" ]]; then
+          exec 200>"$lockfile"
+          acquire_lock "$lockfile"
+          set +e
+          do_edit "$@"
+          rc=$?
+          set -e
+          # Ensure tmpfile is cleaned even on failure (cleanup trap handles it)
+          if [[ $rc -ne 0 ]]; then
+            exit $rc
+          fi
+        else
+          do_edit "$@"
+        fi
+        echo "OK: Applied '$action' to $plan"
       fi
-      echo "OK: Applied '$action' to $plan"
     fi
     ;;
 esac

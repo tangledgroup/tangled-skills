@@ -112,7 +112,7 @@ Once PLAN.md is written, **all subsequent updates to statuses and header fields 
 | **Re-derivation** | |
 | Re-derive all emojis | `bash scripts/plan.sh PLAN.md rederive-all` |
 | **Full workflow (edit + validate + rollback)** | |
-| Any action with validation | `bash scripts/workflow.sh PLAN.md <action> [args...]` |
+| Any action with validation | `bash scripts/plan.sh --validate PLAN.md <action> [args...]` |
 
 The scripts auto-derive phase emojis from tasks and plan emojis from phases.
 You never set a phase or plan emoji manually — it is always derived.
@@ -213,7 +213,7 @@ The plan emoji is **derived from its phases**, not set independently:
 
 When a plan transitions to ☑, it means every single task in every single phase
 is ☑. The scripts auto-derive the plan emoji after edits, so this happens
-automatically when using `plan.sh` or `workflow.sh`. Do not mark the
+automatically when using `plan.sh`. Do not mark the
 plan as completed until this condition is met.
 
 ## Plan
@@ -280,7 +280,7 @@ A phase emoji is **derived from its tasks**, not set independently:
 - ❌ **Blocked** — when no task is ⚙️ or ☑ but at least one is ❌
 - ☐ **To Do** — all tasks are still ☐
 
-The scripts (`plan.sh`, `workflow.sh`) auto-derive phase and plan
+The script (`plan.sh`) auto-derives phase and plan
 emojis after every task/phase status change. Phase and plan emojis are
 always derived — never set manually.
 
@@ -367,11 +367,10 @@ All paths are relative to this skill's directory (where SKILL.md lives).
 
 | Script | Mode | Purpose |
 |--------|------|---------|
-| [scripts/plan.sh](scripts/plan.sh) | **Execute** | Lock-and-edit with `flock` + atomic rename. Supports `create` for new plans, and all set/get actions for statuses, header fields, and re-derivation. Auto-derives phase and plan emojis after status changes. Syncs `**Current Task:**` and `**Current Phase:**` header emojis with actual body statuses. Auto-advances Current Task/Phase on task completion (☑). Read actions (`get-*`) are lock-free and deterministic. |
+| [scripts/plan.sh](scripts/plan.sh) | **Execute** | Lock-and-edit with `flock` + atomic rename. Supports `create` for new plans, and all set/get actions for statuses, header fields, and re-derivation. `--validate` flag adds backup + full re-derive + validation with automatic rollback. Auto-derives phase and plan emojis after status changes. Syncs `**Current Task:**` and `**Current Phase:**` header emojis with actual body statuses. Auto-advances Current Task/Phase on task completion (☑). Read actions (`get-*`) are lock-free and deterministic. |
 | [scripts/derive-phase-emoji.sh](scripts/derive-phase-emoji.sh) | **Execute** | Derive phase emoji from its tasks' emojis using AWK. Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
 | [scripts/derive-plan-emoji.sh](scripts/derive-plan-emoji.sh) | **Execute** | Derive plan emoji from all phases (re-deriving each phase from its tasks). Priority: ⚙️ > ❓ > ❌ > ☑ > ☐. |
-| [scripts/workflow.sh](scripts/workflow.sh) | **Execute** | Full workflow: lock → edit (via plan.sh) → re-derive all phases → validate with automatic rollback on validation failure. Same actions as plan.sh plus read-through for `get-*`. |
-| [scripts/common.sh](scripts/common.sh) | **Source** | Shared helpers: emoji constants, derivation functions, header field access, lock management, Current Phase/Task sync, and auto-advance on completion. Sourced by other scripts - do not run directly. |
+| [scripts/common.sh](scripts/common.sh) | **Source** | Shared helpers: emoji constants, derivation functions, header field access, lock management, Current Phase/Task sync, and auto-advance on completion. Sourced by other scripts — do not run directly. |
 
 ### Usage Examples
 
@@ -406,7 +405,7 @@ bash scripts/plan.sh PLAN.md set-depends-on "../other/PLAN.md"
 bash scripts/plan.sh PLAN.md rederive-all
 
 # Full workflow (edit + re-derive all phases + validate + rollback)
-bash scripts/workflow.sh PLAN.md set-task-status "Task 2.3" "☑"
+bash scripts/plan.sh --validate PLAN.md set-task-status "Task 2.3" "☑"
 
 # Standalone derivation (read-only, no file changes)
 echo "Phase 2 emoji: $(bash scripts/derive-phase-emoji.sh PLAN.md 2)"
@@ -421,9 +420,9 @@ bash scripts/validate-plan.sh PLAN.md
 - **Stale lock detection** - locks older than timeout with no holding process are automatically removed
 - **`mktemp` + `mv -f`** - write to temp then atomic rename, so PLAN.md is never left partial
 - **Advisory lock** - readers can still read PLAN.md while locked (they see the old version)
-- **Automatic rollback** - `workflow.sh` backs up the file and restores it if validation fails
+- **Automatic rollback** - `--validate` mode backs up the file and restores it if validation fails
 - **Cleanup on exit** - temp files, backups, and lock files are removed via trap on normal exit, INT, and TERM
 - **Lock-free reads** - `get-*` actions skip locking entirely (read-only)
 - **Lock file cleanup** - the physical `.lock` file is removed after each operation (flock advisory lock is released when the file descriptor closes; the script also removes the lock file itself via `release_lock` in the cleanup trap)
-- **Nested lock safety** - `workflow.sh` sets `PLAN_SKIP_LOCK` when calling `plan.sh` to avoid deadlocks
+- **Nested lock safety** - `--validate` mode sets `PLAN_SKIP_LOCK` when recursively calling itself to avoid deadlocks
 - **Deterministic header access** - all `get-*` and `set-*` for header fields use canonical parsing/writing via `common.sh`, ensuring values are always read and written in a consistent format
