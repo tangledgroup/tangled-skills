@@ -33,7 +33,7 @@ Strict task numbering (`[emoji-of-task] Task X.Y Task Title`), inline phase/task
 
 ## PLAN.md Header Template
 
-Command `bash scripts/plan.sh PLAN.md create ...` creates PLAN.md like:
+Command `python3 -B scripts/plan.py PLAN.md create ...` creates PLAN.md like:
 
 ```markdown
 <!-- Plan Title is short but descriptive title of current plan -->
@@ -213,46 +213,46 @@ Always use scripts to update `PLAN.md`.
 
 ```bash
 # Create a new PLAN.md with header
-bash scripts/plan.sh PLAN.md create "My Project"
-bash scripts/plan.sh PLAN.md create "Plan ABC" "../other/PLAN.md"
-bash scripts/plan.sh PLAN.md create "Plan XYZ" "../a/PLAN.md" "../../b/PLAN.md"
+python3 -B scripts/plan.py PLAN.md create "My Project"
+python3 -B scripts/plan.py PLAN.md create "Plan ABC" "../other/PLAN.md"
+python3 -B scripts/plan.py PLAN.md create "Plan XYZ" "../a/PLAN.md" "../../b/PLAN.md"
 
 # Header reads
-bash scripts/plan.sh PLAN.md get-plan-title
-bash scripts/plan.sh PLAN.md get-plan-depends-on
-bash scripts/plan.sh PLAN.md get-plan-created
-bash scripts/plan.sh PLAN.md get-plan-updated
-bash scripts/plan.sh PLAN.md get-plan-current-phase
-bash scripts/plan.sh PLAN.md get-plan-current-task
+python3 -B scripts/plan.py PLAN.md get-plan-title
+python3 -B scripts/plan.py PLAN.md get-plan-depends-on
+python3 -B scripts/plan.py PLAN.md get-plan-created
+python3 -B scripts/plan.py PLAN.md get-plan-updated
+python3 -B scripts/plan.py PLAN.md get-plan-current-phase
+python3 -B scripts/plan.py PLAN.md get-plan-current-task
 
 # Header writes
-bash scripts/plan.sh PLAN.md set-plan-title "My Project"
-bash scripts/plan.sh PLAN.md set-plan-depends-on NONE
-bash scripts/plan.sh PLAN.md set-plan-depends-on "../other/PLAN.md"
-bash scripts/plan.sh PLAN.md set-plan-depends-on "../a/PLAN.md" "../../b/PLAN.md"
-bash scripts/plan.sh PLAN.md set-plan-created --now
-bash scripts/plan.sh PLAN.md set-plan-created $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-bash scripts/plan.sh PLAN.md set-plan-updated --now
-bash scripts/plan.sh PLAN.md set-plan-updated $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-bash scripts/plan.sh PLAN.md set-plan-current-phase "Phase 2" # copies `[emoji-of-phase]` of "Phase 2"
-bash scripts/plan.sh PLAN.md set-plan-current-task "Task 2.3" # copies `[emoji-of-task]` of "Task 2.3"
+python3 -B scripts/plan.py PLAN.md set-plan-title "My Project"
+python3 -B scripts/plan.py PLAN.md set-plan-depends-on NONE
+python3 -B scripts/plan.py PLAN.md set-plan-depends-on "../other/PLAN.md"
+python3 -B scripts/plan.py PLAN.md set-plan-depends-on "../a/PLAN.md" "../../b/PLAN.md"
+python3 -B scripts/plan.py PLAN.md set-plan-created --now
+python3 -B scripts/plan.py PLAN.md set-plan-created $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+python3 -B scripts/plan.py PLAN.md set-plan-updated --now
+python3 -B scripts/plan.py PLAN.md set-plan-updated $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+python3 -B scripts/plan.py PLAN.md set-plan-current-phase "Phase 2" # copies `[emoji-of-phase]` of "Phase 2"
+python3 -B scripts/plan.py PLAN.md set-plan-current-task "Task 2.3" # copies `[emoji-of-task]` of "Task 2.3"
 
 # Status reads
-bash scripts/plan.sh PLAN.md get-plan-status # returns `[emoji-of-plan]` of plan
-bash scripts/plan.sh PLAN.md get-phase-status "Phase 2" # returns `[emoji-of-phase]` of "Phase 2"
-bash scripts/plan.sh PLAN.md get-task-status "Task 2.3" # returns `[emoji-of-task]` of "Task 2.3"
+python3 -B scripts/plan.py PLAN.md get-plan-status # returns `[emoji-of-plan]` of plan
+python3 -B scripts/plan.py PLAN.md get-phase-status "Phase 2" # returns `[emoji-of-phase]` of "Phase 2"
+python3 -B scripts/plan.py PLAN.md get-task-status "Task 2.3" # returns `[emoji-of-task]` of "Task 2.3"
 
 # Status writes
-bash scripts/plan.sh PLAN.md set-all-statuses ☐ # set plan, all phases, and all tasks status to be the same - use with caution
-bash scripts/plan.sh PLAN.md set-plan-status ⚙️ # sets `[emoji-of-plan]` for plan
-bash scripts/plan.sh PLAN.md set-phase-status "Phase 2" ⚙️ # sets `[emoji-of-phase]` for "Phase 2"
-bash scripts/plan.sh PLAN.md set-task-status "Task 2.3" ⚙️ # sets `[emoji-of-task]` for "Task 2.3"
+python3 -B scripts/plan.py PLAN.md set-all-statuses ☐ # set plan, all phases, and all tasks status to be the same - use with caution
+python3 -B scripts/plan.py PLAN.md set-plan-status ⚙️ # sets `[emoji-of-plan]` for plan
+python3 -B scripts/plan.py PLAN.md set-phase-status "Phase 2" ⚙️ # sets `[emoji-of-phase]` for "Phase 2"
+python3 -B scripts/plan.py PLAN.md set-task-status "Task 2.3" ⚙️ # sets `[emoji-of-task]` for "Task 2.3"
 
 # Phase/Task CRUD
-bash scripts/plan.sh PLAN.md add-phase "Phase 2" "Description of phase..." # sets phase status to ☐
-bash scripts/plan.sh PLAN.md add-task "Phase 2" "Task 2.4" "Description of task..." # sets task status to ☐, phase status ❓
-bash scripts/plan.sh PLAN.md update-phase "Phase 2" "New description of phase..." # sets phase status to ❓
-bash scripts/plan.sh PLAN.md update-task "Phase 2" "Task 2.4" "New description of task..." # sets status to ❓
-bash scripts/plan.sh PLAN.md remove-phase "Phase 2" "Description of phase..." # sets plan status to ❓
-bash scripts/plan.sh PLAN.md remove-task "Phase 2" "Task 2.4" "Description of task..." # sets plan and phase status to ❓
+python3 -B scripts/plan.py PLAN.md add-phase "Phase 2" "Description of phase..." # sets phase status to ☐
+python3 -B scripts/plan.py PLAN.md add-task "Phase 2" "Task 2.4" "Description of task..." # sets task status to ☐, phase status ❓
+python3 -B scripts/plan.py PLAN.md update-phase "Phase 2" "New description of phase..." # sets phase status to ❓
+python3 -B scripts/plan.py PLAN.md update-task "Phase 2" "Task 2.4" "New description of task..." # sets status to ❓
+python3 -B scripts/plan.py PLAN.md remove-phase "Phase 2" "Description of phase..." # sets plan status to ❓
+python3 -B scripts/plan.py PLAN.md remove-task "Phase 2" "Task 2.4" "Description of task..." # sets plan and phase status to ❓
 ```
