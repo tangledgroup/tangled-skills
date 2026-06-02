@@ -35,12 +35,24 @@ Strict task numbering (`[emoji-of-task] Task X.Y Task Title`), inline phase/task
 
 When this skill is invoked, follow these steps:
 
-1. **PLAN.md doesn't exist?** → Generate the header deterministically using the header script, then append phases/tasks:
+1. **PLAN.md doesn't exist?** → Generate the header deterministically in a single call, then append phases/tasks:
 
    ```bash
-   # Generate canonical header (prints to stdout)
-   ...
+   # Single call — writes header directly to file
+   bash scripts/create-plan-header.sh "My Project" path/to/PLAN.md "../dep/PLAN.md"
+
+   # Append phases and tasks after the header
+   cat >> path/to/PLAN.md <<'EOF'
+
+## ☐ Phase 1 Planning
+- ☐ Task 1.1 Define requirements
+EOF
    ```
+
+   The script accepts three arguments:
+   - `title` — plan title (required)
+   - `output_path` — file to write to (optional, prints to stdout if omitted)
+   - `depends_on` — dependency path(s), defaults to `NONE`
 2. **PLAN.md exists?** → Open it. Examine `**Current Phase:**` and `**Current Task:**` and propose a continuation point (hint: the next pending task could be one of the lowest-numbered but in this order ⚙️ ❓ ❌ ☐). All running tasks have to be re-run with status ⚙️ because they were probably interrupted.
 
 ## Status Update Rules (MANDATORY)
@@ -134,25 +146,24 @@ blank line, and field so markdown renders consistently across all editors.
 
 ```markdown
 <!-- Plan Title is short but descriptive title of current plan -->
-# [emoji-of-plan] Plan: Plan Title
+# ☐ Plan: Plan Title
 
 <!-- default NONE if doesn't have dependencies, or relative paths to other PLAN.md files -->
-**Depends On:** ...
+**Depends On:** NONE
 
 <!-- ISO 8601 / UTC (YYYY-MM-DDTHH:MM:SSZ) -->
-**Created:** ...
+**Created:** 2026-06-02T11:28:39Z
 
 <!-- ISO 8601 / UTC (YYYY-MM-DDTHH:MM:SSZ) -->
-**Updated:** ...
+**Updated:** 2026-06-02T11:28:39Z
 
 <!-- [emoji-of-phase] Phase X Phase Title -->
-**Current Phase:** ...
+**Current Phase:**
 
 <!-- [emoji-of-phase] Phase X - [emoji-of-task] Task X.Y -->
-**Current Task:** ...
+**Current Task:**
 
 <!-- required: PHASES with TASKS start here -->
-...
 ```
 
 ## Universal emoji-coded statuses
@@ -365,8 +376,9 @@ All paths are relative to this skill's directory (where SKILL.md lives).
 ### Usage Examples
 
 ```bash
-# Create a new PLAN.md (deterministic header)
-...
+# Create a new PLAN.md (deterministic header, single call)
+bash scripts/create-plan-header.sh "My Project" path/to/PLAN.md
+bash scripts/create-plan-header.sh "Dependent Plan" path/to/PLAN.md "../other/PLAN.md"
 
 # Status reads (deterministic, no lock)
 bash scripts/update-plan.sh PLAN.md get-task-status "Task 2.3"
