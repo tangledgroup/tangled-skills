@@ -375,31 +375,32 @@ All paths are relative to this skill's directory (where SKILL.md lives).
 ### Usage Examples
 
 ```bash
-# Create a new PLAN.md (deterministic header, single call)
+# Create a new PLAN.md with header
 bash scripts/plan.sh PLAN.md create "My Project"
 bash scripts/plan.sh PLAN.md create "Dependent Plan" "../other/PLAN.md"
 
-# Status reads (deterministic, no lock)
-bash scripts/plan.sh PLAN.md get-task-status "Task 2.3"
-bash scripts/plan.sh PLAN.md get-phase-status "Phase 2"
-bash scripts/plan.sh PLAN.md get-plan-status
-
-# Header reads (deterministic, no lock)
-bash scripts/plan.sh PLAN.md get-current-task
-bash scripts/plan.sh PLAN.md get-current-phase
+# Header reads
 bash scripts/plan.sh PLAN.md get-plan-title
 bash scripts/plan.sh PLAN.md get-depends-on
 bash scripts/plan.sh PLAN.md get-created
 bash scripts/plan.sh PLAN.md get-updated
+bash scripts/plan.sh PLAN.md get-current-task
+bash scripts/plan.sh PLAN.md get-current-phase
 
-# Status writes (atomic, auto-derives phase + plan emojis)
+# Header writes
+bash scripts/plan.sh PLAN.md set-plan-title "My Project"
+bash scripts/plan.sh PLAN.md set-depends-on "../other/PLAN.md"
+
+# Status reads
+bash scripts/plan.sh PLAN.md get-plan-status
+bash scripts/plan.sh PLAN.md get-phase-status "Phase 2"
+bash scripts/plan.sh PLAN.md get-task-status "Task 2.3"
+
+# Status writes
 bash scripts/plan.sh PLAN.md set-task-status "Task 2.3" "⚙️"
 bash scripts/plan.sh PLAN.md update-timestamp
 bash scripts/plan.sh PLAN.md set-current-task "⚙️ Task 2.3"
 
-# Header writes (atomic, canonical format)
-bash scripts/plan.sh PLAN.md set-plan-title "My Project"
-bash scripts/plan.sh PLAN.md set-depends-on "../other/PLAN.md"
 
 # Re-derive all emojis (fix stale phase/plan emojis)
 bash scripts/plan.sh PLAN.md rederive-all
