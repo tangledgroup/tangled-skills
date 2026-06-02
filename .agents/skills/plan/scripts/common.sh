@@ -52,10 +52,10 @@ print_usage() {
   local script_name="$1"
   shift
   cat <<EOF
-Usage: $script_name [--validate] <PLAN.md> <action> [args...]
+Usage: $script_name <PLAN.md> <action> [args...]
 
---validate — wrap write actions with backup + re-derive all + validate
-             and automatic rollback on validation failure.
+All write actions are atomic: lock → backup → edit → re-derive all →
+validate with automatic rollback on validation failure.
 
 Actions:
   create <title> [depends_on]           Create a new PLAN.md with canonical header
