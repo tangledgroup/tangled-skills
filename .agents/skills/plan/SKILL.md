@@ -102,7 +102,7 @@ The plan emoji is **derived from its phases**, not set independently:
 - ❌ **Blocked** — when no phase is ⚙️/☑ but at least one is ❌
 - ☐ **Not Started** — all phases are still ☐
 
-When a plan transitions to ☑, it means every single task in every single phase is ☑. The scripts auto-derive the plan emoji   after edits, so this happens automatically when using `plan.sh`. Do not mark the plan as completed until this condition is met.
+When a plan transitions to ☑, it means every single task in every single phase is ☑. The script auto-derives the plan emoji after edits, so this happens automatically when using `plan.py`. Do not mark the plan as completed until this condition is met.
 
 ## Plan
 
@@ -168,7 +168,7 @@ A phase emoji is **derived from its tasks**, not set independently:
 - ❌ **Blocked** — when no task is ⚙️ or ☑ but at least one is ❌
 - ☐ **To Do** — all tasks are still ☐
 
-The script (`plan.sh`) auto-derives phase and plan emojis after every task/phase status change. Phase and plan emojis are always derived — never set manually.
+The script (`plan.py`) auto-derives phase and plan emojis after every task status change. Phase and plan emojis are always derived — never set manually.
 
 ## Phase and Task Statuses
 
@@ -204,8 +204,8 @@ When all phases and tasks reach ☑ (Done), produce a short completion report su
 
 ## Dependencies
 
-Scripts require: `bash` 4+, `awk`, `sed`, `grep`, `flock`, `mktemp`, `date`.
-All are available on Linux/macOS. On minimal containers, ensure `util-linux` (`flock`) is installed.
+Scripts require: `python3` 3.10+ with only built-in modules (`argparse`, `re`, `sys`, `datetime`, `pathlib`).
+No third-party packages needed.
 
 ### Usage Examples
 
