@@ -233,16 +233,17 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 202 | upx-5-1-1 | upx | 0.1.0 | compression, executable-packer, distribution, size-optimization, cross-platform | >- |
 | 203 | usearch-2-25-1 | usearch | 0.1.0 | vector-search, ann, hnsw, similarity-search, clustering | High-performance single-file similarity search engine for vectors using HNSW with user-defined metrics, ... |
 | 204 | uv-0-11-8 | uv | 0.1.0 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | Extremely fast Python package and project manager written in Rust, replacing pip, pip-tools, pipx, poetry, pyenv, ... |
-| 205 | vega-lite-6-4-3 | vega-lite | 0.1.0 | vega-lite, visualization, charts, grammar-of-graphics, data-viz | Vega-Lite 6.4.3 — high-level grammar of interactive graphics. Generate, author, and debug Vega-Lite specifications ... |
-| 206 | vega-lite-validate-0-1-0 | vega-lite-validate | 0.1.0 | vega-lite, validation, json-schema, check-jsonschema, data-viz | >- |
-| 207 | voidauth-1-12-3 | voidauth | 0.1.0 | voidauth, sso, oidc, authentication, selfhosted | Open-source SSO authentication and user management provider for self-hosted applications. Provides OIDC Provider, ... |
-| 208 | webfetch | webfetch | 0.2.1 | webfetch, web-scraping, url-fetch, markdown, scrapling | Fetches any URL and converts the full page to clean AI-targeted markdown using scrapling. Use when scraping ... |
-| 209 | websearch | websearch | 0.2.1 | websearch, web-search, duckduckgo, yaml-output, scrapling | Searches DuckDuckGo via its HTML endpoint and outputs results as raw YAML. Uses a deterministic bash script, ... |
-| 210 | yjs-13-6-30 | yjs | 0.1.0 | yjs, crdt, collaborative-editing, real-time, shared-types | CRDT framework for conflict-free collaborative editing with shared types (Y.Map, Y.Array, Y.Text). Provides ... |
-| 211 | yq-4-53-2 | yq | 0.1.0 | yaml, json, xml, ini, csv | >- |
-| 212 | zeromq-wiki-3-2-0 | zeromq-wiki | 0.1.0 | zeromq, messaging, distributed-systems, networking, sockets | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and ... |
-| 213 | zeromq-zguide-3-2-0 | zeromq-zguide | 0.1.0 | zeromq, zmq, messaging, sockets, distributed-systems | Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and ... |
+| 205 | vega-6-2-0 | vega | 0.1.0 | vega, visualization, charts, grammar-of-graphics, data-viz | Vega 6.2.0 — declarative visualization grammar for creating interactive charts in JSON. Define data, scales, marks, ... |
+| 206 | vega-lite-6-4-3 | vega-lite | 0.1.0 | vega-lite, visualization, charts, grammar-of-graphics, data-viz | Vega-Lite 6.4.3 — high-level grammar of interactive graphics. Generate, author, and debug Vega-Lite specifications ... |
+| 207 | vega-lite-validate-0-1-0 | vega-lite-validate | 0.1.0 | vega-lite, validation, json-schema, check-jsonschema, data-viz | >- |
+| 208 | voidauth-1-12-3 | voidauth | 0.1.0 | voidauth, sso, oidc, authentication, selfhosted | Open-source SSO authentication and user management provider for self-hosted applications. Provides OIDC Provider, ... |
+| 209 | webfetch | webfetch | 0.2.1 | webfetch, web-scraping, url-fetch, markdown, scrapling | Fetches any URL and converts the full page to clean AI-targeted markdown using scrapling. Use when scraping ... |
+| 210 | websearch | websearch | 0.2.1 | websearch, web-search, duckduckgo, yaml-output, scrapling | Searches DuckDuckGo via its HTML endpoint and outputs results as raw YAML. Uses a deterministic bash script, ... |
+| 211 | yjs-13-6-30 | yjs | 0.1.0 | yjs, crdt, collaborative-editing, real-time, shared-types | CRDT framework for conflict-free collaborative editing with shared types (Y.Map, Y.Array, Y.Text). Provides ... |
+| 212 | yq-4-53-2 | yq | 0.1.0 | yaml, json, xml, ini, csv | >- |
+| 213 | zeromq-wiki-3-2-0 | zeromq-wiki | 0.1.0 | zeromq, messaging, distributed-systems, networking, sockets | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and ... |
+| 214 | zeromq-zguide-3-2-0 | zeromq-zguide | 0.1.0 | zeromq, zmq, messaging, sockets, distributed-systems | Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and ... |
 
 ## Statistics
 
-- **Total Skills**: 213
+- **Total Skills**: 214
