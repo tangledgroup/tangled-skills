@@ -159,7 +159,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 128 | pi-mono-0-74-0 | pi-mono | 0.1.0 | pi, pi-mono, coding-agent, ai-agent, terminal-ai | >- |
 | 129 | pinecone-router-7-5-0 | pinecone-router | 0.1.0 | alpinejs, router, spa, client-side-routing, single-page-application | Client-side routing toolkit for Alpine.js applications using Pinecone Router v7.5, providing route matching, ... |
 | 130 | pipe | pipe | 0.1.4 | pipe, meta, meta-skill, chaining, workflow | Unix-style pipe expression syntax for chaining multiple agent operations sequentially. Each stage's output becomes ... |
-| 131 | plan | plan | 0.3.0 | meta, meta-skill, plan, workflow, task-management | Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require ... |
+| 131 | plan | plan | 0.4.0 | meta, meta-skill, plan, workflow, task-management | Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require ... |
 | 132 | podman-5-8-1 | podman | 0.1.0 | containers, daemonless, rootless, oci, pods | Daemonless container engine with Docker-compatible CLI for managing containers, pods, images, volumes, and networks. ... |
 | 133 | podman-5-8-2 | podman | 0.1.0 | containers, daemonless, rootless, oci, pods | Daemonless container engine with Docker-compatible CLI for managing containers, pods, images, volumes, and networks. ... |
 | 134 | podman-compose-1-5-0 | podman-compose | 0.1.0 | podman, compose, containers, orchestration, devops | Orchestrates multi-container applications using Compose specification files with Podman backend. Use when deploying ... |

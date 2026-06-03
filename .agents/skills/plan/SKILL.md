@@ -3,7 +3,7 @@ name: plan
 description: Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require structured iteration through Planning, Analysis, Design, Implementation, Testing, Deployment, Maintenance, etc phases with clear dependency graphs.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.3.0"
+version: "0.4.0"
 tags:
   - meta
   - meta-skill
@@ -20,8 +20,8 @@ category: meta
 Plan/phase/task based planning system with `PLAN.md` as single source of truth.
 There can be many `PLAN.md` files in different locations.
 Plan files create a dependency graph via `**Depends On:** ...`.
-Strict phase numbering (`[emoji-of-phase] Phase X Phase Title`), inline phase dependency tracking, and emoji-coded statuses within current plan.
-Strict task numbering (`[emoji-of-task] Task X.Y Task Title`), inline phase/task dependency tracking, and emoji-coded statuses within current plan.
+Strict phase numbering (`[emoji-of-phase] Phase X ➖ Phase Title`), inline phase dependency tracking, and emoji-coded statuses within current plan.
+Strict task numbering (`[emoji-of-task] Task X.Y ➖ Task Title ⚓ ...`), with `⚓` anchor marking task dependencies that must reach `☑` before the dependent task can proceed, and emoji-coded statuses within current plan.
 
 ## When to Use
 
@@ -117,10 +117,12 @@ If a phase has zero tasks, emit a warning — it can never reach ☑ (Done) and 
 Tasks are markdown list items. Each task is strictly formatted as:
 
 ```
-- [emoji-of-task] Task X.Y ➖ Task Title (depends on: ...)
+- [emoji-of-task] Task X.Y ➖ Task Title ⚓ Task A.B , Task C.D
   - optional sub-bullet: acceptance criteria, notes, or implementation details
   - optional sub-bullet: additional context
 ```
+
+The `⚓ ...` suffix is **optional** — omit it entirely when a task has no dependencies.
 
 Every task **MUST** have a unique ID in the exact format `- [emoji-of-task] Task X.Y` (X = phase number, Y = sequential task number **within that phase**).
 
@@ -139,11 +141,21 @@ Each task should be small enough to complete in one focused work session and lar
 
 Task dependencies are **phase-bound by default** (most will be same-phase).
 
-When a task has dependencies, append to the task title the suffix `(depends on: A , B , ...)`. If a task has no dependencies, don't append `(depends on: ...)` to it.
+The `⚓` anchor emoji symbolizes "depends on". It means the plan needs these dependent tasks finished in state `☑` before proceeding with the current task.
 
-For phase-bound dependencies, `A`, `B`, etc. are of the form `Task X.Y` where `X` is the current phase.
+When a task has dependencies, append to the task title: `⚓ Task A.B , Task C.D`. If a task has no dependencies, **omit** the `⚓ ...` suffix entirely.
 
-For cross-phase dependencies, use the full `Phase X - Task X.Y` form where `X` is the other phase's ID and `Y` is the task ID within that phase.
+For **phase-bound** dependencies (same phase), use `Task X.Y` where `X` is the current phase:
+```
+- ☐ Task 2.3 ➖ Build parser ⚓ Task 2.1 , Task 2.2
+```
+
+For **cross-phase** dependencies, use the full `Phase X - Task X.Y` form:
+```
+- ☐ Task 3.1 ➖ Integrate modules ⚓ Phase 2 - Task 2.3 , Phase 1 - Task 1.4
+```
+
+The `plan.py` script enforces dependency satisfaction: it will **reject** transitioning a task to `⚙️` (Doing) if any of its `⚓` dependencies are not in `☑` (Done) state.
 
 This creates a clear directed graph that any reader (human or agent) can parse instantly.
 
@@ -269,6 +281,7 @@ python3 -B scripts/plan.py PLAN.md add-phase "Phase 2 ➖ Description of phase..
 # add-task
 #
 python3 -B scripts/plan.py PLAN.md add-task "Phase 2" "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase status ❓
+python3 -B scripts/plan.py PLAN.md add-task "Phase 2" "Task 2.5 ➖ Depends on prior tasks ⚓ Task 2.1 , Task 2.3" # with dependencies"Phase 2" "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase status ❓
 # or
 python3 -B scripts/plan.py PLAN.md add-task "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase status ❓
 

@@ -517,37 +517,83 @@ _TASK_RE = re.compile(
     r"^- (\u2610|\u2753|\u2699\uFE0F|\u274C|\u2611) Task (\d+)\.(\d+)\s*➖\s+(.+)$"
 )
 
+# Matches the ⚓ anchor dependency suffix at end of a task title.
+# e.g. "Do thing ⚓ Task 2.1 , Task 2.2" → clean="Do thing", deps="Task 2.1 , Task 2.2"
+_DEPS_ANCHOR_RE = re.compile(r"^(.+?)\s*⚓\s*(.+)$")
 
-def parse_task_line(line: str) -> tuple[str, int, int, str] | None:
-    """Return (emoji, phase_num, task_num, title) or None."""
+# Matches a single dependency reference: "Task X.Y" or "Phase X - Task X.Y"
+_SINGLE_DEP_RE = re.compile(r"(?:Phase\s+\d+\s*-\s*)?Task\s+\d+\.\d+")
+
+
+def parse_task_deps(raw_title: str) -> tuple[str, list[str]]:
+    """Split a task title into (clean_title, [dependency_refs]).
+
+    Handles titles like:
+      - "Do thing" → ("Do thing", [])
+      - "Do thing ⚓ Task 2.1 , Task 2.2" → ("Do thing", ["Task 2.1", "Task 2.2"])
+      - "Do thing ⚓ Phase 3 - Task 3.1" → ("Do thing", ["Phase 3 - Task 3.1"])
+    """
+    m = _DEPS_ANCHOR_RE.match(raw_title.strip())
+    if not m:
+        return raw_title.strip(), []
+
+    clean = m.group(1).strip()
+    deps_str = m.group(2).strip()
+    deps = [d.strip() for d in deps_str.split(",")]
+    # Validate each dep ref looks like a task reference
+    for d in deps:
+        if not _SINGLE_DEP_RE.fullmatch(d):
+            print(f"Warning: malformed dependency ref {d!r}", file=sys.stderr)
+    return clean, deps
+
+
+def format_task_deps(deps: list[str]) -> str:
+    """Format dependency refs as ' ⚓ Task A.B , Task C.D' or empty string."""
+    if not deps:
+        return ""
+    return " ⚓ " + " , ".join(deps)
+
+
+def parse_task_line(line: str) -> tuple[str, int, int, str, list[str]] | None:
+    """Return (emoji, phase_num, task_num, clean_title, [deps]) or None.
+
+    clean_title does NOT include the ⚓ anchor suffix.
+    deps is a list of dependency references (e.g. ["Task 2.1", "Phase 3 - Task 3.1"]).
+    """
     m = _TASK_RE.match(line.strip())
     if not m:
         return None
     emoji = m.group(1)
     phase = int(m.group(2))
     task = int(m.group(3))
-    title = m.group(4).strip()
-    return emoji, phase, task, title
+    raw_title = m.group(4).strip()
+    clean_title, deps = parse_task_deps(raw_title)
+    return emoji, phase, task, clean_title, deps
 
 
-def format_task_line(emoji: str, phase_num: int, task_num: int, title: str) -> str:
-    """Format a task line. Title may already include (depends on: ...) suffix."""
-    return f"- {emoji} Task {phase_num}.{task_num} ➖ {title}"
+def format_task_line(emoji: str, phase_num: int, task_num: int, title: str, deps: list[str] | None = None) -> str:
+    """Format a task line with optional ⚓ dependency anchor.
+
+    title should be the clean title (without ⚓ suffix).
+    deps is a list of dependency references.
+    """
+    suffix = format_task_deps(deps or [])
+    return f"- {emoji} Task {phase_num}.{task_num} ➖ {title}{suffix}"
 
 
 # ---------------------------------------------------------------------------
 # Helpers — structure extraction
 # ---------------------------------------------------------------------------
 
-def extract_phases(content: str) -> list[tuple[str, int, str, list[tuple[str, int, int, str]]]]:
+def extract_phases(content: str) -> list[tuple[str, int, str, list[tuple[str, int, int, str, list[str]]]]]:
     """Extract all phases with their tasks.
 
-    Returns list of (emoji, phase_num, title, [(emoji, phase, task, title), ...]).
+    Returns list of (emoji, phase_num, title, [(emoji, phase, task, clean_title, [deps]), ...]).
     """
     lines = content.splitlines()
-    phases: list[tuple[str, int, str, list[tuple[str, int, int, str]]]] = []
+    phases: list[tuple[str, int, str, list[tuple[str, int, int, str, list[str]]]]] = []
     current_phase: tuple[str, int, str] | None = None
-    current_tasks: list[tuple[str, int, int, str]] = []
+    current_tasks: list[tuple[str, int, int, str, list[str]]] = []
 
     for line in lines:
         phase_match = parse_phase_heading(line)
@@ -707,6 +753,58 @@ def validate_status_set(content: str) -> str:
             break
 
     return "\n".join(lines)
+
+
+def check_task_deps_satisfied(content: str, task_phase: int, task_num: int) -> bool:
+    """Check if all dependencies of a task are in ☑ (Done) state.
+
+    Returns True if satisfied (no deps or all deps are ☑), False otherwise.
+    """
+    lines = content.splitlines()
+    phases = extract_phases("\n".join(lines))
+
+    # Build a lookup: (phase, task) -> emoji
+    task_status_map: dict[tuple[int, int], str] = {}
+    for _, phase_num, _, tasks in phases:
+        for t in tasks:
+            task_status_map[(t[1], t[2])] = t[0]
+
+    # Find the target task and its deps
+    for _, phase_num, _, tasks in phases:
+        for t in tasks:
+            if t[1] == task_phase and t[2] == task_num:
+                deps = t[4]  # list of dep refs like "Task 2.1" or "Phase 3 - Task 3.1"
+                if not deps:
+                    return True
+                for dep_ref in deps:
+                    dep_phase, dep_task = _resolve_dep_ref(dep_ref, task_phase)
+                    if dep_phase is None:
+                        continue  # malformed ref, skip
+                    dep_status = task_status_map.get((dep_phase, dep_task))
+                    if dep_status != STATUS_DONE:
+                        return False
+                return True
+
+    return True  # task not found, let caller handle error
+
+
+def _resolve_dep_ref(dep_ref: str, current_phase: int) -> tuple[int | None, int | None]:
+    """Resolve a dependency reference to (phase_num, task_num).
+
+    Handles:
+      - "Task X.Y" → (X, Y)
+      - "Phase X - Task X.Y" → (X, Y)
+    """
+    dep_ref = dep_ref.strip()
+    # Cross-phase: "Phase X - Task X.Y"
+    m = re.match(r"Phase\s+(\d+)\s*-\s*Task\s+(\d+)\.(\d+)", dep_ref)
+    if m:
+        return int(m.group(1)), int(m.group(3))
+    # Same-phase or explicit: "Task X.Y"
+    m = re.match(r"Task\s+(\d+)\.(\d+)", dep_ref)
+    if m:
+        return int(m.group(1)), int(m.group(2))
+    return None, None
 
 
 # ---------------------------------------------------------------------------
@@ -1031,7 +1129,7 @@ def cmd_set_all_statuses(args: argparse.Namespace) -> None:
         for i, line in enumerate(lines):
             t = parse_task_line(line)
             if t:
-                lines[i] = format_task_line(new_status, t[1], t[2], t[3])
+                lines[i] = format_task_line(new_status, t[1], t[2], t[3], t[4])
 
         content = "\n".join(lines)
         content = _touch_updated(args.path, content)
@@ -1126,7 +1224,15 @@ def cmd_set_task_status(args: argparse.Namespace) -> None:
                         file=sys.stderr,
                     )
                     sys.exit(1)
-                lines[i] = format_task_line(new_status, t[1], t[2], t[3])
+                # Check dependency satisfaction before transitioning to ⚙️ (Doing)
+                if new_status == STATUS_DOING:
+                    if not check_task_deps_satisfied(content, target_phase, target_task):
+                        print(
+                            f"Error: cannot start {task_ref} — dependencies not satisfied (all deps must be {STATUS_DONE})",
+                            file=sys.stderr,
+                        )
+                        sys.exit(1)
+                lines[i] = format_task_line(new_status, t[1], t[2], t[3], t[4])
                 break
         else:
             print(f"Error: {task_ref} not found", file=sys.stderr)
@@ -1275,10 +1381,13 @@ def cmd_remove_phase(args: argparse.Namespace) -> None:
 def cmd_add_task(args: argparse.Namespace) -> None:
     """Add a new task to an existing phase."""
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
-    task_arg = args.task_title  # e.g. "Task 2.4 - Do thing" or just "Do thing"
+    task_arg = args.task_title  # e.g. "Task 2.4 ➖ Do thing ⚓ Task 2.1 , Task 2.2" or just "Do thing"
 
     target_phase = parse_phase_arg(phase_ref)
-    explicit_p, explicit_t, title = parse_task_add_arg(task_arg)
+    explicit_p, explicit_t, raw_title = parse_task_add_arg(task_arg)
+
+    # Split raw_title into clean title and deps
+    clean_title, deps = parse_task_deps(raw_title)
 
     if explicit_p > 0 and explicit_t > 0:
         task_phase = explicit_p
@@ -1296,7 +1405,7 @@ def cmd_add_task(args: argparse.Namespace) -> None:
                         max_task = t[2]
         task_num = max_task + 1
 
-    task_title = f"Task {task_phase}.{task_num} {title}"
+    task_title = f"Task {task_phase}.{task_num} {clean_title}"
 
     def _transform(content: str) -> str:
         lines = content.splitlines()
@@ -1346,7 +1455,7 @@ def cmd_add_task(args: argparse.Namespace) -> None:
             print(f"Error: {phase_ref} not found", file=sys.stderr)
             sys.exit(1)
 
-        task_line = format_task_line(STATUS_TODO, tp, tn, title)
+        task_line = format_task_line(STATUS_TODO, tp, tn, clean_title, deps)
         lines.insert(insert_idx, task_line)
 
         content = "\n".join(lines)
@@ -1359,7 +1468,7 @@ def cmd_add_task(args: argparse.Namespace) -> None:
 
 
 def cmd_update_task(args: argparse.Namespace) -> None:
-    """Update task description."""
+    """Update task description (preserves existing dependencies)."""
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
     task_ref = args.task_ref  # e.g. "Task 2.4" or "Task 2.4 - Description..."
     new_description = args.description
@@ -1371,9 +1480,10 @@ def cmd_update_task(args: argparse.Namespace) -> None:
         for i, line in enumerate(lines):
             t = parse_task_line(line)
             if t and t[1] == target_phase and t[2] == target_task:
-                # Build new task line with updated title
+                # Build new task line with updated title, preserving deps
                 current_emoji = t[0]
-                lines[i] = format_task_line(current_emoji, target_phase, target_task, new_description)
+                existing_deps = t[4]
+                lines[i] = format_task_line(current_emoji, target_phase, target_task, new_description, existing_deps)
                 break
         else:
             print(f"Error: {task_ref} not found in {phase_ref}", file=sys.stderr)
