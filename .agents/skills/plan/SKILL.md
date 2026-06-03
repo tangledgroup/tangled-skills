@@ -36,25 +36,14 @@ Strict task numbering (`[emoji-of-task] Task X.Y Task Title`), inline phase/task
 Command `python3 -B scripts/plan.py PLAN.md create ...` creates PLAN.md like:
 
 ```markdown
-<!-- Plan Title is short but descriptive title of current plan -->
+<!-- required: Plan header -->
 # ☐ Plan - Plan Title
-
-<!-- default NONE if doesn't have dependencies, or relative paths to other PLAN.md files -->
-**Depends On:** ...
-
-<!-- ISO 8601 / UTC (YYYY-MM-DDTHH:MM:SSZ) -->
-**Created:** ...
-
-<!-- ISO 8601 / UTC (YYYY-MM-DDTHH:MM:SSZ) -->
-**Updated:** ...
-
-<!-- [emoji-of-phase] Phase X Phase Title -->
-**Current Phase:** ...
-
-<!-- [emoji-of-phase] Phase X - [emoji-of-task] Task X.Y -->
-**Current Task:** ...
-
-<!-- required: PHASES with TASKS start here -->
+- Depends On: ...
+- Created: ...
+- Updated: ...
+- Current Phase: ...
+- Current Task: ...
+<!-- required: Phases with Tasks start here -->
 ```
 
 ## Universal emoji-coded statuses
@@ -108,10 +97,10 @@ When a plan transitions to ☑, it means every single task in every single phase
 
 **PLAN.md = single source of truth**: project with dependency graph.
 Multiple `PLAN.md` files can exist in different locations.
-They form a directed acyclic graph (DAG) via the required `**Depends On:**` header field:
+They form a directed acyclic graph (DAG) via the required `- Depends On:` header field:
 - Multiple dependencies are comma-separated with spaces: `../a/PLAN.md , ../../b/PLAN.md`
 - Default value is `NONE` when the plan has no dependencies
-- Cycles are not allowed. Check for cycles whenever any plan is created or when `**Depends On:**` is modified. If a cycle is detected (including transitive cycles), report it to the user and stop until resolved
+- Cycles are not allowed. Check for cycles whenever any plan is created or when `- Depends On:` is modified. If a cycle is detected (including transitive cycles), report it to the user and stop until resolved
 - The dependency graph is resolved transitively by visiting referenced `PLAN.md` headers — not inline-expanded
 - When a dependency is incomplete, ask what to do before proceeding
 

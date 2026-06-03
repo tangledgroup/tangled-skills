@@ -53,22 +53,22 @@ def write_plan(path: str, content: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Helpers — YAML-like header parsing
+# Helpers — header parsing
 # ---------------------------------------------------------------------------
-# The header is NOT YAML; it's markdown bold fields.
+# The header is NOT YAML; it's markdown bullet fields.
 # We parse lines like:
-#   **Depends On:** ...
-#   **Created:** ...
-#   **Updated:** ...
-#   **Current Phase:** ...
-#   **Current Task:** ...
+#   - Depends On: ...
+#   - Created: ...
+#   - Updated: ...
+#   - Current Phase: ...
+#   - Current Task: ...
 
 _HEADER_FIELDS = {
-    "depends_on": r"^\*\*Depends On:\*\*(.+)$",
-    "created": r"^\*\*Created:\*\*(.+)$",
-    "updated": r"^\*\*Updated:\*\*(.+)$",
-    "current_phase": r"^\*\*Current Phase:\*\*(.+)$",
-    "current_task": r"^\*\*Current Task:\*\*(.+)$",
+    "depends_on": r"^- Depends On:(.+)$",
+    "created": r"^- Created:(.+)$",
+    "updated": r"^- Updated:(.+)$",
+    "current_phase": r"^- Current Phase:(.+)$",
+    "current_task": r"^- Current Task:(.+)$",
 }
 
 
@@ -87,8 +87,8 @@ def _parse_header(title_line: str, body_lines: list[str]) -> dict:
 
 
 def _find_header_field_line(lines: list[str], field_name: str) -> int:
-    """Return index of line containing **Field:** or -1."""
-    pattern = rf"^\*\*{re.escape(field_name)}:\*\*"
+    """Return index of line containing `- Field:` or -1."""
+    pattern = rf"^- {re.escape(field_name)}:"
     for i, line in enumerate(lines):
         if re.match(pattern, line.strip()):
             return i
@@ -97,27 +97,27 @@ def _find_header_field_line(lines: list[str], field_name: str) -> int:
 
 def _update_header_field(lines: list[str], field_name: str, value: str) -> list[str]:
     """Update or append a header field line. Returns new lines."""
-    pattern = rf"^\*\*{re.escape(field_name)}:\*\*"
+    pattern = rf"^- {re.escape(field_name)}:"
     idx = -1
     for i, line in enumerate(lines):
         if re.match(pattern, line.strip()):
             idx = i
             break
     if idx >= 0:
-        lines[idx] = f"**{field_name}:** {value}"
+        lines[idx] = f"- {field_name}: {value}"
     else:
-        # Insert after **Current Task:** or before first phase heading
+        # Insert after `- Current Task:` or before first phase heading
         current_task_idx = _find_header_field_line(lines, "Current Task")
         if current_task_idx >= 0:
-            lines.insert(current_task_idx + 1, f"**{field_name}:** {value}")
+            lines.insert(current_task_idx + 1, f"- {field_name}: {value}")
         else:
             # Find first ## Phase line and insert before it
             for i, line in enumerate(lines):
                 if re.match(r"^## ", line):
-                    lines.insert(i, f"**{field_name}:** {value}")
+                    lines.insert(i, f"- {field_name}: {value}")
                     break
             else:
-                lines.append(f"**{field_name}:** {value}")
+                lines.append(f"- {field_name}: {value}")
     return lines
 
 
@@ -451,16 +451,11 @@ def cmd_create(args: argparse.Namespace) -> None:
         deps_str = " , ".join(depends)
 
     content = f"""# {STATUS_TODO} Plan - {title}
-
-**Depends On:** {deps_str}
-
-**Created:** {now}
-
-**Updated:** {now}
-
-**Current Phase:** NONE
-
-**Current Task:** NONE
+- Depends On: {deps_str}
+- Created: {now}
+- Updated: {now}
+- Current Phase: NONE
+- Current Task: NONE
 """
     write_plan(path, content)
     print(f"Created {path}")
