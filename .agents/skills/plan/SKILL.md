@@ -312,4 +312,16 @@ python3 -B scripts/plan.py PLAN.md remove-task "Phase 2" "Task 2.4" # sets plan 
 python3 -B scripts/plan.py PLAN.md remove-task "Phase 2" "Task 2.4 ➖ Description of task..." # sets plan and phase status to ❓
 # or
 python3 -B scripts/plan.py PLAN.md remove-task "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # sets plan and phase status to ❓
+
+#
+# add-task-dependency
+# 
+python3 -B scripts/plan.py PLAN.md add-task-dependency "Phase 2" "Task 2.4" "Task 2.1" # if current task (in this case "Phase 2" "Task 2.4") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
+python3 -B scripts/plan.py PLAN.md add-task-dependency "Phase 3" "Task 3.5" "Task 3.4" # if current task (in this case "Phase 3" "Task 3.5") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
+
+#
+# remove-task-dependency
+# 
+python3 -B scripts/plan.py PLAN.md remove-task-dependency "Phase 2" "Task 2.4" "Task 2.1" # if current task (in this case "Phase 2" "Task 2.4") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
+python3 -B scripts/plan.py PLAN.md remove-task-dependency "Phase 3" "Task 3.5" "Task 3.4" # if current task (in this case "Phase 3" "Task 3.5") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
 ```

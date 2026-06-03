@@ -1538,6 +1538,242 @@ def cmd_remove_task(args: argparse.Namespace) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Helpers — task dependency cycle detection
+# ---------------------------------------------------------------------------
+
+def _build_task_dep_graph(phases) -> dict[tuple[int, int], list[tuple[int, int]]]:
+    """Build a task dependency graph from extracted phases.
+
+    Returns dict mapping (phase, task) -> [(dep_phase, dep_task), ...].
+    """
+    graph: dict[tuple[int, int], list[tuple[int, int]]] = {}
+    for _, phase_num, _, tasks in phases:
+        for t in tasks:
+            # t = (emoji, phase, task, clean_title, deps)
+            key = (t[1], t[2])
+            dep_targets = []
+            for dep_ref in t[4]:
+                dp, dt = _resolve_dep_ref(dep_ref, t[1])
+                if dp is not None:
+                    dep_targets.append((dp, dt))
+            graph[key] = dep_targets
+    return graph
+
+
+def _check_task_dep_cycle(graph: dict[tuple[int, int], list[tuple[int, int]]], new_dep_from: tuple[int, int], new_dep_to: tuple[int, int]) -> None:
+    """Check if adding an edge from new_dep_from -> new_dep_to would create a cycle.
+
+    A cycle exists if new_dep_to (or any of its transitive dependencies)
+    can reach back to new_dep_from.
+
+    Exits with error if cycle detected.
+    """
+    # BFS/DFS from new_dep_to through existing edges, see if we reach new_dep_from
+    visited = set()
+    stack = [new_dep_to]
+
+    while stack:
+        current = stack.pop()
+        if current == new_dep_from:
+            from_p, from_t = new_dep_from
+            to_p, to_t = new_dep_to
+            print(
+                f"Error: adding dependency Task {from_p}.{from_t} -> Task {to_p}.{to_t} "
+                f"would create a dependency cycle",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        if current in visited:
+            continue
+        visited.add(current)
+        for dep_target in graph.get(current, []):
+            stack.append(dep_target)
+
+
+# ---------------------------------------------------------------------------
+# Commands — add-task-dependency / remove-task-dependency
+# ---------------------------------------------------------------------------
+
+def cmd_add_task_dependency(args: argparse.Namespace) -> None:
+    """Add a dependency to an existing task.
+
+    Takes: phase_ref, task_ref (the task to modify), dep_task_ref (the dependency).
+    Appends dep_task_ref to the ⚓ anchor of task_ref.
+
+    State logic: if the target task's status is ☐ after modification, plan and
+    phase statuses remain derived as ☐ (via validate_status_set). Otherwise,
+    validate_status_set derives the correct status from actual task states.
+    """
+    phase_ref = args.phase_ref
+    task_ref = args.task_ref
+    dep_task_ref = args.dep_task_ref
+
+    target_phase, target_task = parse_task_arg(task_ref)
+
+    # Validate that dep_task_ref is a valid task reference
+    dep_phase, dep_task = parse_task_arg(dep_task_ref)
+
+    # Build the canonical dep ref string for comparison
+    # If dep is in same phase as target, use "Task X.Y" form
+    # If different phase, use "Phase X - Task X.Y" form
+    if dep_phase == target_phase:
+        canonical_dep = f"Task {dep_phase}.{dep_task}"
+    else:
+        canonical_dep = f"Phase {dep_phase} - Task {dep_phase}.{dep_task}"
+
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
+        phases = extract_phases(content)
+
+        # Verify target task exists
+        target_found = False
+        for _, phase_num, _, tasks in phases:
+            for t in tasks:
+                if t[1] == target_phase and t[2] == target_task:
+                    target_found = True
+                    break
+        if not target_found:
+            print(f"Error: {task_ref} not found in {phase_ref}", file=sys.stderr)
+            sys.exit(1)
+
+        # Verify dependency task exists
+        dep_found = False
+        for _, phase_num, _, tasks in phases:
+            for t in tasks:
+                if t[1] == dep_phase and t[2] == dep_task:
+                    dep_found = True
+                    break
+        if not dep_found:
+            print(f"Error: dependency {dep_task_ref} not found", file=sys.stderr)
+            sys.exit(1)
+
+        # Build current dependency graph for cycle detection (before adding new edge)
+        graph = _build_task_dep_graph(phases)
+
+        # Check for cycles: adding edge from (target_phase, target_task) -> (dep_phase, dep_task)
+        # means target depends on dep. A cycle exists if dep (or its transitive deps) can reach target.
+        _check_task_dep_cycle(graph, (target_phase, target_task), (dep_phase, dep_task))
+
+        # Now update the task line
+        for i, line in enumerate(lines):
+            t = parse_task_line(line)
+            if t and t[1] == target_phase and t[2] == target_task:
+                current_deps = list(t[4])  # existing deps
+
+                # Check for duplicate (compare canonical forms)
+                if canonical_dep in current_deps:
+                    print(
+                        f"Error: {task_ref} already depends on {dep_task_ref}",
+                        file=sys.stderr,
+                    )
+                    sys.exit(1)
+
+                # Also check self-dependency
+                if target_phase == dep_phase and target_task == dep_task:
+                    print(
+                        f"Error: task cannot depend on itself",
+                        file=sys.stderr,
+                    )
+                    sys.exit(1)
+
+                current_deps.append(canonical_dep)
+                lines[i] = format_task_line(t[0], t[1], t[2], t[3], current_deps)
+                break
+
+        content = "\n".join(lines)
+        content = _touch_updated(args.path, content)
+        content = validate_status_set(content)
+        return content
+
+    _safe_edit(args.path, _transform)
+    print(f"Added dependency: {task_ref} -> {dep_task_ref}")
+
+
+def cmd_remove_task_dependency(args: argparse.Namespace) -> None:
+    """Remove a dependency from an existing task.
+
+    Takes: phase_ref, task_ref (the task to modify), dep_task_ref (the dependency to remove).
+    Removes dep_task_ref from the ⚓ anchor of task_ref.
+
+    State logic: if the target task's status is ☐ after modification, plan and
+    phase statuses remain derived as ☐ (via validate_status_set). Otherwise,
+    validate_status_set derives the correct status from actual task states.
+    """
+    phase_ref = args.phase_ref
+    task_ref = args.task_ref
+    dep_task_ref = args.dep_task_ref
+
+    target_phase, target_task = parse_task_arg(task_ref)
+    dep_phase, dep_task = parse_task_arg(dep_task_ref)
+
+    # Build the canonical dep ref string for comparison
+    if dep_phase == target_phase:
+        canonical_dep = f"Task {dep_phase}.{dep_task}"
+    else:
+        canonical_dep = f"Phase {dep_phase} - Task {dep_phase}.{dep_task}"
+
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
+
+        # Verify target task exists
+        phases = extract_phases(content)
+        target_found = False
+        for _, phase_num, _, tasks in phases:
+            for t in tasks:
+                if t[1] == target_phase and t[2] == target_task:
+                    target_found = True
+                    break
+        if not target_found:
+            print(f"Error: {task_ref} not found in {phase_ref}", file=sys.stderr)
+            sys.exit(1)
+
+        # Find and update the task line
+        removed = False
+        for i, line in enumerate(lines):
+            t = parse_task_line(line)
+            if t and t[1] == target_phase and t[2] == target_task:
+                current_deps = list(t[4])
+
+                # Check if dependency actually exists
+                # Compare against canonical form and also raw forms (in case of format mismatch)
+                found_dep = False
+                for raw_dep in current_deps:
+                    rd_phase, rd_task = _resolve_dep_ref(raw_dep, target_phase)
+                    if rd_phase == dep_phase and rd_task == dep_task:
+                        found_dep = True
+                        break
+
+                if not found_dep:
+                    print(
+                        f"Error: {task_ref} does not depend on {dep_task_ref}",
+                        file=sys.stderr,
+                    )
+                    sys.exit(1)
+
+                # Remove matching deps (could have both "Task X.Y" and "Phase X - Task X.Y" forms)
+                new_deps = [
+                    d for d in current_deps
+                    if _resolve_dep_ref(d, target_phase) != (dep_phase, dep_task)
+                ]
+
+                lines[i] = format_task_line(t[0], t[1], t[2], t[3], new_deps)
+                removed = True
+                break
+
+        if not removed:
+            print(f"Error: {task_ref} not found in {phase_ref}", file=sys.stderr)
+            sys.exit(1)
+
+        content = "\n".join(lines)
+        content = _touch_updated(args.path, content)
+        content = validate_status_set(content)
+        return content
+
+    _safe_edit(args.path, _transform)
+    print(f"Removed dependency: {task_ref} -> {dep_task_ref}")
+
+
+# ---------------------------------------------------------------------------
 # CLI — Argument Parser
 # ---------------------------------------------------------------------------
 
@@ -1632,6 +1868,17 @@ def build_parser() -> argparse.ArgumentParser:
     p_rm_task.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
     p_rm_task.add_argument("task_ref", help='Task reference, e.g. "Task 2.4"')
 
+    # --- task dependency management ---
+    p_add_dep = sub.add_parser("add-task-dependency", help="Add a dependency to a task")
+    p_add_dep.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
+    p_add_dep.add_argument("task_ref", help='Task reference, e.g. "Task 2.4"')
+    p_add_dep.add_argument("dep_task_ref", help='Dependency task reference, e.g. "Task 2.1"')
+
+    p_rm_dep = sub.add_parser("remove-task-dependency", help="Remove a dependency from a task")
+    p_rm_dep.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
+    p_rm_dep.add_argument("task_ref", help='Task reference, e.g. "Task 2.4"')
+    p_rm_dep.add_argument("dep_task_ref", help='Dependency task reference, e.g. "Task 2.1"')
+
     return parser
 
 
@@ -1666,6 +1913,8 @@ COMMAND_MAP = {
     "add-task": cmd_add_task,
     "update-task": cmd_update_task,
     "remove-task": cmd_remove_task,
+    "add-task-dependency": cmd_add_task_dependency,
+    "remove-task-dependency": cmd_remove_task_dependency,
 }
 
 
