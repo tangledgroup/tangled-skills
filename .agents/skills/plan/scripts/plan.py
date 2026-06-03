@@ -1,13 +1,27 @@
 #!/usr/bin/env python3
-"""plan.py — deterministic PLAN.md manager.
+"""plan.py — deterministic PLAN.md manager with atomic updates.
 
 All reads and writes of PLAN.md are done via this script.
 Uses only Python 3.10+ built-in modules.
+
+Concurrency model:
+  - All mutating commands use _safe_edit() which holds an exclusive
+    file lock (fcntl.flock) for the entire read-transform-write cycle.
+  - Read-only commands use a shared lock so they never see partial state.
+  - Writes are crash-safe: temp file + fsync + atomic rename on same
+    filesystem. Orphaned temp files from crashes are cleaned up.
+  - A SHA-256 checksum comment at the bottom of each PLAN.md allows
+    detecting corruption after any write.
 """
 
 import argparse
+import fcntl
+import hashlib
+import os
 import re
 import sys
+import tempfile
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -31,12 +45,211 @@ VALID_TRANSITIONS = {
     STATUS_ERROR:    {STATUS_DOING, STATUS_QUESTION},
 }
 
+# Default lock-acquire timeout in seconds.
+# Raised with TimeoutError if another process holds the lock longer.
+LOCK_TIMEOUT = 10.0
+
 # ---------------------------------------------------------------------------
-# Helpers — file I/O
+# Atomic file I/O + locking + checksums
+# ---------------------------------------------------------------------------
+
+def _lock_path(plan_path: str) -> str:
+    """Return the lock file path for a given PLAN.md."""
+    return plan_path + ".lock"
+
+
+def _acquire_exclusive_lock(plan_path: str, timeout: float = LOCK_TIMEOUT) -> int:
+    """Acquire an exclusive (write) advisory lock on the plan.
+
+    Returns the file descriptor holding the lock.
+    Caller must call _release_lock(fd) when done.
+
+    The lock is held for the ENTIRE read-transform-write cycle so
+    concurrent editors serialize deterministically — no lost updates.
+    """
+    fd = os.open(_lock_path(plan_path), os.O_CREAT | os.O_RDWR)
+    # Write our PID so waiters can diagnose contention
+    os.write(fd, str(os.getpid()).encode())
+    os.lseek(fd, 0, os.SEEK_SET)
+
+    deadline = time.monotonic() + timeout
+    while True:
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            return fd
+        except BlockingIOError:
+            if time.monotonic() > deadline:
+                os.lseek(fd, 0, os.SEEK_SET)
+                holder_pid = os.read(fd, 32).decode().strip()
+                os.close(fd)
+                raise TimeoutError(
+                    f"Lock on {plan_path} held by PID {holder_pid}, "
+                    f"timeout after {timeout}s"
+                )
+            time.sleep(0.05)
+
+
+def _acquire_shared_lock(plan_path: str) -> int:
+    """Acquire a shared (read) advisory lock on the plan.
+
+    Multiple readers coexist; blocks only when a writer holds LOCK_EX.
+    Returns the file descriptor holding the lock.
+    Caller must call _release_lock(fd) when done.
+    """
+    fd = os.open(_lock_path(plan_path), os.O_CREAT | os.O_RDWR)
+    fcntl.flock(fd, fcntl.LOCK_SH)
+    return fd
+
+
+def _release_lock(fd: int) -> None:
+    """Release an advisory lock and close its file descriptor."""
+    fcntl.flock(fd, fcntl.LOCK_UN)
+    os.close(fd)
+
+
+def write_plan_atomic(path: str, content: str) -> None:
+    """Write content to PLAN.md atomically.
+
+    1. Write to a temp file in the SAME directory (same filesystem).
+    2. fsync() to flush to disk — crash after this point is safe.
+    3. rename() temp → target — atomic on same filesystem.
+    4. Preserve original file permissions.
+
+    After a crash: PLAN.md is either the old version or the new one,
+    never partial. The orphaned .tmp is cleaned up next invocation.
+    """
+    p = Path(path)
+    dir_ = p.parent
+    content_bytes = content.encode("utf-8")
+
+    fd, tmp_path = tempfile.mkstemp(
+        dir=str(dir_), prefix=".plan.tmp.", suffix=".md"
+    )
+    closed = False
+    try:
+        written = os.write(fd, content_bytes)
+        if written != len(content_bytes):
+            raise IOError(
+                f"Short write: {written} != {len(content_bytes)} bytes"
+            )
+        os.fsync(fd)
+        os.close(fd)
+        closed = True
+
+        # Preserve permissions of original file if it exists
+        if p.exists():
+            st = p.stat()
+            os.chmod(tmp_path, st.st_mode)
+
+        os.rename(tmp_path, str(p))
+    except BaseException:
+        if not closed:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+        try:
+            os.unlink(tmp_path)
+        except FileNotFoundError:
+            pass
+        raise
+
+
+def _cleanup_orphans(plan_path: str) -> None:
+    """Remove stale .tmp files from crashed writes.
+
+    Must be called under exclusive lock so no live writer is racing.
+    """
+    dir_ = Path(plan_path).parent
+    for f in dir_.glob(".plan.tmp.*.md"):
+        try:
+            f.unlink()
+        except FileNotFoundError:
+            pass
+
+
+# ---------------------------------------------------------------------------
+# Checksums — content integrity verification
+# ---------------------------------------------------------------------------
+
+_CHECKSUM_RE = re.compile(r"^<!-- checksum: ([a-f0-9]{16}) -->$")
+
+
+def _compute_checksum(content: str) -> str:
+    """Compute a 16-char hex SHA-256 digest of content."""
+    return hashlib.sha256(content.encode("utf-8")).hexdigest()[:16]
+
+
+def _add_checksum(content: str) -> str:
+    """Strip any old checksum line, then append a fresh one.
+
+    The checksum covers everything in the file EXCEPT the checksum
+    comment itself, so reads can verify integrity without self-
+    reference issues.
+    """
+    lines = [
+        l for l in content.splitlines()
+        if not _CHECKSUM_RE.match(l.strip())
+    ]
+    # Rejoin preserving original line endings style (always \n)
+    body = "\n".join(lines)
+    if not body.endswith("\n"):
+        body += "\n"
+    checksum = _compute_checksum(body)
+    return body + f"<!-- checksum: {checksum} -->\n"
+
+
+def _strip_checksum(content: str) -> str:
+    """Remove the checksum comment line from content."""
+    return "\n".join(
+        l for l in content.splitlines()
+        if not _CHECKSUM_RE.match(l.strip())
+    )
+
+
+def _verify_checksum(content: str) -> bool:
+    """Verify the file's integrity against its stored checksum.
+
+    Returns True if checksum matches or file has no checksum yet
+    (pre-atomic era). Returns False on mismatch (corruption detected).
+    """
+    lines = content.splitlines()
+    stored = None
+    for line in reversed(lines):
+        m = _CHECKSUM_RE.match(line.strip())
+        if m:
+            stored = m.group(1)
+            break
+    if stored is None:
+        return True  # No checksum — assume valid (new file or legacy)
+
+    # Body is everything except the checksum line
+    body_lines = [
+        l for l in lines if not _CHECKSUM_RE.match(l.strip())
+    ]
+    body = "\n".join(body_lines)
+    if not body.endswith("\n"):
+        body += "\n"
+    computed = _compute_checksum(body)
+    return stored == computed
+
+
+# ---------------------------------------------------------------------------
+# Safe edit wrapper — lock → read → transform → write → unlock
 # ---------------------------------------------------------------------------
 
 def read_plan(path: str) -> str:
-    """Read PLAN.md and return its contents."""
+    """Read PLAN.md and return its contents (checksum stripped)."""
+    p = Path(path)
+    if not p.exists():
+        print(f"Error: {path} does not exist", file=sys.stderr)
+        sys.exit(1)
+    raw = p.read_text(encoding="utf-8")
+    return _strip_checksum(raw)
+
+
+def read_plan_raw(path: str) -> str:
+    """Read PLAN.md including the checksum line (for verification)."""
     p = Path(path)
     if not p.exists():
         print(f"Error: {path} does not exist", file=sys.stderr)
@@ -44,12 +257,77 @@ def read_plan(path: str) -> str:
     return p.read_text(encoding="utf-8")
 
 
+def _safe_edit(plan_path: str, transform_fn) -> str:
+    """Exclusive lock → read → transform → atomic write → unlock.
+
+    The lock is held for the ENTIRE operation so concurrent editors
+    serialize deterministically. No lost updates possible.
+
+    Args:
+        plan_path: Path to the PLAN.md file.
+        transform_fn: Pure function(content: str) -> str that produces
+                      the new file content (without checksum).
+
+    Returns:
+        The final written content (with checksum appended).
+    """
+    fd = _acquire_exclusive_lock(plan_path)
+    try:
+        # 1. Clean orphaned temp files from any prior crash
+        _cleanup_orphans(plan_path)
+
+        # 2. Read fresh content under lock (no one else can modify)
+        raw = read_plan_raw(plan_path)
+
+        # 3. Verify integrity
+        if not _verify_checksum(raw):
+            print(
+                f"Warning: checksum mismatch in {plan_path} — "
+                "file may be corrupted",
+                file=sys.stderr,
+            )
+
+        content = _strip_checksum(raw)
+
+        # 4. Transform (pure function, no I/O)
+        new_content = transform_fn(content)
+
+        # 5. Append checksum and write atomically
+        final_content = _add_checksum(new_content)
+        write_plan_atomic(plan_path, final_content)
+
+        return final_content
+    finally:
+        _release_lock(fd)
+
+
+def _safe_read(plan_path: str) -> str:
+    """Shared lock → read → unlock.
+
+    Readers don't block each other but block during writes, ensuring
+    they never see partial state.
+    """
+    fd = _acquire_shared_lock(plan_path)
+    try:
+        raw = read_plan_raw(plan_path)
+        if not _verify_checksum(raw):
+            print(
+                f"Warning: checksum mismatch in {plan_path} — "
+                "file may be corrupted",
+                file=sys.stderr,
+            )
+        return _strip_checksum(raw)
+    finally:
+        _release_lock(fd)
+
+
 def write_plan(path: str, content: str) -> None:
-    """Write content to PLAN.md atomically via temp file."""
-    p = Path(path)
-    tmp = p.with_suffix(".tmp")
-    tmp.write_text(content, encoding="utf-8")
-    tmp.rename(p)
+    """Write content to PLAN.md atomically via temp file.
+
+    Kept for backward compatibility / non-locked writes (e.g. cmd_create
+    which creates a new file that doesn't need locking).
+    """
+    write_plan_atomic(path, content)
 
 
 # ---------------------------------------------------------------------------
@@ -457,7 +735,9 @@ def cmd_create(args: argparse.Namespace) -> None:
 - Current Phase: NONE
 - Current Task: NONE
 """
-    write_plan(path, content)
+    # Atomically write the new file (no lock needed — file doesn't exist yet)
+    final = _add_checksum(content)
+    write_plan_atomic(path, final)
     print(f"Created {path}")
 
     # Check for dependency cycles
@@ -470,7 +750,7 @@ def cmd_create(args: argparse.Namespace) -> None:
 # ---------------------------------------------------------------------------
 
 def cmd_get_plan_title(args: argparse.Namespace) -> None:
-    content = read_plan(args.path)
+    content = _safe_read(args.path)
     lines = content.splitlines()
     for line in lines:
         m = _TITLE_RE.match(line.strip())
@@ -482,31 +762,31 @@ def cmd_get_plan_title(args: argparse.Namespace) -> None:
 
 
 def cmd_get_plan_depends_on(args: argparse.Namespace) -> None:
-    content = read_plan(args.path)
+    content = _safe_read(args.path)
     header = _parse_header("", content.splitlines())
     print(header.get("depends_on", "NONE"))
 
 
 def cmd_get_plan_created(args: argparse.Namespace) -> None:
-    content = read_plan(args.path)
+    content = _safe_read(args.path)
     header = _parse_header("", content.splitlines())
     print(header.get("created", ""))
 
 
 def cmd_get_plan_updated(args: argparse.Namespace) -> None:
-    content = read_plan(args.path)
+    content = _safe_read(args.path)
     header = _parse_header("", content.splitlines())
     print(header.get("updated", ""))
 
 
 def cmd_get_plan_current_phase(args: argparse.Namespace) -> None:
-    content = read_plan(args.path)
+    content = _safe_read(args.path)
     header = _parse_header("", content.splitlines())
     print(header.get("current_phase", "NONE"))
 
 
 def cmd_get_plan_current_task(args: argparse.Namespace) -> None:
-    content = read_plan(args.path)
+    content = _safe_read(args.path)
     header = _parse_header("", content.splitlines())
     print(header.get("current_task", "NONE"))
 
@@ -523,115 +803,153 @@ def _touch_updated(path: str, content: str) -> str:
 
 
 def cmd_set_plan_title(args: argparse.Namespace) -> None:
-    content = read_plan(args.path)
-    lines = content.splitlines()
-    new_title = args.title
-    for i, line in enumerate(lines):
-        m = _TITLE_RE.match(line.strip())
-        if m:
-            current_emoji = m.group(1) or STATUS_TODO
-            lines[i] = format_plan_title(current_emoji, new_title)
-            break
-    content = "\n".join(lines)
-    content = _touch_updated(args.path, content)
-    content = validate_status_set(content)
-    write_plan(args.path, content)
-    print(f"Set plan title to: {new_title}")
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
+        new_title = args.title
+        for i, line in enumerate(lines):
+            m = _TITLE_RE.match(line.strip())
+            if m:
+                current_emoji = m.group(1) or STATUS_TODO
+                lines[i] = format_plan_title(current_emoji, new_title)
+                break
+        content = "\n".join(lines)
+        content = _touch_updated(args.path, content)
+        content = validate_status_set(content)
+        return content
+
+    _safe_edit(args.path, _transform)
+    print(f"Set plan title to: {args.title}")
 
 
 def cmd_set_plan_depends_on(args: argparse.Namespace) -> None:
-    content = read_plan(args.path)
     deps = getattr(args, "deps", []) or []
     deps_str = "NONE" if not deps else " , ".join(deps)
-    lines = content.splitlines()
-    lines = _update_header_field(lines, "Depends On", deps_str)
-    content = "\n".join(lines)
-    content = _touch_updated(args.path, content)
-    write_plan(args.path, content)
 
-    # Check for cycles
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
+        lines = _update_header_field(lines, "Depends On", deps_str)
+        content = "\n".join(lines)
+        content = _touch_updated(args.path, content)
+        return content
+
+    _safe_edit(args.path, _transform)
+
+    # Check for cycles (after write is committed)
     if deps:
         check_dependency_cycle(args.path, deps)
     print(f"Set depends on to: {deps_str}")
 
 
 def cmd_set_plan_created(args: argparse.Namespace) -> None:
-    content = read_plan(args.path)
     val = args.value
     if val in ("--now", "__NOW__"):
         val = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    lines = content.splitlines()
-    lines = _update_header_field(lines, "Created", val)
-    content = "\n".join(lines)
-    content = _touch_updated(args.path, content)
-    write_plan(args.path, content)
+
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
+        lines = _update_header_field(lines, "Created", val)
+        content = "\n".join(lines)
+        content = _touch_updated(args.path, content)
+        return content
+
+    _safe_edit(args.path, _transform)
     print(f"Set created to: {val}")
 
 
 def cmd_set_plan_updated(args: argparse.Namespace) -> None:
-    content = read_plan(args.path)
     val = args.value
     if val in ("--now", "__NOW__"):
         val = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    lines = content.splitlines()
-    lines = _update_header_field(lines, "Updated", val)
-    content = "\n".join(lines)
-    write_plan(args.path, content)
+
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
+        lines = _update_header_field(lines, "Updated", val)
+        content = "\n".join(lines)
+        return content
+
+    _safe_edit(args.path, _transform)
     print(f"Set updated to: {val}")
 
 
 def cmd_set_plan_current_phase(args: argparse.Namespace) -> None:
-    content = read_plan(args.path)
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
     target = parse_phase_arg(phase_ref)
-    lines = content.splitlines()
 
-    # Find the phase and copy its emoji + full heading
-    target_emoji = None
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
+
+        # Find the phase and copy its emoji + full heading
+        target_text = None
+        for line in lines:
+            m = parse_phase_heading(line)
+            if m:
+                emoji, num, title = m
+                if num == target:
+                    target_text = f"{emoji} Phase {num}"
+                    break
+
+        if target_text is None:
+            print(f"Error: {phase_ref} not found", file=sys.stderr)
+            sys.exit(1)
+
+        lines = _update_header_field(lines, "Current Phase", target_text)
+        content = "\n".join(lines)
+        content = _touch_updated(args.path, content)
+        return content
+
+    # Resolve target_text before locking for the print message
+    existing = read_plan(args.path)
     target_text = None
-    for line in lines:
+    for line in existing.splitlines():
         m = parse_phase_heading(line)
-        if m:
-            emoji, num, title = m
-            if num == target:
-                target_emoji = emoji
-                target_text = f"{emoji} Phase {num}"
-                break
-
+        if m and m[1] == target:
+            target_text = f"{m[0]} Phase {m[1]}"
+            break
     if target_text is None:
         print(f"Error: {phase_ref} not found", file=sys.stderr)
         sys.exit(1)
 
-    lines = _update_header_field(lines, "Current Phase", target_text)
-    content = "\n".join(lines)
-    content = _touch_updated(args.path, content)
-    write_plan(args.path, content)
+    _safe_edit(args.path, _transform)
     print(f"Set current phase to: {target_text}")
 
 
 def cmd_set_plan_current_task(args: argparse.Namespace) -> None:
-    content = read_plan(args.path)
     task_ref = args.task_ref  # e.g. "Task 2.3" or "Task 2.3 - Description..."
-    lines = content.splitlines()
-
     target_phase, target_task = parse_task_arg(task_ref)
 
-    # Find the task and copy its emoji + full reference
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
+
+        # Find the task and copy its emoji + full reference
+        target_text = None
+        for line in lines:
+            t = parse_task_line(line)
+            if t and t[1] == target_phase and t[2] == target_task:
+                target_text = f"{t[0]} Task {target_phase}.{target_task}"
+                break
+
+        if target_text is None:
+            print(f"Error: {task_ref} not found", file=sys.stderr)
+            sys.exit(1)
+
+        lines = _update_header_field(lines, "Current Task", target_text)
+        content = "\n".join(lines)
+        content = _touch_updated(args.path, content)
+        return content
+
+    # Resolve target_text before locking for the print message
+    existing = read_plan(args.path)
     target_text = None
-    for line in lines:
+    for line in existing.splitlines():
         t = parse_task_line(line)
         if t and t[1] == target_phase and t[2] == target_task:
             target_text = f"{t[0]} Task {target_phase}.{target_task}"
             break
-
     if target_text is None:
         print(f"Error: {task_ref} not found", file=sys.stderr)
         sys.exit(1)
 
-    lines = _update_header_field(lines, "Current Task", target_text)
-    content = "\n".join(lines)
-    content = _touch_updated(args.path, content)
-    write_plan(args.path, content)
+    _safe_edit(args.path, _transform)
     print(f"Set current task to: {target_text}")
 
 
@@ -640,7 +958,7 @@ def cmd_set_plan_current_task(args: argparse.Namespace) -> None:
 # ---------------------------------------------------------------------------
 
 def cmd_get_plan_status(args: argparse.Namespace) -> None:
-    content = read_plan(args.path)
+    content = _safe_read(args.path)
     lines = content.splitlines()
     for line in lines:
         m = _TITLE_RE.match(line.strip())
@@ -651,7 +969,7 @@ def cmd_get_plan_status(args: argparse.Namespace) -> None:
 
 
 def cmd_get_phase_status(args: argparse.Namespace) -> None:
-    content = read_plan(args.path)
+    content = _safe_read(args.path)
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
     lines = content.splitlines()
     target = parse_phase_arg(phase_ref)
@@ -666,7 +984,7 @@ def cmd_get_phase_status(args: argparse.Namespace) -> None:
 
 
 def cmd_get_task_status(args: argparse.Namespace) -> None:
-    content = read_plan(args.path)
+    content = _safe_read(args.path)
     task_ref = args.task_ref  # e.g. "Task 2.3" or "Task 2.3 - Description..."
     lines = content.splitlines()
     target_phase, target_task = parse_task_arg(task_ref)
@@ -686,67 +1004,70 @@ def cmd_get_task_status(args: argparse.Namespace) -> None:
 
 def cmd_set_all_statuses(args: argparse.Namespace) -> None:
     """Set plan, all phases, and all tasks to the same status."""
-    content = read_plan(args.path)
     new_status = args.status
 
     if new_status not in ALL_STATUSES:
         print(f"Error: invalid status {new_status!r}", file=sys.stderr)
         sys.exit(1)
 
-    lines = content.splitlines()
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
 
-    # Update plan title
-    for i, line in enumerate(lines):
-        m = _TITLE_RE.match(line.strip())
-        if m:
-            title_text = m.group(2).strip()
-            lines[i] = format_plan_title(new_status, title_text)
-            break
+        # Update plan title
+        for i, line in enumerate(lines):
+            m = _TITLE_RE.match(line.strip())
+            if m:
+                title_text = m.group(2).strip()
+                lines[i] = format_plan_title(new_status, title_text)
+                break
 
-    # Update all phase headings
-    for i, line in enumerate(lines):
-        p = parse_phase_heading(line)
-        if p:
-            lines[i] = format_phase_heading(new_status, p[1], p[2])
+        # Update all phase headings
+        for i, line in enumerate(lines):
+            p = parse_phase_heading(line)
+            if p:
+                lines[i] = format_phase_heading(new_status, p[1], p[2])
 
-    # Update all tasks
-    for i, line in enumerate(lines):
-        t = parse_task_line(line)
-        if t:
-            lines[i] = format_task_line(new_status, t[1], t[2], t[3])
+        # Update all tasks
+        for i, line in enumerate(lines):
+            t = parse_task_line(line)
+            if t:
+                lines[i] = format_task_line(new_status, t[1], t[2], t[3])
 
-    content = "\n".join(lines)
-    content = _touch_updated(args.path, content)
-    write_plan(args.path, content)
+        content = "\n".join(lines)
+        content = _touch_updated(args.path, content)
+        return content
+
+    _safe_edit(args.path, _transform)
     print(f"Set all statuses to: {new_status}")
 
 
 def cmd_set_plan_status(args: argparse.Namespace) -> None:
     """Set plan status (emoji in title)."""
-    content = read_plan(args.path)
     new_status = args.status
 
     if new_status not in ALL_STATUSES:
         print(f"Error: invalid status {new_status!r}", file=sys.stderr)
         sys.exit(1)
 
-    lines = content.splitlines()
-    for i, line in enumerate(lines):
-        m = _TITLE_RE.match(line.strip())
-        if m:
-            title_text = m.group(2).strip()
-            lines[i] = format_plan_title(new_status, title_text)
-            break
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
+        for i, line in enumerate(lines):
+            m = _TITLE_RE.match(line.strip())
+            if m:
+                title_text = m.group(2).strip()
+                lines[i] = format_plan_title(new_status, title_text)
+                break
 
-    content = "\n".join(lines)
-    content = _touch_updated(args.path, content)
-    write_plan(args.path, content)
+        content = "\n".join(lines)
+        content = _touch_updated(args.path, content)
+        return content
+
+    _safe_edit(args.path, _transform)
     print(f"Set plan status to: {new_status}")
 
 
 def cmd_set_phase_status(args: argparse.Namespace) -> None:
     """Set phase status (emoji in heading)."""
-    content = read_plan(args.path)
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
     new_status = args.status
 
@@ -756,35 +1077,34 @@ def cmd_set_phase_status(args: argparse.Namespace) -> None:
 
     target = parse_phase_arg(phase_ref)
 
-    lines = content.splitlines()
-    found = False
-    for i, line in enumerate(lines):
-        p = parse_phase_heading(line)
-        if p and p[1] == target:
-            # Validate transition
-            if not validate_transition(p[0], new_status):
-                print(
-                    f"Error: invalid transition {p[0]} -> {new_status} for {phase_ref}",
-                    file=sys.stderr,
-                )
-                sys.exit(1)
-            lines[i] = format_phase_heading(new_status, p[1], p[2])
-            found = True
-            break
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
+        for i, line in enumerate(lines):
+            p = parse_phase_heading(line)
+            if p and p[1] == target:
+                # Validate transition
+                if not validate_transition(p[0], new_status):
+                    print(
+                        f"Error: invalid transition {p[0]} -> {new_status} for {phase_ref}",
+                        file=sys.stderr,
+                    )
+                    sys.exit(1)
+                lines[i] = format_phase_heading(new_status, p[1], p[2])
+                break
+        else:
+            print(f"Error: {phase_ref} not found", file=sys.stderr)
+            sys.exit(1)
 
-    if not found:
-        print(f"Error: {phase_ref} not found", file=sys.stderr)
-        sys.exit(1)
+        content = "\n".join(lines)
+        content = _touch_updated(args.path, content)
+        return content
 
-    content = "\n".join(lines)
-    content = _touch_updated(args.path, content)
-    write_plan(args.path, content)
+    _safe_edit(args.path, _transform)
     print(f"Set {phase_ref} status to: {new_status}")
 
 
 def cmd_set_task_status(args: argparse.Namespace) -> None:
     """Set task status (emoji in task line)."""
-    content = read_plan(args.path)
     task_ref = args.task_ref  # e.g. "Task 2.3" or "Task 2.3 - Description..."
     new_status = args.status
 
@@ -794,31 +1114,31 @@ def cmd_set_task_status(args: argparse.Namespace) -> None:
 
     target_phase, target_task = parse_task_arg(task_ref)
 
-    lines = content.splitlines()
-    found = False
-    for i, line in enumerate(lines):
-        t = parse_task_line(line)
-        if t and t[1] == target_phase and t[2] == target_task:
-            # Validate transition
-            if not validate_transition(t[0], new_status):
-                print(
-                    f"Error: invalid transition {t[0]} -> {new_status} for {task_ref}",
-                    file=sys.stderr,
-                )
-                sys.exit(1)
-            lines[i] = format_task_line(new_status, t[1], t[2], t[3])
-            found = True
-            break
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
+        for i, line in enumerate(lines):
+            t = parse_task_line(line)
+            if t and t[1] == target_phase and t[2] == target_task:
+                # Validate transition
+                if not validate_transition(t[0], new_status):
+                    print(
+                        f"Error: invalid transition {t[0]} -> {new_status} for {task_ref}",
+                        file=sys.stderr,
+                    )
+                    sys.exit(1)
+                lines[i] = format_task_line(new_status, t[1], t[2], t[3])
+                break
+        else:
+            print(f"Error: {task_ref} not found", file=sys.stderr)
+            sys.exit(1)
 
-    if not found:
-        print(f"Error: {task_ref} not found", file=sys.stderr)
-        sys.exit(1)
+        content = "\n".join(lines)
+        content = _touch_updated(args.path, content)
+        # Re-derive phase and plan statuses
+        content = validate_status_set(content)
+        return content
 
-    content = "\n".join(lines)
-    content = _touch_updated(args.path, content)
-    # Re-derive phase and plan statuses
-    content = validate_status_set(content)
-    write_plan(args.path, content)
+    _safe_edit(args.path, _transform)
     print(f"Set {task_ref} status to: {new_status}")
 
 
@@ -828,107 +1148,123 @@ def cmd_set_task_status(args: argparse.Namespace) -> None:
 
 def cmd_add_phase(args: argparse.Namespace) -> None:
     """Add a new phase at the end of the plan."""
-    content = read_plan(args.path)
     phase_arg = args.phase_title  # e.g. "Phase 2 - Description..." or just "Description..."
     description = getattr(args, "description", "") or ""
 
-    lines = content.splitlines()
-    phases = extract_phases(content)
-
-    # Parse phase argument: explicit number or auto-number
+    # Resolve title before locking (pure computation from user input)
     explicit_num, title = parse_phase_add_arg(phase_arg)
+    # phase_num is resolved inside _transform since it depends on existing content
+
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
+        phases = extract_phases(content)
+
+        nonlocal explicit_num
+        if explicit_num > 0:
+            phase_num = explicit_num
+        else:
+            phase_num = len(phases) + 1
+
+        # Build new phase section
+        new_phase_lines = [
+            "",
+            format_phase_heading(STATUS_TODO, phase_num, title),
+        ]
+        if description:
+            new_phase_lines.append(description)
+
+        content = "\n".join(lines) + "\n" + "\n".join(new_phase_lines) + "\n"
+        content = _touch_updated(args.path, content)
+        return content
+
+    # For explicit numbers, we know phase_num ahead of time.
+    # For auto-numbering, read current phase count to report accurately.
     if explicit_num > 0:
         phase_num = explicit_num
     else:
-        phase_num = len(phases) + 1
+        existing = read_plan(args.path)
+        phase_num = len(extract_phases(existing)) + 1
 
-    # Build new phase section
-    new_phase_lines = [
-        "",
-        format_phase_heading(STATUS_TODO, phase_num, title),
-    ]
-    if description:
-        new_phase_lines.append(description)
-
-    content = "\n".join(lines) + "\n" + "\n".join(new_phase_lines) + "\n"
-    content = _touch_updated(args.path, content)
-    write_plan(args.path, content)
+    _safe_edit(args.path, _transform)
     print(f"Added Phase {phase_num} ({title}) with status {STATUS_TODO}")
 
 
 def cmd_update_phase(args: argparse.Namespace) -> None:
     """Update phase description/title."""
-    content = read_plan(args.path)
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
     new_description = args.description
 
     target = parse_phase_arg(phase_ref)
 
-    lines = content.splitlines()
-    found = False
-    for i, line in enumerate(lines):
-        p = parse_phase_heading(line)
-        if p and p[1] == target:
-            found = True
-            break
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
 
-    if not found:
-        print(f"Error: {phase_ref} not found", file=sys.stderr)
-        sys.exit(1)
+        # Verify phase exists
+        found = False
+        for line in lines:
+            p = parse_phase_heading(line)
+            if p and p[1] == target:
+                found = True
+                break
 
-    # Replace the phase heading line's title with new description if it looks like a title update
-    # or append/update description lines after the heading
-    # For simplicity: replace the phase title part of the heading
-    for i, line in enumerate(lines):
-        p = parse_phase_heading(line)
-        if p and p[1] == target:
-            current_emoji = p[0]
-            lines[i] = format_phase_heading(current_emoji, target, new_description)
-            break
+        if not found:
+            print(f"Error: {phase_ref} not found", file=sys.stderr)
+            sys.exit(1)
 
-    content = "\n".join(lines)
-    content = _touch_updated(args.path, content)
-    # Set phase status to question as per spec
-    content = validate_status_set(content)
-    write_plan(args.path, content)
+        # Replace the phase heading line's title
+        for i, line in enumerate(lines):
+            p = parse_phase_heading(line)
+            if p and p[1] == target:
+                current_emoji = p[0]
+                lines[i] = format_phase_heading(current_emoji, target, new_description)
+                break
+
+        content = "\n".join(lines)
+        content = _touch_updated(args.path, content)
+        content = validate_status_set(content)
+        return content
+
+    _safe_edit(args.path, _transform)
     print(f"Updated {phase_ref} description to: {new_description}")
 
 
 def cmd_remove_phase(args: argparse.Namespace) -> None:
     """Remove a phase and all its tasks."""
-    content = read_plan(args.path)
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
 
     target = parse_phase_arg(phase_ref)
 
-    lines = content.splitlines()
-    phase_ranges = extract_phases_lines("\n".join(lines))
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
+        phase_ranges = extract_phases_lines("\n".join(lines))
 
-    # Find the phase range to remove
-    remove_start = None
-    remove_end = None
-    for start, end in phase_ranges:
-        p = parse_phase_heading(lines[start])
-        if p and p[1] == target:
-            remove_start = start
-            remove_end = end + 1  # exclusive
-            break
+        # Find the phase range to remove
+        remove_start = None
+        remove_end = None
+        for start, end in phase_ranges:
+            p = parse_phase_heading(lines[start])
+            if p and p[1] == target:
+                remove_start = start
+                remove_end = end + 1  # exclusive
+                break
 
-    if remove_start is None:
-        print(f"Error: {phase_ref} not found", file=sys.stderr)
-        sys.exit(1)
+        if remove_start is None:
+            print(f"Error: {phase_ref} not found", file=sys.stderr)
+            sys.exit(1)
 
-    # Remove lines for this phase (including trailing blank line if any)
-    # Also remove one leading blank line if present
-    if remove_start > 0 and lines[remove_start - 1].strip() == "":
-        remove_start -= 1
+        # Remove lines for this phase (including trailing blank line if any)
+        # Also remove one leading blank line if present
+        if remove_start > 0 and lines[remove_start - 1].strip() == "":
+            remove_start -= 1
 
-    new_lines = lines[:remove_start] + lines[remove_end:]
+        new_lines = lines[:remove_start] + lines[remove_end:]
 
-    content = "\n".join(new_lines)
-    content = _touch_updated(args.path, content)
-    content = validate_status_set(content)
-    write_plan(args.path, content)
+        content = "\n".join(new_lines)
+        content = _touch_updated(args.path, content)
+        content = validate_status_set(content)
+        return content
+
+    _safe_edit(args.path, _transform)
     print(f"Removed {phase_ref}")
 
 
@@ -938,24 +1274,20 @@ def cmd_remove_phase(args: argparse.Namespace) -> None:
 
 def cmd_add_task(args: argparse.Namespace) -> None:
     """Add a new task to an existing phase."""
-    content = read_plan(args.path)
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
     task_arg = args.task_title  # e.g. "Task 2.4 - Do thing" or just "Do thing"
 
-    lines = content.splitlines()
-    phases = extract_phases(content)
-
-    # Parse phase reference
     target_phase = parse_phase_arg(phase_ref)
-
-    # Parse task argument: explicit numbers or auto-number
     explicit_p, explicit_t, title = parse_task_add_arg(task_arg)
+
     if explicit_p > 0 and explicit_t > 0:
         task_phase = explicit_p
         task_num = explicit_t
     else:
         task_phase = target_phase
-        # Find max task number in this phase
+        # Pre-read to determine task number for the print message
+        existing = read_plan(args.path)
+        phases = extract_phases(existing)
         max_task = 0
         for emoji, num, t_title, tasks in phases:
             if num == target_phase:
@@ -966,111 +1298,132 @@ def cmd_add_task(args: argparse.Namespace) -> None:
 
     task_title = f"Task {task_phase}.{task_num} {title}"
 
-    insert_idx = None
-    for i, line in enumerate(lines):
-        p = parse_phase_heading(line)
-        if p and p[1] == target_phase:
-            # Find the last task in this phase
-            insert_idx = i + 1
-            for j in range(i + 1, len(lines)):
-                t = parse_task_line(lines[j])
-                if t and t[1] == target_phase:
-                    # Also skip sub-bullets
-                    insert_idx = j + 1
-                    k = j + 1
-                    while k < len(lines) and lines[k].strip().startswith("- "):
-                        k += 1
-                    insert_idx = k
-                elif lines[j].strip() == "" and j > i:
-                    # blank line after heading, skip
-                    insert_idx = j + 1
-                elif parse_phase_heading(lines[j]) is not None:
-                    # next phase, stop
-                    break
-                else:
-                    insert_idx = j
-                    break
-            break
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
+        phases = extract_phases(content)
 
-    if insert_idx is None:
-        print(f"Error: {phase_ref} not found", file=sys.stderr)
-        sys.exit(1)
+        # Re-resolve task_num inside transform (content may differ from pre-read)
+        if explicit_p > 0 and explicit_t > 0:
+            tp = explicit_p
+            tn = explicit_t
+        else:
+            tp = target_phase
+            max_task = 0
+            for emoji, num, t_title, tasks in phases:
+                if num == target_phase:
+                    for t in tasks:
+                        if t[2] > max_task:
+                            max_task = t[2]
+            tn = max_task + 1
 
-    task_line = format_task_line(STATUS_TODO, task_phase, task_num, title)
-    lines.insert(insert_idx, task_line)
+        insert_idx = None
+        for i, line in enumerate(lines):
+            p = parse_phase_heading(line)
+            if p and p[1] == target_phase:
+                # Find the last task in this phase
+                insert_idx = i + 1
+                for j in range(i + 1, len(lines)):
+                    t = parse_task_line(lines[j])
+                    if t and t[1] == target_phase:
+                        # Also skip sub-bullets
+                        insert_idx = j + 1
+                        k = j + 1
+                        while k < len(lines) and lines[k].strip().startswith("- "):
+                            k += 1
+                        insert_idx = k
+                    elif lines[j].strip() == "" and j > i:
+                        # blank line after heading, skip
+                        insert_idx = j + 1
+                    elif parse_phase_heading(lines[j]) is not None:
+                        # next phase, stop
+                        break
+                    else:
+                        insert_idx = j
+                        break
+                break
 
-    content = "\n".join(lines)
-    content = _touch_updated(args.path, content)
-    content = validate_status_set(content)
-    write_plan(args.path, content)
+        if insert_idx is None:
+            print(f"Error: {phase_ref} not found", file=sys.stderr)
+            sys.exit(1)
+
+        task_line = format_task_line(STATUS_TODO, tp, tn, title)
+        lines.insert(insert_idx, task_line)
+
+        content = "\n".join(lines)
+        content = _touch_updated(args.path, content)
+        content = validate_status_set(content)
+        return content
+
+    _safe_edit(args.path, _transform)
     print(f"Added {task_title} to {phase_ref} with status {STATUS_TODO}")
 
 
 def cmd_update_task(args: argparse.Namespace) -> None:
     """Update task description."""
-    content = read_plan(args.path)
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
     task_ref = args.task_ref  # e.g. "Task 2.4" or "Task 2.4 - Description..."
     new_description = args.description
 
     target_phase, target_task = parse_task_arg(task_ref)
 
-    lines = content.splitlines()
-    found = False
-    for i, line in enumerate(lines):
-        t = parse_task_line(line)
-        if t and t[1] == target_phase and t[2] == target_task:
-            found = True
-            # Build new task line with updated title
-            current_emoji = t[0]
-            lines[i] = format_task_line(current_emoji, target_phase, target_task, new_description)
-            break
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
+        for i, line in enumerate(lines):
+            t = parse_task_line(line)
+            if t and t[1] == target_phase and t[2] == target_task:
+                # Build new task line with updated title
+                current_emoji = t[0]
+                lines[i] = format_task_line(current_emoji, target_phase, target_task, new_description)
+                break
+        else:
+            print(f"Error: {task_ref} not found in {phase_ref}", file=sys.stderr)
+            sys.exit(1)
 
-    if not found:
-        print(f"Error: {task_ref} not found in {phase_ref}", file=sys.stderr)
-        sys.exit(1)
+        content = "\n".join(lines)
+        content = _touch_updated(args.path, content)
+        content = validate_status_set(content)
+        return content
 
-    content = "\n".join(lines)
-    content = _touch_updated(args.path, content)
-    content = validate_status_set(content)
-    write_plan(args.path, content)
+    _safe_edit(args.path, _transform)
     print(f"Updated {task_ref} description to: {new_description}")
 
 
 def cmd_remove_task(args: argparse.Namespace) -> None:
     """Remove a task from a phase."""
-    content = read_plan(args.path)
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
     task_ref = args.task_ref  # e.g. "Task 2.4" or "Task 2.4 - Description..."
 
     target_phase, target_task = parse_task_arg(task_ref)
 
-    lines = content.splitlines()
-    remove_start = None
-    remove_end = None
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
+        remove_start = None
+        remove_end = None
 
-    for i, line in enumerate(lines):
-        t = parse_task_line(line)
-        if t and t[1] == target_phase and t[2] == target_task:
-            remove_start = i
-            # Skip sub-bullets
-            remove_end = i + 1
-            j = i + 1
-            while j < len(lines) and lines[j].strip().startswith("- "):
-                remove_end = j + 1
-                j += 1
-            break
+        for i, line in enumerate(lines):
+            t = parse_task_line(line)
+            if t and t[1] == target_phase and t[2] == target_task:
+                remove_start = i
+                # Skip sub-bullets
+                remove_end = i + 1
+                j = i + 1
+                while j < len(lines) and lines[j].strip().startswith("- "):
+                    remove_end = j + 1
+                    j += 1
+                break
 
-    if remove_start is None:
-        print(f"Error: {task_ref} not found in {phase_ref}", file=sys.stderr)
-        sys.exit(1)
+        if remove_start is None:
+            print(f"Error: {task_ref} not found in {phase_ref}", file=sys.stderr)
+            sys.exit(1)
 
-    new_lines = lines[:remove_start] + lines[remove_end:]
+        new_lines = lines[:remove_start] + lines[remove_end:]
 
-    content = "\n".join(new_lines)
-    content = _touch_updated(args.path, content)
-    content = validate_status_set(content)
-    write_plan(args.path, content)
+        content = "\n".join(new_lines)
+        content = _touch_updated(args.path, content)
+        content = validate_status_set(content)
+        return content
+
+    _safe_edit(args.path, _transform)
     print(f"Removed {task_ref}")
 
 
