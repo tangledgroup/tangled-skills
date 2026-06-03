@@ -1297,10 +1297,10 @@ def cmd_add_phase(args: argparse.Namespace) -> None:
 
 def cmd_update_phase(args: argparse.Namespace) -> None:
     """Update phase description/title."""
-    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
-    new_description = args.description
-
-    target = parse_phase_arg(phase_ref)
+    phase_title = args.phase_title  # e.g. "Phase 2 ➖ New description"
+    target = parse_phase_arg(phase_title)
+    # Extract the new description from after " ➖ " if present
+    new_description = phase_title.split(" ➖ ", 1)[-1].strip() if " ➖ " in phase_title else None
 
     def _transform(content: str) -> str:
         lines = content.splitlines()
@@ -1322,7 +1322,8 @@ def cmd_update_phase(args: argparse.Namespace) -> None:
             p = parse_phase_heading(line)
             if p and p[1] == target:
                 current_emoji = p[0]
-                lines[i] = format_phase_heading(current_emoji, target, new_description)
+                title_to_use = new_description if new_description else p[2]
+                lines[i] = format_phase_heading(current_emoji, target, title_to_use)
                 break
 
         content = "\n".join(lines)
@@ -1331,7 +1332,7 @@ def cmd_update_phase(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-    print(f"Updated {phase_ref} description to: {new_description}")
+    print(f"Updated Phase {target} description to: {new_description if new_description else 'unchanged'}")
 
 
 def cmd_remove_phase(args: argparse.Namespace) -> None:
@@ -1470,10 +1471,11 @@ def cmd_add_task(args: argparse.Namespace) -> None:
 def cmd_update_task(args: argparse.Namespace) -> None:
     """Update task description (preserves existing dependencies)."""
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
-    task_ref = args.task_ref  # e.g. "Task 2.4" or "Task 2.4 - Description..."
-    new_description = args.description
+    task_title = args.task_title  # e.g. "Task 2.4 ➖ New description"
 
-    target_phase, target_task = parse_task_arg(task_ref)
+    target_phase, target_task = parse_task_arg(task_title)
+    # Extract the new description from after " ➖ " if present
+    new_description = task_title.split(" ➖ ", 1)[-1].strip() if " ➖ " in task_title else None
 
     def _transform(content: str) -> str:
         lines = content.splitlines()
@@ -1483,10 +1485,12 @@ def cmd_update_task(args: argparse.Namespace) -> None:
                 # Build new task line with updated title, preserving deps
                 current_emoji = t[0]
                 existing_deps = t[4]
-                lines[i] = format_task_line(current_emoji, target_phase, target_task, new_description, existing_deps)
+                title_to_use = new_description if new_description else t[3]
+                lines[i] = format_task_line(current_emoji, target_phase, target_task, title_to_use, existing_deps)
                 break
         else:
-            print(f"Error: {task_ref} not found in {phase_ref}", file=sys.stderr)
+            task_id = f"Task {target_phase}.{target_task}"
+            print(f"Error: {task_id} not found in {phase_ref}", file=sys.stderr)
             sys.exit(1)
 
         content = "\n".join(lines)
@@ -1494,8 +1498,9 @@ def cmd_update_task(args: argparse.Namespace) -> None:
         content = validate_status_set(content)
         return content
 
+    task_id = f"Task {target_phase}.{target_task}"
     _safe_edit(args.path, _transform)
-    print(f"Updated {task_ref} description to: {new_description}")
+    print(f"Updated {task_id} description to: {new_description if new_description else 'unchanged'}")
 
 
 def cmd_remove_task(args: argparse.Namespace) -> None:
@@ -2025,99 +2030,106 @@ def cmd_get_plan(args: argparse.Namespace) -> None:
 # CLI — Argument Parser
 # ---------------------------------------------------------------------------
 
+def _add_path(sub, name: str, **kwargs) -> argparse.ArgumentParser:
+    """Add a subparser with a positional 'path' argument prepended."""
+    p = sub.add_parser(name, **kwargs)
+    p.add_argument("path", help="Path to PLAN.md file")
+    return p
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="plan.py",
         description="Deterministic PLAN.md manager — all reads/writes via script.",
     )
-    parser.add_argument("path", help="Path to PLAN.md file")
 
     sub = parser.add_subparsers(dest="command", required=True)
 
     # --- create ---
     p_create = sub.add_parser("create", help="Create a new PLAN.md")
+    p_create.add_argument("path", help="Path to PLAN.md file")
     p_create.add_argument("title", help="Plan title")
     p_create.add_argument("depends", nargs="*", default=[], help="Dependency PLAN.md paths")
 
     # --- get (header reads) ---
-    sub.add_parser("get-plan-title", help="Get plan title")
-    sub.add_parser("get-plan-depends-on", help="Get dependencies")
-    sub.add_parser("get-plan-created", help="Get created timestamp")
-    sub.add_parser("get-plan-updated", help="Get updated timestamp")
-    sub.add_parser("get-plan-current-phase", help="Get current phase")
-    sub.add_parser("get-plan-current-task", help="Get current task")
+    _add_path(sub, "get-plan-title", help="Get plan title")
+    _add_path(sub, "get-plan-depends-on", help="Get dependencies")
+    _add_path(sub, "get-plan-created", help="Get created timestamp")
+    _add_path(sub, "get-plan-updated", help="Get updated timestamp")
+    _add_path(sub, "get-plan-current-phase", help="Get current phase")
+    _add_path(sub, "get-plan-current-task", help="Get current task")
 
     # --- set (header writes) ---
-    p_set_title = sub.add_parser("set-plan-title", help="Set plan title")
+    p_set_title = _add_path(sub, "set-plan-title", help="Set plan title")
     p_set_title.add_argument("title", help="New plan title")
 
-    p_set_deps = sub.add_parser("set-plan-depends-on", help="Set dependencies")
+    p_set_deps = _add_path(sub, "set-plan-depends-on", help="Set dependencies")
     p_set_deps.add_argument("deps", nargs="*", default=[], help="Dependency PLAN.md paths or NONE")
 
-    p_set_created = sub.add_parser("set-plan-created", help="Set created timestamp")
+    p_set_created = _add_path(sub, "set-plan-created", help="Set created timestamp")
     p_set_created.add_argument("value", nargs="?", default="--now", help="ISO 8601 timestamp or --now (default: --now)")
 
-    p_set_updated = sub.add_parser("set-plan-updated", help="Set updated timestamp")
+    p_set_updated = _add_path(sub, "set-plan-updated", help="Set updated timestamp")
     p_set_updated.add_argument("value", nargs="?", default="--now", help="ISO 8601 timestamp or --now (default: --now)")
 
-    p_set_cp = sub.add_parser("set-plan-current-phase", help="Set current phase")
+    p_set_cp = _add_path(sub, "set-plan-current-phase", help="Set current phase")
     p_set_cp.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
 
-    p_set_ct = sub.add_parser("set-plan-current-task", help="Set current task")
+    p_set_ct = _add_path(sub, "set-plan-current-task", help="Set current task")
     p_set_ct.add_argument("task_ref", help='Task reference, e.g. "Task 2.3"')
 
     # --- status reads ---
-    sub.add_parser("get-plan-status", help="Get plan status emoji")
+    _add_path(sub, "get-plan-status", help="Get plan status emoji")
 
-    p_gps = sub.add_parser("get-phase-status", help="Get phase status emoji")
+    p_gps = _add_path(sub, "get-phase-status", help="Get phase status emoji")
     p_gps.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
 
-    p_gts = sub.add_parser("get-task-status", help="Get task status emoji")
+    p_gts = _add_path(sub, "get-task-status", help="Get task status emoji")
     p_gts.add_argument("task_ref", help='Task reference, e.g. "Task 2.3"')
 
     # --- status writes ---
-    p_sas = sub.add_parser("set-all-statuses", help="Set all statuses to same value")
+    p_sas = _add_path(sub, "set-all-statuses", help="Set all statuses to same value")
     p_sas.add_argument("status", help="Status emoji")
 
-    p_sps = sub.add_parser("set-plan-status", help="Set plan status")
+    p_sps = _add_path(sub, "set-plan-status", help="Set plan status")
     p_sps.add_argument("status", help="Status emoji")
 
-    p_sphs = sub.add_parser("set-phase-status", help="Set phase status")
+    p_sphs = _add_path(sub, "set-phase-status", help="Set phase status")
     p_sphs.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
     p_sphs.add_argument("status", help="Status emoji")
 
-    p_sts = sub.add_parser("set-task-status", help="Set task status")
+    p_sts = _add_path(sub, "set-task-status", help="Set task status")
     p_sts.add_argument("task_ref", help='Task reference, e.g. "Task 2.3"')
     p_sts.add_argument("status", help="Status emoji")
 
     # --- phase CRUD ---
-    p_add_phase = sub.add_parser("add-phase", help="Add a new phase")
+    p_add_phase = _add_path(sub, "add-phase", help="Add a new phase")
     p_add_phase.add_argument("phase_title", help="Phase title")
     p_add_phase.add_argument("description", nargs="?", default="", help="Optional description")
 
-    p_upd_phase = sub.add_parser("update-phase", help="Update phase title/description")
-    p_upd_phase.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
-    p_upd_phase.add_argument("description", help="New description/title")
+    p_upd_phase = _add_path(sub, "update-phase", help="Update phase title/description")
+    p_upd_phase.add_argument("phase_title", help='Phase ref with optional new description, e.g. "Phase 2 ➖ New description"')
 
-    p_rm_phase = sub.add_parser("remove-phase", help="Remove a phase and its tasks")
+
+    p_rm_phase = _add_path(sub, "remove-phase", help="Remove a phase and its tasks")
     p_rm_phase.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
 
     # --- task CRUD ---
-    p_add_task = sub.add_parser("add-task", help="Add a new task")
+    p_add_task = _add_path(sub, "add-task", help="Add a new task")
     p_add_task.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
     p_add_task.add_argument("task_title", help="Task title (e.g. 'Task 2.4 Do thing' or just 'Do thing')")
 
-    p_upd_task = sub.add_parser("update-task", help="Update task description")
+    p_upd_task = _add_path(sub, "update-task", help="Update task description")
     p_upd_task.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
-    p_upd_task.add_argument("task_ref", help='Task reference, e.g. "Task 2.4"')
-    p_upd_task.add_argument("description", help="New description")
+    p_upd_task.add_argument("task_title", help='Task ref with optional new description, e.g. "Task 2.4 ➖ New description"')
 
-    p_rm_task = sub.add_parser("remove-task", help="Remove a task")
+
+    p_rm_task = _add_path(sub, "remove-task", help="Remove a task")
     p_rm_task.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
     p_rm_task.add_argument("task_ref", help='Task reference, e.g. "Task 2.4"')
 
     # --- get-plan (structured output) ---
-    p_get_plan = sub.add_parser("get-plan", help="Get structured plan data")
+    p_get_plan = _add_path(sub, "get-plan", help="Get structured plan data")
     view_group = p_get_plan.add_mutually_exclusive_group()
     view_group.add_argument("--list", action="store_true", help="Flat list view (default)")
     view_group.add_argument("--tree", action="store_true", help="Tree (nested) view")
@@ -2126,12 +2138,12 @@ def build_parser() -> argparse.ArgumentParser:
     fmt_group.add_argument("--yaml", action="store_true", help="YAML output")
 
     # --- task dependency management ---
-    p_add_dep = sub.add_parser("add-task-dependency", help="Add a dependency to a task")
+    p_add_dep = _add_path(sub, "add-task-dependency", help="Add a dependency to a task")
     p_add_dep.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
     p_add_dep.add_argument("task_ref", help='Task reference, e.g. "Task 2.4"')
     p_add_dep.add_argument("dep_task_ref", help='Dependency task reference, e.g. "Task 2.1"')
 
-    p_rm_dep = sub.add_parser("remove-task-dependency", help="Remove a dependency from a task")
+    p_rm_dep = _add_path(sub, "remove-task-dependency", help="Remove a dependency from a task")
     p_rm_dep.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
     p_rm_dep.add_argument("task_ref", help='Task reference, e.g. "Task 2.4"')
     p_rm_dep.add_argument("dep_task_ref", help='Dependency task reference, e.g. "Task 2.1"')
