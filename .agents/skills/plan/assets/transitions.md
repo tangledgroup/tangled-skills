@@ -4,11 +4,11 @@ stateDiagram-v2
 
     [*] --> todo
 
-    state "☐ To Do<br>backlog / new" as todo
-    state "❓ Question<br>question or clarification" as question
-    state "⚙️ Doing<br>in progress / wip" as doing
-    state "❌ Error<br>error / failure" as error
-    state "☑ Done<br>completed / done" as done
+    state "☐ To Do\nbacklog / new" as todo
+    state "❓ Question\nquestion or clarification" as question
+    state "⚙️ Doing\nin progress / wip" as doing
+    state "❌ Error\nerror / failure" as error
+    state "☑ Done\ncompleted / done" as done
 
     todo --> doing
     todo --> question
