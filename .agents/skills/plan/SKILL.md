@@ -216,6 +216,22 @@ When all phases and tasks reach ☑ (Done), produce a short completion report su
 - Any open questions or items left for future work
 - Path to the PLAN.md file
 
+## Dependency Management
+
+When building or refining a plan, actively manage task dependencies using `add-task-dependency` and `remove-task-dependency`. Don't wait until all tasks are listed — add dependencies as you identify them, and remove them if the dependency graph changes during planning.
+
+**Use `add-task-dependency` when:**
+- A newly added task depends on an existing task
+- An existing task acquires a new prerequisite during refinement
+- Cross-phase dependencies are discovered (e.g., implementation needs a design output)
+
+**Use `remove-task-dependency` when:**
+- A dependency is no longer valid after plan restructuring
+- A task was split and the original dependency should move to a different sub-task
+- An artificial dependency was added for safety but is no longer needed
+
+Dependencies are managed incrementally — there is no "add all at once" command. Call `add-task-dependency` for each individual dependency edge.
+
 ## Dependencies
 
 Scripts require: `python3` 3.10+ with only built-in modules (`argparse`, `re`, `sys`, `datetime`, `pathlib`).
