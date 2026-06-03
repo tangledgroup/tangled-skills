@@ -1774,6 +1774,254 @@ def cmd_remove_task_dependency(args: argparse.Namespace) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Commands — get-plan (structured output)
+# ---------------------------------------------------------------------------
+
+import json as _json_mod
+
+_STATUS_LABEL = {
+    STATUS_TODO: "todo",
+    STATUS_QUESTION: "question",
+    STATUS_DOING: "doing",
+    STATUS_ERROR: "error",
+    STATUS_DONE: "done",
+}
+
+
+def _build_plan_data(content: str) -> dict:
+    """Extract structured plan data from PLAN.md content.
+
+    Returns a dict with plan header, phases, and tasks.
+    """
+    lines = content.splitlines()
+
+    # Parse plan title
+    plan_emoji = STATUS_TODO
+    plan_title = ""
+    for line in lines:
+        m = _TITLE_RE.match(line.strip())
+        if m:
+            plan_emoji = m.group(1) or STATUS_TODO
+            plan_title = m.group(2).strip()
+            break
+
+    # Parse header fields
+    header = _parse_header("", lines)
+
+    # Parse phases and tasks
+    phases_data = []
+    for emoji, num, title, tasks in extract_phases(content):
+        task_data = []
+        for t in tasks:
+            # t = (emoji, phase, task, clean_title, deps)
+            task_data.append({
+                "id": f"Task {t[1]}.{t[2]}",
+                "status": _STATUS_LABEL.get(t[0], t[0]),
+                "title": t[3],
+                "depends_on": t[4],
+            })
+        phases_data.append({
+            "id": f"Phase {num}",
+            "status": _STATUS_LABEL.get(emoji, emoji),
+            "title": title,
+            "tasks": task_data,
+        })
+
+    return {
+        "title": plan_title,
+        "status": _STATUS_LABEL.get(plan_emoji, plan_emoji),
+        "depends_on": [d.strip() for d in header.get("depends_on", "").split(",") if d.strip() and d.strip() != "NONE"],
+        "created": header.get("created", ""),
+        "updated": header.get("updated", ""),
+        "current_phase": header.get("current_phase", "NONE"),
+        "current_task": header.get("current_task", "NONE"),
+        "phases": phases_data,
+    }
+
+
+def _format_list_json(data: dict, plan_id: str) -> str:
+    """Flat list format as JSON — plan, phases, and tasks in a single array."""
+    items = [{
+        "type": "plan",
+        "id": plan_id,
+        "title": data["title"],
+        "status": data["status"],
+        "created": data["created"],
+        "updated": data["updated"],
+        "depends_on": data["depends_on"],
+    }]
+    for phase in data["phases"]:
+        items.append({
+            "type": "phase",
+            "id": phase["id"],
+            "title": phase["title"],
+            "status": phase["status"],
+        })
+        for task in phase["tasks"]:
+            items.append({
+                "type": "task",
+                "phase": phase["id"],
+                "id": task["id"],
+                "title": task["title"],
+                "status": task["status"],
+                "depends_on": task["depends_on"],
+            })
+    return _json_mod.dumps(items, indent=2, ensure_ascii=False)
+
+
+def _format_list_yaml(data: dict, plan_id: str) -> str:
+    """Flat list format as YAML — plan, phases, and tasks in a single sequence."""
+    lines = []
+    lines.append("- type: plan")
+    lines.append(f"  id: {plan_id}")
+    lines.append(f"  title: {_yaml_scalar(data['title'])}")
+    lines.append(f"  status: {data['status']}")
+    lines.append(f"  created: {data['created']}")
+    lines.append(f"  updated: {data['updated']}")
+    depends = data["depends_on"]
+    if depends:
+        lines.append("  depends_on:")
+        for d in depends:
+            lines.append(f"    - {d}")
+    else:
+        lines.append("  depends_on: []")
+    for phase in data["phases"]:
+        lines.append("- type: phase")
+        lines.append(f"  id: {phase['id']}")
+        lines.append(f"  title: {phase['title']}")
+        lines.append(f"  status: {phase['status']}")
+        for task in phase["tasks"]:
+            lines.append("- type: task")
+            lines.append(f"  phase: {phase['id']}")
+            lines.append(f"  id: {task['id']}")
+            lines.append(f"  title: {_yaml_scalar(task['title'])}")
+            lines.append(f"  status: {task['status']}")
+            deps = task["depends_on"]
+            if deps:
+                lines.append("  depends_on:")
+                for dep in deps:
+                    lines.append(f"    - {dep}")
+            else:
+                lines.append("  depends_on: []")
+    return "\n".join(lines) + "\n"
+
+
+def _format_tree_json(data: dict, plan_id: str) -> str:
+    """Tree format as JSON — nested phases with tasks."""
+    tree = {
+        "plan": {
+            "id": plan_id,
+            "title": data["title"],
+            "status": data["status"],
+            "depends_on": data["depends_on"],
+            "created": data["created"],
+            "updated": data["updated"],
+            "phases": [],
+        },
+    }
+    for phase in data["phases"]:
+        phase_node = {
+            "id": phase["id"],
+            "status": phase["status"],
+            "title": phase["title"],
+            "tasks": [],
+        }
+        for task in phase["tasks"]:
+            phase_node["tasks"].append({
+                "id": task["id"],
+                "status": task["status"],
+                "title": task["title"],
+                "depends_on": task["depends_on"],
+            })
+        tree["plan"]["phases"].append(phase_node)
+    return _json_mod.dumps(tree, indent=2, ensure_ascii=False)
+
+
+def _format_tree_yaml(data: dict, plan_id: str) -> str:
+    """Tree format as YAML — nested phases with tasks."""
+    lines = []
+    lines.append("plan:")
+    lines.append(f"  id: {plan_id}")
+    lines.append(f"  title: {_yaml_scalar(data['title'])}")
+    lines.append(f"  status: {data['status']}")
+    depends = data["depends_on"]
+    if depends:
+        lines.append("  depends_on:")
+        for d in depends:
+            lines.append(f"    - {d}")
+    else:
+        lines.append("  depends_on: []")
+    lines.append(f"  created: {data['created']}")
+    lines.append(f"  updated: {data['updated']}")
+    lines.append("  phases:")
+    for phase in data["phases"]:
+        lines.append(f"    - id: {phase['id']}")
+        lines.append(f"      status: {phase['status']}")
+        lines.append(f"      title: {phase['title']}")
+        if phase["tasks"]:
+            lines.append("      tasks:")
+            for task in phase["tasks"]:
+                lines.append(f"        - id: {task['id']}")
+                lines.append(f"          status: {task['status']}")
+                lines.append(f"          title: {_yaml_scalar(task['title'])}")
+                deps = task["depends_on"]
+                if deps:
+                    lines.append("          depends_on:")
+                    for dep in deps:
+                        lines.append(f"            - {dep}")
+                else:
+                    lines.append("          depends_on: []")
+        else:
+            lines.append("      tasks: []")
+    return "\n".join(lines) + "\n"
+
+
+def _yaml_scalar(value: str) -> str:
+    """Quote a YAML scalar if it needs quoting."""
+    if not value:
+        return '""'
+    # Quote if contains special chars or looks like a number/bool
+    needs_quote = False
+    if any(c in value for c in ':{}[]&*?|->!%@`,#'):
+        needs_quote = True
+    if value.lower() in ('true', 'false', 'null', 'yes', 'no'):
+        needs_quote = True
+    try:
+        float(value)
+        needs_quote = True
+    except ValueError:
+        pass
+    if needs_quote or '"' in value or '\n' in value:
+        escaped = value.replace('\\', '\\\\').replace('"', '\\"')
+        return f'"{escaped}"'
+    return value
+
+
+def cmd_get_plan(args: argparse.Namespace) -> None:
+    """Output structured plan data in list or tree format, json or yaml."""
+    content = _safe_read(args.path)
+    data = _build_plan_data(content)
+    plan_id = args.path
+
+    view = "tree" if args.tree else "list"
+    fmt = "yaml" if args.yaml else "json"
+
+    if view == "list":
+        if fmt == "json":
+            output = _format_list_json(data, plan_id)
+        else:
+            output = _format_list_yaml(data, plan_id)
+    else:
+        # tree
+        if fmt == "json":
+            output = _format_tree_json(data, plan_id)
+        else:
+            output = _format_tree_yaml(data, plan_id)
+
+    print(output, end="")
+
+
+# ---------------------------------------------------------------------------
 # CLI — Argument Parser
 # ---------------------------------------------------------------------------
 
@@ -1868,6 +2116,15 @@ def build_parser() -> argparse.ArgumentParser:
     p_rm_task.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
     p_rm_task.add_argument("task_ref", help='Task reference, e.g. "Task 2.4"')
 
+    # --- get-plan (structured output) ---
+    p_get_plan = sub.add_parser("get-plan", help="Get structured plan data")
+    view_group = p_get_plan.add_mutually_exclusive_group()
+    view_group.add_argument("--list", action="store_true", help="Flat list view (default)")
+    view_group.add_argument("--tree", action="store_true", help="Tree (nested) view")
+    fmt_group = p_get_plan.add_mutually_exclusive_group()
+    fmt_group.add_argument("--json", action="store_true", help="JSON output (default)")
+    fmt_group.add_argument("--yaml", action="store_true", help="YAML output")
+
     # --- task dependency management ---
     p_add_dep = sub.add_parser("add-task-dependency", help="Add a dependency to a task")
     p_add_dep.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
@@ -1888,6 +2145,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 COMMAND_MAP = {
     "create": cmd_create,
+    "get-plan": cmd_get_plan,
     "get-plan-title": cmd_get_plan_title,
     "get-plan-depends-on": cmd_get_plan_depends_on,
     "get-plan-created": cmd_get_plan_created,

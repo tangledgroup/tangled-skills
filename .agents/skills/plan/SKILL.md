@@ -340,4 +340,16 @@ python3 -B scripts/plan.py PLAN.md add-task-dependency "Phase 3" "Task 3.5" "Tas
 # 
 python3 -B scripts/plan.py PLAN.md remove-task-dependency "Phase 2" "Task 2.4" "Task 2.1" # if current task (in this case "Phase 2" "Task 2.4") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
 python3 -B scripts/plan.py PLAN.md remove-task-dependency "Phase 3" "Task 3.5" "Task 3.4" # if current task (in this case "Phase 3" "Task 3.5") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
+
+#
+# get-plan — structured plan output (read-only, no file lock needed)
+#
+# View modes: --list (flat) or --tree (nested). Default: --list.
+# Output formats: --json or --yaml. Default: --json.
+#
+python3 -B scripts/plan.py PLAN.md get-plan                 # default: --list --json
+python3 -B scripts/plan.py PLAN.md get-plan --list --json   # flat list, JSON (same as default)
+python3 -B scripts/plan.py PLAN.md get-plan --list --yaml   # flat list, YAML
+python3 -B scripts/plan.py PLAN.md get-plan --tree --json   # nested tree, JSON
+python3 -B scripts/plan.py PLAN.md get-plan --tree --yaml   # nested tree, YAML
 ```
