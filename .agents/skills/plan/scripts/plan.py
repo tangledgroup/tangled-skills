@@ -411,11 +411,11 @@ def _strip_header_comment(line: str) -> str:
 def parse_phase_arg(arg: str) -> int:
     """Extract phase number from a phase argument.
 
-    Accepts: 'Phase 2', 'Phase 2 - Description...'
+    Accepts: 'Phase 2', 'Phase 2 ➖ Description...'
     Returns: phase number (int).
     """
-    # Split on first ' - ' to strip optional description
-    id_part = arg.split(" - ", 1)[0].strip()
+    # Split on first ' ➖ ' to strip optional description
+    id_part = arg.split(" ➖ ", 1)[0].strip()
     m = re.match(r"Phase\s+(\d+)", id_part)
     if not m:
         print(f"Error: invalid phase ref: {arg!r}", file=sys.stderr)
@@ -426,10 +426,10 @@ def parse_phase_arg(arg: str) -> int:
 def parse_task_arg(arg: str) -> tuple[int, int]:
     """Extract (phase_num, task_num) from a task argument.
 
-    Accepts: 'Task 2.4', 'Task 2.4 - Description...'
+    Accepts: 'Task 2.4', 'Task 2.4 ➖ Description...'
     Returns: (phase_num, task_num).
     """
-    id_part = arg.split(" - ", 1)[0].strip()
+    id_part = arg.split(" ➖ ", 1)[0].strip()
     m = re.match(r"Task\s+(\d+)\.(\d+)", id_part)
     if not m:
         print(f"Error: invalid task ref: {arg!r}", file=sys.stderr)
@@ -440,10 +440,10 @@ def parse_task_arg(arg: str) -> tuple[int, int]:
 def parse_phase_add_arg(arg: str) -> tuple[int, str]:
     """Parse add-phase argument. Returns (phase_num, title).
 
-    If arg matches 'Phase N - Title...', use explicit N.
+    If arg matches 'Phase N ➖ Title...', use explicit N.
     Otherwise treat entire arg as the title and return (0, title) for auto-numbering.
     """
-    m = re.match(r"^Phase\s+\d+\s+-\s+(.+)$", arg.strip())
+    m = re.match(r"^Phase\s+\d+\s*➖\s+(.+)$", arg.strip())
     if m:
         # Has explicit phase number
         num_m = re.match(r"Phase\s+(\d+)", arg.strip())
@@ -454,10 +454,10 @@ def parse_phase_add_arg(arg: str) -> tuple[int, str]:
 def parse_task_add_arg(arg: str) -> tuple[int, int, str]:
     """Parse add-task argument. Returns (phase_num, task_num, title).
 
-    If arg matches 'Task X.Y - Title...', use explicit numbers.
+    If arg matches 'Task X.Y ➖ Title...', use explicit numbers.
     Otherwise treat entire arg as the title and return (0, 0, title) for auto-numbering.
     """
-    m = re.match(r"^Task\s+\d+\.\d+\s+-\s+(.+)$", arg.strip())
+    m = re.match(r"^Task\s+\d+\.\d+\s*➖\s+(.+)$", arg.strip())
     if m:
         num_m = re.match(r"Task\s+(\d+)\.(\d+)", arg.strip())
         return int(num_m.group(1)), int(num_m.group(2)), m.group(1).strip()
@@ -468,7 +468,7 @@ def parse_task_add_arg(arg: str) -> tuple[int, int, str]:
 # Helpers — plan title parsing
 # ---------------------------------------------------------------------------
 
-_TITLE_RE = re.compile(r"^#\s*(\u2610|\u2753|\u2699\uFE0F|\u274C|\u2611)?\s*Plan\s*-\s*(.+)$")
+_TITLE_RE = re.compile(r"^#\s*(\u2610|\u2753|\u2699\uFE0F|\u274C|\u2611)?\s*Plan\s*➖\s*(.+)$")
 
 
 def parse_plan_title(line: str) -> tuple[str, str]:
@@ -484,14 +484,14 @@ def parse_plan_title(line: str) -> tuple[str, str]:
 
 def format_plan_title(emoji: str, title: str) -> str:
     """Format plan title line."""
-    return f"# {emoji} Plan - {title}"
+    return f"# {emoji} Plan ➖ {title}"
 
 
 # ---------------------------------------------------------------------------
 # Helpers — phase parsing
 # ---------------------------------------------------------------------------
 
-_PHASE_RE = re.compile(r"^##\s*(\u2610|\u2753|\u2699\uFE0F|\u274C|\u2611)?\s*Phase\s+(\d+)\s*-\s*(.+)$")
+_PHASE_RE = re.compile(r"^##\s*(\u2610|\u2753|\u2699\uFE0F|\u274C|\u2611)?\s*Phase\s+(\d+)\s*➖\s*(.+)$")
 
 
 def parse_phase_heading(line: str) -> tuple[str, int, str] | None:
@@ -506,7 +506,7 @@ def parse_phase_heading(line: str) -> tuple[str, int, str] | None:
 
 
 def format_phase_heading(emoji: str, num: int, title: str) -> str:
-    return f"## {emoji} Phase {num} - {title}"
+    return f"## {emoji} Phase {num} ➖ {title}"
 
 
 # ---------------------------------------------------------------------------
@@ -514,7 +514,7 @@ def format_phase_heading(emoji: str, num: int, title: str) -> str:
 # ---------------------------------------------------------------------------
 
 _TASK_RE = re.compile(
-    r"^- (\u2610|\u2753|\u2699\uFE0F|\u274C|\u2611) Task (\d+)\.(\d+)\s*-\s+(.+)$"
+    r"^- (\u2610|\u2753|\u2699\uFE0F|\u274C|\u2611) Task (\d+)\.(\d+)\s*➖\s+(.+)$"
 )
 
 
@@ -532,7 +532,7 @@ def parse_task_line(line: str) -> tuple[str, int, int, str] | None:
 
 def format_task_line(emoji: str, phase_num: int, task_num: int, title: str) -> str:
     """Format a task line. Title may already include (depends on: ...) suffix."""
-    return f"- {emoji} Task {phase_num}.{task_num} - {title}"
+    return f"- {emoji} Task {phase_num}.{task_num} ➖ {title}"
 
 
 # ---------------------------------------------------------------------------
@@ -728,7 +728,7 @@ def cmd_create(args: argparse.Namespace) -> None:
     if depends:
         deps_str = " , ".join(depends)
 
-    content = f"""# {STATUS_TODO} Plan - {title}
+    content = f"""# {STATUS_TODO} Plan ➖ {title}
 - Depends On: {deps_str}
 - Created: {now}
 - Updated: {now}

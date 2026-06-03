@@ -159,7 +159,7 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 128 | pi-mono-0-74-0 | pi-mono | 0.1.0 | pi, pi-mono, coding-agent, ai-agent, terminal-ai | >- |
 | 129 | pinecone-router-7-5-0 | pinecone-router | 0.1.0 | alpinejs, router, spa, client-side-routing, single-page-application | Client-side routing toolkit for Alpine.js applications using Pinecone Router v7.5, providing route matching, ... |
 | 130 | pipe | pipe | 0.1.4 | pipe, meta, meta-skill, chaining, workflow | Unix-style pipe expression syntax for chaining multiple agent operations sequentially. Each stage's output becomes ... |
-| 131 | plan | plan | 0.1.9 | meta, meta-skill, plan, workflow, task-management | Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require ... |
+| 131 | plan | plan | 0.3.0 | meta, meta-skill, plan, workflow, task-management | Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require ... |
 | 132 | podman-5-8-1 | podman | 0.1.0 | containers, daemonless, rootless, oci, pods | Daemonless container engine with Docker-compatible CLI for managing containers, pods, images, volumes, and networks. ... |
 | 133 | podman-5-8-2 | podman | 0.1.0 | containers, daemonless, rootless, oci, pods | Daemonless container engine with Docker-compatible CLI for managing containers, pods, images, volumes, and networks. ... |
 | 134 | podman-compose-1-5-0 | podman-compose | 0.1.0 | podman, compose, containers, orchestration, devops | Orchestrates multi-container applications using Compose specification files with Podman backend. Use when deploying ... |
@@ -234,16 +234,17 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 203 | usearch-2-25-1 | usearch | 0.1.0 | vector-search, ann, hnsw, similarity-search, clustering | High-performance single-file similarity search engine for vectors using HNSW with user-defined metrics, ... |
 | 204 | uv-0-11-8 | uv | 0.1.0 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | Extremely fast Python package and project manager written in Rust, replacing pip, pip-tools, pipx, poetry, pyenv, ... |
 | 205 | vega-6-2-0 | vega | 0.1.0 | vega, visualization, charts, grammar-of-graphics, data-viz | Vega 6.2.0 — declarative visualization grammar for creating interactive charts in JSON. Define data, scales, marks, ... |
-| 206 | vega-lite-6-4-3 | vega-lite | 0.1.0 | vega-lite, visualization, charts, grammar-of-graphics, data-viz | Vega-Lite 6.4.3 — high-level grammar of interactive graphics. Generate, author, and debug Vega-Lite specifications ... |
-| 207 | vega-lite-validator-0-1-0 | vega-lite-validator | 0.1.0 | vega-lite, validation, json-schema, check-jsonschema, data-viz | >- |
-| 208 | voidauth-1-12-3 | voidauth | 0.1.0 | voidauth, sso, oidc, authentication, selfhosted | Open-source SSO authentication and user management provider for self-hosted applications. Provides OIDC Provider, ... |
-| 209 | webfetch | webfetch | 0.2.1 | webfetch, web-scraping, url-fetch, markdown, scrapling | Fetches any URL and converts the full page to clean AI-targeted markdown using scrapling. Use when scraping ... |
-| 210 | websearch | websearch | 0.2.1 | websearch, web-search, duckduckgo, yaml-output, scrapling | Searches DuckDuckGo via its HTML endpoint and outputs results as raw YAML. Uses a deterministic bash script, ... |
-| 211 | yjs-13-6-30 | yjs | 0.1.0 | yjs, crdt, collaborative-editing, real-time, shared-types | CRDT framework for conflict-free collaborative editing with shared types (Y.Map, Y.Array, Y.Text). Provides ... |
-| 212 | yq-4-53-2 | yq | 0.1.0 | yaml, json, xml, ini, csv | >- |
-| 213 | zeromq-wiki-3-2-0 | zeromq-wiki | 0.1.0 | zeromq, messaging, distributed-systems, networking, sockets | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and ... |
-| 214 | zeromq-zguide-3-2-0 | zeromq-zguide | 0.1.0 | zeromq, zmq, messaging, sockets, distributed-systems | Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and ... |
+| 206 | vega-embed-7-1-0 | vega-embed | 0.1.0 | vega-embed, vega, vega-lite, visualization, charts | Embed interactive Vega and Vega-Lite visualizations into web pages. Load specs from URLs or JSON objects, render ... |
+| 207 | vega-lite-6-4-3 | vega-lite | 0.1.0 | vega-lite, visualization, charts, grammar-of-graphics, data-viz | Vega-Lite 6.4.3 — high-level grammar of interactive graphics. Generate, author, and debug Vega-Lite specifications ... |
+| 208 | vega-lite-validator-0-1-0 | vega-lite-validator | 0.1.0 | vega-lite, validation, json-schema, check-jsonschema, data-viz | >- |
+| 209 | voidauth-1-12-3 | voidauth | 0.1.0 | voidauth, sso, oidc, authentication, selfhosted | Open-source SSO authentication and user management provider for self-hosted applications. Provides OIDC Provider, ... |
+| 210 | webfetch | webfetch | 0.2.1 | webfetch, web-scraping, url-fetch, markdown, scrapling | Fetches any URL and converts the full page to clean AI-targeted markdown using scrapling. Use when scraping ... |
+| 211 | websearch | websearch | 0.2.1 | websearch, web-search, duckduckgo, yaml-output, scrapling | Searches DuckDuckGo via its HTML endpoint and outputs results as raw YAML. Uses a deterministic bash script, ... |
+| 212 | yjs-13-6-30 | yjs | 0.1.0 | yjs, crdt, collaborative-editing, real-time, shared-types | CRDT framework for conflict-free collaborative editing with shared types (Y.Map, Y.Array, Y.Text). Provides ... |
+| 213 | yq-4-53-2 | yq | 0.1.0 | yaml, json, xml, ini, csv | >- |
+| 214 | zeromq-wiki-3-2-0 | zeromq-wiki | 0.1.0 | zeromq, messaging, distributed-systems, networking, sockets | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and ... |
+| 215 | zeromq-zguide-3-2-0 | zeromq-zguide | 0.1.0 | zeromq, zmq, messaging, sockets, distributed-systems | Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and ... |
 
 ## Statistics
 
-- **Total Skills**: 214
+- **Total Skills**: 215

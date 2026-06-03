@@ -3,7 +3,7 @@ name: plan
 description: Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require structured iteration through Planning, Analysis, Design, Implementation, Testing, Deployment, Maintenance, etc phases with clear dependency graphs.
 license: MIT
 author: Tangled <noreply@tangledgroup.com>
-version: "0.2.0"
+version: "0.3.0"
 tags:
   - meta
   - meta-skill
@@ -37,7 +37,7 @@ Command `python3 -B scripts/plan.py PLAN.md create ...` creates PLAN.md like:
 
 ```markdown
 <!-- required: Plan header -->
-# ☐ Plan - Plan Title
+# ☐ Plan ➖ Plan Title
 - Depends On: ...
 - Created: ...
 - Updated: ...
@@ -55,7 +55,7 @@ Strictly use only the following emojis for statuses: ☐ ❓ ⚙️ ❌ ☑
 
 The plan itself carries a status via `[emoji-of-plan]` in its title:
 ```
-# [emoji-of-plan] Plan - Plan Title
+# [emoji-of-plan] Plan ➖ Plan Title
 ```
 
 Strictly use following emojis for `[emoji-of-plan]` status:
@@ -106,7 +106,7 @@ They form a directed acyclic graph (DAG) via the required `- Depends On:` header
 
 ## Phases
 
-Phase is strictly formatted as `## [emoji-of-phase] Phase X - Phase Title`, where X is unique ID (X = phase number, starting from 1).
+Phase is strictly formatted as `## [emoji-of-phase] Phase X ➖ Phase Title`, where X is unique ID (X = phase number, starting from 1).
 Every Phase **MUST** have a unique ID in the exact format `## [emoji-of-phase] Phase X` (X = phase number, starting from 1).
 All phases, tasks and their additions, changes, removals, transitions and dependencies live ONLY in `PLAN.md` file.
 
@@ -117,7 +117,7 @@ If a phase has zero tasks, emit a warning — it can never reach ☑ (Done) and 
 Tasks are markdown list items. Each task is strictly formatted as:
 
 ```
-- [emoji-of-task] Task X.Y - Task Title (depends on: ...)
+- [emoji-of-task] Task X.Y ➖ Task Title (depends on: ...)
   - optional sub-bullet: acceptance criteria, notes, or implementation details
   - optional sub-bullet: additional context
 ```
@@ -183,14 +183,14 @@ These are valid state transitions:
 
 ## Argument Parsing Convention
 
-The `" - "` (space-dash-space) delimiter separates IDs from descriptions in command arguments:
+The `" ➖ "` delimiter separates IDs from descriptions in command arguments:
 
-- **phase_title** = `{phase_id} - {phase_desc}` → e.g. `"Phase 2 - Description of phase..."`
-- **task_title** = `{task_id} - {task_desc}` → e.g. `"Task 2.4 - Description of task..."`
+- **phase_title** = `{phase_id} ➖ {phase_desc}` → e.g. `"Phase 2 ➖ Description of phase..."`
+- **task_title** = `{task_id} ➖ {task_desc}` → e.g. `"Task 2.4 ➖ Description of task..."`
 
-The ID is always required; the description after `" - "` is optional. Commands accept both forms:
+The ID is always required; the description after `" ➖ "` is optional. Commands accept both forms:
 - `set-phase-status "Phase 2" ⚙️` — ID only
-- `remove-task "Phase 2 - Desc..." "Task 2.4 - Desc..."` — full form with descriptions
+- `remove-task "Phase 2 ➖ Desc..." "Task 2.4 ➖ Desc..."` — full form with descriptions
 
 For `add-phase` and `add-task`: if the argument starts with an explicit ID (`Phase N` or `Task X.Y`), that number is used; otherwise, the next sequential number is auto-assigned.
 
@@ -263,40 +263,40 @@ python3 -B scripts/plan.py PLAN.md set-task-status "Task 2.3" ⚙️ # sets `[em
 # 
 # add-phase
 # 
-python3 -B scripts/plan.py PLAN.md add-phase "Phase 2 - Description of phase..." # sets phase status to ☐
+python3 -B scripts/plan.py PLAN.md add-phase "Phase 2 ➖ Description of phase..." # sets phase status to ☐
 
 #
 # add-task
 #
-python3 -B scripts/plan.py PLAN.md add-task "Phase 2" "Task 2.4 - Description of task..." # sets task status to ☐, phase status ❓
+python3 -B scripts/plan.py PLAN.md add-task "Phase 2" "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase status ❓
 # or
-python3 -B scripts/plan.py PLAN.md add-task "Phase 2 - Description of phase..." "Task 2.4 - Description of task..." # sets task status to ☐, phase status ❓
+python3 -B scripts/plan.py PLAN.md add-task "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase status ❓
 
 #
 # update-phase
 #
-python3 -B scripts/plan.py PLAN.md update-phase "Phase 2 - New description of phase..." # sets phase status to ❓
+python3 -B scripts/plan.py PLAN.md update-phase "Phase 2 ➖ New description of phase..." # sets phase status to ❓
 
 #
 # update-task
 #
-python3 -B scripts/plan.py PLAN.md update-task "Phase 2" "Task 2.4 - New description of task..." # sets status to ❓
+python3 -B scripts/plan.py PLAN.md update-task "Phase 2" "Task 2.4 ➖ New description of task..." # sets status to ❓
 # or
-python3 -B scripts/plan.py PLAN.md update-task "Phase 2 - New description of phase..." "Task 2.4 - New description of task..." # sets status to ❓
+python3 -B scripts/plan.py PLAN.md update-task "Phase 2 ➖ New description of phase..." "Task 2.4 ➖ New description of task..." # sets status to ❓
 
 #
 # remove-phase
 #
 python3 -B scripts/plan.py PLAN.md remove-phase "Phase 2" # sets plan status to ❓
 # or
-python3 -B scripts/plan.py PLAN.md remove-phase "Phase 2 - Description of phase..." # sets plan status to ❓
+python3 -B scripts/plan.py PLAN.md remove-phase "Phase 2 ➖ Description of phase..." # sets plan status to ❓
 
 #
 # remove-task
 #
 python3 -B scripts/plan.py PLAN.md remove-task "Phase 2" "Task 2.4" # sets plan and phase status to ❓
 # or
-python3 -B scripts/plan.py PLAN.md remove-task "Phase 2" "Task 2.4 - Description of task..." # sets plan and phase status to ❓
+python3 -B scripts/plan.py PLAN.md remove-task "Phase 2" "Task 2.4 ➖ Description of task..." # sets plan and phase status to ❓
 # or
-python3 -B scripts/plan.py PLAN.md remove-task "Phase 2 - Description of phase..." "Task 2.4 - Description of task..." # sets plan and phase status to ❓
+python3 -B scripts/plan.py PLAN.md remove-task "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # sets plan and phase status to ❓
 ```
