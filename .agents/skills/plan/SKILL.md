@@ -60,11 +60,11 @@ The plan itself carries a status via `[emoji-of-plan]` in its title:
 
 Strictly use following emojis for `[emoji-of-plan]` status:
 
-- ☐ **Not Started** — plan created but no work has begun on any phase or task
-- ❓ **Needs Clarification** — plan exists but requirements or scope need clarification before work can begin
-- ⚙️ **Active** — at least one phase or task is in progress or pending
-- ❌ **Blocked** — cannot proceed due to dependency cycles, unresolved external blockers, or critical failures across the plan
-- ☑ **Completed** — all phases and all tasks within them have reached (Done)
+- ☐ **Todo** — plan created but no work has begun on any phase or task
+- ❓ **Question** — plan exists but requirements or scope need clarification before work can begin
+- ⚙️ **Doing** — at least one phase or task is in progress
+- ❌ **Error** — cannot proceed due to dependency cycles, unresolved external blockers, or critical failures across the plan
+- ☑ **Done** — all phases and all tasks within them have reached ☑
 
 ### Plan Status Transitions
 
@@ -73,23 +73,23 @@ These are valid state transitions for `[emoji-of-plan]`:
 - ☐ → ⚙️ — begin work on the plan (start first task)
 - ☐ → ❓ — plan created but scope or requirements need clarification before starting
 - ⚙️ → ❓ — during work, something unexpected happened, need clarification
-- ⚙️ → ❌ — critical blocker stops all progress across the plan
+- ⚙️ → ❌ — critical error or blocker stops all progress across the plan
 - ⚙️ → ☑ — all phases and tasks completed successfully
-- ❓ → ⚙️ — clarifications resolved, begin work
-- ❌ → ⚙️ — blocker resolved, resume work
-- ❌ → ❓ — need clarification on how to resolve the blocker
+- ❓ → ⚙️ — question resolved, begin work
+- ❌ → ⚙️ — error resolved, resume work
+- ❌ → ❓ — need clarification to proceed
 
-⚙️ (Active) is always required before reaching ☑ (Completed). You cannot skip to Completed from Not Started or Blocked states.
+⚙️ (Doing) is always required before reaching ☑ (Done). You cannot skip to Done from Todo or Error states.
 
 ### Plan Status Derivation
 
 The plan emoji is **derived from its phases**, not set independently:
 
-- ☑ **Completed** — only when **all** phases have reached ☑
-- ⚙️ **Active** — when at least one phase is ⚙️ or has a task that is ⚙️
-- ❓ **Needs Clarification** — when no phase is ⚙️/☑ but at least one is ❓
-- ❌ **Blocked** — when no phase is ⚙️/☑ but at least one is ❌
-- ☐ **Not Started** — all phases are still ☐
+- ☑ **Done** — only when **all** phases have reached ☑
+- ⚙️ **Doing** — when at least one phase is ⚙️ or has a task that is ⚙️
+- ❓ **Question** — when no phase is ⚙️/☑ but at least one is ❓
+- ❌ **Error** — when no phase is ⚙️/☑ but at least one is ❌
+- ☐ **Todo** — all phases are still ☐
 
 When a plan transitions to ☑, it means every single task in every single phase is ☑. The script auto-derives the plan emoji after edits, so this happens automatically when using `plan.py`. Do not mark the plan as completed until this condition is met.
 
@@ -164,10 +164,10 @@ This creates a clear directed graph that any reader (human or agent) can parse i
 A phase emoji is **derived from its tasks**, not set independently:
 
 - ☑ **Done** — only when **all** tasks within the phase have reached ☑
-- ⚙️ **Active** — when at least one task is ⚙️ (Doing)
-- ❓ **Needs Clarification** — when no task is ⚙️ or ☑ but at least one is ❓
-- ❌ **Blocked** — when no task is ⚙️ or ☑ but at least one is ❌
-- ☐ **To Do** — all tasks are still ☐
+- ⚙️ **Doing** — when at least one task is ⚙️ (Doing)
+- ❓ **Question** — when no task is ⚙️ or ☑ but at least one is ❓
+- ❌ **Error** — when no task is ⚙️ or ☑ but at least one is ❌
+- ☐ **Todo** — all tasks are still ☐
 
 The script (`plan.py`) auto-derives phase and plan emojis after every task status change. Phase and plan emojis are always derived — never set manually.
 
@@ -175,7 +175,7 @@ The script (`plan.py`) auto-derives phase and plan emojis after every task statu
 
 Strictly use following emojis for `[emoji-of-phase]` and `[emoji-of-task]` status:
 
-- ☐ **To Do** – backlog / new
+- ☐ **Todo** – backlog / new
 - ❓ **Question** – question or clarification
 - ⚙️ **Doing** – in progress / wip
 - ❌ **Error** – error / failure
