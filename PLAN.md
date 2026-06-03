@@ -1,71 +1,30 @@
-# ☑ Plan: Create vega-embed 7.1.0 Skill
+# ☑ Plan ➖ SheetJS 0.20.3 Skill
+- Depends On: NONE
+- Created: 2026-06-03T14:15:37Z
+- Updated: 2026-06-03T14:25:55Z
+- Current Phase: NONE
+- Current Task: NONE
 
-**Depends On:** NONE
+## ☑ Phase 1 ➖ Crawl and Analyze Sources
 
-**Created:** 2026-06-02T00:00:00Z
+- ☑ Task 1.1 ➖ Crawl docs.sheetjs.com main page and navigation structure
+- ☑ Task 1.2 ➖ Crawl core API pages: read, write, utilities (array, csv, html)
+- ☑ Task 1.3 ➖ Crawl CSF (Common Spreadsheet Format) data model pages: cell, sheet, book, addresses
+- ☑ Task 1.4 ➖ Crawl installation, tutorials, file formats, constellation, and zen pages
+- ☑ Task 1.5 ➖ Analyze collected content, determine skill structure (complex), and design reference file layout
+## ☑ Phase 2 ➖ Generate SKILL.md
 
-**Updated:** 2026-06-02T00:00:00Z
+- ☑ Task 2.1 ➖ Create directory structure and write SKILL.md YAML header with validated metadata ⚓ Phase 1 - Task 1.5
+- ☑ Task 2.2 ➖ Write SKILL.md Overview, When to Use, Core Concepts sections with key examples ⚓ Task 2.1
+- ☑ Task 2.3 ➖ Write SKILL.md Installation, Usage Examples, and Advanced Topics navigation ⚓ Task 2.2
+## ☑ Phase 3 ➖ Generate Reference Files
 
-<!-- [emoji-of-phase] Phase X Phase Title -->
-**Current Phase:** ☑ Phase 4
-
-<!-- [emoji-of-phase] Phase X - [emoji-of-task] Task X.Y -->
-**Current Task:** ☑ Task 4.3
-
-## Phases and Tasks
-
-## ☑ Phase 1 Planning
-
-- ☑ Task 1.1 Analyze sources and determine skill structure (simple vs complex)
-  - Review npm page, GitHub README, source code (embed.ts, types.ts, container.ts, index.ts), CHANGELOG
-  - Identify distinct subtopics for reference files
-  - Determine what goes in SKILL.md vs reference/
-
-- ☑ Task 1.2 Draft and validate PLAN.md structure
-  - Create PLAN.md with phases and tasks
-  - Run validator script
-  - Get approval to proceed
-
-## ☑ Phase 2 Content Gathering
-
-- ☑ Task 2.1 Fetch all source material for vega-embed v7.1.0
-  - npm page (v7.1.0) — already fetched
-  - GitHub README.md at v7.1.0 tag — already fetched
-  - Source files: embed.ts, types.ts, container.ts, index.ts, util.ts, post.ts — already fetched
-  - package.json for dependencies/peer deps — already fetched
-  - CHANGELOG.md for version history — already fetched
-
-- ☑ Task 2.2 Analyze and organize content into skill sections
-  - Map embed() function, container(), EmbedOptions interface, Result type
-  - Organize options by category (view config, actions, styling, locale, extensibility)
-  - Identify code examples to include
-
-## ☑ Phase 3 Implementation
-
-- ☑ Task 3.1 Write SKILL.md with YAML header, overview, when-to-use, core concepts
-  - Structure as complex skill: SKILL.md + reference/
-  - SKILL.md: Overview, When to Use, Quick Start (browser + npm), API summary, Options overview
-  - Reference files for deep-dive content
-
-- ☑ Task 3.2 Write reference files
-  - reference/01-api-reference.md — Full embed(), container(), EmbedOptions, Result type documentation
-  - reference/02-options-reference.md — All options organized by category with types and defaults
-  - reference/03-integration-patterns.md — Browser CDN, bundlers (webpack/rollup), Observable, CSP mode, patches, themes
-
-- ☑ Task 3.3 Run structural validator (validate-skill.sh)
-  - Check YAML header validity
-  - Verify directory structure
-  - Fix any issues found
-
-## ☑ Phase 4 Finalization
-
-- ☑ Task 4.1 Perform LLM judgment checks on all files
-  - Verify no hallucinated content
-  - Check terminology consistency
-  - Ensure single recommended approach per topic
-  - Verify forward slashes only
-
-- ☑ Task 4.2 Regenerate README.md skills table
-  - Run gen-skills-table.sh script
-
-- ☑ Task 4.3 Report completion with file tree and validation results
+- ☑ Task 3.1 ➖ Generate reference/01-data-model.md (CSF: cell, sheet, book, addresses, ranges) ⚓ Phase 1 - Task 1.5
+- ☑ Task 3.2 ➖ Generate reference/02-api-reference.md (XLSX.read, XLSX.write, XLSX.readFile, XLSX.writeFile) ⚓ Phase 1 - Task 1.5
+- ☑ Task 3.3 ➖ Generate reference/03-utilities.md (sheet_to_json, sheet_to_csv, aoa_to_sheet, json_to_sheet, table_to_book) ⚓ Phase 1 - Task 1.5
+- ☑ Task 3.4 ➖ Generate reference/04-file-formats.md (supported formats, range limits, constellation libs) ⚓ Phase 1 - Task 1.5
+## ☑ Phase 4 ➖ Validate and Regenerate README
+- ☑ Task 4.1 ➖ Run structural validator on the generated skill ⚓ Phase 2 - Task 2.3 , Phase 3 - Task 3.1 , Phase 3 - Task 3.2 , Phase 3 - Task 3.3 , Phase 3 - Task 3.4
+- ☑ Task 4.2 ➖ Perform LLM judgment checks (content accuracy, conciseness, terminology consistency) ⚓ Task 4.1
+- ☑ Task 4.3 ➖ Regenerate README.md skills table after skill creation ⚓ Task 4.2
+<!-- checksum: 85e1836c31baa8aa -->

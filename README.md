@@ -204,47 +204,48 @@ tar -xz --strip-components=3 -C .agents/skills tangled-skills-main/.agents/skill
 | 173 | s-expression | s-expression | 0.1.0 | s-expression, sexp, lisp, data-format, tree | S-expressions (symbolic expressions) are a minimal notation for nested tree-structured data using atoms and lists. ... |
 | 174 | s-expression-alternatives | s-expression-alternatives | 0.1.0 | s-expression, sweet-expressions, i-expressions, o-expressions, liso | Alternative syntaxes for Lisp-family languages that reduce or eliminate parentheses while preserving homoiconicity ... |
 | 175 | s-expression-interpreter | s-expression-interpreter | 0.1.0 | s-expression, lisp, interpreter, eval-apply, scheme | Build and understand s-expression interpreters in Python and C. Covers lexer-free tokenization, recursive descent ... |
-| 176 | skman | skman | 0.3.1 | meta, meta skill, skill manager, skill package manager, authoring | Skill Package Manager, skman, it is meta skill for skill authoring and skill package manager for AI agents. |
-| 177 | solidjs-1-9-12 | solidjs | 0.1.0 | solidjs, reactivity, signals, jsx, fine-grained | >- |
-| 178 | solid-meta-0-29-4 | solid-meta | 0.1.0 | solidjs, meta-tags, document-head, ssr, seo | Manages document head tags in SolidJS applications with @solidjs/meta v0.29.4, providing SSR-ready Document Head ... |
-| 179 | solid-router-0-16-1 | solid-router | 0.1.0 | solidjs, router, spa, routing, ssg | The universal router for SolidJS providing fine-grained reactivity for route navigation with support for ... |
-| 180 | solid-start-1-3-2 | solid-start | 0.1.0 | solidjs, fullstack, ssr, ssg, csr | Fullstack framework for SolidJS providing SSR, SSG, API routes, file-based routing, and server functions. Use when ... |
-| 181 | spacy-3-8-14 | spacy | 0.1.0 | nlp, natural-language-processing, text-analysis, machine-learning, python | Industrial-strength NLP library for Python providing tokenization, named entity recognition, dependency parsing, and ... |
-| 182 | spec-kit-0-8-3 | spec-kit | 0.1.0 | specification-driven-development, sdd, ai-assisted-development, project-management, workflow-automation | Spec-Driven Development toolkit for specification-first workflows with AI agents. Generate executable ... |
-| 183 | sqlalchemy-2-0-49 | sqlalchemy | 0.1.0 | database, orm, sql, python, postgresql | Complete SQLAlchemy 2.0 toolkit for database operations, ORM mapping, and SQL expression construction. Use when ... |
-| 184 | sqlite-3-53-0 | sqlite | 0.1.0 | sqlite, database, sql, json, fts | Embedded SQL database providing ACID transactions, full-text search (FTS5), spatial indexing (R-Tree), JSON ... |
-| 185 | stanza-1-11-1 | stanza | 0.1.0 | nlp, natural-language-processing, multilingual, tokenization, pos-tagging | Stanford NLP Group's Python NLP library for 80+ languages providing tokenization, POS tagging, lemmatization, ... |
-| 186 | stitch-2026-05-04 | stitch | 0.1.0 | stitch, ui-design, ai-design, mcp, google-labs | AI-powered UI design tool generating high-fidelity screens and frontend code from text prompts and images. Provides ... |
-| 187 | stringzilla-4-6-0 | stringzilla | 0.1.0 | simd, string-processing, search, hashing, sorting | High-performance SIMD-accelerated string library for search, hashing, sorting, and fuzzy matching in ... |
-| 188 | sympy-1-14-0 | sympy | 0.1.0 | sympy, symbolic-math, computer-algebra, python, mathematics | Complete toolkit for SymPy 1.14.0 providing symbolic mathematics in Python including algebra, calculus, matrices, ... |
-| 189 | tailwindcss-4-2-4 | tailwindcss | 0.1.0 | css, tailwind, styling, frontend, utility-first | A skill for using Tailwind CSS v4.2, a utility-first CSS framework with CSS-based configuration via @theme, OKLCH ... |
-| 190 | tailwindcss-browser-4-2-4 | tailwindcss-browser | 0.1.0 | css, tailwind, browser, prototyping, no-build | In-browser Tailwind CSS v4.2 build (@tailwindcss/browser) that compiles utility classes at runtime without a build ... |
-| 191 | tea-0-14-0 | tea | 0.1.0 | gitea, cli, git, devops, ci-cd | Official CLI for Gitea servers. Manage repositories, issues, pull requests, releases, and admin operations from the ... |
-| 192 | temporal-api | temporal-api | 0.1.0 | temporal, date-time, timezone, calendar, javascript | ECMAScript Temporal API for date/time management replacing legacy Date. Provides timezone-aware arithmetic, calendar ... |
-| 193 | textblob-0-20-0 | textblob | 0.1.0 | nlp, text-processing, sentiment-analysis, pos-tagging, tokenization | Python library for simplified natural language processing providing POS tagging, noun phrase extraction, sentiment ... |
-| 194 | textual-8-2-5 | textual | 0.1.0 | tui, terminal-ui, python, framework, reactive | Python framework for building terminal and browser UIs. Provides widget-based DOM, CSS styling (.tcss), reactive ... |
-| 195 | tinycc-0-9-27 | tinycc | 0.1.0 | c-compiler, code-generation, dynamic-compilation, x86, arm | Complete toolkit for TinyCC 0.9.27, a small hyper-fast C compiler generating native x86/x86_64/ARM code without an ... |
-| 196 | tinypy-1-1-0 | tinypy | 0.1.0 | python, vm, embedding, scripting, minimal | Minimalist Python implementation in ~64k of code with a bootstrapped parser, bytecode compiler, and VM with ... |
-| 197 | tinyscheme-1-41 | tinyscheme | 0.1.0 | tinyscheme, scheme, lisp, interpreter, embedded | Lightweight Scheme interpreter (R5RS subset) in ~5000 lines of C, designed as an embeddable scripting engine. ... |
-| 198 | tokenizers-0-23-1 | tokenizers | 0.1.0 | nlp, tokenization, rust, python, transformers | Fast state-of-the-art tokenizers library for NLP written in Rust with Python, Node.js, and Ruby bindings. Use when ... |
-| 199 | transformers-5-7-0 | transformers | 0.1.0 | nlp, machine-learning, deep-learning, pytorch, huggingface | Complete toolkit for Hugging Face Transformers 5.7.0 providing pretrained models for NLP, vision, audio, video, and ... |
-| 200 | ty-0-0-33 | ty | 0.1.0 | python, type-checking, static-analysis, language-server, mypy-alternative | Extremely fast Python type checker and language server written in Rust, 10x-100x faster than mypy and Pyright. ... |
-| 201 | tzip | tzip | 0.4.0 | meta, meta-skill, token-prune, efficiency, guidelines | Lightweight token-pruning communication mode that drops filler and hedging while keeping full sentences and ... |
-| 202 | upx-5-1-1 | upx | 0.1.0 | compression, executable-packer, distribution, size-optimization, cross-platform | >- |
-| 203 | usearch-2-25-1 | usearch | 0.1.0 | vector-search, ann, hnsw, similarity-search, clustering | High-performance single-file similarity search engine for vectors using HNSW with user-defined metrics, ... |
-| 204 | uv-0-11-8 | uv | 0.1.0 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | Extremely fast Python package and project manager written in Rust, replacing pip, pip-tools, pipx, poetry, pyenv, ... |
-| 205 | vega-6-2-0 | vega | 0.1.0 | vega, visualization, charts, grammar-of-graphics, data-viz | Vega 6.2.0 — declarative visualization grammar for creating interactive charts in JSON. Define data, scales, marks, ... |
-| 206 | vega-embed-7-1-0 | vega-embed | 0.1.0 | vega-embed, vega, vega-lite, visualization, charts | Embed interactive Vega and Vega-Lite visualizations into web pages. Load specs from URLs or JSON objects, render ... |
-| 207 | vega-lite-6-4-3 | vega-lite | 0.1.0 | vega-lite, visualization, charts, grammar-of-graphics, data-viz | Vega-Lite 6.4.3 — high-level grammar of interactive graphics. Generate, author, and debug Vega-Lite specifications ... |
-| 208 | vega-lite-validator-0-1-0 | vega-lite-validator | 0.1.0 | vega-lite, validation, json-schema, check-jsonschema, data-viz | >- |
-| 209 | voidauth-1-12-3 | voidauth | 0.1.0 | voidauth, sso, oidc, authentication, selfhosted | Open-source SSO authentication and user management provider for self-hosted applications. Provides OIDC Provider, ... |
-| 210 | webfetch | webfetch | 0.2.1 | webfetch, web-scraping, url-fetch, markdown, scrapling | Fetches any URL and converts the full page to clean AI-targeted markdown using scrapling. Use when scraping ... |
-| 211 | websearch | websearch | 0.2.1 | websearch, web-search, duckduckgo, yaml-output, scrapling | Searches DuckDuckGo via its HTML endpoint and outputs results as raw YAML. Uses a deterministic bash script, ... |
-| 212 | yjs-13-6-30 | yjs | 0.1.0 | yjs, crdt, collaborative-editing, real-time, shared-types | CRDT framework for conflict-free collaborative editing with shared types (Y.Map, Y.Array, Y.Text). Provides ... |
-| 213 | yq-4-53-2 | yq | 0.1.0 | yaml, json, xml, ini, csv | >- |
-| 214 | zeromq-wiki-3-2-0 | zeromq-wiki | 0.1.0 | zeromq, messaging, distributed-systems, networking, sockets | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and ... |
-| 215 | zeromq-zguide-3-2-0 | zeromq-zguide | 0.1.0 | zeromq, zmq, messaging, sockets, distributed-systems | Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and ... |
+| 176 | sheetjs-0-20-3 | sheetjs | 0.1.0 | sheetjs, spreadsheet, xlsx, csv, excel | Spreadsheet data toolkit for reading, writing, and converting 40+ file formats including XLSX, CSV, JSON, HTML, ODS. ... |
+| 177 | skman | skman | 0.3.1 | meta, meta skill, skill manager, skill package manager, authoring | Skill Package Manager, skman, it is meta skill for skill authoring and skill package manager for AI agents. |
+| 178 | solidjs-1-9-12 | solidjs | 0.1.0 | solidjs, reactivity, signals, jsx, fine-grained | >- |
+| 179 | solid-meta-0-29-4 | solid-meta | 0.1.0 | solidjs, meta-tags, document-head, ssr, seo | Manages document head tags in SolidJS applications with @solidjs/meta v0.29.4, providing SSR-ready Document Head ... |
+| 180 | solid-router-0-16-1 | solid-router | 0.1.0 | solidjs, router, spa, routing, ssg | The universal router for SolidJS providing fine-grained reactivity for route navigation with support for ... |
+| 181 | solid-start-1-3-2 | solid-start | 0.1.0 | solidjs, fullstack, ssr, ssg, csr | Fullstack framework for SolidJS providing SSR, SSG, API routes, file-based routing, and server functions. Use when ... |
+| 182 | spacy-3-8-14 | spacy | 0.1.0 | nlp, natural-language-processing, text-analysis, machine-learning, python | Industrial-strength NLP library for Python providing tokenization, named entity recognition, dependency parsing, and ... |
+| 183 | spec-kit-0-8-3 | spec-kit | 0.1.0 | specification-driven-development, sdd, ai-assisted-development, project-management, workflow-automation | Spec-Driven Development toolkit for specification-first workflows with AI agents. Generate executable ... |
+| 184 | sqlalchemy-2-0-49 | sqlalchemy | 0.1.0 | database, orm, sql, python, postgresql | Complete SQLAlchemy 2.0 toolkit for database operations, ORM mapping, and SQL expression construction. Use when ... |
+| 185 | sqlite-3-53-0 | sqlite | 0.1.0 | sqlite, database, sql, json, fts | Embedded SQL database providing ACID transactions, full-text search (FTS5), spatial indexing (R-Tree), JSON ... |
+| 186 | stanza-1-11-1 | stanza | 0.1.0 | nlp, natural-language-processing, multilingual, tokenization, pos-tagging | Stanford NLP Group's Python NLP library for 80+ languages providing tokenization, POS tagging, lemmatization, ... |
+| 187 | stitch-2026-05-04 | stitch | 0.1.0 | stitch, ui-design, ai-design, mcp, google-labs | AI-powered UI design tool generating high-fidelity screens and frontend code from text prompts and images. Provides ... |
+| 188 | stringzilla-4-6-0 | stringzilla | 0.1.0 | simd, string-processing, search, hashing, sorting | High-performance SIMD-accelerated string library for search, hashing, sorting, and fuzzy matching in ... |
+| 189 | sympy-1-14-0 | sympy | 0.1.0 | sympy, symbolic-math, computer-algebra, python, mathematics | Complete toolkit for SymPy 1.14.0 providing symbolic mathematics in Python including algebra, calculus, matrices, ... |
+| 190 | tailwindcss-4-2-4 | tailwindcss | 0.1.0 | css, tailwind, styling, frontend, utility-first | A skill for using Tailwind CSS v4.2, a utility-first CSS framework with CSS-based configuration via @theme, OKLCH ... |
+| 191 | tailwindcss-browser-4-2-4 | tailwindcss-browser | 0.1.0 | css, tailwind, browser, prototyping, no-build | In-browser Tailwind CSS v4.2 build (@tailwindcss/browser) that compiles utility classes at runtime without a build ... |
+| 192 | tea-0-14-0 | tea | 0.1.0 | gitea, cli, git, devops, ci-cd | Official CLI for Gitea servers. Manage repositories, issues, pull requests, releases, and admin operations from the ... |
+| 193 | temporal-api | temporal-api | 0.1.0 | temporal, date-time, timezone, calendar, javascript | ECMAScript Temporal API for date/time management replacing legacy Date. Provides timezone-aware arithmetic, calendar ... |
+| 194 | textblob-0-20-0 | textblob | 0.1.0 | nlp, text-processing, sentiment-analysis, pos-tagging, tokenization | Python library for simplified natural language processing providing POS tagging, noun phrase extraction, sentiment ... |
+| 195 | textual-8-2-5 | textual | 0.1.0 | tui, terminal-ui, python, framework, reactive | Python framework for building terminal and browser UIs. Provides widget-based DOM, CSS styling (.tcss), reactive ... |
+| 196 | tinycc-0-9-27 | tinycc | 0.1.0 | c-compiler, code-generation, dynamic-compilation, x86, arm | Complete toolkit for TinyCC 0.9.27, a small hyper-fast C compiler generating native x86/x86_64/ARM code without an ... |
+| 197 | tinypy-1-1-0 | tinypy | 0.1.0 | python, vm, embedding, scripting, minimal | Minimalist Python implementation in ~64k of code with a bootstrapped parser, bytecode compiler, and VM with ... |
+| 198 | tinyscheme-1-41 | tinyscheme | 0.1.0 | tinyscheme, scheme, lisp, interpreter, embedded | Lightweight Scheme interpreter (R5RS subset) in ~5000 lines of C, designed as an embeddable scripting engine. ... |
+| 199 | tokenizers-0-23-1 | tokenizers | 0.1.0 | nlp, tokenization, rust, python, transformers | Fast state-of-the-art tokenizers library for NLP written in Rust with Python, Node.js, and Ruby bindings. Use when ... |
+| 200 | transformers-5-7-0 | transformers | 0.1.0 | nlp, machine-learning, deep-learning, pytorch, huggingface | Complete toolkit for Hugging Face Transformers 5.7.0 providing pretrained models for NLP, vision, audio, video, and ... |
+| 201 | ty-0-0-33 | ty | 0.1.0 | python, type-checking, static-analysis, language-server, mypy-alternative | Extremely fast Python type checker and language server written in Rust, 10x-100x faster than mypy and Pyright. ... |
+| 202 | tzip | tzip | 0.4.0 | meta, meta-skill, token-prune, efficiency, guidelines | Lightweight token-pruning communication mode that drops filler and hedging while keeping full sentences and ... |
+| 203 | upx-5-1-1 | upx | 0.1.0 | compression, executable-packer, distribution, size-optimization, cross-platform | >- |
+| 204 | usearch-2-25-1 | usearch | 0.1.0 | vector-search, ann, hnsw, similarity-search, clustering | High-performance single-file similarity search engine for vectors using HNSW with user-defined metrics, ... |
+| 205 | uv-0-11-8 | uv | 0.1.0 | python, package-management, dependency-resolution, virtual-environments, pip-replacement | Extremely fast Python package and project manager written in Rust, replacing pip, pip-tools, pipx, poetry, pyenv, ... |
+| 206 | vega-6-2-0 | vega | 0.1.0 | vega, visualization, charts, grammar-of-graphics, data-viz | Vega 6.2.0 — declarative visualization grammar for creating interactive charts in JSON. Define data, scales, marks, ... |
+| 207 | vega-embed-7-1-0 | vega-embed | 0.1.0 | vega-embed, vega, vega-lite, visualization, charts | Embed interactive Vega and Vega-Lite visualizations into web pages. Load specs from URLs or JSON objects, render ... |
+| 208 | vega-lite-6-4-3 | vega-lite | 0.1.0 | vega-lite, visualization, charts, grammar-of-graphics, data-viz | Vega-Lite 6.4.3 — high-level grammar of interactive graphics. Generate, author, and debug Vega-Lite specifications ... |
+| 209 | vega-lite-validator-0-1-0 | vega-lite-validator | 0.1.0 | vega-lite, validation, json-schema, check-jsonschema, data-viz | >- |
+| 210 | voidauth-1-12-3 | voidauth | 0.1.0 | voidauth, sso, oidc, authentication, selfhosted | Open-source SSO authentication and user management provider for self-hosted applications. Provides OIDC Provider, ... |
+| 211 | webfetch | webfetch | 0.2.1 | webfetch, web-scraping, url-fetch, markdown, scrapling | Fetches any URL and converts the full page to clean AI-targeted markdown using scrapling. Use when scraping ... |
+| 212 | websearch | websearch | 0.2.1 | websearch, web-search, duckduckgo, yaml-output, scrapling | Searches DuckDuckGo via its HTML endpoint and outputs results as raw YAML. Uses a deterministic bash script, ... |
+| 213 | yjs-13-6-30 | yjs | 0.1.0 | yjs, crdt, collaborative-editing, real-time, shared-types | CRDT framework for conflict-free collaborative editing with shared types (Y.Map, Y.Array, Y.Text). Provides ... |
+| 214 | yq-4-53-2 | yq | 0.1.0 | yaml, json, xml, ini, csv | >- |
+| 215 | zeromq-wiki-3-2-0 | zeromq-wiki | 0.1.0 | zeromq, messaging, distributed-systems, networking, sockets | A comprehensive toolkit for ZeroMQ (ØMQ) messaging library covering socket patterns, protocols, architecture, and ... |
+| 216 | zeromq-zguide-3-2-0 | zeromq-zguide | 0.1.0 | zeromq, zmq, messaging, sockets, distributed-systems | Complete ZeroMQ ZGuide 3.2 toolkit covering messaging patterns, socket types, reliability mechanisms, and ... |
 
 ## Statistics
 
-- **Total Skills**: 215
+- **Total Skills**: 216
