@@ -13,6 +13,7 @@ Concurrency model:
   - A SHA-256 checksum comment at the bottom of each PLAN.md allows
     detecting corruption after any write.
 """
+__all__ = ['parse_plan_data']
 
 import argparse
 import fcntl
@@ -29,11 +30,11 @@ from pathlib import Path
 # Constants
 # ---------------------------------------------------------------------------
 
-STATUS_TODO = "\u2610"       # ☐ Not Started / To Do
-STATUS_QUESTION = "\u2753"   # ❓ Needs Clarification / Question
-STATUS_DOING = "\u2699\uFE0F"  # ⚙️ Active / Doing
-STATUS_ERROR = "\u274C"      # ❌ Blocked / Error
-STATUS_DONE = "\u2611"       # ☑ Completed / Done
+STATUS_TODO = "\u2610"          # ☐ Not Started / To Do
+STATUS_QUESTION = "\u2753"      # ❓ Needs Clarification / Question
+STATUS_DOING = "\u2699\uFE0F"   # ⚙️ Active / Doing
+STATUS_ERROR = "\u274C"         # ❌ Blocked / Error
+STATUS_DONE = "\u2611"          # ☑ Completed / Done
 
 ALL_STATUSES = {STATUS_TODO, STATUS_QUESTION, STATUS_DOING, STATUS_ERROR, STATUS_DONE}
 
@@ -1784,6 +1785,7 @@ def cmd_remove_task_dependency(args: argparse.Namespace) -> None:
 
 import json as _json_mod
 
+
 _STATUS_LABEL = {
     STATUS_TODO: "todo",
     STATUS_QUESTION: "question",
@@ -1791,6 +1793,61 @@ _STATUS_LABEL = {
     STATUS_ERROR: "error",
     STATUS_DONE: "done",
 }
+
+
+def parse_plan_data(
+    plan_path: str | None = None,
+    content: str | None = None,
+    view: str = "list",
+) -> list[dict] | dict:
+    """Extract structured plan data from PLAN.md as native Python objects.
+
+    Accepts either a file path (*plan_path*) or raw markdown text (*content*),
+    but not both.  Returns parsed plan data as plain Python dicts — no
+    serialisation to JSON/YAML strings.
+
+    Args:
+        plan_path: Path to a PLAN.md file on disk.  Read with shared lock
+            and checksum verification when provided.
+        content: Raw PLAN.md markdown text.  Used directly when provided.
+        view: Output shape — ``"list"`` for a flat array of plan/phase/task
+            items (default), or ``"tree"`` for a nested hierarchy.
+
+    Returns:
+        A ``list[dict]`` when *view* is ``"list"``, or a ``dict`` with a
+        top-level ``"plan"`` key when *view* is ``"tree"``.
+
+    Raises:
+        ValueError: If neither or both *plan_path* and *content* are given,
+            or if *view* is not ``"list"`` or ``"tree"``.
+
+    Examples::
+
+        # From a file
+        data = parse_plan_data(plan_path="PLAN.md")
+
+        # From raw text
+        data = parse_plan_data(content=raw_text, view="tree")
+    """
+    if plan_path is None and content is None:
+        raise ValueError("Either plan_path or content must be provided")
+    if plan_path is not None and content is not None:
+        raise ValueError("Provide either plan_path or content, not both")
+
+    if view not in ("list", "tree"):
+        raise ValueError(f"view must be 'list' or 'tree', got '{view}'")
+
+    # Resolve raw content
+    if plan_path is not None:
+        content = _safe_read(plan_path)
+    plan_id = plan_path or "<inline>"
+
+    data = _build_plan_data(content)
+
+    if view == "list":
+        return _to_list_data(data, plan_id)
+    else:
+        return _to_tree_data(data, plan_id)
 
 
 def _build_plan_data(content: str) -> dict:
@@ -1841,6 +1898,73 @@ def _build_plan_data(content: str) -> dict:
         "current_phase": header.get("current_phase", "NONE"),
         "current_task": header.get("current_task", "NONE"),
         "phases": phases_data,
+    }
+
+
+def _to_list_data(data: dict, plan_id: str) -> list[dict]:
+    """Convert _build_plan_data dict to a flat list of native Python dicts.
+
+    Same structure as --list output but returns Python objects instead of
+    serialised JSON/YAML strings.
+    """
+    items = [{
+        "type": "plan",
+        "id": plan_id,
+        "title": data["title"],
+        "status": data["status"],
+        "created": data["created"],
+        "updated": data["updated"],
+        "depends_on": list(data["depends_on"]),
+    }]
+    for phase in data["phases"]:
+        items.append({
+            "type": "phase",
+            "id": phase["id"],
+            "title": phase["title"],
+            "status": phase["status"],
+        })
+        for task in phase["tasks"]:
+            items.append({
+                "type": "task",
+                "phase": phase["id"],
+                "id": task["id"],
+                "title": task["title"],
+                "status": task["status"],
+                "depends_on": list(task["depends_on"]),
+            })
+    return items
+
+
+def _to_tree_data(data: dict, plan_id: str) -> dict:
+    """Convert _build_plan_data dict to a nested tree of native Python dicts.
+
+    Same structure as --tree output but returns Python objects instead of
+    serialised JSON/YAML strings.
+    """
+    phases = []
+    for phase in data["phases"]:
+        tasks = [{
+            "id": task["id"],
+            "status": task["status"],
+            "title": task["title"],
+            "depends_on": list(task["depends_on"]),
+        } for task in phase["tasks"]]
+        phases.append({
+            "id": phase["id"],
+            "status": phase["status"],
+            "title": phase["title"],
+            "tasks": tasks,
+        })
+    return {
+        "plan": {
+            "id": plan_id,
+            "title": data["title"],
+            "status": data["status"],
+            "depends_on": list(data["depends_on"]),
+            "created": data["created"],
+            "updated": data["updated"],
+            "phases": phases,
+        },
     }
 
 
