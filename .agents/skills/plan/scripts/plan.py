@@ -1840,7 +1840,7 @@ def parse_plan_data(
     # Resolve raw content
     if plan_path is not None:
         content = _safe_read(plan_path)
-    plan_id = plan_path or "<inline>"
+    plan_id = plan_path or "PLAN.md"
 
     data = _build_plan_data(content)
 
