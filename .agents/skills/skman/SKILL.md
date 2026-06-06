@@ -68,6 +68,8 @@ my-skill/
 │   ├── fill_form.lua     # Form filling script
 └── assets/               # Only if explicitly requested
     └── example-config.yaml
+    └── example-doc.md
+    └── example-graph.png
 ```
 
 **Script quality rules:**
@@ -198,11 +200,11 @@ Invalid: `PDF-Processing`, `-pdf`, `pdf--processing`, `pdf processing`
 
 Directory Names:
 
-When constructing the **directory name**, include the upstream version hyphenated: `project-1-2-3`, `project-0-16`, `project-2025-11-25`. The `name` field in YAML should match the directory name.
+When constructing the **directory name**, include the upstream version hyphenated if a version is provided. Versions can be SemVer (`project-1-2-3`, `project-0-16`) or date-based (`project-2025-11-25`). If no version is provided, use just the skill name (e.g., `git`, `lambda-calculus`). The `name` field in YAML should match the directory name.
 
 Version Tracking:
 
-The skill file's own version (SemVer 2.0.0) is tracked in `assets/MISC.md`, not in SKILL.md frontmatter.
+The skill file's own version (SemVer 2.0.0) is tracked in `assets/MISC.md`, not in SKILL.md frontmatter. This is independent of the upstream project version used in the directory name.
 
 - **Always start at `0.1.0`** for new skills
 - **Patch bump** (`0.1.0` → `0.1.1`): typo fixes, minor corrections
