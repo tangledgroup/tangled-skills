@@ -36,7 +36,7 @@ The user provides at least one source:
 
 ### Output Structure
 
-Generated skills are created in `.agents/skills/<skill-name>/`:
+Generated skills are created in `.agents/skills/<skill-name>/` or `.agents/skills/<skill-name>-<version>/` (version is optional).
 
 **Simple skill** (single SKILL.md):
 ```
