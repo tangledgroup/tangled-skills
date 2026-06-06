@@ -1,689 +1,424 @@
 #!/usr/bin/env python3
-"""skman — Skill Package Manager
-
-Single-entry CLI for validating skills, regenerating the README table,
-and syncing upstream skills from tangled-skills.
+"""skman — Skill Manager: scaffold, validate, and inspect agent skills.
 
 Usage:
-    python3 -B skman.py validate [--strict] <SKILL_DIR>
-    python3 -B skman.py gen-table [SKILLS_DIR] [README_PATH]
-    python3 -B skman.py sync [TARGET_DIR]
+    python3 -B scripts/skman.py --help
+    python3 -B scripts/skman.py create --help
+    python3 -B scripts/skman.py validate --help
+    python3 -B scripts/skman.py info --help
 """
 
 import argparse
 import os
 import re
-import shutil
-import subprocess
 import sys
-import tempfile
-from pathlib import Path
+import textwrap
 
 
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
+
+NAME_RE = re.compile(r'^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$')
 MAX_NAME_LEN = 64
 MAX_DESC_LEN = 1024
-SKILL_MAX_LINES = 500
-README_TABLE_COL = 120
 
-UPSTREAM_REPO = "https://github.com/tangledgroup/tangled-skills"
-UPSTREAM_BRANCH = "main"
-UPSTREAM_PATH = ".agents/skills"
+FRONTMATTER_RE = re.compile(
+    r'^---\s*\n(?P<content>.*?)^---\s*\n', re.MULTILINE | re.DOTALL
+)
+YAML_LINE_RE = re.compile(r'^(?P<key>[a-z][a-z0-9_-]*)\s*:\s*(?P<value>.*)$')
 
+DEFAULT_SKILL_MD = textwrap.dedent("""\
+---
+name: {name}
+description: {description}
+---
 
-# ---------------------------------------------------------------------------
-# YAML helpers (no external parser — built-in only)
-# ---------------------------------------------------------------------------
+# {title}
 
-def _extract_yaml_field(text: str, field: str) -> str:
-    """Extract a single-line or block-scalar YAML field from frontmatter."""
-    lines = text.split("\n")
-    in_header = False
-    in_block = False
-    strip_mode = False
-    buf = []
+## Overview
 
-    for i, line in enumerate(lines):
-        if i == 0 and line.strip() == "---":
-            in_header = True
-            continue
-        if line.strip() == "---" and in_header:
-            # End of header
-            if in_block:
-                val = " ".join(buf)
-                return val.strip()
-            break
-        if not in_header:
-            break
+[Describe what this skill does and when to use it.]
 
-        if in_block:
-            if line.startswith("  ") or line.strip() == "":
-                buf.append(line[2:].strip())
-                continue
-            else:
-                val = " ".join(buf)
-                in_block = False
-                buf = []
-                # Fall through to process this line
+## Setup
 
-        key_match = re.match(rf"^{re.escape(field)}\s*:\s*(.*)", line)
-        if key_match:
-            val = key_match.group(1).strip()
-            if val in (">-", ">"):
-                strip_mode = val == ">-"
-                in_block = True
-                buf = []
-                continue
-            # Strip quotes
-            if len(val) >= 2 and val[0] == val[-1] and val[0] in ('"', "'"):
-                val = val[1:-1]
-            return val
+[One-time setup steps, if any. Omit section if none needed.]
 
-    return ""
+## Usage
 
+[How to use this skill. Include examples.]
 
-def _count_yaml_fields(text: str) -> list[str]:
-    """Return list of top-level field names in the YAML header."""
-    fields = []
-    lines = text.split("\n")
-    in_header = False
-    in_block = False
-
-    for i, line in enumerate(lines):
-        if i == 0 and line.strip() == "---":
-            in_header = True
-            continue
-        if line.strip() == "---" and in_header:
-            break
-        if not in_header:
-            continue
-
-        if in_block:
-            if line.startswith("  ") or line.strip() == "":
-                continue
-            else:
-                in_block = False
-
-        m = re.match(r"^([a-zA-Z_][a-zA-Z0-9_-]*)\s*:", line)
-        if m:
-            fields.append(m.group(1))
-            val = line[m.end():].strip()
-            if val in (">-", ">"):
-                in_block = True
-
-    return fields
+""")
 
 
 # ---------------------------------------------------------------------------
-# validate subcommand
+# Helpers
 # ---------------------------------------------------------------------------
 
-class _Validator:
-    """Collect pass/fail/warn results for a skill directory."""
+def _parse_frontmatter(text):
+    """Return (frontmatter_dict, body_text) or (None, text) if no frontmatter."""
+    m = FRONTMATTER_RE.match(text)
+    if not m:
+        return None, text
+    fm = {}
+    for line in m.group('content').splitlines():
+        lm = YAML_LINE_RE.match(line.strip())
+        if lm:
+            fm[lm.group('key')] = lm.group('value').strip()
+    body = text[m.end():]
+    return fm, body
 
-    def __init__(self, strict: bool):
-        self.strict = strict
-        self.errors = 0
-        self.warnings = 0
-        self.passes = 0
-        self.sections: dict[str, list[tuple[str, str]]] = {}
 
-    # -- output helpers
-    def _section(self, name: str):
-        self.sections.setdefault(name, [])
+def _validate_name(name):
+    """Return list of error strings (empty = valid)."""
+    errors = []
+    if not name:
+        errors.append("name is missing")
+        return errors
+    if len(name) > MAX_NAME_LEN:
+        errors.append(f"name exceeds {MAX_NAME_LEN} characters ({len(name)})")
+    if not NAME_RE.match(name):
+        errors.append(
+            "name must be lowercase letters, numbers, and hyphens only; "
+            "no leading/trailing/consecutive hyphens"
+        )
+    return errors
 
-    def pass_(self, section: str, msg: str):
-        self.passes += 1
-        self._section(section)
-        self.sections[section].append(("✓", msg))
-        print(f"  ✓ {msg}")
 
-    def fail(self, section: str, msg: str):
-        self.errors += 1
-        self._section(section)
-        self.sections[section].append(("✗", msg))
-        print(f"  ✗ {msg}")
+def _validate_description(desc):
+    """Return list of error strings (empty = valid)."""
+    errors = []
+    if desc is None:
+        errors.append("description is missing (required)")
+        return errors
+    if not desc.strip():
+        errors.append("description is empty (required)")
+        return errors
+    if len(desc) > MAX_DESC_LEN:
+        errors.append(
+            f"description exceeds {MAX_DESC_LEN} characters ({len(desc)})"
+        )
+    if '<' in desc and '>' in desc:
+        errors.append("description must not contain XML tags")
+    return errors
 
-    def warn(self, section: str, msg: str):
-        self.warnings += 1
-        self._section(section)
-        self.sections[section].append(("⚠", msg))
-        print(f"  ⚠ {msg}")
 
-    # -- checks
-    def check_yaml_header(self, skill_dir: Path):
-        print("--- YAML Header ---")
-        sec = "YAML Header"
-        skill_file = skill_dir / "SKILL.md"
+def _validate_frontmatter(fm):
+    """Return list of error strings for the full frontmatter."""
+    errors = []
+    name = fm.get('name', '') if fm else ''
+    errors.extend(_validate_name(name))
+    desc = fm.get('description', None) if fm else None
+    errors.extend(_validate_description(desc))
+    return errors
 
-        text = skill_file.read_text(encoding="utf-8")
-        lines = text.split("\n")
 
-        # Starts with ---
-        if lines[0].strip() == "---":
-            self.pass_(sec, "File starts with --- on line 1")
-        else:
-            self.fail(sec, f"File does not start with --- on line 1 (got: '{lines[0]}')")
+def _find_skill_md(path):
+    """Given a path (file or dir), return the absolute path to SKILL.md."""
+    abs_path = os.path.abspath(path)
+    if os.path.isfile(abs_path):
+        return abs_path
+    if os.path.isdir(abs_path):
+        candidate = os.path.join(abs_path, 'SKILL.md')
+        if os.path.isfile(candidate):
+            return candidate
+    return None
 
-        # Closing ---
-        dash_indices = [i for i, l in enumerate(lines) if l.strip() == "---"]
-        if len(dash_indices) < 2:
-            self.fail(sec, "No closing --- found for YAML header")
-        else:
-            self.pass_(sec, f"YAML header block properly closed with --- (line {dash_indices[1] + 1})")
 
-        # name field
-        yaml_name = _extract_yaml_field(text, "name")
-        dir_name = skill_dir.name
+# ---------------------------------------------------------------------------
+# Subcommands
+# ---------------------------------------------------------------------------
 
-        if not yaml_name:
-            self.fail(sec, "Missing 'name' field in YAML header")
-        elif yaml_name != dir_name:
-            self.fail(sec, f"'name' field '{yaml_name}' does not match directory name '{dir_name}'")
-        else:
-            self.pass_(sec, "'name' field matches directory name")
+def cmd_create(args):
+    """Scaffold a new skill directory."""
+    name = args.name.strip()
+    description = args.description.strip()
+    output_dir = args.output_dir or name
 
-        if yaml_name and not NAME_RE.match(yaml_name):
-            self.fail(sec, f"'name' '{yaml_name}' does not match regex ^[a-z0-9]+(-[a-z0-9]+)*$")
-        elif yaml_name:
-            self.pass_(sec, "'name' matches required format")
+    # Validate before creating anything
+    errors = []
+    errors.extend(_validate_name(name))
+    errors.extend(_validate_description(description))
 
-        # description field
-        yaml_desc = _extract_yaml_field(text, "description")
-        if not yaml_desc:
-            self.fail(sec, "Missing 'description' field in YAML header")
-        elif len(yaml_desc) > MAX_DESC_LEN:
-            self.warn(sec, f"'description' is {len(yaml_desc)} chars (max recommended: {MAX_DESC_LEN})")
-        else:
-            self.pass_(sec, f"'description' present ({len(yaml_desc)} chars)")
+    if errors:
+        print("create: validation failed:", file=sys.stderr)
+        for e in errors:
+            print(f"  - {e}", file=sys.stderr)
+        sys.exit(1)
 
-        # Exactly two fields
-        fields = _count_yaml_fields(text)
-        extra = [f for f in fields if f not in ("name", "description")]
-        if extra:
-            self.fail(sec, f"Extra fields in YAML header: {', '.join(extra)}. Only name and description allowed.")
-        else:
-            self.pass_(sec, "YAML header has exactly two fields (name, description)")
+    # Create directory structure
+    skill_dir = os.path.join(output_dir, name) if output_dir != name else output_dir
+    os.makedirs(skill_dir, exist_ok=True)
 
-        print()
+    skill_md_path = os.path.join(skill_dir, 'SKILL.md')
+    if os.path.exists(skill_md_path):
+        print(f"create: {skill_md_path} already exists — skipping", file=sys.stderr)
+        sys.exit(1)
 
-    def check_directory(self, skill_dir: Path):
-        print("--- Directory Structure ---")
-        sec = "Directory Structure"
+    title = name.replace('-', ' ').title()
+    content = DEFAULT_SKILL_MD.format(name=name, description=description, title=title)
+    with open(skill_md_path, 'w') as f:
+        f.write(content)
 
-        self.pass_(sec, "SKILL.md exists")
+    # Optionally create reference directory
+    if args.with_reference:
+        ref_dir = os.path.join(skill_dir, 'reference')
+        os.makedirs(ref_dir, exist_ok=True)
+        placeholder = os.path.join(ref_dir, '01-reference.md')
+        with open(placeholder, 'w') as f:
+            f.write(f"# {title} Reference\n\n[Detailed reference content.]\n")
 
-        # reference/
-        ref_dir = skill_dir / "reference"
-        has_reference = ref_dir.is_dir()
-        if has_reference:
-            self.pass_(sec, "reference/ directory exists")
-            nested = [d for d in ref_dir.rglob("*") if d.is_dir() and d != ref_dir]
-            if nested:
-                self.fail(sec, f"reference/ contains subdirectories (should be flat): {', '.join(str(d) for d in nested)}")
-            else:
-                self.pass_(sec, "reference/ has flat structure (no subdirectories)")
-
-            ref_files = sorted(ref_dir.glob("*.md"))
-            bad_named = [f.name for f in ref_files if not re.match(r"^[0-9][0-9]-.*\.md$", f.name)]
-            if bad_named:
-                self.fail(sec, f"reference/ files not matching NN-*.md pattern: {', '.join(bad_named)}")
-            else:
-                self.pass_(sec, f"reference/ files match NN-*.md naming ({len(ref_files)} files)")
-
-            empty = [f.name for f in ref_files if f.stat().st_size == 0]
-            if empty:
-                self.fail(sec, f"Empty reference files: {', '.join(empty)}")
-            else:
-                self.pass_(sec, "Reference files are non-empty")
-        else:
-            self.pass_(sec, "No reference/ directory (simple skill)")
-
-        # scripts/
-        has_scripts = (skill_dir / "scripts").is_dir()
-        if has_scripts:
-            self.pass_(sec, "scripts/ directory exists (opt-in)")
-        else:
-            self.pass_(sec, "No scripts/ directory")
-
-        # assets/
-        if (skill_dir / "assets").is_dir():
-            self.pass_(sec, "assets/ directory exists (opt-in)")
-        else:
-            self.pass_(sec, "No assets/ directory")
-
-        # Unexpected root files
-        allowed = {"SKILL.md", "reference", "scripts", "assets"}
-        unexpected = [
-            e.name for e in skill_dir.iterdir()
-            if not e.is_dir() and e.name not in allowed and not e.name.startswith(".")
-        ]
-        if unexpected:
-            self.warn(sec, f"Unexpected files in skill root: {', '.join(unexpected)}")
-        else:
-            self.pass_(sec, "No unexpected files in skill root")
-
-        # Disallowed dirs/files
-        disallowed = []
-        for vc in (".git", ".svn", ".hg"):
-            if (skill_dir / vc).is_dir():
-                disallowed.append(f"{vc}/")
-        for env in skill_dir.glob(".env*"):
-            if env.exists():
-                disallowed.append(env.name)
-        if disallowed:
-            self.fail(sec, f"Disallowed files/dirs found: {', '.join(disallowed)}")
-        else:
-            self.pass_(sec, "No disallowed files/directories (.git, .env*, etc.)")
-
-        # Backslashes
-        backslash = [str(f) for f in skill_dir.rglob("*\\*") if f != skill_dir]
-        if backslash:
-            self.fail(sec, "Files with backslashes in names found")
-        else:
-            self.pass_(sec, "No backslashes in file paths")
-
-        print()
-        return has_reference, has_scripts
-
-    def check_content(self, skill_dir: Path, has_reference: bool):
-        print("--- Content Sections ---")
-        sec = "Content Sections"
-        text = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
-
-        if re.search(r"^## Overview", text, re.MULTILINE):
-            self.pass_(sec, "## Overview section present")
-        else:
-            self.fail(sec, "Missing '## Overview' section")
-
-        if re.search(r"^## When to Use", text, re.MULTILINE):
-            self.pass_(sec, "## When to Use section present")
-        else:
-            self.fail(sec, "Missing '## When to Use' section")
-
-        if has_reference:
-            line_count = text.count("\n")
-            if line_count > SKILL_MAX_LINES:
-                self.warn(sec, f"SKILL.md is {line_count} lines (max recommended: {SKILL_MAX_LINES} when reference/ exists)")
-            else:
-                self.pass_(sec, f"SKILL.md under {SKILL_MAX_LINES} lines ({line_count} lines)")
-
-            if re.search(r"^## Advanced Topics", text, re.MULTILINE):
-                self.pass_(sec, "## Advanced Topics section present")
-
-                # All reference files linked from SKILL.md
-                ref_dir = skill_dir / "reference"
-                ref_names = [f.name for f in ref_dir.glob("*.md")]
-                missing = [r for r in ref_names if f"reference/{r}" not in text]
-                if missing:
-                    self.warn(sec, f"Reference files not linked from SKILL.md: {', '.join(missing)}")
-                else:
-                    self.pass_(sec, "All reference files linked from SKILL.md")
-            else:
-                self.fail(sec, "Missing '## Advanced Topics' section (required when reference/ exists)")
-
-            # Reference files have headings
-            no_heading = []
-            for f in (skill_dir / "reference").glob("*.md"):
-                head = f.read_text(encoding="utf-8", errors="replace").split("\n")[:5]
-                if not any(l.startswith("#") for l in head):
-                    no_heading.append(f.name)
-            if no_heading:
-                self.fail(sec, f"Reference files missing headings: {', '.join(no_heading)}")
-            else:
-                self.pass_(sec, "Reference files have headings")
-
-        print()
-
-    def check_scripts(self, skill_dir: Path):
-        sec = "Scripts"
-        scripts_dir = skill_dir / "scripts"
-        if not scripts_dir.is_dir():
-            return
-
-        print(f"--- {sec} ---")
-        text = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
-
-        # Referenced scripts exist on disk
-        refs = set(re.findall(r"scripts/[a-zA-Z0-9_.\-]+", text))
-        missing = [r for r in refs if not (skill_dir / r).exists()]
-        if missing:
-            self.fail(sec, f"Referenced scripts not found: {', '.join(missing)}")
-        elif refs:
-            self.pass_(sec, "All referenced scripts exist on disk")
-        else:
-            self.pass_(sec, "No script references in SKILL.md (scripts may be standalone)")
-
-        # No package installs in scripts
-        install_re = re.compile(r"(pip install|npm install|apt-get install|yum install)")
-        skip_tokens = {"grep", "sed", "awk", "re.compile", "re.search", "re.findall",
-                       "install_re", "INSTALL"}
-        violations = []
-        for f in scripts_dir.iterdir():
-            if f.is_file():
-                content = f.read_text(encoding="utf-8", errors="replace")
-                # Skip comment lines and lines that are regex/pattern definitions
-                code_lines = [l for l in content.split("\n")
-                              if not re.match(r"^\s*(#|//)", l)
-                              and not any(t in l for t in skip_tokens)]
-                if any(install_re.search(l) for l in code_lines):
-                    violations.append(f.name)
-        if violations:
-            self.warn(sec, f"Scripts with package installs (violates AGENTS.md): {', '.join(violations)}")
-        else:
-            self.pass_(sec, "No package installation commands in scripts")
-
-        # Shebang or recognized extension
-        ext_re = re.compile(r"\.(sh|bash|py|js|ts)$")
-        bad = []
-        for f in scripts_dir.iterdir():
-            if f.is_file():
-                first = f.read_text(encoding="utf-8", errors="replace").split("\n")[0]
-                if not first.startswith("#!") and not ext_re.search(f.name):
-                    bad.append(f.name)
-        if bad:
-            self.warn(sec, f"Scripts without shebang or recognized extension: {', '.join(bad)}")
-        else:
-            self.pass_(sec, "All scripts have shebang or recognizable extension")
-
-        print()
-
-    def summary(self):
-        total = self.errors + self.warnings + self.passes
-        print("--- Summary ---")
-        print(f"  Checks passed: {self.passes}")
-        print(f"  Errors:        {self.errors}")
-        print(f"  Warnings:      {self.warnings}")
-        print(f"  Total checks:  {total}")
-
-        if self.errors > 0:
-            print(f"\n✗ Validation FAILED with {self.errors} error(s)")
-            return 1
-        if self.strict and self.warnings > 0:
-            print(f"\n✗ Validation FAILED in strict mode with {self.warnings} warning(s)")
-            return 1
-        if self.warnings > 0:
-            print(f"\n⚠ Validation passed with {self.warnings} warning(s)")
-            return 0
-        print("\n✓ Validation PASSED")
-        return 0
+    print(f"create: scaffolded skill '{name}' at {skill_md_path}")
+    if args.with_reference:
+        print(f"create: created reference placeholder at {placeholder}")
 
 
 def cmd_validate(args):
-    """Validate structural integrity of a skill directory."""
-    skill_dir = Path(args.skill_dir)
-    if not skill_dir.is_dir():
-        print(f"Error: Directory not found: {args.skill_dir}", file=sys.stderr)
-        sys.exit(1)
-    if not (skill_dir / "SKILL.md").is_file():
-        print(f"Error: SKILL.md not found in: {skill_dir}", file=sys.stderr)
-        sys.exit(1)
+    """Validate a SKILL.md file against spec rules."""
+    target = args.path
+    skill_md = _find_skill_md(target)
 
-    skill_dir = skill_dir.resolve()
-    print(f"Validating skill: {skill_dir.name}")
-    print(f"Directory: {skill_dir}")
-    print()
-
-    v = _Validator(strict=args.strict)
-    v.check_yaml_header(skill_dir)
-    has_ref, has_scripts = v.check_directory(skill_dir)
-    v.check_content(skill_dir, has_ref)
-    if has_scripts:
-        v.check_scripts(skill_dir)
-    code = v.summary()
-    sys.exit(code)
-
-
-# ---------------------------------------------------------------------------
-# gen-table subcommand
-# ---------------------------------------------------------------------------
-
-def _strip_version_suffix(name: str) -> str:
-    """Derive project name from skill directory by stripping version suffix."""
-    # Strip trailing pre-release
-    name = re.sub(r"-(alpha|beta|rc)-[0-9]+$", "", name)
-    # Strip trailing -NUMBER segments
-    name = re.sub(r"(-[0-9]+)+$", "", name)
-    return name
-
-
-def _truncate(text: str, max_len: int = README_TABLE_COL) -> str:
-    """Truncate text at word boundary, appending '...' if needed."""
-    if len(text) <= max_len:
-        return text
-    cut = max_len - 3
-    truncated = text[:cut]
-    last_space = truncated.rfind(" ")
-    if last_space > 0:
-        truncated = truncated[:last_space]
-    return f"{truncated}..."
-
-
-def cmd_gen_table(args):
-    """Regenerate the Skills Table section in README.md."""
-    skills_dir = Path(args.skills_dir)
-    readme_path = Path(args.readme_path)
-
-    if not skills_dir.is_dir():
-        print(f"Error: Skills directory '{skills_dir}' not found.", file=sys.stderr)
-        sys.exit(1)
-    if not readme_path.is_file():
-        print(f"Error: README file '{readme_path}' not found.", file=sys.stderr)
+    if skill_md is None:
+        print(f"validate: no SKILL.md found at '{target}'", file=sys.stderr)
         sys.exit(1)
 
-    rows = []
-    count = 0
+    with open(skill_md, 'r') as f:
+        content = f.read()
 
-    for skill_dir in sorted(skills_dir.iterdir()):
-        if not skill_dir.is_dir():
-            continue
-        skill_file = skill_dir / "SKILL.md"
-        if not skill_file.is_file():
-            continue
+    fm, body = _parse_frontmatter(content)
 
-        text = skill_file.read_text(encoding="utf-8")
-        name = _extract_yaml_field(text, "name")
-        description = _extract_yaml_field(text, "description")
-        project = _strip_version_suffix(skill_dir.name)
-        desc_trunc = _truncate(description)
+    errors = []
+    warnings = []
 
-        count += 1
-        rows.append((skill_dir.name, count, project, desc_trunc))
+    # Frontmatter presence
+    if fm is None:
+        errors.append("no YAML frontmatter found (must start with ---)")
+    else:
+        errors.extend(_validate_frontmatter(fm))
 
-    # Build replacement table
-    header = (
-        "\n## Skills Table\n\n"
-        "| No | Skill | Project | Version | Technologies | Description |\n"
-        "|----|-------|---------|---------|--------------|-------------|\n"
-    )
-    body_lines = []
-    for skill_name, num, project, desc in rows:
-        escaped = desc.replace("|", "\\|")
-        body_lines.append(f"| {num} | {skill_name} | {project} |  |  | {escaped} |")
+        # Check for unknown fields (informational warning)
+        known_fields = {
+            'name', 'description', 'license', 'compatibility',
+            'metadata', 'allowed-tools', 'disable-model-invocation',
+        }
+        unknown = set(fm.keys()) - known_fields
+        if unknown:
+            warnings.append(f"unknown frontmatter fields: {', '.join(sorted(unknown))}")
 
-    replacement = header + "\n".join(body_lines) + "\n"
-
-    # Replace in README
-    readme_text = readme_path.read_text(encoding="utf-8")
-
-    table_match = re.search(r"^## Skills Table$", readme_text, re.MULTILINE)
-    stats_match = re.search(r"^## Statistics$", readme_text, re.MULTILINE)
-    if not table_match or not stats_match:
-        print(f"Error: Could not find '## Skills Table' or '## Statistics' in {readme_path}", file=sys.stderr)
-        sys.exit(1)
-
-    # Find last non-blank line before table
-    before_end = table_match.start()
-    while before_end > 0 and readme_text[before_end - 1] in ("\n", " "):
-        before_end -= 1
-
-    # Rebuild: content before table + replacement + blank line + stats section onward
-    new_readme = (
-        readme_text[:before_end]
-        + replacement
-        + "\n"
-        + readme_text[stats_match.start():]
-    )
-
-    # Update statistics count
-    new_readme = re.sub(
-        r"- \*\*Total Skills\*\*: \d+",
-        f"- **Total Skills**: {count}",
-        new_readme,
-    )
-
-    readme_path.write_text(new_readme, encoding="utf-8")
-    print(f"Generated skills table with {count} skills in {readme_path}")
-
-
-# ---------------------------------------------------------------------------
-# sync subcommand
-# ---------------------------------------------------------------------------
-
-def cmd_sync(args):
-    """Sync local .agents/skills with tangled-skills upstream."""
-    target = Path(args.target_dir)
-    if not target.is_dir():
-        print(f"Error: Target directory '{target}' does not exist.", file=sys.stderr)
-        sys.exit(1)
-
-    target = target.resolve()
-    skills_dest = target / UPSTREAM_PATH
-    skills_dest.mkdir(parents=True, exist_ok=True)
-
-    url = f"{UPSTREAM_REPO}/archive/refs/heads/{UPSTREAM_BRANCH}.tar.gz"
-    print(f"Syncing tangled-skills into {skills_dest} ...")
-
-    try:
-        # Download tarball to temp file
-        with tempfile.NamedTemporaryFile(suffix=".tar.gz", delete=False) as tmp:
-            tmp_path = tmp.name
-
-        subprocess.run(
-            ["curl", "-sL", "-o", tmp_path, url],
-            check=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+    # Body checks
+    body_lines = body.splitlines()
+    body_line_count = len(body_lines)
+    if body_line_count > 500:
+        warnings.append(
+            f"body has {body_line_count} lines (recommended: under 500)"
         )
 
-        # Extract .agents/skills from archive
-        subprocess.run(
-            [
-                "tar", "-xz",
-                f"--strip-components=3",
-                f"-C", str(skills_dest),
-                f"tangled-skills-{UPSTREAM_BRANCH}/{UPSTREAM_PATH}",
-            ],
-            check=True,
-        )
+    # Check for heading
+    has_heading = any(line.startswith('#') for line in body_lines)
+    if not has_heading and fm is not None:
+        warnings.append("body has no markdown headings")
 
-        os.unlink(tmp_path)
+    # Report
+    ok = True
+    if errors:
+        ok = False
+        print("validate: FAILED")
+        for e in errors:
+            print(f"  ERROR: {e}")
+    elif warnings and not args.strict:
+        print("validate: OK (with warnings)")
+    else:
+        print("validate: OK")
 
-    except FileNotFoundError as e:
-        print(f"Error: Required command not found: {e}", file=sys.stderr)
+    if warnings:
+        for w in warnings:
+            print(f"  WARN:  {w}")
+
+    if args.strict and warnings:
+        ok = False
+
+    sys.exit(0 if ok else 1)
+
+
+def cmd_info(args):
+    """Print parsed frontmatter and structural summary of a skill."""
+    target = args.path
+    skill_md = _find_skill_md(target)
+
+    if skill_md is None:
+        print(f"info: no SKILL.md found at '{target}'", file=sys.stderr)
         sys.exit(1)
-    except subprocess.CalledProcessError as e:
-        print(f"Error: Command failed with exit code {e.returncode}: {' '.join(e.cmd)}", file=sys.stderr)
-        # Clean up temp file if it exists
-        if "tmp_path" in dir() and os.path.exists(tmp_path):
-            os.unlink(tmp_path)
-        sys.exit(1)
 
-    print(f"Sync complete. Skills directory: {skills_dest}/")
+    with open(skill_md, 'r') as f:
+        content = f.read()
+
+    fm, body = _parse_frontmatter(content)
+
+    # Print frontmatter
+    print("info: SKILL.md analysis")
+    print("-" * 40)
+    if fm:
+        for key in ('name', 'description', 'license', 'compatibility',
+                     'allowed-tools', 'disable-model-invocation'):
+            val = fm.get(key)
+            if val is not None:
+                print(f"  {key}: {val}")
+        # Show any extra fields
+        known_fields = {
+            'name', 'description', 'license', 'compatibility',
+            'metadata', 'allowed-tools', 'disable-model-invocation',
+        }
+        extra = set(fm.keys()) - known_fields
+        for key in sorted(extra):
+            print(f"  {key}: {fm[key]}")
+    else:
+        print("  (no frontmatter)")
+
+    # Structural summary
+    body_lines = body.splitlines()
+    headings = [line.strip() for line in body_lines if line.startswith('#')]
+    line_count = len(body_lines)
+    word_count = len(body.split())
+
+    print(f"  body lines: {line_count}")
+    print(f"  body words: {word_count}")
+    if headings:
+        print("  headings:")
+        for h in headings:
+            depth = len(h) - len(h.lstrip('#'))
+            text = h.lstrip('#').strip()
+            indent = "    " * (depth - 1)
+            print(f"  {indent}- {text}")
+
+    # Directory listing
+    skill_dir = os.path.dirname(skill_md)
+    entries = sorted(os.listdir(skill_dir))
+    if entries:
+        print("  files:")
+        for entry in entries:
+            full = os.path.join(skill_dir, entry)
+            if os.path.isdir(full):
+                print(f"    {entry}/")
+            else:
+                size = os.path.getsize(full)
+                print(f"    {entry} ({size} bytes)")
 
 
 # ---------------------------------------------------------------------------
-# CLI
+# Argument parser
 # ---------------------------------------------------------------------------
 
-def build_parser() -> argparse.ArgumentParser:
+def build_parser():
     parser = argparse.ArgumentParser(
-        prog="skman",
-        description="Skill Package Manager — validate, generate tables, and sync agent skills.",
-    )
-    sub = parser.add_subparsers(dest="command", help="Available commands")
+        prog='skman',
+        description=textwrap.dedent("""\
+            Skill Manager — scaffold, validate, and inspect agent skills.
 
-    # -- validate
+            Subcommands:
+              create      Scaffold a new skill directory with SKILL.md
+              validate    Check SKILL.md against spec rules
+              info        Print frontmatter and structural summary
+
+            Use '<subcommand> --help' for details on each subcommand.
+        """),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    sub = parser.add_subparsers(dest='subcommand')
+
+    # --- create ---
+    p_create = sub.add_parser(
+        'create',
+        description=textwrap.dedent("""\
+            Scaffold a new skill directory with SKILL.md and optional reference.
+
+            Examples:
+              python3 -B scripts/skman.py create my-skill "Does X and Y"
+              python3 -B scripts/skman.py create my-skill "Desc" --with-reference
+              python3 -B scripts/skman.py create my-skill "Desc" --output-dir ./skills
+        """),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_create.add_argument('name', help='Skill name (lowercase, hyphens, numbers)')
+    p_create.add_argument('description', help='Skill description (max 1024 chars)')
+    p_create.add_argument(
+        '--output-dir', '-o',
+        default=None,
+        help='Parent directory for the skill (default: same as name)',
+    )
+    p_create.add_argument(
+        '--with-reference',
+        action='store_true',
+        help='Also create a reference/ directory with placeholder',
+    )
+
+    # --- validate ---
     p_validate = sub.add_parser(
-        "validate",
-        help="Validate structural integrity of a skill directory",
-        description=(
-            "Checks YAML header fields, directory layout, file naming, "
-            "section presence, and script references."
-        ),
+        'validate',
+        description=textwrap.dedent("""\
+            Validate a SKILL.md file against the agent skills spec.
+
+            Checks:
+              - Frontmatter presence and required fields
+              - Name format (lowercase, hyphens, length)
+              - Description presence and length
+              - Body line count (warning if over 500)
+
+            Examples:
+              python3 -B scripts/skman.py validate ./my-skill
+              python3 -B scripts/skman.py validate ./my-skill/SKILL.md
+              python3 -B scripts/skman.py validate --strict ./my-skill
+        """),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
+    p_validate.add_argument('path', help='Path to skill directory or SKILL.md file')
     p_validate.add_argument(
-        "--strict",
-        action="store_true",
-        help="Promote warnings to errors (exit 1 on warnings)",
-    )
-    p_validate.add_argument(
-        "skill_dir",
-        help="Path to the skill directory containing SKILL.md",
+        '--strict',
+        action='store_true',
+        help='Treat warnings as errors (non-zero exit on any warning)',
     )
 
-    # -- gen-table
-    p_table = sub.add_parser(
-        "gen-table",
-        help="Regenerate the Skills Table section in README.md",
-        description="Scans all skills and rebuilds the markdown table in README.md.",
-    )
-    p_table.add_argument(
-        "skills_dir",
-        nargs="?",
-        default=".agents/skills",
-        help="Directory containing skill subdirectories (default: .agents/skills)",
-    )
-    p_table.add_argument(
-        "readme_path",
-        nargs="?",
-        default="README.md",
-        help="Path to README.md to update (default: README.md)",
-    )
+    # --- info ---
+    p_info = sub.add_parser(
+        'info',
+        description=textwrap.dedent("""\
+            Print frontmatter and structural summary of a skill.
 
-    # -- sync
-    p_sync = sub.add_parser(
-        "sync",
-        help="Sync local .agents/skills with tangled-skills upstream",
-        description=(
-            "Fetches the main branch of tangled-skills from GitHub and "
-            "extracts .agents/skills into the target directory."
-        ),
+            Shows:
+              - Parsed frontmatter fields
+              - Body line/word count
+              - Heading outline
+              - Directory listing with file sizes
+
+            Examples:
+              python3 -B scripts/skman.py info ./my-skill
+              python3 -B scripts/skman.py info ./my-skill/SKILL.md
+        """),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    p_sync.add_argument(
-        "target_dir",
-        nargs="?",
-        default=".",
-        help="Target directory (default: current directory)",
-    )
+    p_info.add_argument('path', help='Path to skill directory or SKILL.md file')
 
     return parser
 
+
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
 
 def main():
     parser = build_parser()
     args = parser.parse_args()
 
-    if args.command is None:
+    if args.subcommand is None:
         parser.print_help()
         sys.exit(0)
 
     dispatch = {
-        "validate": cmd_validate,
-        "gen-table": cmd_gen_table,
-        "sync": cmd_sync,
+        'create': cmd_create,
+        'validate': cmd_validate,
+        'info': cmd_info,
     }
-
-    handler = dispatch.get(args.command)
-    if handler:
-        handler(args)
-    else:
-        parser.print_help()
-        sys.exit(1)
+    dispatch[args.subcommand](args)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
