@@ -151,7 +151,7 @@ Apply these throughout the workflow.
 
 ### Directory and Version
 
-- Directory: `<skill-name>` or `<skill-name>-<version>` (e.g., `curl-8-20-0`, `project-2025-11-25`).
+- Directory: `<skill-name>` or `<skill-name>-<version>` (e.g., `git`, `plan`, `curl-8-20-0`, `project-2025-11-25`).
 
 ### Script Quality
 
