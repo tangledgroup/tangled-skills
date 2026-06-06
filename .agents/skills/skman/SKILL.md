@@ -104,7 +104,7 @@ description: <1-1024 chars, third person, includes WHAT and WHEN>
 
 **Run structural validator:**
 ```bash
-bash scripts/validate-skill.sh [--strict] <SKILL_DIR>
+python3 -B scripts/skman.py validate [--strict] <SKILL_DIR>
 ```
 Checks YAML header, directory layout, file naming, section presence, and script references. Use `--strict` to promote warnings to errors.
 
@@ -122,7 +122,7 @@ Report success with file tree and validation results.
 
 **Regenerate the skills table** (after every skill addition, deletion, rename, update, or YAML header edit):
 ```bash
-bash scripts/gen-skills-table.sh [SKILLS_DIR] [README_PATH]
+python3 -B scripts/skman.py gen-table [SKILLS_DIR] [README_PATH]
 ```
 Both arguments optional. Defaults: `.agents/skills` and `README.md`.
 
@@ -187,7 +187,7 @@ Generated skills must work on both small and large LLMs:
 ### sync — Sync local .agents/skills with tangled-skills
 
 ```bash
-bash scripts/sync.sh [TARGET_DIR]
+python3 -B scripts/skman.py sync [TARGET_DIR]
 ```
 
 Fetches the `main` branch of tangled-skills from GitHub, extracts `.agents/skills/` into `TARGET_DIR/.agents/skills/`, overwriting existing skills with upstream versions. Default target: current directory.
