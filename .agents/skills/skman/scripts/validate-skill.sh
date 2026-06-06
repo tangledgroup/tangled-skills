@@ -19,7 +19,7 @@ errors=0
 warnings=0
 passes=0
 
-# Per-category counters (reserved for future detailed reporting)
+
 
 # ---------------------------------------------------------------------------
 # Usage / Help
@@ -29,7 +29,7 @@ usage() {
 Usage: validate-skill.sh [--strict] <SKILL_DIR>
 
 Validates structural integrity of an agent skill directory:
-  - YAML header fields (name, description, license, author, version, tags)
+  - YAML header fields (name, description — exactly two fields)
   - Directory structure (SKILL.md, reference/, scripts/, assets/)
   - Content sections (Overview, When to Use, Advanced Topics)
   - Script references (if scripts/ exists)
@@ -215,12 +215,9 @@ else
   pass "YAML header block properly closed with --- (line ${second_dash_line})"
 fi
 
-# Extract and validate required fields
+# Extract and validate required fields (exactly two: name + description)
 yaml_name=$(extract_yaml_field "$SKILL_FILE" "name")
 yaml_description=$(extract_yaml_field "$SKILL_FILE" "description")
-yaml_license=$(extract_yaml_field "$SKILL_FILE" "license")
-yaml_author=$(extract_yaml_field "$SKILL_FILE" "author")
-yaml_version=$(extract_yaml_field "$SKILL_FILE" "version")
 
 # name: required, matches regex, matches directory
 if [[ -z "$yaml_name" ]]; then
@@ -247,48 +244,28 @@ else
   pass "'description' present (${#yaml_description} chars)"
 fi
 
-# license: must be "MIT"
-if [[ -z "$yaml_license" ]]; then
-  fail "Missing 'license' field in YAML header"
-elif [[ "$yaml_license" != "MIT" ]]; then
-  fail "'license' is '$yaml_license', expected 'MIT'"
+# Check for extra fields in YAML header (only name + description allowed)
+extra_fields=$(awk '
+  NR==1 && /^---$/ { next }
+  /^---$/ { if (!header_end) { header_end=1; next }; exit }
+  !header_end && /^([a-zA-Z_][a-zA-Z0-9_-]*):/ {
+    field = $0
+    sub(/:.*/, "", field)
+    if (field != "name" && field != "description") print field
+  }
+' "$SKILL_FILE")
+
+if [[ -n "$extra_fields" ]]; then
+  fail "Extra fields in YAML header: $(echo "$extra_fields" | tr '\n' ', ' | sed 's/,$//'). Only name and description allowed. Move other metadata to assets/MISC.md."
 else
-  pass "'license' is MIT"
+  pass "YAML header has exactly two fields (name, description)"
 fi
 
-# author: format "Name <email@example.com>"
-if [[ -z "$yaml_author" ]]; then
-  fail "Missing 'author' field in YAML header"
-elif ! echo "$yaml_author" | grep -qP '^\S+ <\S+@\S+\.\S+>$'; then
-  warn "'author' format '$yaml_author' does not match 'Name <email@example.com>'"
+# Check for MISC.md if extra metadata is expected (optional)
+if [[ -f "${SKILL_DIR}/assets/MISC.md" ]]; then
+  pass "assets/MISC.md exists for skill metadata"
 else
-  pass "'author' format is valid"
-fi
-
-# version: required, must be valid SemVer (skill file version, not upstream project version)
-if [[ -z "$yaml_version" ]]; then
-  fail "Missing 'version' field in YAML header"
-elif ! echo "$yaml_version" | grep -qP '^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$'; then
-  fail "'version' '$yaml_version' is not valid SemVer (expected MAJOR.MINOR.PATCH, e.g. '0.1.0'). This is the skill file's own version, not the upstream project version."
-else
-  pass "'version' present ('$yaml_version')"
-fi
-
-# tags: required, must be a non-empty array
-tags=$(extract_tags "$SKILL_FILE")
-tag_count=$(echo "$tags" | grep -c . || true)
-if [[ $tag_count -eq 0 ]]; then
-  fail "Missing or empty 'tags' field in YAML header"
-else
-  pass "'tags' present ($tag_count tags)"
-fi
-
-# category: optional but recommended
-yaml_category=$(extract_yaml_field "$SKILL_FILE" "category")
-if [[ -z "$yaml_category" ]]; then
-  warn "Missing 'category' field in YAML header (recommended)"
-else
-  pass "'category' present ('$yaml_category')"
+  warn "No assets/MISC.md found (recommended for license, author, version, tags)"
 fi
 
 echo ""
