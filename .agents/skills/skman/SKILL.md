@@ -11,7 +11,10 @@ It is meta skill for skill authoring and skill package manager for AI agents.
 
 Generates spec-compliant, cross-platform agent skills from user requirements. Takes project/tool name, version, and documentation sources (URLs or filesystem paths), then produces complete SKILL.md files that work on pi, opencode, Claude Code, and Codex platforms.
 
-Skills are Markdown-only by default — no scripts or assets are generated unless the user explicitly requests them. If OS-level operations are needed, inline bash or Python with built-in modules is used instead.
+Skills are Markdown-only by default — no scripts or assets are generated unless the user explicitly requests them.
+
+- **Scripts** — Bash or Python scripts that perform deterministic tasks (validation, analysis, form-filling, etc.). Executed by the agent, not loaded into context. Only output consumes tokens.
+- **Assets** — Supporting files like documentation, reference manuals, diagrams, schemas, or data files. Not executed by the skill directly; provided as supplementary material the agent can read when needed.
 
 ## When to Use
 
@@ -75,6 +78,9 @@ my-skill/
   - **Execute** (preferred): "Run `analyze_form.py` to extract fields" — the script runs via bash, only output consumes tokens. More reliable and token-efficient.
   - **Read as reference**: "See `extract_algorithm.py` for the field extraction logic" — the agent reads the source code to understand complex algorithms or adapt the approach.
 - When in doubt, prefer execution over reading. Scripts that run deterministically are more reliable than agent-generated equivalents.
+- **Python scripts**: Use `python3` with built-in modules only, unless the user requests otherwise. Invoke as `python3 -B script.py` (the `-B` flag skips writing `.pyc` files). If the user needs third-party packages, they may request `uv run python -B script.py` instead. Python can be treated as a bash command/tool when used inline.
+- **Naming**: The default script should share the base name of the skill (e.g., `curl` for `curl-8-20-0`, `skman` for `skman`). Additional utility scripts use descriptive names.
+- **Help system**: Scripts are the tools of a skill. Every script must support `--help` so agents can discover its capabilities without reading source code. Scripts may have subcommands, and each subcommand must support its own independent `--help` (e.g., `script --help`, `script subcmd --help`). The main `--help` lists available subcommands; each subcommand's `--help` documents its own arguments and behavior.
 
 ### Progressive Disclosure Patterns
 
