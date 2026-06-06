@@ -1,20 +1,6 @@
 ---
 name: aiohttp-3-13-0
 description: Async HTTP client/server for Python asyncio. Use when building async web applications, REST APIs, or making concurrent HTTP requests in Python.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - http
-  - async
-  - client
-  - server
-  - websocket
-  - aiohttp
-category: library
-external_references:
-  - https://docs.aiohttp.org/en/stable/
-  - https://github.com/aio-libs/aiohttp
 ---
 
 # aiohttp 3.13

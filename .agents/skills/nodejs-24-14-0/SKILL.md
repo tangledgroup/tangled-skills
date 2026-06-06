@@ -1,22 +1,6 @@
 ---
 name: nodejs-24-14-0
 description: Complete Node.js 24.14 runtime toolkit covering core modules, async programming, HTTP servers, file system operations, streams, cryptography, process management, and ES modules. Use when building server-side JavaScript applications, CLI tools, microservices, or any Node.js project requiring built-in APIs for networking, I/O, encryption, and child processes.
-version: "0.1.0"
-author: Tangled <noreply@tangledgroup.com>
-license: MIT
-tags:
-  - nodejs
-  - javascript
-  - runtime
-  - server-side
-  - async
-  - streams
-  - http
-  - cryptography
-category: runtime
-external_references:
-  - https://nodejs.org/api/
-  - https://github.com/nodejs/node
 ---
 
 # Node.js 24.14

@@ -1,23 +1,6 @@
 ---
 name: matplotlib-3-10-9
 description: Comprehensive toolkit for Matplotlib 3.10.9, the Python plotting library for static, animated, and interactive visualizations. Use when generating plots (line, scatter, bar, histogram, contour, 3D), customizing figures/axes/colors/text, managing backends and output formats, configuring rcParams, building subplots/gridspecs, or integrating with Jupyter notebooks.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - plotting
-  - visualization
-  - charts
-  - graphs
-  - data-visualization
-  - figures
-category: data-science
-external_references:
-  - https://github.com/matplotlib/matplotlib/tree/v3.10.9/doc
-  - https://github.com/matplotlib/matplotlib/tree/v3.10.9
-  - https://matplotlib.org/3.10.9/api/index.html
-  - https://matplotlib.org/3.10.9/gallery/index.html
-  - https://matplotlib.org/3.10.9/users/index.html
 ---
 
 # Matplotlib 3.10.9

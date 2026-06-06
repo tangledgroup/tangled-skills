@@ -1,20 +1,6 @@
 ---
 name: automerge-3-2-6
 description: CRDT library for building collaborative, local-first applications with automatic conflict-free merging. Provides JSON-like documents with maps, lists, text, rich text, and counters that sync across peers offline. Use when building multiplayer apps, collaborative editors, offline-first tools, or any application requiring concurrent edits with guaranteed convergence.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - automerge
-  - crdt
-  - local-first
-  - collaborative-editing
-  - offline-sync
-category: library
-external_references:
-  - https://automerge.org/
-  - https://github.com/automerge/automerge/tree/js/automerge-3.2.6
-  - https://github.com/automerge/automerge.github.io
 ---
 
 # Automerge 3.2.6

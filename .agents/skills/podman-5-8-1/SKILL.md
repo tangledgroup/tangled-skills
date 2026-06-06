@@ -1,24 +1,6 @@
 ---
 name: podman-5-8-1
 description: Daemonless container engine with Docker-compatible CLI for managing containers, pods, images, volumes, and networks. Supports rootless operation, Kubernetes integration, systemd management, and remote access. Use when building, running, or managing containers without a daemon, implementing rootless workflows, orchestrating pods, or migrating from Docker.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - containers
-  - daemonless
-  - rootless
-  - oci
-  - pods
-  - kubernetes
-  - quadlet
-  - networking
-  - podman-machine
-category: container-runtime
-external_references:
-  - https://docs.podman.io/
-  - https://github.com/containers/podman
-compatibility: Linux native; Mac and Windows require podman machine VM. Go 1.23+ to build. Requires pasta for rootless networking.
 ---
 
 # Podman 5.8.1

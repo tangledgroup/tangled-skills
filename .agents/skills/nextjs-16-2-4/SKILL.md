@@ -1,22 +1,6 @@
 ---
 name: nextjs-16-2-4
 description: Build production-ready React applications with Next.js 16.2.4, providing App Router and Pages Router, server/client components, routing, data fetching, caching, API routes, and deployment. Use when creating modern web applications requiring SSR/SSG/ISR, SEO-friendly rendering, TypeScript support, or full-stack JavaScript development.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - react
-  - nextjs
-  - ssr
-  - ssg
-  - fullstack
-  - typescript
-  - app-router
-  - server-components
-category: framework
-external_references:
-  - https://nextjs.org/docs
-  - https://github.com/vercel/next.js
 ---
 
 # Next.js 16.2.4

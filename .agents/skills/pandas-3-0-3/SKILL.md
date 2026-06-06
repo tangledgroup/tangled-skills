@@ -1,27 +1,6 @@
 ---
 name: pandas-3-0-3
-description: >-
-  Complete toolkit for pandas 3.0.3 providing DataFrame and Series data structures,
-  tabular data manipulation, groupby aggregations, merging/joining, reshaping,
-  time series analysis, I/O for CSV/JSON/Parquet/Excel/SQL/Iceberg,
-  PyArrow integration, Copy-on-Write semantics, and the new default string dtype.
-  Use when building Python programs that require data wrangling, exploratory analysis,
-  ETL pipelines, statistical summaries, or any workflow centered on labeled tabular data.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - pandas
-  - dataframe
-  - data-analysis
-  - tabular-data
-  - python
-  - pyarrow
-  - etl
-category: library
-external_references:
-  - https://github.com/pandas-dev/pandas/tree/v3.0.3
-  - https://pandas.pydata.org/docs/
+description: Complete toolkit for pandas 3.0.3 providing DataFrame and Series data structures, tabular data manipulation, groupby aggregations, merging/joining, reshaping, time series analysis, I/O for CSV/JSON/Parquet/Excel/SQL/Iceberg, PyArrow integration, Copy-on-Write semantics, and the new default string dtype. Use when building Python programs that require data wrangling, exploratory analysis, ETL pipelines, statistical summaries, or any workflow centered on labeled tabular data.
 ---
 
 # pandas 3.0.3

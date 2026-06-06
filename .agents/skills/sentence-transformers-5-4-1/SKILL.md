@@ -1,26 +1,6 @@
 ---
 name: sentence-transformers-5-4-1
 description: Comprehensive toolkit for computing text embeddings, semantic search, and reranking using Sentence Transformers v5.4.1. Provides dense, sparse, and cross-encoder models for semantic textual similarity, paraphrase mining, clustering, retrieve-and-rerank pipelines, and multimodal applications with support for 100+ languages and extensive training capabilities. Use when generating text embeddings, building semantic search or RAG pipelines, performing cross-lingual retrieval, text classification/clustering, or reranking search results with sentence-transformers models.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - embeddings
-  - semantic-search
-  - reranking
-  - nlp
-  - sentence-embeddings
-  - cross-encoder
-  - sparse-encoder
-  - transformers
-category: machine-learning
-external_references:
-  - https://github.com/huggingface/sentence-transformers/tree/v5.4.1
-  - https://arxiv.org/abs/1908.10084
-  - https://arxiv.org/abs/2004.09813
-  - https://huggingface.co/spaces/mteb/leaderboard
-  - https://www.sbert.net/
-  - https://huggingface.co/sentence-transformers
 ---
 
 # Sentence Transformers 5.4.1

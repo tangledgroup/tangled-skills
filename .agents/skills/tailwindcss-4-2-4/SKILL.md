@@ -1,21 +1,6 @@
 ---
 name: tailwindcss-4-2-4
 description: A skill for using Tailwind CSS v4.2, a utility-first CSS framework with CSS-based configuration via @theme, OKLCH color space, cascade layers, and Lightning CSS optimization. Use when building responsive web interfaces, customizing design systems, adding utility-class styling to HTML, or migrating from Tailwind v3.
-version: "0.1.0"
-author: Tangled <noreply@tangledgroup.com>
-license: MIT
-tags:
-  - css
-  - tailwind
-  - styling
-  - frontend
-  - utility-first
-  - responsive-design
-  - design-tokens
-category: development
-external_references:
-  - https://tailwindcss.com/docs
-  - https://github.com/tailwindlabs/tailwindcss
 ---
 
 # Tailwind CSS 4.2

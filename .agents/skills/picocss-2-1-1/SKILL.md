@@ -1,20 +1,6 @@
 ---
 name: picocss-2-1-1
 description: Minimalist CSS framework that styles semantic HTML elements by default with responsive typography, automatic light/dark modes, and 130+ customizable CSS variables. Use when building clean, lightweight web interfaces with pure HTML markup, creating class-light designs without JavaScript dependencies, or implementing accessible design systems with minimal CSS.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - css-framework
-  - semantic-html
-  - responsive-design
-  - light-dark-mode
-  - minimal-css
-  - web-development
-category: development
-external_references:
-  - https://picocss.com/
-  - https://github.com/picocss/pico
 ---
 
 # Pico CSS 2.1

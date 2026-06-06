@@ -1,19 +1,6 @@
 ---
 name: websearch
 description: Searches DuckDuckGo via its HTML endpoint and outputs results as raw YAML. Uses a deterministic bash script, extracts search results, and prints exact YAML output.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.2.1"
-tags:
-  - websearch
-  - web-search
-  - duckduckgo
-  - yaml-output
-  - scrapling
-  - scraping
-category: meta
-external_references:
-  - https://html.duckduckgo.com/html/
 ---
 
 # Web Search — DuckDuckGo to YAML

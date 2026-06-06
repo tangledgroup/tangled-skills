@@ -1,22 +1,6 @@
 ---
 name: pyomo-6-10-0
 description: Python-based open-source optimization modeling language supporting LP, QP, NLP, MILP, MIQP, MINLP, stochastic programming, GDP, DAE, bilevel programming, MPEC, and network flow models with commercial (Gurobi, CPLEX) and open-source (CBC, HiGHS, IPOPT) solver interfaces. Use when formulating mathematical optimization models in Python, connecting code to solvers, building abstract or concrete models, or needing advanced features like disjunctive programming, stochastic optimization, dynamic optimization, bilevel optimization, robust optimization, or sensitivity analysis.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.1"
-tags:
-  - pyomo
-  - optimization
-  - mathematical-programming
-  - modeling
-  - linear-programming
-  - nonlinear-programming
-  - mixed-integer
-category: library
-external_references:
-  - https://www.pyomo.org/
-  - https://pyomo.readthedocs.io/en/stable/
-  - https://github.com/Pyomo/pyomo/tree/6.10.0
 ---
 
 # Pyomo 6.10.0

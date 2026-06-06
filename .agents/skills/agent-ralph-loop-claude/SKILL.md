@@ -1,19 +1,6 @@
 ---
 name: agent-ralph-loop-claude
 description: Implements the Ralph Wiggum technique as a Claude Code plugin for iterative, self-referential AI development loops. Use when building projects that require hands-free AI implementation through continuous bash-style loops inside a single Claude Code session, where the same prompt is repeatedly fed back until completion criteria are met.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - claude-code
-  - plugin
-  - iterative-development
-  - autonomous-agents
-  - ralph-wiggum
-category: agent-frameworks
-external_references:
-  - https://claude.com/plugins/ralph-loop
-  - https://github.com/anthropics/claude-plugins-official/tree/main/plugins/ralph-loop
 ---
 
 # Ralph Loop Claude Plugin v1.0.0

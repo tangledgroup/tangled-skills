@@ -1,22 +1,6 @@
 ---
 name: mcp-2025-11-25
 description: Model Context Protocol (MCP) 2025-11-25 specification covering client-host-server architecture, JSON-RPC messaging, tools, resources, prompts, sampling, elicitation, and transports. Use when building MCP clients or servers, implementing LLM tool integrations, configuring stdio or Streamable HTTP transports, or connecting language models to external data sources.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - mcp
-  - model-context-protocol
-  - llm
-  - ai-integration
-  - json-rpc
-  - tools
-  - sampling
-  - elicitation
-category: protocol
-external_references:
-  - https://modelcontextprotocol.io/specification/2025-11-25
-  - https://github.com/modelcontextprotocol/modelcontextprotocol
 ---
 
 # Model Context Protocol (MCP) 2025-11-25

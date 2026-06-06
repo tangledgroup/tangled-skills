@@ -1,26 +1,6 @@
 ---
 name: curl-8-20-0
 description: CLI tool and C library for multi-protocol data transfers supporting HTTP/HTTPS, FTP, SFTP, and 30+ protocols. Covers command-line usage, authentication, proxies, SSL/TLS, and WebSocket support. Use when making HTTP requests from the terminal, writing scripts that download/upload data, building C applications with libcurl, or working with curl's supported protocols.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - HTTP client
-  - FTP
-  - URL transfer
-  - libcurl
-  - CLI tool
-  - HTTPS
-  - SSL/TLS
-  - WebSocket
-  - multi-protocol
-category: networking
-external_references:
-  - https://github.com/curl/curl/tree/curl-8_20_0/docs
-  - https://curl.se/
-  - https://curl.se/libcurl/
-  - https://curl.se/ch/8.20.0.html
-  - https://github.com/curl/curl
 ---
 
 # curl 8.20.0

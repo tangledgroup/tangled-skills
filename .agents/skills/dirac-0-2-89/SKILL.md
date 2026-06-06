@@ -1,30 +1,8 @@
 ---
 name: dirac-0-2-89
-description: >
-  Open-source coding agent that reduces API costs by 64.8% while maintaining
-  100% accuracy on complex refactoring tasks. Uses hash-anchored parallel edits,
-  AST-native manipulation via tree-sitter, multi-file batching, and high-bandwidth
-  context curation. Available as both VS Code extension and CLI. Fork of Cline.
-  Use when building or configuring Dirac, understanding its edit engine internals,
-  integrating with its tool system, or deploying it as a coding agent in CI/CD.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - coding-agent
-  - hash-anchored-edits
-  - ast-manipulation
-  - tree-sitter
-  - multi-file-batching
-  - token-efficiency
-  - vscode-extension
-  - cli
-category: agents
-external_references:
-  - https://github.com/dirac-run/dirac
-  - https://dirac.run/
-  - https://dirac.run/docs/cli
-  - https://www.npmjs.com/package/dirac-cli
+description: 'Open-source coding agent that reduces API costs by 64.8% while maintaining 100% accuracy on complex refactoring tasks. Uses hash-anchored parallel edits, AST-native manipulation via tree-sitter, multi-file batching, and high-bandwidth context curation. Available as both VS Code extension and CLI. Fork of Cline. Use when building or configuring Dirac, understanding its edit engine internals, integrating with its tool system, or deploying it as a coding agent in CI/CD.
+
+  '
 ---
 
 # Dirac v0.2.89

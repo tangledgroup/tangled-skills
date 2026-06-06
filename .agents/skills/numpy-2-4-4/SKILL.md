@@ -1,27 +1,6 @@
 ---
 name: numpy-2-4-4
 description: Fundamental package for scientific computing with Python, providing n-dimensional arrays, mathematical functions, random number generators, linear algebra, and Fourier transforms with modern Python typing and Array API standard compatibility. Use when building Python programs requiring numerical array computing, matrix operations, statistical analysis, or high-performance vectorized computation.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - numpy
-  - arrays
-  - scientific-computing
-  - linear-algebra
-  - data-science
-  - numerical-computing
-category: library
-external_references:
-  - https://numpy.org/
-  - https://data-apis.org/array-api/
-  - https://github.com/numpy/numpy
-  - https://numpy.org/doc/stable/numpy_2_0_migration_guide.html
-  - https://numpy.org/doc/stable/reference/random/index.html
-  - https://numpy.org/neps/nep-0050-new-type-promotion.html
-  - https://numpy.org/neps/nep-0052-public-naming.html
-  - https://numpy.org/doc/stable/
-  - https://github.com/numpy/numpy/tree/v2.4.4
 ---
 
 # NumPy 2.4.4

@@ -1,30 +1,6 @@
 ---
 name: pytorch-2-12-0
-description: >-
-  Complete toolkit for PyTorch 2.12 providing n-dimensional tensors, automatic
-  differentiation, neural network modules, data loading, torch.compile optimization,
-  torch.export serialization, and comprehensive torch.optim coverage (15 algorithms,
-  LR schedulers, SWA/EMA). Use when building deep learning models, training neural
-  networks on CPU/CUDA/XPU/MPS/ROCm, selecting optimization algorithms (SGD, AdamW,
-  Adafactor, Muon, etc.), configuring learning rate schedules, compiling models with
-  torch.compile, exporting models with torch.export, or implementing distributed
-  training with DDP/FSDP/tensor parallelism.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.3.0"
-tags:
-  - pytorch
-  - deep-learning
-  - tensors
-  - autograd
-  - torch-compile
-  - torch-export
-  - neural-networks
-category: ml-ai
-external_references:
-  - https://pytorch.org/
-  - https://github.com/pytorch/pytorch/tree/v2.12.0
-  - https://docs.pytorch.org/docs/2.12/optim.html
+description: Complete toolkit for PyTorch 2.12 providing n-dimensional tensors, automatic differentiation, neural network modules, data loading, torch.compile optimization, torch.export serialization, and comprehensive torch.optim coverage (15 algorithms, LR schedulers, SWA/EMA). Use when building deep learning models, training neural networks on CPU/CUDA/XPU/MPS/ROCm, selecting optimization algorithms (SGD, AdamW, Adafactor, Muon, etc.), configuring learning rate schedules, compiling models with torch.compile, exporting models with torch.export, or implementing distributed training with DDP/FSDP/tensor parallelism.
 ---
 
 # PyTorch 2.12.0

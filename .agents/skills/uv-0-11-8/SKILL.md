@@ -1,22 +1,6 @@
 ---
 name: uv-0-11-8
 description: Extremely fast Python package and project manager written in Rust, replacing pip, pip-tools, pipx, poetry, pyenv, twine, virtualenv, and more with 10-100x faster performance. Use when managing Python projects, installing packages, running scripts with dependencies, managing Python versions, or needing high-performance dependency resolution.
-version: "0.1.0"
-author: Tangled <noreply@tangledgroup.com>
-license: MIT
-tags:
-  - python
-  - package-management
-  - dependency-resolution
-  - virtual-environments
-  - pip-replacement
-  - poetry-alternative
-  - rust
-  - performance
-category: tooling
-external_references:
-  - https://docs.astral.sh/uv/
-  - https://github.com/astral-sh/uv
 ---
 
 # uv 0.11.8

@@ -1,21 +1,6 @@
 ---
 name: rtk-0-42-0
 description: CLI proxy that filters and compresses command outputs before they reach LLM context, reducing token consumption by 60-90%. Supports 100+ commands across git, cargo, JavaScript, Python, Go, Docker, Kubernetes, AWS, and more. Use when working with AI coding assistants (Claude Code, Cursor, Copilot, Gemini, Codex, etc.) to reduce LLM token usage during development workflows.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - rtk
-  - token-optimization
-  - cli-tool
-  - llm
-  - agent-tooling
-  - cost-reduction
-  - rust
-category: tooling
-external_references:
-  - https://github.com/rtk-ai/rtk/tree/v0.42.0
-  - https://www.rtk-ai.app/docs/
 ---
 
 # RTK 0.42.0 — Rust Token Killer

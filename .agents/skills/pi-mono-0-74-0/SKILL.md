@@ -1,27 +1,6 @@
 ---
 name: pi-mono-0-74-0
-description: >-
-  Complete toolkit for the pi coding agent monorepo v0.74.0 covering five packages:
-  pi-coding-agent (interactive CLI), pi-ai (unified LLM API), pi-agent-core (agent runtime),
-  pi-tui (terminal UI framework), and pi-web-ui (web chat components). Provides provider setup,
-  extension authoring, SDK embedding, session management, and customization guidance.
-  Use when building, extending, or integrating with the pi coding agent ecosystem — writing extensions,
-  configuring providers, embedding via SDK, or troubleshooting pi's interactive mode.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - pi
-  - pi-mono
-  - coding-agent
-  - ai-agent
-  - terminal-ai
-  - extensions
-  - llm-api
-category: tooling
-external_references:
-  - https://github.com/earendil-works/pi/tree/v0.74.0
-  - https://github.com/earendil-works/website
+description: 'Complete toolkit for the pi coding agent monorepo v0.74.0 covering five packages: pi-coding-agent (interactive CLI), pi-ai (unified LLM API), pi-agent-core (agent runtime), pi-tui (terminal UI framework), and pi-web-ui (web chat components). Provides provider setup, extension authoring, SDK embedding, session management, and customization guidance. Use when building, extending, or integrating with the pi coding agent ecosystem — writing extensions, configuring providers, embedding via SDK, or troubleshooting pi''s interactive mode.'
 ---
 
 # Pi Monorepo v0.74.0

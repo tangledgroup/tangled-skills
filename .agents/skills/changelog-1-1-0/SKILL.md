@@ -1,19 +1,6 @@
 ---
 name: changelog-1-1-0
 description: Create and maintain changelogs following the Keep a Changelog specification v1.1.0, providing standardized format guidelines, best practices, and examples for documenting project changes in a human-readable way. Use when creating release notes, documenting version changes, maintaining CHANGELOG.md files, or formatting project updates following the official specification.
-version: "0.1.0"
-author: Tangled <noreply@tangledgroup.com>
-license: MIT
-tags:
-- changelog
-- documentation
-- versioning
-- semver
-- release-notes
-category: documentation
-external_references:
-- https://keepachangelog.com/en/1.1.0/
-- https://semver.org/spec/v2.0.0.html
 ---
 
 # Keep a Changelog 1.1.0

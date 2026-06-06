@@ -1,24 +1,6 @@
 ---
 name: a2a-1-0-0
 description: Open standard for communication between independent AI agent systems. Agents discover capabilities via Agent Cards and collaborate on tasks with streaming without exposing internal state. Supports JSON-RPC 2.0, gRPC, and HTTP+JSON bindings with enterprise security. Use when building multi-agent systems requiring agent discovery, task collaboration, or secure inter-agent communication.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - agent-communication
-  - multi-agent
-  - interoperability
-  - protocol
-  - json-rpc
-  - grpc
-  - rest
-  - streaming
-  - push-notifications
-  - extensions
-category: protocol
-external_references:
-  - https://github.com/a2aproject/A2A
-  - https://a2a-protocol.org/latest/
 ---
 
 # Agent2Agent (A2A) Protocol 1.0.0

@@ -1,19 +1,6 @@
 ---
 name: python-louvain-0-16
 description: Python implementation of the Louvain algorithm for community detection in graphs. Produces modularity-optimized partitions of undirected NetworkX graphs with support for weighted edges, resolution parameters, and dendrogram generation. Use when detecting communities in social networks, biological networks, citation graphs, or any graph where modular structure reveals meaningful groupings.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - community-detection
-  - louvain
-  - graph-algorithms
-  - networkx
-  - modularity
-category: data-science
-external_references:
-  - https://github.com/taynaud/python-louvain
-  - https://python-louvain.readthedocs.io/en/latest/
 ---
 
 # python-louvain 0.16

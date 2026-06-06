@@ -1,20 +1,6 @@
 ---
 name: hnswlib-0-9-0
 description: Header-only C++ library implementing HNSW graphs for fast approximate nearest neighbor search with Python bindings via pybind11. Supports L2, inner product, and cosine distance spaces with SIMD-optimized computation. Use when building vector search indexes requiring sub-millisecond latency, implementing incremental index construction, or needing a lightweight dependency-free ANN library.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - ann
-  - vector-search
-  - hnsw
-  - nearest-neighbor
-  - simd
-  - cpp
-  - python-bindings
-category: machine-learning
-external_references:
-  - https://github.com/nmslib/hnswlib
 ---
 
 # hnswlib 0.9.0

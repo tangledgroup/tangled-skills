@@ -1,23 +1,6 @@
 ---
 name: mempalace-3-3-4
 description: Local AI memory system that mines projects and conversations into a searchable index using ChromaDB for vector search and SQLite for knowledge graph storage. No API keys or cloud dependencies required. Use when building AI agents requiring persistent memory, mining conversation exports, creating searchable codebase indexes, implementing local RAG, or needing temporal knowledge graphs.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - ai-memory
-  - local-rag
-  - chromadb
-  - knowledge-graph
-  - mcp
-  - agent-memory
-  - verbatim-storage
-category: ai-tooling
-external_references:
-  - https://github.com/MemPalace/mempalace/tree/v3.3.4
-  - https://github.com/MemPalace/mempalace/releases
-  - https://mempalaceofficial.com
-  - https://raw.githubusercontent.com/lhl/agentic-memory/10ade6b92a1d54f896f56cd2be386ef54e288a0c/ANALYSIS-mempalace.md
 ---
 
 # MemPalace 3.3.4

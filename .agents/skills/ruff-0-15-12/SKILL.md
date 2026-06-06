@@ -1,22 +1,6 @@
 ---
 name: ruff-0-15-12
 description: Extremely fast Python linter and code formatter written in Rust with 900+ rules, block-level suppressions, and Markdown code formatting. 10x-100x faster than Flake8/Black. Use when linting Python code for style and correctness, formatting code consistently, configuring rule selection, suppressing violations, or needing fast incremental analysis in CI/CD and editors.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - python
-  - linter
-  - formatter
-  - code-quality
-  - flake8
-  - black
-  - isort
-  - pyupgrade
-category: tooling
-external_references:
-  - https://docs.astral.sh/ruff
-  - https://github.com/astral-sh/ruff
 ---
 
 # Ruff 0.15.12

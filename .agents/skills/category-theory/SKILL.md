@@ -1,23 +1,6 @@
 ---
 name: category-theory
 description: Mathematical framework for abstract structures and their relationships via categories, functors, natural transformations, limits, adjunctions, and monads. Provides dual mathematical and programming perspectives with Haskell typeclasses (Functor/Monad/Applicative) and Python libraries (pycategories, category-theory-python). Use when reasoning about compositional program structure, understanding functional abstractions, connecting algebraic concepts to code, working with monadic effects or F-algebras for recursive data, or following the Category Theory for Programmers curriculum.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.2.0"
-tags:
-  - category-theory
-  - functional-programming
-  - type-theory
-  - monads
-  - functors
-  - ctfp
-  - pycategories
-category: mathematics
-external_references:
-  - https://github.com/hmemcpy/milewski-ctfp-pdf
-  - https://bartoszmilewski.com/2014/10/28/category-theory-for-programmers-the-preface/
-  - https://pycategories.readthedocs.io/en/latest/index.html
-  - https://finsberg.github.io/category-theory-python/README.html
 ---
 
 # Category Theory for Programmers

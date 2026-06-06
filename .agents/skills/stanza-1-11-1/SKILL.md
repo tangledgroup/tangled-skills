@@ -1,33 +1,6 @@
 ---
 name: stanza-1-11-1
 description: Stanford NLP Group's Python NLP library for 80+ languages providing tokenization, POS tagging, lemmatization, dependency parsing, and NER via a neural pipeline built on PyTorch. Includes a Python wrapper for the Java Stanford CoreNLP server. Use when building multilingual NLP pipelines, performing linguistic analysis across languages, training custom models, or integrating biomedical/clinical NER.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - nlp
-  - natural-language-processing
-  - multilingual
-  - tokenization
-  - pos-tagging
-  - lemmatization
-  - dependency-parsing
-  - ner
-  - sentiment-analysis
-  - constituency-parsing
-  - coreference
-  - language-identification
-  - stanford-nlp
-  - pytorch
-category: machine-learning
-external_references:
-  - https://github.com/stanfordnlp/stanza/tree/v1.11.1
-  - https://arxiv.org/abs/2003.07082
-  - https://arxiv.org/abs/2007.14640
-  - https://stanfordnlp.github.io/CoreNLP/
-  - https://universaldependencies.org/
-  - https://stanfordnlp.github.io/stanza/
-  - https://huggingface.co/stanfordnlp/models
 ---
 
 # Stanza 1.11.1

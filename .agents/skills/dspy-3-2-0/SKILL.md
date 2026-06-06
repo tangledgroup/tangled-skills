@@ -1,22 +1,6 @@
 ---
 name: dspy-3-2-0
 description: Framework for programming rather than prompting language models. Compiles LM calls into self-improving pipelines by tuning prompts or weights to maximize user-defined metrics. Use when building classifiers, RAG pipelines, agents, or any multi-stage LM program requiring automated prompt engineering or model fine-tuning driven by evaluation metrics.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - llm-programming
-  - prompt-optimization
-  - ai-compilation
-  - few-shot-learning
-  - instruction-tuning
-  - agent-framework
-  - meta-prompting
-category: ai-framework
-external_references:
-  - https://github.com/stanfordnlp/dspy
-  - https://github.com/stanfordnlp/dspy/tree/main/docs/docs
-  - https://dspy.ai/
 ---
 
 # DSPy 3.2.0

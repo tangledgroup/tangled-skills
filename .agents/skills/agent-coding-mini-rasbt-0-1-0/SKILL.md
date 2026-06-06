@@ -1,21 +1,6 @@
 ---
 name: agent-coding-mini-rasbt-0-1-0
 description: Minimal standalone coding agent framework by Sebastian Raschka backed by Ollama, providing workspace context collection, tool execution with approval gates, session persistence, and subagent delegation. Use when building lightweight local coding agents for file manipulation, shell commands, code editing, or automated workflows without external API dependencies.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - coding-agent
-  - ollama
-  - local-ai
-  - autonomous-agent
-  - python
-  - tool-use
-  - memory
-category: ai-agents
-external_references:
-  - https://github.com/rasbt/mini-coding-agent
-  - https://magazine.sebastianraschka.com/p/components-of-a-coding-agent
 ---
 
 # Mini-Coding-Agent

@@ -1,28 +1,6 @@
 ---
 name: opentelemetry-collector-1-56-0
 description: Vendor-agnostic telemetry collector for OpenTelemetry providing configurable pipelines for traces, metrics, and logs. Supports agent/gateway patterns, OpAMP fleet management, and custom distributions. Use when deploying observability infrastructure, configuring OTLP data collection, managing collector fleets, or implementing production-ready telemetry with retries and batching.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - opentelemetry
-  - collector
-  - observability
-  - telemetry
-  - tracing
-  - metrics
-  - logs
-  - opamp
-  - otlp
-  - pipelines
-category: observability
-external_references:
-  - https://github.com/open-telemetry/opentelemetry-collector
-  - https://github.com/open-telemetry/opamp
-  - https://github.com/open-telemetry/opentelemetry-collector-contrib
-  - https://github.com/open-telemetry/opentelemetry-collector/tree/main/cmd/builder
-  - https://opentelemetry.io/docs/collector/
-  - https://opentelemetry.io/docs/collector/quick-start/
 ---
 
 # OpenTelemetry Collector 1.56.0

@@ -1,19 +1,6 @@
 ---
 name: solid-meta-0-29-4
 description: Manages document head tags in SolidJS applications with @solidjs/meta v0.29.4, providing SSR-ready Document Head management including Title, Meta, Link, Style, Base, and Stylesheet components with MetaProvider. Use when building SolidJS applications requiring dynamic head tag control, SEO meta tags, or managing document title/stylesheets across routes.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - solidjs
-  - meta-tags
-  - document-head
-  - ssr
-  - seo
-category: frontend
-external_references:
-  - https://github.com/solidjs/solid-meta
-  - https://www.npmjs.com/package/@solidjs/meta
 ---
 
 # @solidjs/meta v0.29.4

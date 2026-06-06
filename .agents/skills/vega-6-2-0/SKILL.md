@@ -1,26 +1,8 @@
 ---
 name: vega-6-2-0
-description: >
-  Vega 6.2.0 — declarative visualization grammar for creating interactive charts
-  in JSON. Define data, scales, marks, axes, legends, signals, and interactions
-  to render HTML5 Canvas or SVG visualizations. Use when authoring Vega
-  specifications, building interactive data visualizations, or working with
-  Vega's JSON-based visualization grammar.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - vega
-  - visualization
-  - charts
-  - grammar-of-graphics
-  - data-viz
-  - interactive-graphics
-  - json-spec
-category: library
-external_references:
-  - https://www.npmjs.com/package/vega/v/6.2.0
-  - https://github.com/vega/vega/tree/v6.2.0
+description: 'Vega 6.2.0 — declarative visualization grammar for creating interactive charts in JSON. Define data, scales, marks, axes, legends, signals, and interactions to render HTML5 Canvas or SVG visualizations. Use when authoring Vega specifications, building interactive data visualizations, or working with Vega''s JSON-based visualization grammar.
+
+  '
 ---
 
 # Vega 6.2.0

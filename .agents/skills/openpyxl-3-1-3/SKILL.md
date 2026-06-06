@@ -1,20 +1,6 @@
 ---
 name: openpyxl-3-1-3
 description: Complete toolkit for openpyxl 3.1.3 providing Excel xlsx/xlsm/xltx/xltm file creation, reading, writing, styling, charts, conditional formatting, data validation, tables, filters, and Pandas integration. Use when building Python programs that need to generate, modify, or read Microsoft Excel spreadsheets programmatically.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - openpyxl
-  - excel
-  - xlsx
-  - spreadsheet
-  - python
-  - data-export
-category: library
-external_references:
-  - https://github.com/soxhub/openpyxl
-  - https://openpyxl.readthedocs.io/en/stable/#documentation
 ---
 
 # openpyxl 3.1.3

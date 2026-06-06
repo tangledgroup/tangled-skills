@@ -1,19 +1,6 @@
 ---
 name: sympy-1-14-0
 description: Complete toolkit for SymPy 1.14.0 providing symbolic mathematics in Python including algebra, calculus, matrices, equation solving, simplification, and printing. Use when building Python programs that require exact symbolic computation, symbolic expression manipulation, analytical differentiation/integration, equation solving, or mathematical typesetting via LaTeX output.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - sympy
-  - symbolic-math
-  - computer-algebra
-  - python
-  - mathematics
-category: library
-external_references:
-  - https://docs.sympy.org/latest/index.html
-  - https://github.com/sympy/sympy/tree/sympy-1.14.0
 ---
 
 # SymPy 1.14.0

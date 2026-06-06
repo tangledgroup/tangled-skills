@@ -1,24 +1,6 @@
 ---
 name: lisp-in-python-2026-05-03
-description: "Build a minimal Lisp interpreter in Python covering the eval-apply cycle, recursive descent parsing, lexical scoping, closures, special forms, and a REPL. Includes extension patterns for macros, continuations, and tail-call optimization. Use when building interpreters from scratch, studying programming language fundamentals, or learning homoiconicity and the eval-apply loop."
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - lisp
-  - interpreter
-  - python
-  - eval-apply
-  - homoiconicity
-  - lexical-scoping
-category: language-runtime
-external_references:
-  - https://norvig.com/lispy.html
-  - https://bytegoblin.io/blog/write-a-lisp-in-16-lines-of-python.mdx
-  - https://gist.github.com/spatters/bdd0c6ce2863bda0de61e8c0ae097e84
-  - https://zstix.io/posts/make-a-lisp-in-python/
-  - https://aljamal.substack.com/p/homoiconic-python
-  - https://misfra.me/2019/03/mini-lisp/
+description: Build a minimal Lisp interpreter in Python covering the eval-apply cycle, recursive descent parsing, lexical scoping, closures, special forms, and a REPL. Includes extension patterns for macros, continuations, and tail-call optimization. Use when building interpreters from scratch, studying programming language fundamentals, or learning homoiconicity and the eval-apply loop.
 ---
 
 # Lisp in Python — Minimal Interpreter Guide

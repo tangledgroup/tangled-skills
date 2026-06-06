@@ -1,29 +1,8 @@
 ---
 name: vega-lite-6-4-3
-description: >
-  Vega-Lite 6.4.3 — high-level grammar of interactive graphics.
-  Generate, author, and debug Vega-Lite specifications for bar charts, line charts,
-  scatterplots, area charts, maps, heatmaps, boxplots, faceted/layered/concatenated
-  multi-view visualizations, and interactive selections.
-  Compiles to Vega (lower-level visualization grammar).
-  Use when generating interactive data visualizations or authoring Vega-Lite JSON specs.
-version: 0.1.0
-tags:
-  - vega-lite
-  - visualization
-  - charts
-  - grammar-of-graphics
-  - data-viz
-  - interactive-graphics
-  - json-spec
-license: MIT
-author: tangled-skills <skills@tangled.example.com>
-category: library
-external_references:
-  - https://vega.github.io/vega-lite/docs/
-  - https://vega.github.io/vega-lite/examples/
-  - https://github.com/vega/vega-lite/tree/v6.4.3
-  - https://vega.github.io/schema/vega-lite/v6.json
+description: 'Vega-Lite 6.4.3 — high-level grammar of interactive graphics. Generate, author, and debug Vega-Lite specifications for bar charts, line charts, scatterplots, area charts, maps, heatmaps, boxplots, faceted/layered/concatenated multi-view visualizations, and interactive selections. Compiles to Vega (lower-level visualization grammar). Use when generating interactive data visualizations or authoring Vega-Lite JSON specs.
+
+  '
 ---
 
 # Vega-Lite 6.4.3

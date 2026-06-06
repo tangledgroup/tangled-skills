@@ -1,27 +1,6 @@
 ---
 name: llama-cpp-1-0-0
 description: C/C++ LLM inference library with GGUF support, quantization, GPU acceleration (CUDA/Metal/HIP/Vulkan/SYCL), OpenAI-compatible server, and speculative decoding. Use when building local LLM inference applications, deploying models on edge devices, creating OpenAI-compatible API servers, or working with GGUF models.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - llm
-  - inference
-  - gguf
-  - quantization
-  - cuda
-  - metal
-  - server
-  - local-ai
-category: machine-learning
-external_references:
-  - https://github.com/ggml-org/llama.cpp/tree/b8789
-  - https://github.com/ggml-org/llama.cpp/blob/b8789/docs/gguf.md
-  - https://github.com/ggml-org/llama.cpp/issues/9289
-  - https://github.com/ggml-org/llama.cpp/issues/9291
-  - https://github.com/orgs/ggml-org/packages/container/package/llama.cpp
-  - https://huggingface.co/models?search=ggml-org
-  - https://github.com/ggml-org/llama.cpp/tree/b8789/docs
 ---
 
 # llama.cpp b8789

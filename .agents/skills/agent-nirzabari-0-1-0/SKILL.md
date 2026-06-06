@@ -1,23 +1,6 @@
 ---
 name: agent-nirzabari-0-1-0
 description: Comprehensive guide to understanding and building coding agent harnesses, covering 7-layer architecture, context engineering, tool orchestration, safety systems, and real-world implementations from Codex, OpenCode, Cursor, and Claude Code. Use when designing agentic systems, analyzing agent architectures, or studying production-grade coding agent implementations.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - ai-agents
-  - coding-agents
-  - harness-engineering
-  - llm-systems
-  - agent-architecture
-  - tool-orchestration
-  - context-management
-  - codex
-  - opencode
-  - cursor
-category: ai-agents
-external_references:
-  - https://nirzabari.github.io/blog/2026-03-07-coding-agents
 ---
 
 # Coding Agent Harness Architecture

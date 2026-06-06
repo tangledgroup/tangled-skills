@@ -1,21 +1,6 @@
 ---
 name: authelia-4-39-19
 description: Open-source authentication and authorization server providing multi-factor authentication (MFA), single sign-on (SSO), and OpenID Connect 1.0 Provider. Supports LDAP, file-based identity providers, TOTP, WebAuthn, Duo Push, passkeys, fine-grained access control rules, session management via Redis, and proxy integration with NGINX, Traefik, Caddy, Envoy, HAProxy. Use when deploying or configuring Authelia for authentication gateways, SSO portals, MFA enforcement, or OpenID Connect identity provider setups.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - authelia
-  - authentication
-  - mfa
-  - sso
-  - openid-connect
-  - access-control
-  - reverse-proxy
-category: security
-external_references:
-  - https://www.authelia.com/
-  - https://github.com/authelia/authelia/tree/v4.39.19
 ---
 
 # Authelia 4.39.19

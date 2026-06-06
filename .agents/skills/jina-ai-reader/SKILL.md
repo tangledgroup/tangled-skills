@@ -1,18 +1,6 @@
 ---
 name: jina-ai-reader
 description: Converts any URL to LLM-friendly markdown via r.jina.ai and searches the web with s.jina.ai, returning top results in readable format. Use when extracting clean text from web pages, PDFs, or MS Office documents for LLM context, or when grounding LLM responses with live web search results.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - url-to-markdown
-  - web-crawling
-  - web-search
-  - llm-context
-  - context-engineering
-category: tooling
-external_references:
-  - https://github.com/jina-ai/reader
 ---
 
 # Jina Reader

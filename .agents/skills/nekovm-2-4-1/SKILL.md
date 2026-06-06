@@ -1,21 +1,6 @@
 ---
 name: nekovm-2-4-1
 description: Stack-based bytecode VM and dynamically typed scripting language, primarily as a compilation target for Haxe. Provides C FFI, embeddable VM, and standalone executable generation. Deprecated since 2021-09-09, maintained for Haxe compatibility only. Use when embedding Neko as a scripting engine in C applications, writing Neko C primitives, or building Haxe projects targeting the Neko VM.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - nekovm
-  - neko
-  - virtual-machine
-  - scripting-language
-  - haxe
-  - embedding
-category: language-runtime
-external_references:
-  - https://nekovm.org/
-  - https://github.com/HaxeFoundation/neko
-  - https://github.com/HaxeFoundation/nekovm.org/tree/master
 ---
 
 # NekoVM 2.4.1

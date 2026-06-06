@@ -1,22 +1,6 @@
 ---
 name: numkong-7-6-0
 description: Ultra-fast mixed-precision vector similarity and distance library with 2000+ SIMD kernels across x86, ARM, RISC-V. Supports Float64 through packed bits (1-bit) with automatic precision widening and zero hidden allocations. Use when computing vector distances, dot products, similarity metrics, or any high-throughput vector math needing sub-byte precision (fp8, fp6, int4).
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-- vector-similarity
-- simd
-- mixed-precision
-- dot-product
-- distance-metrics
-- packed-matrix
-category: numerical-computing
-external_references:
-- https://pypi.org/project/numkong/
-- https://github.com/ashvardanian/NumWars
-- https://ashvardanian.com/posts/numkong/
-- https://github.com/ashvardanian/NumKong
 ---
 
 # NumKong 7.6.0

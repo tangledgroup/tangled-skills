@@ -1,28 +1,6 @@
 ---
 name: ghostscript-10-07-0
-description: >-
-  Interpreter for PostScript, PDF, PCL, XPS page description languages with raster and vector output devices.
-  Converts between document formats (PDF↔PostScript↔images), compresses PDFs, extracts text, renders pages to PNG/JPEG/TIFF,
-  performs OCR on scanned documents, and manages color profiles via ICC. Use when converting PDF/PostScript/PCL/XPS
-  files to images or other formats, rasterizing pages at specific DPI, compressing or optimizing PDFs, extracting
-  text from documents, integrating Ghostscript via C/Python/C#/Java APIs, or building print-processing pipelines.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - ghostscript
-  - ghostpdl
-  - pdf
-  - postscript
-  - document-conversion
-  - rasterization
-  - pcl
-  - xps
-category: cli-tool
-external_references:
-  - https://ghostscript.com/index.html
-  - https://github.com/ArtifexSoftware/ghostpdl/tree/ghostpdl-10.07.0
-  - https://ghostscript.readthedocs.io/en/latest/
+description: Interpreter for PostScript, PDF, PCL, XPS page description languages with raster and vector output devices. Converts between document formats (PDF↔PostScript↔images), compresses PDFs, extracts text, renders pages to PNG/JPEG/TIFF, performs OCR on scanned documents, and manages color profiles via ICC. Use when converting PDF/PostScript/PCL/XPS files to images or other formats, rasterizing pages at specific DPI, compressing or optimizing PDFs, extracting text from documents, integrating Ghostscript via C/Python/C#/Java APIs, or building print-processing pipelines.
 ---
 
 # Ghostscript 10.07.0

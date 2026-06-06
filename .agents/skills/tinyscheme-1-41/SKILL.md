@@ -1,21 +1,6 @@
 ---
 name: tinyscheme-1-41
 description: Lightweight Scheme interpreter (R5RS subset) in ~5000 lines of C, designed as an embeddable scripting engine. Opcode-based dispatch, Schorr-Deutsch-Waite GC, and conditional compilation for footprint tuning (down to ~64KB). Supports closures, continuations, and macros. Use when building or studying embedded interpreters, analyzing GC algorithms, integrating Scheme into C applications.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - tinyscheme
-  - scheme
-  - lisp
-  - interpreter
-  - embedded
-  - gc
-  - bytecode
-category: language-runtime
-external_references:
-  - https://en.wikipedia.org/wiki/TinyScheme
-  - https://github.com/zpl-c/tinyscheme
 ---
 
 # TinyScheme 1.41

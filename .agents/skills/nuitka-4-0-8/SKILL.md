@@ -1,21 +1,6 @@
 ---
 name: nuitka-4-0-8
 description: Python compiler that translates Python code to C and native executables. Use when compiling Python applications for distribution, creating extension modules, optimizing performance, or building standalone binaries across Windows, Linux, macOS, and FreeBSD.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - python
-  - compiler
-  - c-extension
-  - standalone
-  - onefile
-  - performance
-  - distribution
-category: tooling
-external_references:
-  - https://nuitka.net/doc/
-  - https://github.com/Nuitka/Nuitka
 ---
 
 # Nuitka 4.0.8

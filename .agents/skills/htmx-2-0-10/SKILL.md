@@ -1,25 +1,6 @@
 ---
 name: htmx-2-0-10
-version: "1.0.0"
-author: Tangled <noreply@tangledgroup.com>
-license: MIT
-category: frontend-library
-tags:
-  - htmx
-  - ajax
-  - html
-  - dom
-  - websocket
-  - sse
-  - extensions
-  - progressive-enhancement
-description: >
-  Complete reference for htmx 2.0.10 — the HTML attributes library for AJAX,
-  WebSockets, SSE, and dynamic DOM updates without writing JavaScript.
-  Covers all core attributes, 7 core extensions, 30+ community extensions,
-  third-party integrations (Alpine.js, jQuery, hyperscript, SortableJS,
-  Web Components, SweetAlert2, Tom Select), 25+ UX patterns, configuration,
-  security, validation, history/boosting, caching, and migration guides.
+description: Complete reference for htmx 2.0.10 — the HTML attributes library for AJAX, WebSockets, SSE, and dynamic DOM updates without writing JavaScript. Covers all core attributes, 7 core extensions, 30+ community extensions, third-party integrations (Alpine.js, jQuery, hyperscript, SortableJS, Web Components, SweetAlert2, Tom Select), 25+ UX patterns, configuration, security, validation, history/boosting, caching, and migration guides.
 ---
 
 # htmx 2.0.10

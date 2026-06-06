@@ -1,22 +1,6 @@
 ---
 name: duckdb-1-5-3
 description: Complete toolkit for DuckDB 1.5.3, an in-process SQL OLAP database management system. Covers SQL queries, data import/export (CSV, JSON, Parquet), Python API (Relations, UDFs, DB-API), nested types, window functions, and extensions. Use when writing SQL queries against local files or embedded databases, performing analytical data processing in Python, ingesting data from CSV/JSON/Parquet, or building data pipelines with DuckDB.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - duckdb
-  - sql
-  - database
-  - olap
-  - python-api
-  - data-analytics
-  - parquet
-category: database
-external_references:
-  - https://github.com/duckdb/duckdb/tree/v1.5.3
-  - https://duckdb.org/docs/current/
-  - https://duckdb.org/docs/current/clients/python/overview
 ---
 
 # DuckDB 1.5.3

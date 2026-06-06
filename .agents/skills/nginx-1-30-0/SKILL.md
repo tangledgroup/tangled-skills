@@ -1,26 +1,6 @@
 ---
 name: nginx-1-30-0
 description: High-performance HTTP server, reverse proxy, and load balancer supporting HTTP/HTTPS proxying, SSL/TLS termination, caching, rate limiting, WebSocket, and access control. Use when configuring Nginx as web server or reverse proxy, setting up load balancing, implementing HTTPS, routing to backend servers, or tuning performance.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - HTTP server
-  - reverse proxy
-  - load balancer
-  - SSL/TLS
-  - caching
-  - compression
-  - WebSocket
-  - FastCGI
-  - stream proxy
-category: web-servers
-external_references:
-  - https://nginx.org/en/docs/
-  - https://docs.nginx.com/nginx/admin-guide/
-  - https://nginx.org/en/docs/beginners_guide.html
-  - https://nginx.org/en/docs/control.html
-  - https://github.com/nginx/nginx/tree/stable-1.30
 ---
 
 # Nginx 1.30.0

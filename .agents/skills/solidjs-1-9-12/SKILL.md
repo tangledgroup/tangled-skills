@@ -1,28 +1,6 @@
 ---
 name: solidjs-1-9-12
-description: >-
-  A comprehensive toolkit for building reactive user interfaces with SolidJS
-  1.x, a declarative JavaScript framework using fine-grained reactivity.
-  Solid compiles templates to real DOM nodes and updates them with
-  fine-grained reactions — no Virtual DOM, no rerendering. Components are
-  regular functions that run once. Use when creating web applications,
-  components, or UI libraries requiring efficient state management and
-  minimal virtual DOM overhead.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - solidjs
-  - reactivity
-  - signals
-  - jsx
-  - fine-grained
-  - web-framework
-  - components
-category: frontend-framework
-external_references:
-  - https://www.solidjs.com/docs
-  - https://github.com/solidjs/solid
+description: A comprehensive toolkit for building reactive user interfaces with SolidJS 1.x, a declarative JavaScript framework using fine-grained reactivity. Solid compiles templates to real DOM nodes and updates them with fine-grained reactions — no Virtual DOM, no rerendering. Components are regular functions that run once. Use when creating web applications, components, or UI libraries requiring efficient state management and minimal virtual DOM overhead.
 ---
 
 # SolidJS 1.x

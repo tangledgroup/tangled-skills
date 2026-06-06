@@ -1,19 +1,6 @@
 ---
 name: agent-ralph-loop-vercel-labs
 description: Continuous autonomy framework for the Vercel AI SDK implementing the Ralph Wiggum technique — an iterative outer loop that keeps feeding an AI agent a task until verifyCompletion confirms success. Use when building autonomous coding agents, long-running code migrations, refactoring tasks, or any workflow requiring iterative verification and feedback loops beyond single-shot LLM tool calls.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - autonomous-agent
-  - ai-sdk
-  - iterative-loop
-  - coding-agent
-  - continuous-autonomy
-  - vercel
-category: agent-framework
-external_references:
-  - https://github.com/vercel-labs/ralph-loop-agent
 ---
 
 # Ralph Loop Agent (Vercel Labs) 0.0.3

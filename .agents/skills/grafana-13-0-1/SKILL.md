@@ -1,21 +1,6 @@
 ---
 name: grafana-13-0-1
 description: Grafana 13.0.1 observability platform for querying, visualizing, alerting on, and exploring metrics, logs, traces, and profiles. Covers installation, data source configuration, dashboard building with dynamic dashboards, alert rule management, Explore queries, provisioning with Git Sync, and administration. Use when setting up Grafana monitoring, building dashboards, configuring alerts, provisioning resources via YAML or GitOps, or administering a Grafana instance.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - grafana
-  - observability
-  - dashboards
-  - alerting
-  - metrics
-  - logs
-  - traces
-category: tooling
-external_references:
-  - https://github.com/grafana/grafana/tree/v13.0.1
-  - https://grafana.com/docs/grafana/latest/
 ---
 
 # Grafana 13.0.1

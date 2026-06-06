@@ -1,20 +1,6 @@
 ---
 name: acp-0-12-2
 description: Protocol standardizing communication between code editors and AI coding agents using JSON-RPC 2.0 over stdio. Decouples agents from editors for cross-compatibility. Use when building AI coding agents needing editor interoperability, implementing persistent sessions with tool calls, connecting agents via MCP delegation, or working with the official SDKs.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - agent-protocol
-  - json-rpc
-  - coding-agents
-  - editor-integration
-  - ai-agents
-  - stdio-transport
-category: protocols
-external_references:
-  - https://agentclientprotocol.com
-  - https://github.com/agentclientprotocol/agent-client-protocol
 ---
 
 # Agent Client Protocol (ACP) 0.12.2

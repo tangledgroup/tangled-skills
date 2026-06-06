@@ -1,24 +1,6 @@
 ---
 name: tea-0-14-0
 description: Official CLI for Gitea servers. Manage repositories, issues, pull requests, releases, and admin operations from the terminal. Supports multiple Gitea instances, OAuth2/token auth, and machine-readable output (JSON, YAML, CSV). Use when automating Gitea workflows, managing PRs and issues from the shell, or scripting CI/CD interactions.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - gitea
-  - cli
-  - git
-  - devops
-  - ci-cd
-  - automation
-category: cli-tool
-external_references:
-  - https://gitea.com/gitea/tea
-  - https://code.gitea.io/sdk/gitea
-  - https://dl.gitea.com/tea/
-  - https://hub.docker.com/r/gitea/tea
-  - https://pkg.go.dev/code.gitea.io/tea
-  - https://gitea.com/gitea/tea/src/branch/main/docs
 ---
 
 # tea 0.14.0

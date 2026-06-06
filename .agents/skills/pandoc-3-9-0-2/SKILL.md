@@ -1,21 +1,6 @@
 ---
 name: pandoc-3-9-0-2
 description: Universal document converter supporting 50+ input formats (Markdown, HTML, LaTeX, docx, EPUB, Org, RST, AsciiDoc) and 60+ output formats including PDF. Provides metadata blocks, citations, math rendering, templates, Lua filters, and custom readers/writers. Use when converting between document formats, generating PDFs from markup, transforming Markdown to HTML/LaTeX/Word, processing bibliographic citations, or building document conversion pipelines.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - pandoc
-  - document-converter
-  - markdown
-  - latex
-  - pdf
-  - epub
-  - filters
-category: tooling
-external_references:
-  - https://pandoc.org/
-  - https://github.com/jgm/pandoc/tree/3.9.0.2
 ---
 
 # Pandoc 3.9.0.2

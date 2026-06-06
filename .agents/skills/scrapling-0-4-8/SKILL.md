@@ -1,20 +1,6 @@
 ---
 name: scrapling-0-4-8
 description: Adaptive web scraping framework for Python providing HTML parsing with CSS/XPath/text/regex selection, HTTP and browser-based fetchers with anti-bot bypass, adaptive element tracking that survives website changes, a Scrapy-like spider crawling system with pause/resume, proxy rotation, and an MCP server for AI integration. Use when building scrapers, crawlers, or data extraction pipelines needing resilience to website structure changes and anti-bot protections.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - scrapling
-  - web-scraping
-  - html-parsing
-  - crawler
-  - anti-bot
-  - adaptive-scraping
-category: library
-external_references:
-  - https://github.com/D4Vinci/Scrapling/tree/v0.4.8
-  - https://scrapling.readthedocs.io/en/latest/
 ---
 
 # Scrapling 0.4.8

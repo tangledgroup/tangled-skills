@@ -1,20 +1,6 @@
 ---
 name: aiohttp-cors-0-8-1
 description: Implement Cross-Origin Resource Sharing (CORS) in aiohttp applications using aiohttp-cors 0.8.1, enabling secure cross-origin requests with configurable origins, credentials, headers, and preflight caching. Use when building aiohttp.web APIs serving browsers from different origins, configuring per-route or global CORS policies, or working with web views requiring CORS.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - cors
-  - aiohttp
-  - web-security
-  - http-headers
-  - cross-origin
-category: web-development
-external_references:
-  - https://pypi.org/project/aiohttp-cors/
-  - https://github.com/aio-libs/aiohttp-cors
-  - https://aiohttp-cors.readthedocs.io/
 ---
 
 # aiohttp-cors 0.8.1

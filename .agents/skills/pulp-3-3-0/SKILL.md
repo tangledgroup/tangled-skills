@@ -1,22 +1,6 @@
 ---
 name: pulp-3-3-0
 description: Complete toolkit for PuLP 3.3.0, a Python linear and mixed-integer programming modeler generating MPS/LP/JSON files and calling solvers like CBC, GLPK, CPLEX, Gurobi, HiGHS, and SCIP. Use when formulating optimization problems in Python, solving LP/MIP models, configuring solver backends, or performing model export/import.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - optimization
-  - linear-programming
-  - mixed-integer-programming
-  - lp
-  - mip
-  - operations-research
-category: data-science
-external_references:
-  - https://coin-or.github.io/pulp/
-  - https://github.com/coin-or/pulp/tree/3.3.0/examples
-  - https://www.coin-or.org/
-  - https://github.com/coin-or/pulp/tree/3.3.0
 ---
 
 # PuLP 3.3.0

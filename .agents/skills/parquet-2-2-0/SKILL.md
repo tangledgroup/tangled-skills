@@ -1,19 +1,6 @@
 ---
 name: parquet-2-2-0
 description: Complete toolkit for Apache Parquet 2.2.0 columnar storage format covering physical and logical types, schema definition via Thrift (parquet.thrift), encodings (PLAIN, RLE, Dictionary, Delta Binary Packed, Delta Length Byte Array, Delta String, Byte Stream Split), compression codecs (SNAPPY, GZIP, ZSTD, LZ4_RAW, BROTLI), nested data with definition/repetition levels, bloom filters, page indexes, encryption, and file layout. Use when reading, writing, or optimizing Parquet files, designing columnar storage schemas, tuning compression and encoding strategies, or implementing Parquet readers/writers.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - parquet
-  - columnar-storage
-  - file-format
-  - dremel
-  - thrift
-category: file-format
-external_references:
-  - https://parquet.apache.org/docs/
-  - https://github.com/apache/parquet-format
 ---
 
 # Apache Parquet 2.2.0

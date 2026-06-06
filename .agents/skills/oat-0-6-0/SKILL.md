@@ -1,24 +1,6 @@
 ---
 name: oat-0-6-0
 description: Ultra-lightweight semantic UI component library (~8KB CSS + JS, zero dependencies) that styles HTML elements by default without classes. Provides 27 components including buttons, forms, cards, dialogs, tabs, dropdowns, toasts, tooltips, grids, and sidebar layouts with automatic light/dark mode. Use when building web applications with minimal CSS/JS footprint, semantic-first markup, no build tools, or when replacing heavier frameworks like Bootstrap or Tailwind for simple UI needs.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - javascript
-  - css
-  - frontend
-  - ui-components
-  - semantic-html
-  - web-components
-  - lightweight
-  - zero-dependency
-  - theming
-  - responsive
-category: frontend-development
-external_references:
-  - https://oat.ink/
-  - https://github.com/knadh/oat/tree/v0.6.0
 ---
 
 # OAT v0.6.0

@@ -1,26 +1,6 @@
 ---
 name: upx-5-1-1
-description: >-
-  A skill for using UPX (Ultimate Packer for eXecutables) v5.1.1 to compress
-  and decompress executable files across multiple platforms including Windows,
-  Linux, macOS, DOS, Atari, and PlayStation. Achieves 50%-70% file size
-  reduction with very fast decompression and no runtime memory penalty for most
-  formats. Use when reducing distribution size of executables and DLLs,
-  optimizing storage or download costs, compressing bootable Linux kernels, or
-  packing executables for embedded and resource-constrained environments.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - compression
-  - executable-packer
-  - distribution
-  - size-optimization
-  - cross-platform
-category: tooling
-external_references:
-  - https://upx.github.io
-  - https://github.com/upx/upx
+description: A skill for using UPX (Ultimate Packer for eXecutables) v5.1.1 to compress and decompress executable files across multiple platforms including Windows, Linux, macOS, DOS, Atari, and PlayStation. Achieves 50%-70% file size reduction with very fast decompression and no runtime memory penalty for most formats. Use when reducing distribution size of executables and DLLs, optimizing storage or download costs, compressing bootable Linux kernels, or packing executables for embedded and resource-constrained environments.
 ---
 
 # UPX 5.1.1

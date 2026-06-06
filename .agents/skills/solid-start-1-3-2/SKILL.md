@@ -1,27 +1,6 @@
 ---
 name: solid-start-1-3-2
 description: Fullstack framework for SolidJS providing SSR, SSG, API routes, file-based routing, and server functions. Use when building performant web applications with unified rendering modes (CSR, SSR sync/async/streaming, SSG), isomorphic code execution, single-flight mutations, and deployment adapters for Vercel, Netlify, Cloudflare, AWS, Azure, Bun, Deno, and more.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - solidjs
-  - fullstack
-  - ssr
-  - ssg
-  - csr
-  - api-routes
-  - file-routing
-  - server-functions
-  - typescript
-  - vinxi
-  - nitro
-  - vite
-category: framework
-external_references:
-  - https://start.solidjs.com/
-  - https://github.com/solidjs/solid-start
-  - https://docs.solidjs.com/solid-start
 ---
 
 # SolidStart 1.3.2

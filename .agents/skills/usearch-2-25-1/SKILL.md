@@ -1,27 +1,6 @@
 ---
 name: usearch-2-25-1
 description: High-performance single-file similarity search engine for vectors using HNSW with user-defined metrics, quantization, and multi-language bindings (Python, C++, Rust, JavaScript, Go, Swift, C#, Wolfram). Use when building vector search applications, implementing ANN search, performing semantic search, or requiring faster alternatives to FAISS.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - vector-search
-  - ann
-  - hnsw
-  - similarity-search
-  - clustering
-  - quantization
-  - simd
-category: machine-learning
-external_references:
-  - https://github.com/unum-cloud/usearch
-  - https://docs.rs/usearch/latest/usearch/
-  - https://github.com/ashvardanian/numkong
-  - https://unum-cloud.github.io/USearch/
-  - https://unum-cloud.github.io/USearch/cpp
-  - https://unum-cloud.github.io/USearch/python
-  - https://www.unum.cloud/blog/2023-11-07-scaling-vector-search-with-intel
-  - https://github.com/unum-cloud/USearch/tree/main/docs
 ---
 
 # USearch 2.25.1

@@ -1,28 +1,6 @@
 ---
 name: paramiko-4-0-0
-description: >-
-  Complete toolkit for Paramiko 4.0.0, a pure-Python SSHv2 protocol implementation providing both client and server functionality. Use when building Python applications that require SSH connections, remote command execution, SFTP file transfers, SSH tunneling/port forwarding, running an in-Python sshd, or programmatic SSH authentication with password, public key, agent, certificate, or GSS-API/Kerberos methods.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - ssh
-  - sshv2
-  - sftp
-  - remote-execution
-  - file-transfer
-  - tunneling
-  - port-forwarding
-  - authentication
-  - networking
-category: library
-external_references:
-  - https://www.paramiko.org/
-  - https://docs.paramiko.org/
-  - https://github.com/paramiko/paramiko
-  - https://www.paramiko.org/faq.html
-  - https://www.paramiko.org/installing.html
-  - https://github.com/paramiko/paramiko/tree/4.0.0
+description: Complete toolkit for Paramiko 4.0.0, a pure-Python SSHv2 protocol implementation providing both client and server functionality. Use when building Python applications that require SSH connections, remote command execution, SFTP file transfers, SSH tunneling/port forwarding, running an in-Python sshd, or programmatic SSH authentication with password, public key, agent, certificate, or GSS-API/Kerberos methods.
 ---
 
 # Paramiko 4.0.0

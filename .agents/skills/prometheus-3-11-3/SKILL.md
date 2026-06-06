@@ -1,21 +1,6 @@
 ---
 name: prometheus-3-11-3
 description: Complete toolkit for Prometheus 3.11.3 covering configuration, PromQL querying, service discovery, rules, alerting, and storage. Use when deploying or configuring Prometheus servers, writing PromQL queries, setting up scrape configs and service discovery, authoring recording or alerting rules, tuning TSDB retention, integrating with Alertmanager, or managing remote read/write endpoints.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - prometheus
-  - monitoring
-  - promql
-  - metrics
-  - alerting
-  - tsdb
-  - service-discovery
-category: tooling
-external_references:
-  - https://github.com/prometheus/prometheus/tree/v3.11.3
-  - https://prometheus.io/docs/introduction/overview/
 ---
 
 # Prometheus 3.11.3

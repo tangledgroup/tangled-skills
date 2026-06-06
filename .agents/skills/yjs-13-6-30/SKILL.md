@@ -1,21 +1,6 @@
 ---
 name: yjs-13-6-30
 description: CRDT framework for conflict-free collaborative editing with shared types (Y.Map, Y.Array, Y.Text). Provides network-agnostic document sync via binary updates, awareness tracking, undo/redo, and delta-format events. Use when building real-time collaborative editors, multi-user data sync, offline-first applications, or any app requiring concurrent editing without merge conflicts.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - yjs
-  - crdt
-  - collaborative-editing
-  - real-time
-  - shared-types
-  - javascript
-category: library
-external_references:
-  - https://yjs.dev/
-  - https://docs.yjs.dev/
-  - https://github.com/yjs/yjs/tree/v13.6.30
 ---
 
 # Yjs 13.6.30

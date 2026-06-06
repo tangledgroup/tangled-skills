@@ -1,21 +1,6 @@
 ---
 name: openai-python-2-38-0
 description: Complete toolkit for OpenAI Python SDK 2.38.0 providing typed sync/async clients for the Responses API, Chat Completions API, Realtime API, multimodal (audio/image/video), and Azure OpenAI. Use when building Python applications that call OpenAI models, stream responses, handle tool calling, authenticate via workload identity, or integrate with Azure OpenAI.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - openai
-  - python
-  - sdk
-  - ai
-  - llm
-  - chat-completions
-  - responses-api
-category: library
-external_references:
-  - https://github.com/openai/openai-python/tree/v2.38.0/examples
-  - https://github.com/openai/openai-python/tree/v2.38.0/tests
 ---
 
 # OpenAI Python SDK 2.38.0

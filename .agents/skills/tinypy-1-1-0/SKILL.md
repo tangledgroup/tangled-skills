@@ -1,25 +1,6 @@
 ---
 name: tinypy-1-1-0
 description: Minimalist Python implementation in ~64k of code with a bootstrapped parser, bytecode compiler, and VM with incremental GC. Supports classes, dicts, lists, exceptions, and modules. Cross-platform with C API for embedding. Use when building embedded scripting engines, studying VM internals, or needing a tiny Python-compatible runtime for constrained environments.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - python
-  - vm
-  - embedding
-  - scripting
-  - minimal
-  - bytecode
-  - garbage-collection
-  - bootstrap
-category: language-runtime
-external_references:
-  - http://www.tinypy.org/
-  - http://www.philhassey.com/blog/category/tinypy/
-  - http://www.tinypy.org/community.html
-  - https://github.com/philhassey/tinypy/blob/wiki/Index.md
-  - https://github.com/philhassey/tinypy/tree/1.1
 ---
 
 # TinyPy 1.1

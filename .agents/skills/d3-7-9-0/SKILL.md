@@ -1,23 +1,6 @@
 ---
 name: d3-7-9-0
 description: JavaScript library for bespoke data-driven documents providing SVG and Canvas-based visualizations with scales, axes, transitions, geo-projections, force simulations, and hierarchy layouts. Use when building custom interactive charts, geographic maps, network diagrams, animated data visualizations, or implementing low-level graphics with direct DOM control.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - JavaScript
-  - visualization
-  - SVG
-  - Canvas
-  - data-visualization
-category: frontend
-external_references:
-  - https://d3js.org/what-is-d3
-  - https://d3js.org/
-  - https://d3js.org/api
-  - https://d3js.org/getting-started
-  - https://github.com/d3
-  - https://observablehq.com/@d3/gallery
 ---
 
 # D3.js 7.9.0

@@ -1,23 +1,6 @@
 ---
 name: hy-1-2-0
 description: Lisp dialect embedded in Python providing prefix S-expression syntax, compile-time macros, quasiquoting, reader macros, and seamless access to Python built-ins and libraries. Use when writing Hy programs, creating Hy macros, converting between Python and Hy code, debugging Hy compilation, or building Lisp-style metaprogramming on Python.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - hy
-  - hylang
-  - lisp
-  - python-embedded
-  - macros
-  - metaprogramming
-  - s-expression
-category: language-runtime
-external_references:
-  - https://hylang.org/
-  - https://github.com/hylang/hy/tree/1.2.0
-  - https://github.com/hylang/py2hy
-compatibility: Python 3.10+
 ---
 
 # Hy 1.2.0 (Crackers and Snacks)

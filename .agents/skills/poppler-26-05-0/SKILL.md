@@ -1,20 +1,6 @@
 ---
 name: poppler-26-05-0
 description: PDF rendering library providing C++, glib, Qt5, and Qt6 APIs for loading, parsing, rendering, and extracting content from PDF documents. Use when building applications that need to render PDF pages to images, extract text/images/fonts, convert PDFs to PS/SVG/PNG/JPEG/TIFF, inspect metadata, or manipulate embedded files and digital signatures.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - poppler
-  - pdf
-  - rendering
-  - c++
-  - glib
-  - qt
-category: library
-external_references:
-  - https://poppler.freedesktop.org/
-  - https://gitlab.freedesktop.org/poppler/poppler/-/tree/poppler-26.05.0?ref_type=tags
 ---
 
 # Poppler 26.05.0

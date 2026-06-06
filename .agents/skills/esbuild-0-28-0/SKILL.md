@@ -1,27 +1,6 @@
 ---
 name: esbuild-0-28-0
 description: Complete toolkit for esbuild v0.28 JavaScript bundler providing CLI, JavaScript API, and Go API access for bundling, minification, transformation, and development workflows with support for TypeScript, JSX, CSS modules, tree shaking, source maps, watch mode, and local development server without requiring npm installation via npx execution. Use when bundling JavaScript/TypeScript projects, configuring build pipelines, setting up watch mode for development, or transforming code without npm dependencies.
-version: "0.1.0"
-author: Tangled <noreply@tangledgroup.com>
-license: MIT
-tags:
-- javascript
-- bundler
-- typescript
-- jsx
-- css
-- minification
-- tree-shaking
-- source-maps
-- watch-mode
-- development-server
-- npx
-- esm
-- commonjs
-category: tooling
-external_references:
-- https://esbuild.github.io/
-- https://github.com/evanw/esbuild
 ---
 
 # esbuild v0.28

@@ -1,31 +1,6 @@
 ---
 name: s-expression-alternatives
 description: Alternative syntaxes for Lisp-family languages that reduce or eliminate parentheses while preserving homoiconicity and extensibility. Covers sweet-expressions (curly-infix, neoteric, indentation-based), i-expressions (SRFI-49 indentation-sensitive syntax), o-expressions (operator-based AST with currying juxtaposition), and Liso (Racket implementation of o-expressions). Use when designing alternative Lisp syntaxes, building reader macros for readable code, evaluating tradeoffs between parentheses and other grouping mechanisms, or implementing custom s-expression variants.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - s-expression
-  - sweet-expressions
-  - i-expressions
-  - o-expressions
-  - liso
-  - lisp-syntax
-  - homoiconic
-  - readable
-  - indentation
-  - reader-macro
-category: language-concept
-external_references:
-  - https://readable.sourceforge.net/
-  - https://srfi.schemers.org/srfi-49/srfi-49.html
-  - https://breuleux.net/blog/oexprs.html
-  - https://github.com/breuleux/liso
-reference:
-  - reference/01-sweet-expressions.md
-  - reference/02-i-expressions.md
-  - reference/03-o-expressions.md
-  - reference/04-liso.md
 ---
 
 # S-Expression Alternatives

@@ -1,27 +1,6 @@
 ---
 name: cryptography-47-0-0
 description: Comprehensive toolkit for Python cryptographic operations using the cryptography library v47.0.0. Use when implementing encryption, decryption, hashing, digital signatures, key derivation, X.509 certificate handling, post-quantum cryptography (ML-KEM, ML-DSA), ASN.1 encoding/decoding, and other cryptographic primitives in Python applications.
-version: "0.1.0"
-author: Tangled <noreply@tangledgroup.com>
-license: MIT
-tags:
-- cryptography
-- encryption
-- hashing
-- asymmetric
-- symmetric
-- x509
-- tls
-- python
-- security
-- post-quantum
-- ml-kem
-- ml-dsa
-- asn1
-category: security
-external_references:
-- https://cryptography.io/en/stable/
-- https://github.com/pyca/cryptography
 ---
 
 # cryptography 47.x

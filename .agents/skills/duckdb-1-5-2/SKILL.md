@@ -1,25 +1,6 @@
 ---
 name: duckdb-1-5-2
 description: High-performance analytical SQL database with support for nested types, vectorized execution, and seamless integration with Python, R, Java, Node.js, and WebAssembly. Use when building data analytics applications, performing ad-hoc queries on CSV/Parquet/JSON files, working with DataFrames (pandas, Polars), or needing an embedded OLAP database without server infrastructure.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - analytics
-  - olap
-  - embedded-database
-  - sql
-  - data-science
-  - dataframe
-  - parquet
-  - json
-category: database
-external_references:
-  - https://duckdb.org/docs/current/
-  - https://duckdb.org/docs/current/clients/python/overview
-  - https://duckdb.org/docs/current/sql/introduction
-  - https://github.com/duckdb/duckdb
-  - https://github.com/duckdb/duckdb/tree/v1.5.2
 ---
 
 # DuckDB 1.5.2

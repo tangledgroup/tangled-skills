@@ -1,30 +1,6 @@
 ---
 name: s-expression-interpreter
 description: Build and understand s-expression interpreters in Python and C. Covers lexer-free tokenization, recursive descent parsing, eval-apply cycles, SymbolTable scoping, lval heap allocation with mpc, sfsexp library integration, and language semantics across Scheme (R4RS/R7RS), Common Lisp, and Clojure. Use when building a Lisp/Scheme interpreter from scratch, implementing s-expression data structures in C, adding function definitions and lexical scoping to an evaluator, or understanding how homoiconic languages process code-as-data through read-eval-print loops.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - s-expression
-  - lisp
-  - interpreter
-  - eval-apply
-  - scheme
-  - common-lisp
-  - clojure
-category: language-runtime
-external_references:
-  - https://lwcarani.github.io/posts/writing-a-lisp-interpreter-in-python/
-  - https://bytegoblin.io/blog/write-a-lisp-in-16-lines-of-python.mdx
-  - https://github.com/mjsottile/sfsexp
-  - https://buildyourownlisp.com/index.php/S-Expressions
-  - https://eecs390.github.io/content/_autosummary/eecs390.content.functional.html
-  - https://gist.github.com/lispstudent/4cf841027b287c3e36bd85592ed6910e
-  - https://www.cs.cmu.edu/Groups/AI/html/r4rs/
-  - https://lisp-lang.org/learn/functions
-  - https://clojure.org/guides/learn/functions
-  - https://standards.scheme.org/corrected-r7rs/
-  - https://johnj.com/posts/scheme-in-python/
 ---
 
 # S-Expressions Interpreter

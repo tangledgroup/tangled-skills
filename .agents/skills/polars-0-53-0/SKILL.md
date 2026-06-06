@@ -1,22 +1,6 @@
 ---
 name: polars-0-53-0
-description: "Complete toolkit for Polars 0.53.0 providing high-performance DataFrame computing with lazy evaluation, expression-based API, streaming engine, GPU acceleration, and SQL interface. Covers data types, expressions, transformations (joins, pivots, window functions), IO (CSV, Parquet, JSON, Excel, databases, cloud storage), LazyFrame optimization, and streaming. Use when building Python data pipelines, ETL workflows, analytics queries, or migrating from pandas/Spark to Polars."
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - polars
-  - dataframe
-  - lazy-evaluation
-  - expressions
-  - streaming
-  - gpu
-  - etl
-category: library
-external_references:
-  - https://github.com/pola-rs/polars/tree/rs-0.53.0
-  - https://docs.pola.rs/api/python/stable/reference/index.html
-  - https://docs.pola.rs/#example
+description: Complete toolkit for Polars 0.53.0 providing high-performance DataFrame computing with lazy evaluation, expression-based API, streaming engine, GPU acceleration, and SQL interface. Covers data types, expressions, transformations (joins, pivots, window functions), IO (CSV, Parquet, JSON, Excel, databases, cloud storage), LazyFrame optimization, and streaming. Use when building Python data pipelines, ETL workflows, analytics queries, or migrating from pandas/Spark to Polars.
 ---
 
 # Polars 0.53.0

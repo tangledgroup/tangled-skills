@@ -1,25 +1,6 @@
 ---
 name: redis-om-python-1-1-0
-description: A skill for using Redis OM Python v1.1, an object mapping library that
-  provides declarative models, automatic secondary-index generation, and fluent query
-  APIs for Redis with RediSearch and RedisJSON modules. Use when building Python applications
-  requiring ORM-like abstractions for Redis, full-text search capabilities, geospatial
-  queries, vector similarity search (KNN), or complex nested document storage.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - redis
-  - orm
-  - object-mapping
-  - pydantic
-  - redi-search
-  - redis-json
-  - vector-search
-category: database
-external_references:
-  - https://redis.github.io/redis-om-python/
-  - https://github.com/redis/redis-om-python
+description: A skill for using Redis OM Python v1.1, an object mapping library that provides declarative models, automatic secondary-index generation, and fluent query APIs for Redis with RediSearch and RedisJSON modules. Use when building Python applications requiring ORM-like abstractions for Redis, full-text search capabilities, geospatial queries, vector similarity search (KNN), or complex nested document storage.
 ---
 
 # Redis OM Python 1.1.0

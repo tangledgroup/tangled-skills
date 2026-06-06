@@ -1,17 +1,6 @@
 ---
 name: pipe
 description: Unix-style pipe expression syntax for chaining multiple agent operations sequentially. Each stage's output becomes the next stage's implicit context, enabling multi-step workflows in a single expression. Use when chaining 2+ operations where intermediate results feed into subsequent steps — e.g., search then summarize, read then analyze, transform then report.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.4"
-tags:
-  - pipe
-  - meta
-  - meta-skill
-  - chaining
-  - workflow
-  - orchestration
-category: meta
 ---
 
 # Pipe — Unix-Style Chaining for LLM Agents

@@ -1,21 +1,6 @@
 ---
 name: python-prometheus-0-25-0
 description: Official Prometheus Python client library v0.25.0 for instrumenting Python applications with metrics. Provides Counter, Gauge, Summary, Histogram, Info, and Enum metric types; HTTP/WSGI/ASGI exporters; framework integrations (Flask, Django, FastAPI, AIOHTTP, Twisted); Pushgateway support; multiprocess mode for Gunicorn; custom collectors; and Graphite bridge. Use when adding Prometheus metrics to Python applications, exposing metrics endpoints, or integrating with web frameworks.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - prometheus
-  - python
-  - metrics
-  - instrumentation
-  - monitoring
-  - observability
-  - client-python
-category: library
-external_references:
-  - https://github.com/prometheus/client_python/tree/v0.25.0
-  - https://prometheus.github.io/client_python/
 ---
 
 # Prometheus Python Client 0.25.0

@@ -1,18 +1,6 @@
 ---
 name: duckduckgo
 description: Searches DuckDuckGo via its HTML endpoint using scrapling. Returns results as markdown (default), raw HTML, compact JSON, or YAML. Use when performing web searches from within an agent workflow without requiring a search API key or external service.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.2.0"
-tags:
-  - duckduckgo
-  - search
-  - web-search
-  - scrapling
-  - scraping
-category: web
-external_references:
-  - https://html.duckduckgo.com/html/
 ---
 
 # DuckDuckGo Search

@@ -1,19 +1,6 @@
 ---
 name: python-scrypt-0-9-4
 description: Python toolkit for scrypt-based key derivation and password hashing. Use when implementing secure password storage, deriving encryption keys from passwords, or verifying passwords with memory-hard key derivation functions resistant to hardware-assisted attacks.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - scrypt
-  - password-hashing
-  - key-derivation
-  - cryptography
-  - pbkdf
-category: cryptography
-external_references:
-  - https://datatracker.ietf.org/doc/html/rfc7914
-  - https://github.com/holgern/py-scrypt
 ---
 
 # python-scrypt 0.9.4

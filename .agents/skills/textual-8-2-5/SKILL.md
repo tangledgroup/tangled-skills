@@ -1,21 +1,6 @@
 ---
 name: textual-8-2-5
 description: Python framework for building terminal and browser UIs. Provides widget-based DOM, CSS styling (.tcss), reactive attributes, event system, Workers API for concurrency, command palette, and theming. Use when building terminal UIs, CLI tools with rich interfaces, data dashboards, interactive forms, or any Python application requiring a graphical interface in the terminal.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - tui
-  - terminal-ui
-  - python
-  - framework
-  - reactive
-  - widgets
-  - css
-category: framework
-external_references:
-  - https://github.com/Textualize/textual
-  - https://textual.textualize.io/
 ---
 
 # Textual 8.2.5

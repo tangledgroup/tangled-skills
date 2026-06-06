@@ -1,20 +1,6 @@
 ---
 name: skman
 description: Skill Package Manager, skman, it is meta skill for skill authoring and skill package manager for AI agents.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.3.1"
-tags:
-  - meta
-  - meta skill
-  - skill manager
-  - skill package manager
-  - authoring
-category: meta
-external_references:
-  - https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
-  - https://opencode.ai/docs/skills
-  - https://pi.dev/docs/latest/skills
 ---
 
 # skman - Skill Package Manager
@@ -139,7 +125,7 @@ Determine whether this is a **new skill** or an **update**:
 
 ### Step 1: Validate Input
 
-Check that the skill name matches `^[a-z0-9]+(-[a-z0-9]+)*$`. The upstream project version goes into the skill name/directory (e.g., `curl-8-20-0`). The YAML `version` field tracks the skill file's own version, starting at `0.1.0` and following SemVer.
+Check that the skill name matches `^[a-z0-9]+(-[a-z0-9]+)*$`. The upstream project version goes into the skill name/directory (e.g., `curl-8-20-0`). The skill file's own version is tracked in `assets/MISC.md`, starting at `0.1.0` and following SemVer.
 
 ### Step 2: Crawl and Collect Content
 
@@ -176,7 +162,7 @@ Assess collected content to decide simple vs complex output structure. Consider:
 
 ### Step 4: Generate YAML Header
 
-Create a valid YAML header with validated name, description, version, and metadata fields.
+Create a valid YAML header with exactly two fields: `name` and `description`. All other metadata goes into `assets/MISC.md`.
 
 YAML Header Rules:
 
@@ -186,31 +172,14 @@ Every generated skill MUST have a valid YAML header. Invalid YAML prevents loadi
 ---
 name: <skill-name>
 description: <1-1024 char description, third person, includes WHAT and WHEN>
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - <tag1>
-  - <tag2>
-category: <category>
-external_references:
-  - https://<user-provided-url>
 ---
 ```
 
 Field Rules:
-- `name` — **Required**. 1-64 chars, regex `^[a-z0-9]+(-[a-z0-9]+)*$`, matches directory name. Include the upstream version hyphenated in the name (e.g., `curl-8-20-0`, `pacote-21-5-0`).
-- `description` — **Required**. 1-1024 chars, third person, includes WHAT and WHEN.
-- `license` — **Always MIT** — this is the skill file's license, never the upstream project's.
-- `author` — Format: `Name <email@example.com>`.
-- `version` — The **skill file's own version**, independent of the upstream project version. Always start at `0.1.0`. Follows SemVer 2.0.0: bump patch for corrections/typos, minor for new content or sections, major for structural rewrites.
-- `tags` — Array of string tags, 3-7 recommended. Mix broad and specific. Include the upstream project name when distinctive.
-- `category` — Skill category classification. Common values: `tooling`, `networking`, `database`, `language-runtime`, `ml-ai`, `web-framework`, `cli-tool`, `library`, `protocol`, `devops`.
-- `external_references` — User-provided starting URLs only.
-- `compatibility` — Max 500 chars, environment requirements.
-- `metadata` — String-to-string map.
-- `allowed-tools` — Pre-approved tools (experimental, pi only).
-- `disable-model-invocation` — Hidden from system prompt (pi only).
+- `name` — **Required**. Max 64 chars. Lowercase a-z, 0-9, hyphens. Regex `^[a-z0-9]+(-[a-z0-9]+)*$`. Unlike the standard, Pi does not require this to match the parent directory because that standard requirement is suboptimal for shared skill directories. Include the upstream version hyphenated in the name (e.g., `curl-8-20-0`, `pacote-21-5-0`).
+- `description` — **Required**. Max 1024 chars. What the skill does and when to use it. Third person.
+
+All other metadata fields (`license`, `author`, `version`, `tags`, `category`, `external_references`, `compatibility`, etc.) go into `assets/MISC.md` — not loaded into agent context.
 
 Name Validation:
 
@@ -221,17 +190,18 @@ Name Validation:
 Valid: `pdf-processing`, `data-analysis`, `fastapi-0-115`
 Invalid: `PDF-Processing`, `-pdf`, `pdf--processing`, `pdf processing`
 
-Version Field Rules:
+Directory Names:
 
-The `version` field tracks the **skill file's own version**, independent of the upstream project version. The upstream version lives in the skill name/directory (e.g., `curl-8-20-0` means curl v8.20.0).
+When constructing the **directory name**, include the upstream version hyphenated: `project-1-2-3`, `project-0-16`, `project-2025-11-25`. The `name` field in YAML should match the directory name.
+
+Version Tracking:
+
+The skill file's own version (SemVer 2.0.0) is tracked in `assets/MISC.md`, not in SKILL.md frontmatter.
 
 - **Always start at `0.1.0`** for new skills
-- **SemVer 2.0.0**: `MAJOR.MINOR.PATCH`
 - **Patch bump** (`0.1.0` → `0.1.1`): typo fixes, minor corrections
 - **Minor bump** (`0.1.0` → `0.2.0`): new content, new sections, substantive improvements
 - **Major bump** (`0.2.0` → `1.0.0`): structural rewrites, breaking changes to instruction semantics
-
-When constructing the **directory name**, include the upstream version hyphenated: `project-1-2-3`, `project-0-16`, `project-2025-11-25`. The `name` field in YAML must match the directory name exactly.
 
 Description Formula — Construct descriptions using this pattern:
 
@@ -272,15 +242,6 @@ Every generated skill MUST include the YAML header and these core sections:
 ---
 name: <skill-name>
 description: <specific description with WHAT and WHEN>
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - <tag1>
-  - <tag2>
-category: <category>
-external_references:
-  - https://<user-provided-url>
 ---
 
 # <Project Name> <Version>
@@ -296,6 +257,26 @@ Clear guidance on when this skill should be invoked. Include specific scenarios.
 ## Core Concepts
 
 Key concepts, terminology, and fundamental ideas related to the topic.
+```
+
+Optional `assets/MISC.md` (not loaded into agent context):
+
+```markdown
+# Skill Metadata
+
+Moved from SKILL.md frontmatter. Not loaded into agent context.
+
+```yaml
+license: MIT
+author: Tangled <noreply@tangledgroup.com>
+version: "0.1.0"
+tags:
+  - <tag1>
+  - <tag2>
+category: <category>
+external_references:
+  - https://<user-provided-url>
+```
 ```
 
 The following sections are **optional** — include only when applicable:
@@ -393,13 +374,11 @@ After the structural validator passes, review these items manually:
 
 - File starts with `---` on line 1
 - Valid YAML block between first pair of `---` delimiters
-- `name` present and matches directory name
-- `name` matches regex `^[a-z0-9]+(-[a-z0-9]+)*$`
+- Exactly two fields: `name` and `description`
+- `name` present, max 64 chars, regex `^[a-z0-9]+(-[a-z0-9]+)*$`
 - `description` present (1-1024 characters)
-- `license` is "MIT" (always — this is the skill file's license, not the upstream project's)
-- `author` format: `Name <email@example.com>`
-- `version` is valid SemVer (skill file version, starts at `0.1.0`, not the upstream project version)
 - Header ends with `---` before main content
+- No other fields in SKILL.md frontmatter (those go in `assets/MISC.md`)
 
 #### 2. Structure
 

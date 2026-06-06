@@ -1,23 +1,6 @@
 ---
 name: lambda-calculus-and-lisp-2026-05-12
 description: Covers the relationship between lambda calculus and Lisp, including McCarthy's EVAL, Church encodings in Scheme, the Y combinator for nameless recursion, and Lisp's hardware origins vs pure lambda theory. Use when implementing lambda calculus in Lisp/Scheme, enabling recursion without named functions via fixed-point combinators, encoding data types as pure functions with Church encodings, or studying the historical divergence between Lisp and lambda calculus.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - lambda-calculus
-  - lisp
-  - scheme
-  - y-combinator
-  - church-encoding
-  - recursion
-  - eval
-category: language-runtime
-external_references:
-  - https://babbagefiles.xyz/lambda-calculus-and-lisp-01/
-  - https://babbagefiles.xyz/lambda-calculus-and-lisp-02-recursion/
-  - https://wal.sh/research/lambda-calculus-in-scheme.html
-  - https://8dcc.github.io/programming/understanding-y-combinator.html
 ---
 
 # Lambda Calculus and Lisp

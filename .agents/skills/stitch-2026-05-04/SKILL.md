@@ -1,19 +1,6 @@
 ---
 name: stitch-2026-05-04
 description: AI-powered UI design tool generating high-fidelity screens and frontend code from text prompts and images. Provides MCP tools for coding agents, a TypeScript SDK, DESIGN.md format, and export to Figma/AI Studio. Use when generating UI designs from prompts or images, connecting Stitch to AI coding agents via MCP, or building multi-page sites from prompt-driven designs.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - stitch
-  - ui-design
-  - ai-design
-  - mcp
-  - google-labs
-  - frontend
-category: ml-ai
-external_references:
-  - https://stitch.withgoogle.com/docs/
 ---
 
 # Stitch (Google Labs)

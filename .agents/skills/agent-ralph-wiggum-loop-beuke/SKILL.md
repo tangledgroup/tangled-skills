@@ -1,19 +1,6 @@
 ---
 name: agent-ralph-wiggum-loop-beuke
 description: Principles and conceptual framework of the Ralph Wiggum Loop pattern for goal-oriented autonomous AI agent loops. Covers agentic loop structure, failure modes, safety implications, control theory comparisons, and best practices. Use when designing or reasoning about iterative AI agent systems that act, check feedback, and repeat until a completion criterion is met.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - ralph-wiggum
-  - agentic-loops
-  - autonomous-agents
-  - ai-safety
-  - feedback-systems
-  - iterative-conditioning
-category: agent-patterns
-external_references:
-  - https://beuke.org/ralph-wiggum-loop/
 ---
 
 # Ralph Wiggum Loop — Principles and Concepts

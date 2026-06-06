@@ -1,21 +1,6 @@
 ---
 name: payloadcms-ecommerce-3-84-1
 description: Payload CMS ecommerce template providing production-ready online store with products, variants, carts, orders, Stripe payments, and user accounts. Use when building e-commerce platforms, online stores, or any digital commerce project requiring product catalogs, shopping carts, order management, payment processing, or inventory management following official Payload best practices.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - payloadcms
-  - ecommerce
-  - commerce
-  - stripe
-  - payments
-  - nextjs
-  - headless-cms
-category: cms-template
-external_references:
-  - https://payloadcms.com/docs/ecommerce/plugin
-  - https://github.com/payloadcms/payload/tree/v3.84.1/templates/ecommerce
 ---
 
 # Payload CMS Ecommerce Template v3.84.1

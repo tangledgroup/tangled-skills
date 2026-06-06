@@ -1,21 +1,6 @@
 ---
 name: authentik-2026-5-0
 description: Open-source Identity Provider (IdP) for modern SSO supporting OAuth2/OIDC, SAML, LDAP, RADIUS, SCIM, and Proxy protocols. Use when configuring identity management, setting up authentication flows with stages and policies, deploying outposts for reverse-proxy or LDAP services, provisioning users via blueprints, or integrating applications as OAuth2 clients, SAML service providers, or LDAP consumers.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - authentik
-  - identity-provider
-  - sso
-  - oauth2
-  - oidc
-  - saml
-  - ldap
-category: tooling
-external_references:
-  - https://github.com/goauthentik/authentik/tree/version/2026.5.0-rc2
-  - https://next.goauthentik.io/developer-docs/
 ---
 
 # authentik 2026.5.0

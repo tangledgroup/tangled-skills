@@ -1,31 +1,6 @@
 ---
 name: mermaid-11-15-0
-description: >-
-  Complete toolkit for Mermaid 11.15.0 providing 29 diagram types including
-  flowcharts, sequence diagrams, Gantt charts, class diagrams, state diagrams,
-  ER diagrams, C4 diagrams, mindmaps, git graphs, pie charts, and more.
-  Supports frontmatter configuration, theming, accessibility (accTitle/accDescr),
-  multiple layout engines (dagre, elk, tidy-tree, cose-bilkent), icons, math
-  (KaTeX), animations, and interactivity. Use when creating diagrams from
-  text definitions, generating visualizations for documentation, or integrating
-  Mermaid into web pages, markdown files, or APIs.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - mermaid
-  - diagrams
-  - flowchart
-  - visualization
-  - documentation
-  - uml
-  - charts
-category: tooling
-external_references:
-  - https://github.com/mermaid-js/mermaid/tree/mermaid%4011.15.0
-  - https://github.com/mermaid-js/mermaid/tree/mermaid%4011.15.0/docs
-  - https://github.com/mermaid-js/mermaid/tree/mermaid%4011.15.0/demos
-compatibility: Node.js >= 16, modern browsers (not IE)
+description: Complete toolkit for Mermaid 11.15.0 providing 29 diagram types including flowcharts, sequence diagrams, Gantt charts, class diagrams, state diagrams, ER diagrams, C4 diagrams, mindmaps, git graphs, pie charts, and more. Supports frontmatter configuration, theming, accessibility (accTitle/accDescr), multiple layout engines (dagre, elk, tidy-tree, cose-bilkent), icons, math (KaTeX), animations, and interactivity. Use when creating diagrams from text definitions, generating visualizations for documentation, or integrating Mermaid into web pages, markdown files, or APIs.
 ---
 
 # Mermaid 11.15.0

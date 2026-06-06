@@ -1,21 +1,6 @@
 ---
 name: fltk-1-4-5
 description: Cross-platform C++ GUI toolkit with ~80 widget classes, OpenGL/GLUT integration, drawing primitives, image support, printing, and FLUID visual builder. Supports X11, Wayland, Windows, macOS with HiDPI scaling. Use when building desktop GUI apps in C++, subclassing Fl_Widget for custom controls, embedding OpenGL, or migrating from GLUT/FreeGLUT.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - fltk
-  - gui
-  - c++
-  - desktop
-  - widgets
-  - opengl
-category: library
-external_references:
-  - https://www.fltk.org/
-  - https://github.com/fltk/fltk/releases/download/release-1.4.5/fltk-1.4.5-docs-html.tar.gz
-  - https://github.com/fltk/fltk/tree/release-1.4.5
 ---
 
 # FLTK 1.4.5

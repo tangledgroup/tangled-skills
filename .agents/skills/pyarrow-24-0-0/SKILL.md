@@ -1,22 +1,6 @@
 ---
 name: pyarrow-24-0-0
-description: "Complete toolkit for PyArrow 24.0.0 providing columnar in-memory data structures, vectorized compute functions, Parquet/CSV/ORC/JSON file I/O, Pandas and NumPy zero-copy integration, IPC serialization, tabular datasets, and Arrow Flight RPC. Use when building Python data pipelines, converting between Pandas/NumPy/Arrow formats, reading or writing Parquet files, performing vectorized array computations, serializing data via IPC, or working with partitioned datasets."
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - pyarrow
-  - arrow
-  - columnar
-  - parquet
-  - data-pipeline
-  - numpy
-  - pandas
-category: library
-external_references:
-  - https://github.com/apache/arrow/tree/apache-arrow-24.0.0/python
-  - https://arrow.apache.org/docs/python/
-  - https://arrow.apache.org/cookbook/py/
+description: Complete toolkit for PyArrow 24.0.0 providing columnar in-memory data structures, vectorized compute functions, Parquet/CSV/ORC/JSON file I/O, Pandas and NumPy zero-copy integration, IPC serialization, tabular datasets, and Arrow Flight RPC. Use when building Python data pipelines, converting between Pandas/NumPy/Arrow formats, reading or writing Parquet files, performing vectorized array computations, serializing data via IPC, or working with partitioned datasets.
 ---
 
 # PyArrow 24.0.0

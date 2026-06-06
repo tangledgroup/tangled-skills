@@ -1,26 +1,6 @@
 ---
 name: logic
 description: Comprehensive reference covering formal logic systems from propositional through higher-order logic, plus modal logic, soundness, and inductive reasoning. Use when working with logical formalisms, constructing proofs, analyzing arguments, building theorem provers, designing type systems, implementing satisfiability solvers, or reasoning about logical properties like validity, completeness, and expressiveness.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - logic
-  - propositional-logic
-  - first-order-logic
-  - higher-order-logic
-  - modal-logic
-  - soundness
-  - inductive-reasoning
-category: language-runtime
-external_references:
-  - https://en.wikipedia.org/wiki/Propositional_logic
-  - https://en.wikipedia.org/wiki/First-order_logic
-  - https://en.wikipedia.org/wiki/Second-order_logic
-  - https://en.wikipedia.org/wiki/Higher-order_logic
-  - https://en.wikipedia.org/wiki/Modal_logic
-  - https://en.wikipedia.org/wiki/Soundness
-  - https://en.wikipedia.org/wiki/Inductive_reasoning
 ---
 
 # Formal Logic Reference

@@ -1,26 +1,6 @@
 ---
 name: stringzilla-4-6-0
 description: High-performance SIMD-accelerated string library for search, hashing, sorting, and fuzzy matching in C/C++/Python/Rust/JavaScript/Swift/Go. Use when optimizing string operations for big data processing, bioinformatics, or high-throughput applications requiring up to 10x faster CPU throughput and up to 100x faster GPU kernels via StringZillas parallel backends.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - simd
-  - string-processing
-  - search
-  - hashing
-  - sorting
-  - bioinformatics
-  - performance
-  - swar
-  - cuda
-category: library
-external_references:
-  - https://pypi.org/project/stringzilla/
-  - https://github.com/ashvardanian/StringZilla
-  - https://docs.rs/stringzilla
-  - https://crates.io/crates/stringzilla
-  - https://ashvardanian.com/posts/stringzilla/
 ---
 
 # StringZilla 4.6.0

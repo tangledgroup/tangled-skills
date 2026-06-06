@@ -1,29 +1,6 @@
 ---
 name: python-docx-1-2-0
-description: >-
-  Complete toolkit for python-docx 1.2.0, a Python library for creating, reading,
-  and updating Microsoft Word (.docx) files. Covers document manipulation, text
-  formatting with paragraphs and runs, table creation with merged cells, section
-  layout and page margins, header/footer management, style system (paragraph,
-  character, table, latent), comments, inline shapes/pictures, core properties,
-  and all enumerations. Use when building Python programs that generate Word
-  documents, automate report creation, fill document templates, or extract
-  content from .docx files.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - python-docx
-  - word
-  - docx
-  - document-generation
-  - microsoft-word
-  - office-automation
-  - reporting
-category: library
-external_references:
-  - https://github.com/python-openxml/python-docx/tree/v1.2.0
-  - https://python-docx.readthedocs.io/en/latest/index.html
+description: Complete toolkit for python-docx 1.2.0, a Python library for creating, reading, and updating Microsoft Word (.docx) files. Covers document manipulation, text formatting with paragraphs and runs, table creation with merged cells, section layout and page margins, header/footer management, style system (paragraph, character, table, latent), comments, inline shapes/pictures, core properties, and all enumerations. Use when building Python programs that generate Word documents, automate report creation, fill document templates, or extract content from .docx files.
 ---
 
 # python-docx 1.2.0

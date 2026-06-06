@@ -1,21 +1,6 @@
 ---
 name: agent-ralph-wiggum-ghuntley
 description: Geoffrey Huntley's Ralph Wiggum technique — a monolithic iterative loop pattern for autonomous AI-driven software development. Use when building greenfield projects through repeated LLM invocations in a bash-style loop, tuning prompts through observation, and treating the loop itself as the programmable unit rather than individual tool calls or multi-agent orchestration.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - ralph-wiggum
-  - autonomous-development
-  - iterative-loops
-  - greenfield
-  - prompt-tuning
-  - context-engineering
-  - monolithic-agents
-category: agent-patterns
-external_references:
-  - https://ghuntley.com/ralph/
-  - https://ghuntley.com/loop/
 ---
 
 # Ralph Wiggum Technique (Geoffrey Huntley)

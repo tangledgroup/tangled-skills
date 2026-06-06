@@ -1,23 +1,6 @@
 ---
 name: chart-js-4-5-1
 description: Complete toolkit for Chart.js 4.5.1, the popular JavaScript charting library using HTML5 Canvas rendering. Use when creating interactive charts (line, bar, pie, doughnut, radar, scatter, bubble, area), configuring axes and scales, customizing animations and tooltips, or building data visualizations with TypeScript support across JavaScript frameworks.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - charts
-  - canvas
-  - data-visualization
-  - javascript
-  - html5
-  - responsive
-category: frontend
-external_references:
-  - https://www.chartjs.org/docs/latest/
-  - https://discord.gg/HxEguTK6av
-  - https://github.com/chartjs/awesome
-  - https://stackoverflow.com/questions/tagged/chart.js
-  - https://github.com/chartjs/Chart.js
 ---
 
 # Chart.js 4.5.1

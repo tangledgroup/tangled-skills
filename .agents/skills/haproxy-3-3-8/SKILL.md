@@ -1,29 +1,6 @@
 ---
 name: haproxy-3-3-8
-description: Complete HAProxy 3.3.8 toolkit for load balancing, reverse proxying,
-  SSL/TLS termination, and traffic management. Includes cumulative bug fixes from
-  3.3.0 through 3.3.8 covering QUIC/HTTP3 hardening, SSL memory safety, mux-h1/h2
-  robustness, Lua scripting fixes, ACME improvements, and CLI permission checks.
-  Use when configuring HTTP/TCP load balancers, implementing high availability,
-  managing SSL certificates, setting up health checks, configuring ACLs and content
-  switching, or deploying HAProxy as a production-grade reverse proxy and load balancer.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - load balancing
-  - reverse proxy
-  - SSL termination
-  - high availability
-  - HTTP proxy
-  - TCP proxy
-  - health checks
-  - ACLs
-category: infrastructure
-external_references:
-  - https://www.haproxy.org/download/3.3/src/haproxy-3.3.8.tar.gz
-  - https://github.com/haproxy/haproxy
-  - https://www.haproxy.org/
+description: Complete HAProxy 3.3.8 toolkit for load balancing, reverse proxying, SSL/TLS termination, and traffic management. Includes cumulative bug fixes from 3.3.0 through 3.3.8 covering QUIC/HTTP3 hardening, SSL memory safety, mux-h1/h2 robustness, Lua scripting fixes, ACME improvements, and CLI permission checks. Use when configuring HTTP/TCP load balancers, implementing high availability, managing SSL certificates, setting up health checks, configuring ACLs and content switching, or deploying HAProxy as a production-grade reverse proxy and load balancer.
 ---
 
 # HAProxy 3.3.8

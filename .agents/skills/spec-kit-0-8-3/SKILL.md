@@ -1,21 +1,6 @@
 ---
 name: spec-kit-0-8-3
 description: Spec-Driven Development toolkit for specification-first workflows with AI agents. Generate executable specifications, implementation plans, and automated workflows that drive code generation. Use when building software projects requiring structured specification workflows, integrating AI coding assistants with spec-driven methodologies, or migrating to specification-first practices.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - specification-driven-development
-  - sdd
-  - ai-assisted-development
-  - project-management
-  - workflow-automation
-  - slash-commands
-  - feature-specification
-  - workflows
-category: development
-external_references:
-  - https://github.com/github/spec-kit
 ---
 
 # Spec Kit 0.8.3

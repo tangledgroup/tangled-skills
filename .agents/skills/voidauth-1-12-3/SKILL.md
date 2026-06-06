@@ -1,21 +1,6 @@
 ---
 name: voidauth-1-12-3
 description: Open-source SSO authentication and user management provider for self-hosted applications. Provides OIDC Provider, ProxyAuth forward authentication, user/group management, passkeys, and email-based invitations. Use when deploying or configuring VoidAuth as an identity provider, setting up OIDC integrations with self-hosted apps, securing domains via ProxyAuth behind Caddy/NGINX/Traefik reverse proxies, managing users and security groups, or troubleshooting authentication flows.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - voidauth
-  - sso
-  - oidc
-  - authentication
-  - selfhosted
-  - proxy-auth
-  - identity-provider
-category: tooling
-external_references:
-  - https://voidauth.app/#/
-  - https://github.com/voidauth/voidauth/tree/v1.12.3
 ---
 
 # VoidAuth 1.12.3

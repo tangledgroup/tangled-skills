@@ -1,22 +1,6 @@
 ---
 name: asyncstdlib-3-14-0
 description: Python async standard library providing async versions of builtins, itertools, functools, contextlib, and heapq for asyncio, trio, and custom event loops. Use when building async Python applications that need iterator operations (zip, map, chain, groupby), async caching (lru_cache), async context managers, or safe iterator lifecycle management.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-- python
-- async
-- itertools
-- builtins
-- functools
-- contextlib
-- heapq
-- iterator
-category: library
-external_references:
-- https://github.com/maxfischer2781/asyncstdlib
-- https://asyncstdlib.readthedocs.io/
 ---
 
 # asyncstdlib 3.14.0

@@ -1,27 +1,6 @@
 ---
 name: gunicorn-26-0-0
-description: >-
-  Complete toolkit for Gunicorn 26.0.0 — Python WSGI/ASGI HTTP server with pre-fork worker model.
-  Covers installation, configuration, worker selection (sync, gthread, gevent, ASGI),
-  deployment behind Nginx/systemd/Docker, SSL/TLS, HTTP/2, Dirty Arbiters for heavy workloads,
-  uWSGI protocol, and runtime control via gunicornc.
-  Use when deploying Python web applications (Django, Flask, FastAPI, Starlette) to production,
-  tuning Gunicorn worker counts and timeouts, configuring reverse proxy integration,
-  or setting up async/ASGI workloads with streaming and Dirty Arbiters.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - gunicorn
-  - wsgi
-  - asgi
-  - python-server
-  - deployment
-  - webserver
-category: server
-external_references:
-  - https://gunicorn.org/
-  - https://github.com/benoitc/gunicorn
+description: Complete toolkit for Gunicorn 26.0.0 — Python WSGI/ASGI HTTP server with pre-fork worker model. Covers installation, configuration, worker selection (sync, gthread, gevent, ASGI), deployment behind Nginx/systemd/Docker, SSL/TLS, HTTP/2, Dirty Arbiters for heavy workloads, uWSGI protocol, and runtime control via gunicornc. Use when deploying Python web applications (Django, Flask, FastAPI, Starlette) to production, tuning Gunicorn worker counts and timeouts, configuring reverse proxy integration, or setting up async/ASGI workloads with streaming and Dirty Arbiters.
 ---
 
 # Gunicorn 26.0.0

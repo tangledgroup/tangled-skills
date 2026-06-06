@@ -1,22 +1,6 @@
 ---
 name: agent-wiggum-cli-federiconeri
 description: Autonomous coding agent that scans codebases, generates feature specs via AI interviews, and runs Ralph loops via Claude Code, Codex CLI, or any CLI-based agent. Reads GitHub backlog, runs loops, and auto-merges PRs. Use when automating feature development end-to-end, running autonomous coding loops, managing GitHub backlogs with AI, or implementing the Ralph loop methodology.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - autonomous-coding
-  - ralph-loop
-  - spec-driven-development
-  - ai-agent
-  - claude-code
-  - codex-cli
-  - github-integration
-  - backlog-automation
-category: development
-external_references:
-  - https://github.com/federiconeri/wiggum-cli
-  - https://wiggum.app/
 ---
 
 # Wiggum CLI v0.18.3

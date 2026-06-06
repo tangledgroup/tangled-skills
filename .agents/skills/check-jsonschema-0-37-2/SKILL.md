@@ -1,20 +1,6 @@
 ---
 name: check-jsonschema-0-37-2
 description: CLI tool for validating JSON, YAML, TOML, and JSON5 files against JSON Schema. Use when verifying configuration files, CI/CD workflows, or any structured data against a schema in the terminal via `uvx check-jsonschema`. Supports local and remote schemas, 25+ builtin schemas for popular tools, and pre-commit integration.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - check-jsonschema
-  - json-schema
-  - validation
-  - cli-tool
-  - pre-commit
-  - schema-validation
-category: cli-tool
-external_references:
-  - https://pypi.org/project/check-jsonschema/0.37.2/
-  - https://github.com/python-jsonschema/check-jsonschema/tree/0.37.2
 ---
 
 # check-jsonschema 0.37.2

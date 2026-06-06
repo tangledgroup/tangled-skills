@@ -1,22 +1,6 @@
 ---
 name: agent-ralph-wiggum-snarktank
 description: Autonomous AI coding loop that runs AI coding tools (Amp or Claude Code) repeatedly until all PRD items are complete. Each iteration is a fresh instance with clean context. Memory persists via git history, progress.txt, and prd.json. Use when building features hands-free through iterative AI loops, shipping code while away, or implementing spec-driven development with the Ralph Wiggum technique.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - ralph-wiggum
-  - autonomous-agent
-  - coding-loop
-  - prd-driven
-  - claude-code
-  - amp
-  - hands-free-development
-category: agent-techniques
-external_references:
-  - https://github.com/snarktank/ralph
-  - https://snarktank.github.io/ralph/
-  - https://ghuntley.com/ralph/
 ---
 
 # agent-ralph-wiggum-snarktank v0.1.0

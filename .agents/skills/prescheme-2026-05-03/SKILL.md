@@ -1,20 +1,6 @@
 ---
 name: prescheme-2026-05-03
 description: Statically typed Scheme dialect that compiles to C via Hindley/Milner type inference and CPS transformations. Combines Scheme syntax, macros, and tail recursion with manual memory management and no runtime overhead. Use when building virtual machines, garbage collectors, operating systems, or embedded systems where a full Scheme implementation is too heavy but C lacks expressiveness.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - prescheme
-  - scheme
-  - lisp
-  - static-typing
-  - systems-programming
-  - c-compiler
-category: language-runtime
-external_references:
-  - https://prescheme.org/
-  - https://codeberg.org/prescheme/prescheme
 ---
 
 # Pre-Scheme

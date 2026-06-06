@@ -1,23 +1,6 @@
 ---
 name: mem0-2-0-1
 description: Self-improving memory layer for LLM agents (Mem0 v2.0.1) enabling persistent context across sessions with single-pass ADD-only extraction, multi-signal hybrid search (semantic + BM25 + entity linking), and support for both managed platform and open-source deployments. Use when building LLM agent workflows requiring persistent memory, semantic recall across conversations, entity-linked memory retrieval, or integrating with managed Mem0 platform.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - memory
-  - llm
-  - ai-agents
-  - vector-search
-  - hybrid-search
-  - entity-linking
-category: ai-infrastructure
-external_references:
-  - https://docs.mem0.ai/llms.txt
-  - https://github.com/mem0ai/mem0
-  - https://app.mem0.ai
-  - https://arxiv.org/pdf/2504.19413.pdf
-  - https://mem0.dev/DiG
 ---
 
 # Mem0 v2.0.1

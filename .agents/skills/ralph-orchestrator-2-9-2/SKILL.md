@@ -1,20 +1,6 @@
 ---
 name: ralph-orchestrator-2-9-2
 description: Orchestration framework that keeps AI agents in a loop until tasks are done. Supports Claude Code, Gemini CLI, Codex, Amp, Copilot CLI, OpenCode, and Pi backends with event-driven coordination, quality gates, and parallel loops via git worktrees. Use when building autonomous AI coding workflows, orchestrating multi-step agent pipelines, or implementing the Ralph Wiggum technique.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - ai-orchestration
-  - ralph-wiggum
-  - autonomous-agents
-  - hat-system
-  - event-driven
-  - multi-backend
-category: agent-frameworks
-external_references:
-  - https://github.com/mikeyobrien/ralph-orchestrator
-  - https://mikeyobrien.github.io/ralph-orchestrator/
 ---
 
 # Ralph Orchestrator 2.9.2

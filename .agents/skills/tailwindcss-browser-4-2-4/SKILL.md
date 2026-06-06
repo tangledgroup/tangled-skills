@@ -1,22 +1,6 @@
 ---
 name: tailwindcss-browser-4-2-4
 description: In-browser Tailwind CSS v4.2 build (@tailwindcss/browser) that compiles utility classes at runtime without a build step. Use when prototyping, creating documentation sites, building static pages, or learning Tailwind CSS without setting up Node.js tooling. Not for production applications requiring optimized CSS bundles.
-version: "0.1.0"
-author: Tangled <noreply@tangledgroup.com>
-license: MIT
-tags:
-  - css
-  - tailwind
-  - browser
-  - prototyping
-  - no-build
-  - static-sites
-  - cdn
-category: development
-
-external_references:
-  - https://www.npmjs.com/package/@tailwindcss/browser
-  - https://github.com/tailwindlabs/tailwindcss
 ---
 
 # Tailwind CSS Browser Build v4.2.4

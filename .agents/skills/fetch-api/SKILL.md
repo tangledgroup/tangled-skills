@@ -1,21 +1,6 @@
 ---
 name: fetch-api
 description: JavaScript Fetch API for making HTTP requests from browsers and workers using promise-based fetch(). Covers Request/Response/Headers interfaces, body handling (JSON/text/blob/streaming), abort signals, CORS modes, credentials, caching, and deferred fetch. Use when building web applications that need to communicate with servers, load data via AJAX, upload files, cancel in-flight requests, or work with cross-origin resources.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - fetch
-  - http
-  - javascript
-  - web-api
-  - browser
-  - xhr-alternative
-category: web-framework
-external_references:
-  - https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
-  - https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch
-  - https://fetch.spec.whatwg.org/
 ---
 
 # Fetch API
