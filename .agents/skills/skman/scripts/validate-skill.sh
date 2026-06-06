@@ -256,16 +256,9 @@ extra_fields=$(awk '
 ' "$SKILL_FILE")
 
 if [[ -n "$extra_fields" ]]; then
-  fail "Extra fields in YAML header: $(echo "$extra_fields" | tr '\n' ', ' | sed 's/,$//'). Only name and description allowed. Move other metadata to assets/MISC.md."
+  fail "Extra fields in YAML header: $(echo "$extra_fields" | tr '\n' ', ' | sed 's/,$//'). Only name and description allowed."
 else
   pass "YAML header has exactly two fields (name, description)"
-fi
-
-# Check for MISC.md if extra metadata is expected (optional)
-if [[ -f "${SKILL_DIR}/assets/MISC.md" ]]; then
-  pass "assets/MISC.md exists for skill metadata"
-else
-  warn "No assets/MISC.md found (recommended for license, author, version, tags)"
 fi
 
 echo ""

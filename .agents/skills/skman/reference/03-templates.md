@@ -4,7 +4,6 @@
 - SKILL.md Template (Simple)
 - SKILL.md Template (Complex)
 - Reference File Template
-- MISC.md Template
 - Optional Sections
 
 ---
@@ -87,28 +86,6 @@ Content here...
 ```
 
 For files over 100 lines, the table of contents at the top lets the agent see full scope even when previewing.
-
-## MISC.md Template
-
-Optional. Place in `assets/MISC.md`. Not loaded into agent context — metadata only.
-
-```markdown
-# Skill Metadata
-
-Moved from SKILL.md frontmatter. Not loaded into agent context.
-
-```yaml
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - <tag1>
-  - <tag2>
-category: <category>
-external_references:
-  - https://<user-provided-url>
-```
-```
 
 ## Optional Sections
 

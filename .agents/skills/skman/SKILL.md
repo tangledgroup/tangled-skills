@@ -82,7 +82,7 @@ If single cohesive topic OR under 300 lines                                    �
 - **Complex**: SKILL.md as overview + navigation hub, `reference/` with flat numbered files (`01-*.md`, `02-*.md`).
 - **Scripts/assets**: Only if explicitly requested by the user.
 
-**Write YAML header** (exactly two fields — all other metadata goes to `assets/MISC.md`):
+**Write YAML header** (exactly two fields):
 
 ```yaml
 ---
@@ -134,7 +134,7 @@ Apply these throughout the workflow.
 
 - File starts with `---` on line 1, ends header with second `---`.
 - Exactly two fields: `name` and `description`.
-- All other metadata (`license`, `author`, `version`, `tags`, `category`, etc.) goes in `assets/MISC.md` — not loaded into agent context.
+
 - `name`: max 64 chars, regex `^[a-z0-9]+(-[a-z0-9]+)*$`.
 - `description`: 1–1024 chars, third person.
 
@@ -152,10 +152,6 @@ Apply these throughout the workflow.
 ### Directory and Version
 
 - Directory: `<skill-name>` or `<skill-name>-<version>` (e.g., `curl-8-20-0`, `project-2025-11-25`).
-- Skill file version (SemVer) tracked in `assets/MISC.md`, not YAML header. Start at `0.1.0`.
-  - Patch (`0.1.0` → `0.1.1`): typos, minor corrections
-  - Minor (`0.1.0` → `0.2.0`): new content, substantive improvements
-  - Major (`0.2.0` → `1.0.0`): structural rewrites, breaking instruction changes
 
 ### Script Quality
 
@@ -204,4 +200,4 @@ Fetches the `main` branch of tangled-skills from GitHub, extracts `.agents/skill
 
 **Degrees of Freedom**: Match instruction specificity to task fragility — high, medium, or low freedom → [Degrees of Freedom](reference/02-degrees-of-freedom.md)
 
-**Templates**: Full copy-paste templates for SKILL.md, reference files, and MISC.md → [Templates](reference/03-templates.md)
+**Templates**: Full copy-paste templates for SKILL.md and reference files → [Templates](reference/03-templates.md)
