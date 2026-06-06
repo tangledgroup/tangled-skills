@@ -160,17 +160,17 @@ def cmd_create(args):
     with open(skill_md_path, 'w') as f:
         f.write(content)
 
-    # Optionally create reference directory
-    if args.with_reference:
-        ref_dir = os.path.join(skill_dir, 'reference')
+    # Optionally create references directory
+    if args.with_references:
+        ref_dir = os.path.join(skill_dir, 'references')
         os.makedirs(ref_dir, exist_ok=True)
         placeholder = os.path.join(ref_dir, '01-reference.md')
         with open(placeholder, 'w') as f:
             f.write(f"# {title} Reference\n\n[Detailed reference content.]\n")
 
     print(f"create: scaffolded skill '{name}' at {skill_md_path}")
-    if args.with_reference:
-        print(f"create: created reference placeholder at {placeholder}")
+    if args.with_references:
+        print(f"create: created references placeholder at {placeholder}")
 
 
 def cmd_validate(args):
@@ -322,11 +322,11 @@ def build_parser():
     p_create = sub.add_parser(
         'create',
         description=textwrap.dedent("""\
-            Scaffold a new skill directory with SKILL.md and optional reference.
+            Scaffold a new skill directory with SKILL.md and optional references.
 
             Examples:
               python3 -B scripts/skman.py create my-skill "Does X and Y"
-              python3 -B scripts/skman.py create my-skill "Desc" --with-reference
+              python3 -B scripts/skman.py create my-skill "Desc" --with-references
               python3 -B scripts/skman.py create my-skill "Desc" --output-dir ./skills
         """),
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -339,9 +339,9 @@ def build_parser():
         help='Parent directory for the skill (default: same as name)',
     )
     p_create.add_argument(
-        '--with-reference',
+        '--with-references',
         action='store_true',
-        help='Also create a reference/ directory with placeholder',
+        help='Also create a references/ directory with placeholder',
     )
 
     # --- validate ---

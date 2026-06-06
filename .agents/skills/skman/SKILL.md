@@ -33,7 +33,7 @@ A skill is a directory containing a `SKILL.md` file. Everything else is optional
 ├── SKILL.md              # Required: frontmatter + instructions
 ├── scripts/              # Optional: helper scripts (executed, not loaded)
 │   └── <skill-name>.py  # Main script matching skill name
-├── reference/            # Optional: detailed docs loaded on demand
+├── references/           # Optional: detailed docs loaded on demand (numbered prefix)
 │   └── 01-topic.md
 └── assets/               # Optional: templates, configs, etc.
 ```
@@ -82,8 +82,8 @@ Follow these steps in order:
 # Basic scaffold
 python3 -B scripts/skman.py create my-skill "Extracts text from PDF files"
 
-# With reference directory
-python3 -B scripts/skman.py create my-skill "Desc" --with-reference
+# With references directory
+python3 -B scripts/skman.py create my-skill "Desc" --with-references
 
 # Into a specific parent directory
 python3 -B scripts/skman.py create my-skill "Desc" -o ./custom-skills
@@ -104,7 +104,7 @@ When writing files directly, ensure:
 Common operations:
 
 - **Update description** — edit the frontmatter; this is what agents see in the system prompt
-- **Split long content** — move sections >100 lines into `reference/NN-topic.md`, link from SKILL.md
+- **Split long content** — move sections >100 lines into `references/NN-topic.md`, link from SKILL.md
 - **Add a script** — place in `scripts/` with the skill's name as base name
 - **Restructure references** — keep references one level deep; all should link directly from SKILL.md
 
@@ -139,12 +139,54 @@ Checks performed:
 - Always third person ("Processes Excel files" not "I can help you")
 - Include both what the skill does and when to use it
 - Include key terms that trigger discovery (file extensions, tool names, task types)
+- **Combat under-triggering** — models tend to under-use skills. Make the description slightly "pushy" by explicitly naming trigger phrases and adjacent contexts the user might say, even if they don't name the skill directly. Example:
+  ```
+  # Weak
+  How to build a simple fast dashboard to display internal data.
+
+  # Pushy
+  How to build a simple fast dashboard to display internal data. Use this skill whenever the user mentions dashboards, data visualization, internal metrics, or wants to display any kind of company data, even if they don't explicitly ask for a "dashboard."
+  ```
+
+### Writing Style
+- **Use imperative voice** — "Run this command" not "You should run this command"
+- **Explain the why, avoid rigid MUST/ALWAYS/NEVER in caps** — modern models respond better to reasoning than rigid commands. If something is critical, explain why it matters
+- **Use explicit Input/Output examples** to show expected transformations:
+  ```markdown
+  ## Example
+  **Input:** Added user authentication with JWT tokens
+  **Output:** feat(auth): implement JWT-based authentication
+  ```
+- **Define output formats with exact templates** when structure matters:
+  ```markdown
+  ALWAYS use this exact template:
+  # [Title]
+  ## Executive summary
+  ## Key findings
+  ```
 
 ### Progressive Disclosure
+Skills use a three-level loading system:
+
+1. **Metadata** (name + description) — always in context (~100 words). This is what determines whether the skill triggers.
+2. **SKILL.md body** — loaded when skill triggers (<500 lines ideal). Contains the core instructions.
+3. **Bundled resources** — loaded as needed (unlimited). Scripts execute without loading into context; reference files load on demand.
+
+Guidelines:
 - Keep SKILL.md body under 500 lines
-- Move detailed content to `reference/` files linked from SKILL.md
+- Move detailed content to `references/` files linked from SKILL.md
 - Avoid deeply nested references — all reference files should link directly from SKILL.md
 - Include a table of contents in reference files longer than 100 lines
+- **Reference file naming** — use numeric prefixes (`00-`, `01-`, `02-`, …) for deterministic ordering and easy insertion. Files should be named `NN-topic.md` where `NN` is a zero-padded incrementing number
+- **Multi-domain skills** — when a skill supports multiple variants (frameworks, platforms), organize by domain in references:
+  ```
+  cloud-deploy/
+  ├── SKILL.md              # workflow + variant selection logic
+  └── references/
+      ├── 00-aws.md
+      ├── 01-gcp.md
+      └── 02-azure.md
+  ```
 
 ### Model Compatibility
 - SLMs (small models): need more explicit guidance, numbered steps, less ambiguity
