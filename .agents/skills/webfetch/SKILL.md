@@ -22,7 +22,7 @@ external_references:
 
 Fetches any URL and converts the full page to clean AI-targeted markdown using `scrapling[shell]`'s `--ai-targeted` mode. The output is readable markdown optimized for AI context — no raw HTML, no noise.
 
-A deterministic bash script handles all fetch execution — the agent always runs `bash scripts/fetch.sh <URL>` and never constructs commands on the fly. This ensures consistent behavior and prevents command-generation errors.
+A deterministic bash script handles all fetch execution — the agent always runs `bash scripts/webfetch.sh <URL>` and never constructs commands on the fly. This ensures consistent behavior and prevents command-generation errors.
 
 No API key or external service required. Uses `uvx 'scrapling[shell]'` for ephemeral execution — no persistent installs.
 
@@ -37,10 +37,10 @@ No API key or external service required. Uses `uvx 'scrapling[shell]'` for ephem
 
 ### Basic Fetch
 
-Run `fetch.sh` with a URL:
+Run `webfetch.sh` with a URL:
 
 ```bash
-bash scripts/fetch.sh <URL>
+bash scripts/webfetch.sh <URL>
 ```
 
 ### Fetch to Specific Path
@@ -48,7 +48,7 @@ bash scripts/fetch.sh <URL>
 Use `--output` to save to a specific location:
 
 ```bash
-bash scripts/fetch.sh <URL> --output ./output.md
+bash scripts/webfetch.sh <URL> --output ./output.md
 ```
 
 The file persists at the specified path (not auto-deleted).
@@ -67,7 +67,7 @@ The script does not attempt to guess or correct URLs — it reports the fetch fa
 
 ### Deterministic Script Execution
 
-The agent always runs `bash scripts/fetch.sh <URL>` — it never constructs `uvx` or `scrapling` commands on the fly. This ensures:
+The agent always runs `bash scripts/webfetch.sh <URL>` — it never constructs `uvx` or `scrapling` commands on the fly. This ensures:
 
 - **Consistent execution**: Always uses scrapling with correct flags
 - **No command errors**: No risk of malformed `uvx` invocations
