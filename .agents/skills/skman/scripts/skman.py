@@ -197,10 +197,7 @@ def cmd_validate(args):
         errors.extend(_validate_frontmatter(fm))
 
         # Check for unknown fields (informational warning)
-        known_fields = {
-            'name', 'description', 'license', 'compatibility',
-            'metadata', 'allowed-tools', 'disable-model-invocation',
-        }
+        known_fields = {'name', 'description'}
         unknown = set(fm.keys()) - known_fields
         if unknown:
             warnings.append(f"unknown frontmatter fields: {', '.join(sorted(unknown))}")
@@ -258,16 +255,12 @@ def cmd_info(args):
     print("info: SKILL.md analysis")
     print("-" * 40)
     if fm:
-        for key in ('name', 'description', 'license', 'compatibility',
-                     'allowed-tools', 'disable-model-invocation'):
+        for key in ('name', 'description'):
             val = fm.get(key)
             if val is not None:
                 print(f"  {key}: {val}")
         # Show any extra fields
-        known_fields = {
-            'name', 'description', 'license', 'compatibility',
-            'metadata', 'allowed-tools', 'disable-model-invocation',
-        }
+        known_fields = {'name', 'description'}
         extra = set(fm.keys()) - known_fields
         for key in sorted(extra):
             print(f"  {key}: {fm[key]}")

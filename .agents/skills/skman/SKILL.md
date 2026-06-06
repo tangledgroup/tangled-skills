@@ -44,11 +44,6 @@ A skill is a directory containing a `SKILL.md` file. Everything else is optional
 |---|---|---|
 | `name` | Yes | 1-64 chars, lowercase a-z, 0-9, hyphens; no leading/trailing/consecutive hyphens |
 | `description` | Yes | Non-empty, max 1024 chars, third-person, no XML tags |
-| `license` | No | License name or reference to bundled file |
-| `compatibility` | No | Max 500 chars, environment requirements |
-| `metadata` | No | Arbitrary key-value mapping |
-| `allowed-tools` | No | Space-delimited list of pre-approved tools |
-| `disable-model-invocation` | No | `true` hides skill from system prompt |
 
 ### Frontmatter Template
 
