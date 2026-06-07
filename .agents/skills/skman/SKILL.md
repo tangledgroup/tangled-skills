@@ -5,9 +5,11 @@ description: Scaffold, validate, and inspect agent skills (SKILL.md files). Use 
 
 # Skill Manager
 
+## Overview
+
 Tools and guidelines for creating, validating, and managing agent skills.
 
-## Quick Start
+## Usage
 
 Scaffold a new skill with the helper script:
 
@@ -36,6 +38,8 @@ A skill is a directory containing a `SKILL.md` file. Everything else is optional
 │   └── _<skill-name>.py  # Python implementation (underscore prefix, not called directly)
 ├── references/           # Optional: detailed docs loaded on demand (numbered prefix)
 │   └── 01-topic.md
+│   └── 02-abc.md
+│   └── 03-xyz.md
 └── assets/               # Optional: templates, configs, etc.
 ```
 
@@ -66,9 +70,10 @@ Follow these steps in order:
 3. **Write the body** — concise instructions, under 500 lines. Structure:
    - `# Skill Title`
    - `## Overview` — what it does
-   - `## Setup` — one-time steps (omit if none)
-   - `## Usage` — how to use it with examples
-   - Additional sections as needed, linked to reference files for detail
+   - `## Setup` — Optional: one-time steps (omit if none)
+   - `## Usage` — Optional: how to use it with examples
+   - `## Gotchas` — Optional: The most useful part of teaching a skill is listing its hidden traps. Instead of vague advice, provide specific rules that stop the agent from making predictable, common-sense mistakes in that specific environment.
+   - `## References` — Optional: Provides on-demand reference material for agents.
 
 4. **Create a main script** (if automation is needed) — write the implementation as `scripts/_<skill-name>.py` (underscore prefix) and a thin bash wrapper `scripts/<skill-name>.sh` that passes all arguments through. The SKILL.md references only the `.sh` file. Include `--help` at every level. Use stdlib only unless instructed otherwise.
 
@@ -152,26 +157,14 @@ Checks performed:
 ### Writing Style
 - **Use imperative voice** — "Run this command" not "You should run this command"
 - **Explain the why, avoid rigid MUST/ALWAYS/NEVER in caps** — modern models respond better to reasoning than rigid commands. If something is critical, explain why it matters
-- **Use explicit Input/Output examples** to show expected transformations:
-  ```markdown
-  ## Example
-  **Input:** Added user authentication with JWT tokens
-  **Output:** feat(auth): implement JWT-based authentication
-  ```
-- **Define output formats with exact templates** when structure matters:
-  ```markdown
-  ALWAYS use this exact template:
-  # [Title]
-  ## Executive summary
-  ## Key findings
-  ```
 
 ### Progressive Disclosure
-Skills use a three-level loading system:
+Skills use a four-level loading system:
 
 1. **Metadata** (name + description) — always in context (~100 words). This is what determines whether the skill triggers.
 2. **SKILL.md body** — loaded when skill triggers (<500 lines ideal). Contains the core instructions.
-3. **Bundled resources** — loaded as needed (unlimited). Scripts execute without loading into context; reference files load on demand.
+3. **Scripts** — loaded as needed (unlimited). Scripts execute without loading into context
+4. **References** — loaded as needed (unlimited). Reference files load on demand.
 
 Guidelines:
 - Keep SKILL.md body under 500 lines
