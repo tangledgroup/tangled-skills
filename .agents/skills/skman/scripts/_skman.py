@@ -160,6 +160,42 @@ def cmd_create(args):
     with open(skill_md_path, 'w') as f:
         f.write(content)
 
+    # Create scripts directory with bash wrapper + python implementation
+    scripts_dir = os.path.join(skill_dir, 'scripts')
+    os.makedirs(scripts_dir, exist_ok=True)
+
+    # Bash wrapper (entry point)
+    sh_path = os.path.join(scripts_dir, f'{name}.sh')
+    with open(sh_path, 'w') as f:
+        f.write(f'#!/usr/bin/env bash\n')
+        f.write(f'# {name} — {description}\n')
+        f.write(f'set -euo pipefail\n')
+        f.write(f'\n')
+        f.write(f'SCRIPT_DIR="$(cd "$(dirname "${{BASH_SOURCE[0]}}")" && pwd)"\n')
+        f.write(f'exec python3 -B "$SCRIPT_DIR/_{name}.py" "$@"\n')
+    os.chmod(sh_path, 0o755)
+
+    # Python implementation (underscore prefix)
+    py_path = os.path.join(scripts_dir, f'_{name}.py')
+    with open(py_path, 'w') as f:
+        f.write(f'#!/usr/bin/env python3\n')
+        f.write(f'"""{name} — {description}\n')
+        f.write(f'\n')
+        f.write(f'Usage:\n')
+        f.write(f'    scripts/{name}.sh --help\n')
+        f.write(f'"""\n')
+        f.write(f'\n')
+        f.write(f'import argparse\n')
+        f.write(f'import sys\n')
+        f.write(f'\n')
+        f.write(f'\ndef main():\n')
+        f.write(f'    parser = argparse.ArgumentParser(prog="{name}")\n')
+        f.write(f'    parser.parse_args()\n')
+        f.write(f'    print("TODO: implement {name}")\n')
+        f.write(f'\n')
+        f.write(f'\nif __name__ == "__main__":\n')
+        f.write(f'    main()\n')
+
     # Optionally create references directory
     if args.with_references:
         ref_dir = os.path.join(skill_dir, 'references')
@@ -169,6 +205,8 @@ def cmd_create(args):
             f.write(f"# {title} Reference\n\n[Detailed reference content.]\n")
 
     print(f"create: scaffolded skill '{name}' at {skill_md_path}")
+    print(f"create: created bash wrapper at {sh_path}")
+    print(f"create: created python impl  at {py_path}")
     if args.with_references:
         print(f"create: created references placeholder at {placeholder}")
 

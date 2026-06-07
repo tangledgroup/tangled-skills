@@ -12,14 +12,14 @@ Tools and guidelines for creating, validating, and managing agent skills.
 Scaffold a new skill with the helper script:
 
 ```bash
-python3 -B scripts/skman.py create <name> "<description>"
+scripts/skman.sh create <name> "<description>"
 ```
 
 Discover available commands:
 
 ```bash
-python3 -B scripts/skman.py --help
-python3 -B scripts/skman.py <subcommand> --help
+scripts/skman.sh --help
+scripts/skman.sh <subcommand> --help
 ```
 
 ## Skill Format
@@ -32,7 +32,8 @@ A skill is a directory containing a `SKILL.md` file. Everything else is optional
 <skill-name>/
 ├── SKILL.md              # Required: frontmatter + instructions
 ├── scripts/              # Optional: helper scripts (executed, not loaded)
-│   └── <skill-name>.py  # Main script matching skill name
+│   ├── <skill-name>.sh   # Bash wrapper — the entry point referenced in SKILL.md
+│   └── _<skill-name>.py  # Python implementation (underscore prefix, not called directly)
 ├── references/           # Optional: detailed docs loaded on demand (numbered prefix)
 │   └── 01-topic.md
 └── assets/               # Optional: templates, configs, etc.
@@ -69,24 +70,24 @@ Follow these steps in order:
    - `## Usage` — how to use it with examples
    - Additional sections as needed, linked to reference files for detail
 
-4. **Create a main script** (if automation is needed) — place in `scripts/<skill-name>.py` or `scripts/<skill-name>.sh`. Include `--help` at every level. Use stdlib only unless instructed otherwise.
+4. **Create a main script** (if automation is needed) — write the implementation as `scripts/_<skill-name>.py` (underscore prefix) and a thin bash wrapper `scripts/<skill-name>.sh` that passes all arguments through. The SKILL.md references only the `.sh` file. Include `--help` at every level. Use stdlib only unless instructed otherwise.
 
 5. **Validate** — run the validation script:
    ```bash
-   python3 -B scripts/skman.py validate <path-to-skill>
+   scripts/skman.sh validate <path-to-skill>
    ```
 
 ### Using the Scaffold Script
 
 ```bash
 # Basic scaffold
-python3 -B scripts/skman.py create my-skill "Extracts text from PDF files"
+scripts/skman.sh create my-skill "Extracts text from PDF files"
 
 # With references directory
-python3 -B scripts/skman.py create my-skill "Desc" --with-references
+scripts/skman.sh create my-skill "Desc" --with-references
 
 # Into a specific parent directory
-python3 -B scripts/skman.py create my-skill "Desc" -o ./custom-skills
+scripts/skman.sh create my-skill "Desc" -o ./custom-skills
 ```
 
 The script validates name and description before creating files.
@@ -113,8 +114,8 @@ Common operations:
 Run the built-in validator:
 
 ```bash
-python3 -B scripts/skman.py validate ./my-skill
-python3 -B scripts/skman.py validate --strict ./my-skill
+scripts/skman.sh validate ./my-skill
+scripts/skman.sh validate --strict ./my-skill
 ```
 
 Checks performed:
@@ -198,7 +199,7 @@ Guidelines:
 After adding, removing, or renaming skills, regenerate the auto-generated section of `README.md`:
 
 ```bash
-python3 -B scripts/skman.py generate
+scripts/skman.sh generate
 ```
 
 This scans `.agents/skills/` for all `SKILL.md` files, parses their frontmatter, and replaces everything from the auto-generated marker to end of file with a fresh Skills Table and Statistics section.
@@ -206,11 +207,11 @@ This scans `.agents/skills/` for all `SKILL.md` files, parses their frontmatter,
 ## Script Reference
 
 ```bash
-python3 -B scripts/skman.py --help              # Top-level help
-python3 -B scripts/skman.py create --help       # Create subcommand
-python3 -B scripts/skman.py validate --help     # Validate subcommand
-python3 -B scripts/skman.py info --help         # Info subcommand
-python3 -B scripts/skman.py generate --help     # Generate subcommand
+scripts/skman.sh --help              # Top-level help
+scripts/skman.sh create --help       # Create subcommand
+scripts/skman.sh validate --help     # Validate subcommand
+scripts/skman.sh info --help         # Info subcommand
+scripts/skman.sh generate --help     # Generate subcommand
 ```
 
 | Command | Purpose |
