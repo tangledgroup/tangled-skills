@@ -40,10 +40,6 @@ description: {description}
 
 [Describe what this skill does and when to use it.]
 
-## Setup
-
-[One-time setup steps, if any. Omit section if none needed.]
-
 ## Usage
 
 [How to use this skill. Include examples.]
@@ -56,16 +52,81 @@ description: {description}
 # ---------------------------------------------------------------------------
 
 def _parse_frontmatter(text):
-    """Return (frontmatter_dict, body_text) or (None, text) if no frontmatter."""
+    """Return (frontmatter_dict, body_text) or (None, text) if no frontmatter.
+
+    Handles single-line values, quoted multi-line values, block scalars (|, >),
+    and indented continuation lines.
+    """
     m = FRONTMATTER_RE.match(text)
     if not m:
         return None, text
-    fm = {}
-    for line in m.group('content').splitlines():
-        lm = YAML_LINE_RE.match(line.strip())
-        if lm:
-            fm[lm.group('key')] = lm.group('value').strip()
     body = text[m.end():]
+    fm = {}
+    lines = m.group('content').splitlines()
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip()
+        # Skip blank lines and comments
+        if not stripped or stripped.startswith('#'):
+            i += 1
+            continue
+        lm = YAML_LINE_RE.match(stripped)
+        if not lm:
+            i += 1
+            continue
+        key = lm.group('key')
+        value = lm.group('value').strip()
+        # Handle block scalars (| or >)
+        if value in ('|', '>'):
+            i += 1
+            block_lines = []
+            while i < len(lines):
+                bline = lines[i]
+                if bline and (bline[0] == ' ' or bline[0] == '\t'):
+                    block_lines.append(bline.strip())
+                    i += 1
+                else:
+                    break
+            fm[key] = '\n'.join(block_lines)
+            continue
+        # Handle quoted multi-line values
+        if value.startswith('"') and not value.endswith('"'):
+            i += 1
+            parts = [value[1:]]
+            while i < len(lines):
+                cline = lines[i].strip()
+                if cline.endswith('"'):
+                    parts.append(cline[:-1])
+                    break
+                parts.append(cline)
+                i += 1
+            fm[key] = '\n'.join(parts)
+            continue
+        if value.startswith("'") and not value.endswith("'"):
+            i += 1
+            parts = [value[1:]]
+            while i < len(lines):
+                cline = lines[i].strip()
+                if cline.endswith("'"):
+                    parts.append(cline[:-1])
+                    break
+                parts.append(cline)
+                i += 1
+            fm[key] = '\n'.join(parts)
+            continue
+        # Handle indented continuation lines (next line is indented more)
+        i += 1
+        while i < len(lines):
+            next_line = lines[i]
+            if not next_line or next_line[0] in (' ', '\t'):
+                cont = next_line.strip()
+                if cont:
+                    value += ' ' + cont
+                i += 1
+            else:
+                break
+        fm[key] = value
     return fm, body
 
 
@@ -98,8 +159,8 @@ def _validate_description(desc):
         errors.append(
             f"description exceeds {MAX_DESC_LEN} characters ({len(desc)})"
         )
-    if '<' in desc and '>' in desc:
-        errors.append("description must not contain XML tags")
+    if re.search(r'<[a-zA-Z/][^>]*>', desc):
+        errors.append("description must not contain XML/HTML tags")
     return errors
 
 
@@ -133,7 +194,7 @@ def cmd_create(args):
     """Scaffold a new skill directory."""
     name = args.name.strip()
     description = args.description.strip()
-    output_dir = args.output_dir or name
+    output_dir = args.output_dir
 
     # Validate before creating anything
     errors = []
@@ -147,7 +208,7 @@ def cmd_create(args):
         sys.exit(1)
 
     # Create directory structure
-    skill_dir = os.path.join(output_dir, name) if output_dir != name else output_dir
+    skill_dir = os.path.join(output_dir, name)
     os.makedirs(skill_dir, exist_ok=True)
 
     skill_md_path = os.path.join(skill_dir, 'SKILL.md')
@@ -160,41 +221,45 @@ def cmd_create(args):
     with open(skill_md_path, 'w') as f:
         f.write(content)
 
-    # Create scripts directory with bash wrapper + python implementation
-    scripts_dir = os.path.join(skill_dir, 'scripts')
-    os.makedirs(scripts_dir, exist_ok=True)
+    # Optionally create scripts directory
+    if args.with_scripts:
+        scripts_dir = os.path.join(skill_dir, 'scripts')
+        os.makedirs(scripts_dir, exist_ok=True)
 
-    # Bash wrapper (entry point)
-    sh_path = os.path.join(scripts_dir, f'{name}.sh')
-    with open(sh_path, 'w') as f:
-        f.write(f'#!/usr/bin/env bash\n')
-        f.write(f'# {name} — {description}\n')
-        f.write(f'set -euo pipefail\n')
-        f.write(f'\n')
-        f.write(f'SCRIPT_DIR="$(cd "$(dirname "${{BASH_SOURCE[0]}}")" && pwd)"\n')
-        f.write(f'exec python3 -B "$SCRIPT_DIR/_{name}.py" "$@"\n')
-    os.chmod(sh_path, 0o755)
+        # Bash wrapper (entry point)
+        sh_path = os.path.join(scripts_dir, f'{name}.sh')
+        with open(sh_path, 'w') as f:
+            f.write(f'#!/usr/bin/env bash\n')
+            f.write(f'# {name} — {description}\n')
+            f.write(f'set -euo pipefail\n')
+            f.write(f'\n')
+            f.write(f'SCRIPT_DIR="$(cd "$(dirname "${{BASH_SOURCE[0]}}")" && pwd)"\n')
+            f.write(f'exec python3 -B "$SCRIPT_DIR/_{name}.py" "$@"\n')
+        os.chmod(sh_path, 0o755)
 
-    # Python implementation (underscore prefix)
-    py_path = os.path.join(scripts_dir, f'_{name}.py')
-    with open(py_path, 'w') as f:
-        f.write(f'#!/usr/bin/env python3\n')
-        f.write(f'"""{name} — {description}\n')
-        f.write(f'\n')
-        f.write(f'Usage:\n')
-        f.write(f'    {name}.sh --help\n')
-        f.write(f'"""\n')
-        f.write(f'\n')
-        f.write(f'import argparse\n')
-        f.write(f'import sys\n')
-        f.write(f'\n')
-        f.write(f'\ndef main():\n')
-        f.write(f'    parser = argparse.ArgumentParser(prog="{name}")\n')
-        f.write(f'    parser.parse_args()\n')
-        f.write(f'    print("TODO: implement {name}")\n')
-        f.write(f'\n')
-        f.write(f'\nif __name__ == "__main__":\n')
-        f.write(f'    main()\n')
+        # Python implementation (underscore prefix)
+        py_path = os.path.join(scripts_dir, f'_{name}.py')
+        with open(py_path, 'w') as f:
+            f.write(f'#!/usr/bin/env python3\n')
+            f.write(f'"""{name} — {description}\n')
+            f.write(f'\n')
+            f.write(f'Usage:\n')
+            f.write(f'    {name}.sh --help\n')
+            f.write(f'"""\n')
+            f.write(f'\n')
+            f.write(f'import argparse\n')
+            f.write(f'import sys\n')
+            f.write(f'\n')
+            f.write(f'\ndef main():\n')
+            f.write(f'    parser = argparse.ArgumentParser(prog="{name}")\n')
+            f.write(f'    parser.parse_args()\n')
+            f.write(f'    print("TODO: implement {name}")\n')
+            f.write(f'\n')
+            f.write(f'\nif __name__ == "__main__":\n')
+            f.write(f'    main()\n')
+
+        print(f"create: created bash wrapper at {sh_path}")
+        print(f"create: created python impl  at {py_path}")
 
     # Optionally create references directory
     if args.with_references:
@@ -203,12 +268,9 @@ def cmd_create(args):
         placeholder = os.path.join(ref_dir, '01-reference.md')
         with open(placeholder, 'w') as f:
             f.write(f"# {title} Reference\n\n[Detailed reference content.]\n")
+        print(f"create: created references placeholder at {placeholder}")
 
     print(f"create: scaffolded skill '{name}' at {skill_md_path}")
-    print(f"create: created bash wrapper at {sh_path}")
-    print(f"create: created python impl  at {py_path}")
-    if args.with_references:
-        print(f"create: created references placeholder at {placeholder}")
 
 
 def cmd_validate(args):
@@ -240,6 +302,18 @@ def cmd_validate(args):
         if unknown:
             warnings.append(f"unknown frontmatter fields: {', '.join(sorted(unknown))}")
 
+        # Name vs directory basename consistency
+        skill_dir = os.path.dirname(skill_md)
+        dir_basename = os.path.basename(skill_dir)
+        # Strip optional -<version> suffix (e.g. "skman-2.0" -> "skman")
+        dir_name = re.sub(r'-\d+(?:\.\d+)*$', '', dir_basename)
+        fm_name = fm.get('name', '')
+        if fm_name and dir_name != fm_name:
+            warnings.append(
+                f"directory name '{dir_basename}' does not match "
+                f"frontmatter name '{fm_name}' (expected '{fm_name}' or '{fm_name}-<version>')"
+            )
+
     # Body checks
     body_lines = body.splitlines()
     body_line_count = len(body_lines)
@@ -248,19 +322,28 @@ def cmd_validate(args):
             f"body has {body_line_count} lines (recommended: under 500)"
         )
 
-    # Check for heading
-    has_heading = any(line.startswith('#') for line in body_lines)
-    if not has_heading and fm is not None:
-        warnings.append("body has no markdown headings")
+    # Body must start with level-1 heading
+    first_content_line = None
+    for line in body_lines:
+        stripped = line.strip()
+        if stripped:
+            first_content_line = stripped
+            break
+    if first_content_line and not first_content_line.startswith('# '):
+        errors.append(
+            f"body must start with a level-1 heading (found: '{first_content_line[:60]}...')"
+        )
 
     # Report
-    ok = True
+    passed = not errors
+    if args.strict and warnings:
+        passed = False
+
     if errors:
-        ok = False
         print("validate: FAILED")
         for e in errors:
             print(f"  ERROR: {e}")
-    elif warnings and not args.strict:
+    elif warnings:
         print("validate: OK (with warnings)")
     else:
         print("validate: OK")
@@ -269,10 +352,7 @@ def cmd_validate(args):
         for w in warnings:
             print(f"  WARN:  {w}")
 
-    if args.strict and warnings:
-        ok = False
-
-    sys.exit(0 if ok else 1)
+    sys.exit(0 if passed else 1)
 
 
 def cmd_info(args):
@@ -307,7 +387,15 @@ def cmd_info(args):
 
     # Structural summary
     body_lines = body.splitlines()
-    headings = [line.strip() for line in body_lines if line.startswith('#')]
+    headings = []
+    in_fence = False
+    for line in body_lines:
+        stripped = line.strip()
+        if stripped.startswith('```'):
+            in_fence = not in_fence
+            continue
+        if not in_fence and stripped.startswith('#'):
+            headings.append(stripped)
     line_count = len(body_lines)
     word_count = len(body.split())
 
@@ -457,12 +545,12 @@ def build_parser():
     p_create = sub.add_parser(
         'create',
         description=textwrap.dedent("""\
-            Scaffold a new skill directory with SKILL.md and optional references.
+            Scaffold a new skill directory with SKILL.md and optional scripts/references.
 
             Examples:
               skman.sh create my-skill "Does X and Y"
-              skman.sh create my-skill "Desc" --with-references
-              skman.sh create my-skill "Desc" --output-dir ./skills
+              skman.sh create my-skill "Desc" --with-scripts --with-references
+              skman.sh create my-skill "Desc" -o ./custom-skills
         """),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -470,8 +558,13 @@ def build_parser():
     p_create.add_argument('description', help='Skill description (max 1024 chars)')
     p_create.add_argument(
         '--output-dir', '-o',
-        default=None,
-        help='Parent directory for the skill (default: same as name)',
+        default='.agents/skills',
+        help='Parent directory for the skill (default: .agents/skills)',
+    )
+    p_create.add_argument(
+        '--with-scripts',
+        action='store_true',
+        help='Also create scripts/ directory with bash wrapper + python stub',
     )
     p_create.add_argument(
         '--with-references',

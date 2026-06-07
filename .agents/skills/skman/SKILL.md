@@ -33,9 +33,11 @@ A skill is a directory containing a `SKILL.md` file. Everything else is optional
 ```
 <skill-name>/
 ├── SKILL.md              # Required: frontmatter + instructions
-├── scripts/              # Optional: helper scripts (executed, not loaded)
+├── scripts/              # Optional: helper scripts (executed, not loaded into context)
 │   ├── <skill-name>.sh   # Bash wrapper — the entry point referenced in SKILL.md
 │   └── _<skill-name>.py  # Python implementation (underscore prefix, not called directly)
+
+> Use `skman.sh create --with-scripts` to scaffold these.
 ├── references/           # Optional: detailed docs loaded on demand (numbered prefix)
 │   └── 01-topic.md
 │   └── 02-abc.md
@@ -48,7 +50,7 @@ A skill is a directory containing a `SKILL.md` file. Everything else is optional
 | Field | Required | Rules |
 |---|---|---|
 | `name` | Yes | 1-64 chars, lowercase a-z, 0-9, hyphens; no leading/trailing/consecutive hyphens |
-| `description` | Yes | Non-empty, max 1024 chars, third-person, no XML tags |
+| `description` | Yes | Non-empty, max 1024 chars, third-person, must not contain XML/HTML tags (`<tag>`) |
 
 ### Frontmatter Template
 
@@ -67,15 +69,14 @@ Follow these steps in order:
 
 2. **Write the frontmatter** — exactly `name` and `description` at minimum. The description determines when the agent loads this skill; make it specific with trigger terms.
 
-3. **Write the body** — concise instructions, under 500 lines. Structure:
+3. **Write the body** — concise instructions, under 500 lines. Must start with a level-1 heading (`#`). Structure:
    - `# Skill Title`
    - `## Overview` — what it does
-   - `## Setup` — Optional: one-time steps (omit if none)
    - `## Usage` — Optional: how to use it with examples
    - `## Gotchas` — Optional: The most useful part of teaching a skill is listing its hidden traps. Instead of vague advice, provide specific rules that stop the agent from making predictable, common-sense mistakes in that specific environment.
    - `## References` — Optional: Provides on-demand reference material for agents.
 
-4. **Create a main script** (if automation is needed) — write the implementation as `scripts/_<skill-name>.py` (underscore prefix) and a thin bash wrapper `scripts/<skill-name>.sh` that passes all arguments through. The SKILL.md references only the `.sh` file. Include `--help` at every level. Use stdlib only unless instructed otherwise.
+4. **Create a main script** (if automation is needed) — write the implementation as `scripts/_<skill-name>.py` (underscore prefix) and a thin bash wrapper `scripts/<skill-name>.sh` that passes all arguments through. Scripts are **executed** (not loaded into context). The SKILL.md references only the `.sh` file. Include `--help` at every level. Use stdlib only unless instructed otherwise. Scaffold with `--with-scripts`.
 
 5. **Validate** — run the validation script:
    ```bash
@@ -85,11 +86,11 @@ Follow these steps in order:
 ### Using the Scaffold Script
 
 ```bash
-# Basic scaffold
+# Into default location (.agents/skills/my-skill/)
 skman.sh create my-skill "Extracts text from PDF files"
 
-# With references directory
-skman.sh create my-skill "Desc" --with-references
+# With scripts and references
+skman.sh create my-skill "Desc" --with-scripts --with-references
 
 # Into a specific parent directory
 skman.sh create my-skill "Desc" -o ./custom-skills
@@ -100,10 +101,10 @@ The script validates name and description before creating files.
 ### Manual Creation
 
 When writing files directly, ensure:
-- Directory is named after the skill (or `<skill-name>-<version>`)
+- Directory is named after the skill (e.g., `skman`) or `<skill-name>-<version>` (e.g., `skman-2.0`)
+- Frontmatter `name` matches the directory basename (stripping any `-<version>` suffix)
 - `SKILL.md` exists at the directory root
-- Frontmatter has valid `name` and non-empty `description`
-- Body starts with a level-1 heading
+- Body starts with a level-1 heading (`# Title`)
 
 ## Editing a Skill
 
@@ -126,8 +127,10 @@ skman.sh validate --strict ./my-skill
 Checks performed:
 - Frontmatter presence and required fields
 - Name format (case, characters, length, hyphen rules)
-- Description presence and length
+- Description presence, length, and absence of XML/HTML tags
+- Body starts with a level-1 heading
 - Body line count warning (>500 lines)
+- Name vs directory basename consistency (warns on mismatch)
 
 ## Best Practices
 
@@ -163,7 +166,7 @@ Skills use a four-level loading system:
 
 1. **Metadata** (name + description) — always in context (~100 words). This is what determines whether the skill triggers.
 2. **SKILL.md body** — loaded when skill triggers (<500 lines ideal). Contains the core instructions.
-3. **Scripts** — loaded as needed (unlimited). Scripts execute without loading into context
+3. **Scripts** — executed (not loaded into context). Run via `scripts/<name>.sh`.
 4. **References** — loaded as needed (unlimited). Reference files load on demand.
 
 Guidelines:
