@@ -2,10 +2,10 @@
 """skman — Skill Manager: scaffold, validate, and inspect agent skills.
 
 Usage:
-    python3 -B scripts/skman.py --help
-    python3 -B scripts/skman.py create --help
-    python3 -B scripts/skman.py validate --help
-    python3 -B scripts/skman.py info --help
+    skman.sh --help
+    skman.sh create --help
+    skman.sh validate --help
+    skman.sh info --help
 """
 
 import argparse
@@ -182,7 +182,7 @@ def cmd_create(args):
         f.write(f'"""{name} — {description}\n')
         f.write(f'\n')
         f.write(f'Usage:\n')
-        f.write(f'    scripts/{name}.sh --help\n')
+        f.write(f'    {name}.sh --help\n')
         f.write(f'"""\n')
         f.write(f'\n')
         f.write(f'import argparse\n')
@@ -460,9 +460,9 @@ def build_parser():
             Scaffold a new skill directory with SKILL.md and optional references.
 
             Examples:
-              python3 -B scripts/skman.py create my-skill "Does X and Y"
-              python3 -B scripts/skman.py create my-skill "Desc" --with-references
-              python3 -B scripts/skman.py create my-skill "Desc" --output-dir ./skills
+              skman.sh create my-skill "Does X and Y"
+              skman.sh create my-skill "Desc" --with-references
+              skman.sh create my-skill "Desc" --output-dir ./skills
         """),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -492,9 +492,9 @@ def build_parser():
               - Body line count (warning if over 500)
 
             Examples:
-              python3 -B scripts/skman.py validate ./my-skill
-              python3 -B scripts/skman.py validate ./my-skill/SKILL.md
-              python3 -B scripts/skman.py validate --strict ./my-skill
+              skman.sh validate ./my-skill
+              skman.sh validate ./my-skill/SKILL.md
+              skman.sh validate --strict ./my-skill
         """),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -518,8 +518,8 @@ def build_parser():
               - Directory listing with file sizes
 
             Examples:
-              python3 -B scripts/skman.py info ./my-skill
-              python3 -B scripts/skman.py info ./my-skill/SKILL.md
+              skman.sh info ./my-skill
+              skman.sh info ./my-skill/SKILL.md
         """),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -535,9 +535,9 @@ def build_parser():
             and replaces everything from the auto-generated marker to end of file.
 
             Examples:
-              python3 -B scripts/skman.py generate
-              python3 -B scripts/skman.py generate --skills-dir ./custom-skills
-              python3 -B scripts/skman.py generate --readme ./docs/README.md
+              skman.sh generate
+              skman.sh generate --skills-dir ./custom-skills
+              skman.sh generate --readme ./docs/README.md
         """),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )

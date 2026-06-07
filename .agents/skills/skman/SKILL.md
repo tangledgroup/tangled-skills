@@ -12,14 +12,14 @@ Tools and guidelines for creating, validating, and managing agent skills.
 Scaffold a new skill with the helper script:
 
 ```bash
-scripts/skman.sh create <name> "<description>"
+skman.sh create <name> "<description>"
 ```
 
 Discover available commands:
 
 ```bash
-scripts/skman.sh --help
-scripts/skman.sh <subcommand> --help
+skman.sh --help
+skman.sh <subcommand> --help
 ```
 
 ## Skill Format
@@ -74,20 +74,20 @@ Follow these steps in order:
 
 5. **Validate** — run the validation script:
    ```bash
-   scripts/skman.sh validate <path-to-skill>
+   skman.sh validate <path-to-skill>
    ```
 
 ### Using the Scaffold Script
 
 ```bash
 # Basic scaffold
-scripts/skman.sh create my-skill "Extracts text from PDF files"
+skman.sh create my-skill "Extracts text from PDF files"
 
 # With references directory
-scripts/skman.sh create my-skill "Desc" --with-references
+skman.sh create my-skill "Desc" --with-references
 
 # Into a specific parent directory
-scripts/skman.sh create my-skill "Desc" -o ./custom-skills
+skman.sh create my-skill "Desc" -o ./custom-skills
 ```
 
 The script validates name and description before creating files.
@@ -114,8 +114,8 @@ Common operations:
 Run the built-in validator:
 
 ```bash
-scripts/skman.sh validate ./my-skill
-scripts/skman.sh validate --strict ./my-skill
+skman.sh validate ./my-skill
+skman.sh validate --strict ./my-skill
 ```
 
 Checks performed:
@@ -199,7 +199,7 @@ Guidelines:
 After adding, removing, or renaming skills, regenerate the auto-generated section of `README.md`:
 
 ```bash
-scripts/skman.sh generate
+skman.sh generate
 ```
 
 This scans `.agents/skills/` for all `SKILL.md` files, parses their frontmatter, and replaces everything from the auto-generated marker to end of file with a fresh Skills Table and Statistics section.
@@ -207,11 +207,11 @@ This scans `.agents/skills/` for all `SKILL.md` files, parses their frontmatter,
 ## Script Reference
 
 ```bash
-scripts/skman.sh --help              # Top-level help
-scripts/skman.sh create --help       # Create subcommand
-scripts/skman.sh validate --help     # Validate subcommand
-scripts/skman.sh info --help         # Info subcommand
-scripts/skman.sh generate --help     # Generate subcommand
+skman.sh --help              # Top-level help
+skman.sh create --help       # Create subcommand
+skman.sh validate --help     # Validate subcommand
+skman.sh info --help         # Info subcommand
+skman.sh generate --help     # Generate subcommand
 ```
 
 | Command | Purpose |
