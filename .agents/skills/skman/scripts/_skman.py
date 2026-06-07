@@ -174,6 +174,10 @@ def _validate_frontmatter(fm):
     return errors
 
 
+REQUIRED_SECTIONS = {'#'}  # body must start with a level-1 heading
+OPTIONAL_SECTIONS = {'## Overview', '## Usage', '## Gotchas', '## References'}
+
+
 def _find_skill_md(path):
     """Given a path (file or dir), return the absolute path to SKILL.md."""
     abs_path = os.path.abspath(path)
@@ -184,6 +188,56 @@ def _find_skill_md(path):
         if os.path.isfile(candidate):
             return candidate
     return None
+
+
+def _check_sections(body):
+    """Check for required and optional sections in the body.
+
+    Returns (errors, warnings) lists.
+    """
+    errors = []
+    warnings = []
+
+    # Collect headings, skipping fenced code blocks
+    in_fence = False
+    found_headings = set()
+    for line in body.splitlines():
+        stripped = line.strip()
+        if stripped.startswith('```'):
+            in_fence = not in_fence
+            continue
+        if not in_fence and stripped.startswith('#'):
+            found_headings.add(stripped)
+
+    # Check optional sections — warn if missing
+    missing_optional = OPTIONAL_SECTIONS - found_headings
+    if missing_optional:
+        warnings.append(
+            f"missing optional section(s): {', '.join(sorted(missing_optional))}"
+        )
+
+    return errors, warnings
+
+
+def _check_script_permissions(skill_dir, fm_name):
+    """Check that scripts/<name>.sh is executable if it exists.
+
+    Returns (errors, warnings) lists.
+    """
+    errors = []
+    warnings = []
+
+    if not fm_name:
+        return errors, warnings
+
+    sh_path = os.path.join(skill_dir, 'scripts', f'{fm_name}.sh')
+    if os.path.isfile(sh_path):
+        if not os.access(sh_path, os.X_OK):
+            warnings.append(
+                f"scripts/{fm_name}.sh is not executable (run chmod +x)"
+            )
+
+    return errors, warnings
 
 
 # ---------------------------------------------------------------------------
@@ -274,7 +328,14 @@ def cmd_create(args):
 
 
 def cmd_validate(args):
-    """Validate a SKILL.md file against spec rules."""
+    """Validate a SKILL.md file against spec rules.
+
+    Every check is reported as PASS / WARN / ERROR in a single enumerated list:
+      1.  [PASS] …
+      2.  [PASS] …
+      3.  [WARN] …
+      4.  [ERROR] …
+    """
     target = args.path
     skill_md = _find_skill_md(target)
 
@@ -287,70 +348,132 @@ def cmd_validate(args):
 
     fm, body = _parse_frontmatter(content)
 
-    errors = []
-    warnings = []
+    results = []  # list of (label, message) where label in {"PASS", "WARN", "ERROR"}
 
-    # Frontmatter presence
+    # --- Frontmatter presence ---
     if fm is None:
-        errors.append("no YAML frontmatter found (must start with ---)")
+        results.append(("ERROR", "no YAML frontmatter found (must start with ---)"))
     else:
-        errors.extend(_validate_frontmatter(fm))
+        results.append(("PASS", "frontmatter present"))
 
-        # Check for unknown fields (informational warning)
+        # Name
+        name_errors = _validate_name(fm.get('name', ''))
+        if name_errors:
+            for e in name_errors:
+                results.append(("ERROR", f"name: {e}"))
+        else:
+            results.append(("PASS", f"name '{fm.get('name', '')}' is valid"))
+
+        # Description
+        desc_errors = _validate_description(fm.get('description', None))
+        if desc_errors:
+            for e in desc_errors:
+                results.append(("ERROR", f"description: {e}"))
+        else:
+            results.append(("PASS", "description is valid"))
+
+        # Unknown fields
         known_fields = {'name', 'description'}
         unknown = set(fm.keys()) - known_fields
         if unknown:
-            warnings.append(f"unknown frontmatter fields: {', '.join(sorted(unknown))}")
+            results.append(("WARN", f"unknown frontmatter fields: {', '.join(sorted(unknown))}"))
+        else:
+            results.append(("PASS", "no unknown frontmatter fields"))
 
         # Name vs directory basename consistency
         skill_dir = os.path.dirname(skill_md)
         dir_basename = os.path.basename(skill_dir)
-        # Strip optional -<version> suffix (e.g. "skman-2.0" -> "skman")
         dir_name = re.sub(r'-\d+(?:\.\d+)*$', '', dir_basename)
         fm_name = fm.get('name', '')
         if fm_name and dir_name != fm_name:
-            warnings.append(
-                f"directory name '{dir_basename}' does not match "
-                f"frontmatter name '{fm_name}' (expected '{fm_name}' or '{fm_name}-<version>')"
+            results.append(
+                ("WARN",
+                 f"directory name '{dir_basename}' does not match "
+                 f"frontmatter name '{fm_name}' (expected '{fm_name}' or '{fm_name}-<version>')")
             )
+        else:
+            results.append(("PASS", f"directory name matches frontmatter name '{fm_name}'"))
 
-    # Body checks
+        # Script permission checks
+        perm_errors, perm_warnings = _check_script_permissions(skill_dir, fm_name)
+        for e in perm_errors:
+            results.append(("ERROR", e))
+        for w in perm_warnings:
+            results.append(("WARN", w))
+        if not perm_errors and not perm_warnings:
+            sh_path = os.path.join(skill_dir, 'scripts', f'{fm_name}.sh')
+            if os.path.isfile(sh_path):
+                results.append(("PASS", f"scripts/{fm_name}.sh is executable"))
+
+    # --- Body checks ---
     body_lines = body.splitlines()
     body_line_count = len(body_lines)
-    if body_line_count > 500:
-        warnings.append(
-            f"body has {body_line_count} lines (recommended: under 500)"
-        )
 
-    # Body must start with level-1 heading
+    # Level-1 heading
     first_content_line = None
     for line in body_lines:
         stripped = line.strip()
         if stripped:
             first_content_line = stripped
             break
-    if first_content_line and not first_content_line.startswith('# '):
-        errors.append(
-            f"body must start with a level-1 heading (found: '{first_content_line[:60]}...')"
+    if first_content_line is None:
+        results.append(("PASS", "body is empty (no content lines)"))
+    elif not first_content_line.startswith('# '):
+        results.append(
+            ("ERROR",
+             f"body must start with a level-1 heading (found: '{first_content_line[:60]}...')")
         )
+    else:
+        results.append(("PASS", f"body starts with level-1 heading '{first_content_line}'"))
 
-    # Report
-    passed = not errors
-    if args.strict and warnings:
+    # Line count
+    if body_line_count > 500:
+        results.append(
+            ("WARN", f"body has {body_line_count} lines (recommended: under 500)")
+        )
+    else:
+        results.append(("PASS", f"body has {body_line_count} lines (under 500)"))
+
+    # Section checks
+    sec_errors, sec_warnings = _check_sections(body)
+    for e in sec_errors:
+        results.append(("ERROR", e))
+    for w in sec_warnings:
+        results.append(("WARN", w))
+    if not sec_errors and not sec_warnings:
+        results.append(("PASS", "all optional sections present"))
+
+    # --- Report ---
+    error_count = sum(1 for label, _ in results if label == "ERROR")
+    warn_count = sum(1 for label, _ in results if label == "WARN")
+
+    passed = error_count == 0
+    if args.strict and warn_count > 0:
         passed = False
 
-    if errors:
+    # Print header
+    if error_count:
         print("validate: FAILED")
-        for e in errors:
-            print(f"  ERROR: {e}")
-    elif warnings:
+    elif warn_count:
         print("validate: OK (with warnings)")
     else:
         print("validate: OK")
 
-    if warnings:
-        for w in warnings:
-            print(f"  WARN:  {w}")
+    # Print all checks enumerated: PASSes first, then WARNs, then ERRORs
+    passes = [(i, msg) for i, (label, msg) in enumerate(results, 1) if label == "PASS"]
+    warns = [(i, msg) for i, (label, msg) in enumerate(results, 1) if label == "WARN"]
+    errors_list = [(i, msg) for i, (label, msg) in enumerate(results, 1) if label == "ERROR"]
+
+    counter = 0
+    for _, msg in passes:
+        counter += 1
+        print(f"  {counter}. [PASS] {msg}")
+    for _, msg in warns:
+        counter += 1
+        print(f"  {counter}. [WARN] {msg}")
+    for _, msg in errors_list:
+        counter += 1
+        print(f"  {counter}. [ERROR] {msg}")
 
     sys.exit(0 if passed else 1)
 

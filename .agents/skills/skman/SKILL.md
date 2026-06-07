@@ -131,6 +131,8 @@ Checks performed:
 - Body starts with a level-1 heading
 - Body line count warning (>500 lines)
 - Name vs directory basename consistency (warns on mismatch)
+- Optional section presence (`## Overview`, `## Usage`, `## Gotchas`, `## References` — warns if missing)
+- Script executability (`scripts/<name>.sh` must be `chmod +x` — warns if not)
 
 ## Best Practices
 
@@ -189,6 +191,21 @@ Guidelines:
 - SLMs (small models): need more explicit guidance, numbered steps, less ambiguity
 - LLMs (large models): prefer concise instructions, avoid over-explaining
 - Aim for instructions that work across both: clear structure, explicit rules, no fluff
+
+## Gotchas
+
+- **Scaffolded `.sh` files may lose execute permission** — `skman.sh create --with-scripts` sets `chmod 0o755`, but editors or git checkouts can strip it. Always verify with `ls -l scripts/<name>.sh`; the validator warns if the bit is missing.
+- **`--strict` turns section warnings into errors** — optional sections (`## Overview`, `## Usage`, `## Gotchas`, `## References`) produce warnings by default. In strict mode, any missing optional section fails validation. Not every skill needs all sections, but they're recommended for completeness.
+- **Frontmatter `name` must match the directory basename** — the validator warns on mismatch (e.g., directory `my-tool/` with `name: my_tool`). Fix by renaming the directory or correcting the frontmatter.
+- **Reference files are loaded on demand, not into context** — keep SKILL.md self-contained for core instructions; move deep-dive content to `references/NN-topic.md` and link from the body.
+
+## References
+
+For detailed background on skill design decisions and agent behavior patterns, see:
+
+- Agent prompt engineering best practices (progressive disclosure, token budgeting)
+- Skill discovery mechanics (how descriptions trigger loading)
+- Multi-domain skill organization patterns
 
 ## Generating README
 
