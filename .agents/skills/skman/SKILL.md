@@ -193,6 +193,16 @@ Guidelines:
 - LLMs (large models): prefer concise instructions, avoid over-explaining
 - Aim for instructions that work across both: clear structure, explicit rules, no fluff
 
+## Generating README
+
+After adding, removing, or renaming skills, regenerate the auto-generated section of `README.md`:
+
+```bash
+python3 -B scripts/skman.py generate
+```
+
+This scans `.agents/skills/` for all `SKILL.md` files, parses their frontmatter, and replaces everything from the auto-generated marker to end of file with a fresh Skills Table and Statistics section.
+
 ## Script Reference
 
 ```bash
@@ -200,6 +210,7 @@ python3 -B scripts/skman.py --help              # Top-level help
 python3 -B scripts/skman.py create --help       # Create subcommand
 python3 -B scripts/skman.py validate --help     # Validate subcommand
 python3 -B scripts/skman.py info --help         # Info subcommand
+python3 -B scripts/skman.py generate --help     # Generate subcommand
 ```
 
 | Command | Purpose |
@@ -207,3 +218,4 @@ python3 -B scripts/skman.py info --help         # Info subcommand
 | `create <name> <desc>` | Scaffold a new skill directory with SKILL.md |
 | `validate <path>` | Check SKILL.md against spec rules |
 | `info <path>` | Print frontmatter and structural summary |
+| `generate` | Generate Skills Table and Statistics in README.md |

@@ -298,6 +298,110 @@ def cmd_info(args):
 
 
 # ---------------------------------------------------------------------------
+# generate subcommand
+# ---------------------------------------------------------------------------
+
+AUTOGEN_MARKER = "<!-- IMPORTANT: never change after this point because it is automatically generated -->"
+
+
+def _discover_skills(skills_dir):
+    """Scan skills_dir for directories containing SKILL.md.
+
+    Returns a sorted list of (name, description) tuples.
+    name = directory basename, description = frontmatter 'description' field.
+    """
+    skills = []
+    if not os.path.isdir(skills_dir):
+        return skills
+
+    for entry in sorted(os.listdir(skills_dir)):
+        skill_md = os.path.join(skills_dir, entry, 'SKILL.md')
+        if not os.path.isfile(skill_md):
+            continue
+        with open(skill_md, 'r') as f:
+            content = f.read()
+        fm, _ = _parse_frontmatter(content)
+        name = entry
+        desc = ''
+        if fm:
+            name = fm.get('name', entry)
+            desc = fm.get('description', '') or ''
+        skills.append((name, desc))
+
+    return skills
+
+
+def _truncate_desc(desc, max_len=120):
+    """Truncate description to max_len chars, appending '...' if cut."""
+    if len(desc) <= max_len:
+        return desc
+    return desc[:max_len].rsplit(' ', 1)[0] + '...'
+
+
+def _build_table(skills):
+    """Build the Skills Table markdown from a list of (name, description)."""
+    lines = []
+    lines.append("## Skills Table")
+    lines.append("")
+    lines.append("| No | Skill | Description |")
+    lines.append("|----|-------|-------------|")
+    for i, (name, desc) in enumerate(skills, 1):
+        truncated = _truncate_desc(desc)
+        lines.append(f"| {i} | {name} | {truncated} |")
+    return "\n".join(lines)
+
+
+def _build_statistics(total):
+    """Build the Statistics section markdown."""
+    lines = []
+    lines.append("")
+    lines.append("## Statistics")
+    lines.append("")
+    lines.append(f"- **Total Skills**: {total}")
+    return "\n".join(lines)
+
+
+def cmd_generate(args):
+    """Generate the Skills Table and Statistics in README.md."""
+    skills_dir = args.skills_dir
+    readme_path = args.readme
+
+    # Discover all skills
+    skills = _discover_skills(skills_dir)
+    total = len(skills)
+
+    if total == 0:
+        print(f"generate: no skills found in '{skills_dir}'", file=sys.stderr)
+        sys.exit(1)
+
+    # Build replacement section
+    table = _build_table(skills)
+    stats = _build_statistics(total)
+    new_section = f"{AUTOGEN_MARKER}\n{table}\n{stats}\n"
+
+    # Read README
+    if not os.path.isfile(readme_path):
+        print(f"generate: README not found at '{readme_path}'", file=sys.stderr)
+        sys.exit(1)
+
+    with open(readme_path, 'r') as f:
+        readme = f.read()
+
+    # Replace everything from marker to end of file
+    idx = readme.find(AUTOGEN_MARKER)
+    if idx == -1:
+        print(f"generate: auto-generated marker not found in '{readme_path}'", file=sys.stderr)
+        sys.exit(1)
+
+    new_readme = readme[:idx] + new_section
+
+    with open(readme_path, 'w') as f:
+        f.write(new_readme)
+
+    print(f"generate: updated {readme_path} with {total} skills")
+
+
+# ---------------------------------------------------------------------------
 # Argument parser
 # ---------------------------------------------------------------------------
 
@@ -311,6 +415,7 @@ def build_parser():
               create      Scaffold a new skill directory with SKILL.md
               validate    Check SKILL.md against spec rules
               info        Print frontmatter and structural summary
+              generate    Generate Skills Table and Statistics in README.md
 
             Use '<subcommand> --help' for details on each subcommand.
         """),
@@ -390,6 +495,33 @@ def build_parser():
     )
     p_info.add_argument('path', help='Path to skill directory or SKILL.md file')
 
+    # --- generate ---
+    p_generate = sub.add_parser(
+        'generate',
+        description=textwrap.dedent("""\
+            Generate the Skills Table and Statistics section in README.md.
+
+            Scans all skill directories for SKILL.md files, parses frontmatter,
+            and replaces everything from the auto-generated marker to end of file.
+
+            Examples:
+              python3 -B scripts/skman.py generate
+              python3 -B scripts/skman.py generate --skills-dir ./custom-skills
+              python3 -B scripts/skman.py generate --readme ./docs/README.md
+        """),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_generate.add_argument(
+        '--skills-dir',
+        default='.agents/skills',
+        help='Directory containing skill subdirectories (default: .agents/skills)',
+    )
+    p_generate.add_argument(
+        '--readme',
+        default='README.md',
+        help='Path to README.md to update (default: README.md)',
+    )
+
     return parser
 
 
@@ -409,6 +541,7 @@ def main():
         'create': cmd_create,
         'validate': cmd_validate,
         'info': cmd_info,
+        'generate': cmd_generate,
     }
     dispatch[args.subcommand](args)
 
