@@ -331,13 +331,6 @@ def _discover_skills(skills_dir):
     return skills
 
 
-def _truncate_desc(desc, max_len=120):
-    """Truncate description to max_len chars, appending '...' if cut."""
-    if len(desc) <= max_len:
-        return desc
-    return desc[:max_len].rsplit(' ', 1)[0] + '...'
-
-
 def _build_table(skills):
     """Build the Skills Table markdown from a list of (name, description)."""
     lines = []
@@ -346,8 +339,7 @@ def _build_table(skills):
     lines.append("| No | Skill | Description |")
     lines.append("|----|-------|-------------|")
     for i, (name, desc) in enumerate(skills, 1):
-        truncated = _truncate_desc(desc)
-        lines.append(f"| {i} | {name} | {truncated} |")
+        lines.append(f"| {i} | {name} | {desc} |")
     return "\n".join(lines)
 
 
