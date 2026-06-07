@@ -3,9 +3,7 @@ name: skman
 description: Scaffold, validate, and inspect agent skills (SKILL.md files). Use when creating new skills, checking skill format compliance, or reviewing skill structure.
 ---
 
-# Skill Manager
-
-## Overview
+# skman
 
 Tools and guidelines for creating, validating, and managing agent skills.
 
@@ -69,8 +67,8 @@ Follow these steps in order:
 
 2. **Write the frontmatter** — exactly `name` and `description` at minimum. The description determines when the agent loads this skill; make it specific with trigger terms.
 
-3. **Write the body** — concise instructions, under 500 lines. Must start with a level-1 heading (`#`). Structure:
-   - `# Skill Title`
+3. **Write the body** — concise instructions, under 500 lines. Must start with a level-1 heading matching `# <name>` or `# <name> <version>`. Structure:
+   - `# <name>` (e.g., `# skman`) or `# <name> <version>` (e.g., `# uv 0.11.19`)
    - `## Overview` — what it does
    - `## Usage` — Optional: how to use it with examples
    - `## Gotchas` — Optional: The most useful part of teaching a skill is listing its hidden traps. Instead of vague advice, provide specific rules that stop the agent from making predictable, common-sense mistakes in that specific environment.
@@ -89,6 +87,9 @@ Follow these steps in order:
 # Into default location (.agents/skills/my-skill/)
 skman.sh create my-skill "Extracts text from PDF files"
 
+# With version (dir: uv-0-11-19/, H1: # uv 0.11.19)
+skman.sh create uv "Fast Python package manager" --version 0.11.19
+
 # With scripts and references
 skman.sh create my-skill "Desc" --with-scripts --with-references
 
@@ -101,10 +102,10 @@ The script validates name and description before creating files.
 ### Manual Creation
 
 When writing files directly, ensure:
-- Directory is named after the skill (e.g., `skman`) or `<skill-name>-<version>` (e.g., `skman-2.0`)
-- Frontmatter `name` matches the directory basename (stripping any `-<version>` suffix)
+- Directory is named after the skill (e.g., `skman`) or `<skill-name>-<version>` (e.g., `uv-0-11-19`)
+- Frontmatter `name` is the base skill name (e.g., `uv`), or the full name including version (e.g., `uv-0-11-19`) — both accepted
 - `SKILL.md` exists at the directory root
-- Body starts with a level-1 heading (`# Title`)
+- Body starts with `# <name>` or `# <name> <version>` matching the directory (e.g., `# uv 0.11.19` for `uv-0-11-19/`)
 
 ## Editing a Skill
 
@@ -131,6 +132,7 @@ Checks performed:
 - Body starts with a level-1 heading
 - Body line count warning (>500 lines)
 - Name vs directory basename consistency (warns on mismatch)
+- H1 heading format (`# <name>` or `# <name> <version>` — errors on mismatch)
 - Optional section presence (`## Overview`, `## Usage`, `## Gotchas`, `## References` — warns if missing)
 - Script executability (`scripts/<name>.sh` must be `chmod +x` — warns if not)
 
@@ -196,7 +198,8 @@ Guidelines:
 
 - **Scaffolded `.sh` files may lose execute permission** — `skman.sh create --with-scripts` sets `chmod 0o755`, but editors or git checkouts can strip it. Always verify with `ls -l scripts/<name>.sh`; the validator warns if the bit is missing.
 - **`--strict` turns section warnings into errors** — optional sections (`## Overview`, `## Usage`, `## Gotchas`, `## References`) produce warnings by default. In strict mode, any missing optional section fails validation. Not every skill needs all sections, but they're recommended for completeness.
-- **Frontmatter `name` must match the directory basename** — the validator warns on mismatch (e.g., directory `my-tool/` with `name: my_tool`). Fix by renaming the directory or correcting the frontmatter.
+- **Frontmatter `name` must match the directory basename** — the validator accepts base name (`uv`) or full name with version (`uv-0-11-19`). Warns on mismatch (e.g., directory `my-tool/` with `name: my_tool`). Fix by renaming the directory or correcting the frontmatter.
+- **H1 heading must match `# <name>` or `# <name> <version>`** — the validator errors if the first heading doesn't match. For `skman/` it must be `# skman`; for `uv-0-11-19/` it must be `# uv 0.11.19`.
 - **Reference files are loaded on demand, not into context** — keep SKILL.md self-contained for core instructions; move deep-dive content to `references/NN-topic.md` and link from the body.
 
 ## References
@@ -229,7 +232,7 @@ skman.sh generate --help     # Generate subcommand
 
 | Command | Purpose |
 |---|---|
-| `create <name> <desc>` | Scaffold a new skill directory with SKILL.md |
+| `create <name> <desc> [--version <ver>]` | Scaffold a new skill directory with SKILL.md |
 | `validate <path>` | Check SKILL.md against spec rules |
 | `info <path>` | Print frontmatter and structural summary |
 | `generate` | Generate Skills Table and Statistics in README.md |

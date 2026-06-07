@@ -46,6 +46,10 @@ description: {description}
 
 """)
 
+# Matches trailing version suffix: -<digit>[-<digit>]* at end of dir name
+# e.g. "uv-0-11-19" -> "0-11-19", "git-8-20-0" -> "8-20-0"
+VERSION_SUFFIX_RE = re.compile(r'-(\d+(?:-\d+)+)$')
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -240,6 +244,28 @@ def _check_script_permissions(skill_dir, fm_name):
     return errors, warnings
 
 
+def _strip_version_suffix(dir_basename):
+    """Strip trailing -<version> suffix from directory basename.
+
+    Returns (name, version_with_hyphens_or_None).
+    e.g. 'uv-0-11-19' -> ('uv', '0-11-19')
+         'skman'       -> ('skman', None)
+    """
+    m = VERSION_SUFFIX_RE.search(dir_basename)
+    if m:
+        name = dir_basename[:m.start()]
+        return name, m.group(1)
+    return dir_basename, None
+
+
+def _dir_version_to_dots(version_with_hyphens):
+    """Convert hyphen-separated version to dot-separated.
+
+    e.g. '0-11-19' -> '0.11.19'
+    """
+    return version_with_hyphens.replace('-', '.')
+
+
 # ---------------------------------------------------------------------------
 # Subcommands
 # ---------------------------------------------------------------------------
@@ -249,6 +275,9 @@ def cmd_create(args):
     name = args.name.strip()
     description = args.description.strip()
     output_dir = args.output_dir
+    version = getattr(args, 'version', None)
+    if version:
+        version = version.strip()
 
     # Validate before creating anything
     errors = []
@@ -261,8 +290,19 @@ def cmd_create(args):
             print(f"  - {e}", file=sys.stderr)
         sys.exit(1)
 
+    # Build directory name and H1 title
+    if version:
+        # Normalize: dots in H1, hyphens in dir name
+        version_dots = version.replace('-', '.')
+        version_hyphen = version.replace('.', '-')
+        dir_name = f"{name}-{version_hyphen}"
+        h1_title = f"{name} {version_dots}"
+    else:
+        dir_name = name
+        h1_title = name
+
     # Create directory structure
-    skill_dir = os.path.join(output_dir, name)
+    skill_dir = os.path.join(output_dir, dir_name)
     os.makedirs(skill_dir, exist_ok=True)
 
     skill_md_path = os.path.join(skill_dir, 'SKILL.md')
@@ -270,8 +310,7 @@ def cmd_create(args):
         print(f"create: {skill_md_path} already exists — skipping", file=sys.stderr)
         sys.exit(1)
 
-    title = name.replace('-', ' ').title()
-    content = DEFAULT_SKILL_MD.format(name=name, description=description, title=title)
+    content = DEFAULT_SKILL_MD.format(name=name, description=description, title=h1_title)
     with open(skill_md_path, 'w') as f:
         f.write(content)
 
@@ -324,7 +363,7 @@ def cmd_create(args):
             f.write(f"# {title} Reference\n\n[Detailed reference content.]\n")
         print(f"create: created references placeholder at {placeholder}")
 
-    print(f"create: scaffolded skill '{name}' at {skill_md_path}")
+    print(f"create: scaffolded skill '{dir_name}' at {skill_md_path}")
 
 
 def cmd_validate(args):
@@ -383,13 +422,16 @@ def cmd_validate(args):
         # Name vs directory basename consistency
         skill_dir = os.path.dirname(skill_md)
         dir_basename = os.path.basename(skill_dir)
-        dir_name = re.sub(r'-\d+(?:\.\d+)*$', '', dir_basename)
+        dir_name, dir_version = _strip_version_suffix(dir_basename)
         fm_name = fm.get('name', '')
-        if fm_name and dir_name != fm_name:
+        # Accept frontmatter name as either base name ('uv') or full name ('uv-0-11-19')
+        fm_name_base, _ = _strip_version_suffix(fm_name) if fm_name else ('', None)
+        name_matches = (fm_name == dir_basename or fm_name_base == dir_name)
+        if fm_name and not name_matches:
             results.append(
                 ("WARN",
                  f"directory name '{dir_basename}' does not match "
-                 f"frontmatter name '{fm_name}' (expected '{fm_name}' or '{fm_name}-<version>')")
+                 f"frontmatter name '{fm_name}' (expected '{dir_name}' or '{dir_basename}')")
             )
         else:
             results.append(("PASS", f"directory name matches frontmatter name '{fm_name}'"))
@@ -424,7 +466,20 @@ def cmd_validate(args):
              f"body must start with a level-1 heading (found: '{first_content_line[:60]}...')")
         )
     else:
-        results.append(("PASS", f"body starts with level-1 heading '{first_content_line}'"))
+        # Validate H1 heading format: must be '# <name>' or '# <name> <version>'
+        # Derive expected heading from directory structure, not frontmatter name
+        h1_text = first_content_line[2:]  # strip '# '
+        expected_h1 = dir_name
+        if dir_version:
+            expected_h1 = f"{dir_name} {_dir_version_to_dots(dir_version)}"
+        if h1_text == expected_h1:
+            results.append(("PASS", f"H1 heading '{first_content_line}' matches expected format"))
+        else:
+            results.append(
+                ("ERROR",
+                 f"H1 heading '{first_content_line}' does not match expected "
+                 f"'#{expected_h1}' (must be '# <name>' or '# <name> <version>')")
+            )
 
     # Line count
     if body_line_count > 500:
@@ -674,11 +729,17 @@ def build_parser():
               skman.sh create my-skill "Does X and Y"
               skman.sh create my-skill "Desc" --with-scripts --with-references
               skman.sh create my-skill "Desc" -o ./custom-skills
+              skman.sh create uv "Package manager" --version 0.11.19
         """),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     p_create.add_argument('name', help='Skill name (lowercase, hyphens, numbers)')
     p_create.add_argument('description', help='Skill description (max 1024 chars)')
+    p_create.add_argument(
+        '--version', '-V',
+        default=None,
+        help='Optional version (e.g. 0.11.19). Dir becomes <name>-<version>, H1 is "# <name> <version>"',
+    )
     p_create.add_argument(
         '--output-dir', '-o',
         default='.agents/skills',

@@ -1,5 +1,5 @@
 ---
-name: uv
+name: uv-0-11-19
 description: Fast Python package and project manager written in Rust. Replaces pip, pip-tools, pipx, poetry, pyenv, virtualenv, twine, and more. Use when managing Python dependencies, creating virtual environments, running tools with uvx (pipx alternative), installing Python versions, building/publishing packages, or any Python project setup task.
 ---
 
