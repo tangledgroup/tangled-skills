@@ -68,7 +68,7 @@ Key capabilities: auto-detect spec type from `$schema` or structure, apply theme
 import embed from 'vega-embed';
 
 const spec = {
-  $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+  $schema: 'https://vega.github.io/schema/vega-lite/v6.json',
   data: { url: 'data/cars.json' },
   mark: 'bar',
   encoding: { x: { field: 'Origin', type: 'nominal' }, y: { aggregate: 'count', type: 'quantitative' } }

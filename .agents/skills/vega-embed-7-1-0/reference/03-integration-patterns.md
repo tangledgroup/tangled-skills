@@ -23,7 +23,7 @@ Include Vega, Vega-Lite, and Vega-Embed as `<script>` tags. The global `vegaEmbe
 
 ```js
 var spec = {
-  $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+  $schema: 'https://vega.github.io/schema/vega-lite/v6.json',
   data: { url: 'https://example.com/data.json' },
   mark: 'bar',
   encoding: { x: { field: 'x', type: 'quantitative' }, y: { aggregate: 'count', type: 'quantitative' } }
