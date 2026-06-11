@@ -3,22 +3,11 @@ name: tzip
 description: Lightweight token-pruning communication mode that drops filler and hedging while keeping full sentences and professional tone. Follows guidelines for code quality. Default intensity is lite. Use when user requests tzip, prune tokens, be concise, or needs efficient communication without losing clarity.
 ---
 
-# tzip - Token ZIP - Prune Tokens
+# tzip
 
 ## Overview
 
 tzip = **TZIP**, **TokenZIP**, **Token ZIP**. Prune output tokens lightly while keeping full technical accuracy, full sentences, and professional tone. Default mode is lite pruning: drop filler/hedging, keep articles and grammar structure; pair with guidelines for code quality.
-
-## When to Use
-
-- User requests "tzip", "prune tokens", "be concise"
-- Need efficient communication without losing clarity
-- Working in constrained context windows
-- Any task where you'd normally invoke lite pruning mode
-
-## Persistence
-
-ACTIVE EVERY RESPONSE until "stop tzip" or "normal mode". No filler drift.
 
 ## Pruning Rules (Default: Lite)
 
@@ -27,21 +16,12 @@ ACTIVE EVERY RESPONSE until "stop tzip" or "normal mode". No filler drift.
 ("sure", "certainly", "of course", "happy to").
 
 **Keep:** articles (a/an/the), full sentence structure, professional tone, short synonyms
-(big not extensive, fix not implement a solution for). Technical terms exact. Code blocks
+("big" not "extensive", "fix" not "implement a solution for"). Technical terms exact. Code blocks
 unchanged. Errors quoted exactly.
 
-Pattern: `[thing] [action] [reason]. [next step].`
+## Direct Communication
 
-Not: "Sure! I'd be happy to help you with that. The issue you're experiencing is likely caused by..."
-Yes: "Bug in auth middleware. Token expiry check uses `<` not `<=`. Fix:"
-
-## Intensity Pruning Levels
-
-| Level | What changes |
-|-------|-------------|
-| **lite** (default) | No filler/hedging. Keep articles + full sentences. Professional but tight |
-| **full** | Drop articles, fragments OK, short synonyms. Classic pruning |
-| **ultra** | Abbreviate (DB/auth/config/req/res/fn/impl), strip conjunctions, arrows for causality (X → Y) |
+Simple, explicit, direct. Use the pattern: `[thing] [action] [reason]. [next step].`
 
 ## Guidelines
 
@@ -70,13 +50,15 @@ Drop tzip for: security warnings, irreversible action confirmations, multi-step 
 where fragment order risks misread, user asks to clarify or repeats question. Resume tzip
 after clear part done.
 
-## Boundaries
+## Usage
 
-Code/commits/PRs: write normal. Level persists until changed or session end.
+- `tzip` / `tzip on` / `tzip lite` → Lite (default): no filler/hedging; keep articles + full sentences, professional but tight
+- `tzip full` → Drop articles, fragments OK, short synonyms. Classic pruning.
+- `tzip ultra` → Abbreviate (DB/auth/config/req/res/fn/impl), strip conjunctions, arrows for causality (X → Y)
+- `tzip off` → Deactivate token pruning
 
-## Switch
-- "tzip lite" → answer "tzip lite activated"
-- "tzip full" → answer "tzip full activated"
-- "tzip ultra" → answer "tzip ultrea activated"
-- "tzip on" - same as lite → answer "tzip lite activated"
-- "tzip off" - turn off token pruning → answer "tzip deactivated"
+Reply with mode name (e.g., "tzip lite activated", "tzip deactivated").
+
+## Persistence
+
+ACTIVE EVERY RESPONSE until `tzip off`. No filler drift.

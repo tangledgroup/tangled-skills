@@ -1,8 +1,6 @@
 ---
 name: git
-description: 'Complete Git 2.54.0 toolkit covering version control workflows, Conventional Commits v1.0.0, Keep a Changelog message bodies, and Semantic Versioning 2.0.0. Use when managing repositories, writing structured commit messages with conventional types and changelog-style bodies, bumping versions, or analyzing codebase health through git history.
-
-  '
+description: 'Add-commit-push all changes in one flow. Use when the user says acp, add commit push, stage and push, or wants to quickly commit and push all working directory changes.'
 ---
 
 # Git version control
