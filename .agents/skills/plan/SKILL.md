@@ -25,7 +25,7 @@ Strict task numbering (`[emoji-of-task] Task X.Y ➖ Task Title ⚓ ...`), with 
 
 ## PLAN.md Header Template
 
-Command `./plan.sh create PLAN.md ...` creates PLAN.md like:
+Command `plan.sh create PLAN.md ...` creates PLAN.md like:
 
 ```markdown
 <!-- required: Plan header -->
@@ -229,7 +229,7 @@ Dependencies are managed incrementally — there is no "add all at once" command
 Scripts require: `python3` 3.10+ with only built-in modules (`argparse`, `re`, `sys`, `datetime`, `pathlib`).
 No third-party packages needed.
 
-### Usage Examples
+## Usage
 
 Always use scripts to update `PLAN.md`.
 
@@ -237,101 +237,101 @@ Always use scripts to update `PLAN.md`.
 #
 # Create a new PLAN.md with header
 #
-./plan.sh create PLAN.md "My Project"
-./plan.sh create PLAN.md "Plan ABC" "../other/PLAN.md"
-./plan.sh create PLAN.md "Plan XYZ" "../a/PLAN.md" "../../b/PLAN.md"
+plan.sh create PLAN.md "My Project"
+plan.sh create PLAN.md "Plan ABC" "../other/PLAN.md"
+plan.sh create PLAN.md "Plan XYZ" "../a/PLAN.md" "../../b/PLAN.md"
 
 #
 # Header reads
 #
-./plan.sh get-plan-title PLAN.md
-./plan.sh get-plan-depends-on PLAN.md
-./plan.sh get-plan-created PLAN.md
-./plan.sh get-plan-updated PLAN.md
-./plan.sh get-plan-current-phase PLAN.md
-./plan.sh get-plan-current-task PLAN.md
+plan.sh get-plan-title PLAN.md
+plan.sh get-plan-depends-on PLAN.md
+plan.sh get-plan-created PLAN.md
+plan.sh get-plan-updated PLAN.md
+plan.sh get-plan-current-phase PLAN.md
+plan.sh get-plan-current-task PLAN.md
 
 #
 # Header writes
 #
-./plan.sh set-plan-title PLAN.md "My Project"
-./plan.sh set-plan-depends-on PLAN.md NONE
-./plan.sh set-plan-depends-on PLAN.md "../other/PLAN.md"
-./plan.sh set-plan-depends-on PLAN.md "../a/PLAN.md" "../../b/PLAN.md"
-./plan.sh set-plan-created PLAN.md --now # UTC ISO format "%Y-%m-%dT%H:%M:%SZ"
-./plan.sh set-plan-created PLAN.md $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-./plan.sh set-plan-updated PLAN.md --now # UTC ISO format "%Y-%m-%dT%H:%M:%SZ"
-./plan.sh set-plan-updated PLAN.md $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-./plan.sh set-plan-current-phase PLAN.md "Phase 2" # copies `[emoji-of-phase]` of "Phase 2"
-./plan.sh set-plan-current-task PLAN.md "Task 2.3" # copies `[emoji-of-task]` of "Task 2.3"
+plan.sh set-plan-title PLAN.md "My Project"
+plan.sh set-plan-depends-on PLAN.md NONE
+plan.sh set-plan-depends-on PLAN.md "../other/PLAN.md"
+plan.sh set-plan-depends-on PLAN.md "../a/PLAN.md" "../../b/PLAN.md"
+plan.sh set-plan-created PLAN.md --now # UTC ISO format "%Y-%m-%dT%H:%M:%SZ"
+plan.sh set-plan-created PLAN.md $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+plan.sh set-plan-updated PLAN.md --now # UTC ISO format "%Y-%m-%dT%H:%M:%SZ"
+plan.sh set-plan-updated PLAN.md $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+plan.sh set-plan-current-phase PLAN.md "Phase 2" # copies `[emoji-of-phase]` of "Phase 2"
+plan.sh set-plan-current-task PLAN.md "Task 2.3" # copies `[emoji-of-task]` of "Task 2.3"
 
 #
 # Status reads
 #
-./plan.sh get-plan-status PLAN.md # returns `[emoji-of-plan]` of plan
-./plan.sh get-phase-status PLAN.md "Phase 2" # returns `[emoji-of-phase]` of "Phase 2"
-./plan.sh get-task-status PLAN.md "Task 2.3" # returns `[emoji-of-task]` of "Task 2.3"
+plan.sh get-plan-status PLAN.md # returns `[emoji-of-plan]` of plan
+plan.sh get-phase-status PLAN.md "Phase 2" # returns `[emoji-of-phase]` of "Phase 2"
+plan.sh get-task-status PLAN.md "Task 2.3" # returns `[emoji-of-task]` of "Task 2.3"
 
 #
 # Status writes
 #
-./plan.sh set-all-statuses PLAN.md ☐ # set plan, all phases, and all tasks status to be the same - use with caution
-./plan.sh set-plan-status PLAN.md ⚙️ # sets `[emoji-of-plan]` for plan
-./plan.sh set-phase-status PLAN.md "Phase 2" ⚙️ # sets `[emoji-of-phase]` for "Phase 2"
-./plan.sh set-task-status PLAN.md "Task 2.3" ⚙️ # sets `[emoji-of-task]` for "Task 2.3"
+plan.sh set-all-statuses PLAN.md ☐ # set plan, all phases, and all tasks status to be the same - use with caution
+plan.sh set-plan-status PLAN.md ⚙️ # sets `[emoji-of-plan]` for plan
+plan.sh set-phase-status PLAN.md "Phase 2" ⚙️ # sets `[emoji-of-phase]` for "Phase 2"
+plan.sh set-task-status PLAN.md "Task 2.3" ⚙️ # sets `[emoji-of-task]` for "Task 2.3"
 
 # 
 # add-phase
 # 
-./plan.sh add-phase PLAN.md "Phase 2 ➖ Description of phase..." # sets phase status to ☐
+plan.sh add-phase PLAN.md "Phase 2 ➖ Description of phase..." # sets phase status to ☐
 
 #
 # add-task
 #
-./plan.sh add-task PLAN.md "Phase 2" "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase status ❓
-./plan.sh add-task PLAN.md "Phase 2" "Task 2.5 ➖ Depends on prior tasks ⚓ Task 2.1 , Task 2.3" # with dependencies
+plan.sh add-task PLAN.md "Phase 2" "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase status ❓
+plan.sh add-task PLAN.md "Phase 2" "Task 2.5 ➖ Depends on prior tasks ⚓ Task 2.1 , Task 2.3" # with dependencies
 # or
-./plan.sh add-task PLAN.md "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase status ❓
+plan.sh add-task PLAN.md "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase status ❓
 
 #
 # update-phase
 #
-./plan.sh update-phase PLAN.md "Phase 2 ➖ New description of phase..." # sets phase status to ❓
+plan.sh update-phase PLAN.md "Phase 2 ➖ New description of phase..." # sets phase status to ❓
 
 #
 # update-task
 #
-./plan.sh update-task PLAN.md "Phase 2" "Task 2.4 ➖ New description of task..." # sets status to ❓
+plan.sh update-task PLAN.md "Phase 2" "Task 2.4 ➖ New description of task..." # sets status to ❓
 # or
-./plan.sh update-task PLAN.md "Phase 2 ➖ New description of phase..." "Task 2.4 ➖ New description of task..." # sets status to ❓
+plan.sh update-task PLAN.md "Phase 2 ➖ New description of phase..." "Task 2.4 ➖ New description of task..." # sets status to ❓
 
 #
 # remove-phase
 #
-./plan.sh remove-phase PLAN.md "Phase 2" # sets plan status to ❓
+plan.sh remove-phase PLAN.md "Phase 2" # sets plan status to ❓
 # or
-./plan.sh remove-phase PLAN.md "Phase 2 ➖ Description of phase..." # sets plan status to ❓
+plan.sh remove-phase PLAN.md "Phase 2 ➖ Description of phase..." # sets plan status to ❓
 
 #
 # remove-task
 #
-./plan.sh remove-task PLAN.md "Phase 2" "Task 2.4" # sets plan and phase status to ❓
+plan.sh remove-task PLAN.md "Phase 2" "Task 2.4" # sets plan and phase status to ❓
 # or
-./plan.sh remove-task PLAN.md "Phase 2" "Task 2.4 ➖ Description of task..." # sets plan and phase status to ❓
+plan.sh remove-task PLAN.md "Phase 2" "Task 2.4 ➖ Description of task..." # sets plan and phase status to ❓
 # or
-./plan.sh remove-task PLAN.md "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # sets plan and phase status to ❓
+plan.sh remove-task PLAN.md "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # sets plan and phase status to ❓
 
 #
 # add-task-dependency
 # 
-./plan.sh add-task-dependency PLAN.md "Phase 2" "Task 2.4" "Task 2.1" # if current task (in this case "Phase 2" "Task 2.4") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
-./plan.sh add-task-dependency PLAN.md "Phase 3" "Task 3.5" "Task 3.4" # if current task (in this case "Phase 3" "Task 3.5") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
+plan.sh add-task-dependency PLAN.md "Phase 2" "Task 2.4" "Task 2.1" # if current task (in this case "Phase 2" "Task 2.4") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
+plan.sh add-task-dependency PLAN.md "Phase 3" "Task 3.5" "Task 3.4" # if current task (in this case "Phase 3" "Task 3.5") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
 
 #
 # remove-task-dependency
 # 
-./plan.sh remove-task-dependency PLAN.md "Phase 2" "Task 2.4" "Task 2.1" # if current task (in this case "Phase 2" "Task 2.4") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
-./plan.sh remove-task-dependency PLAN.md "Phase 3" "Task 3.5" "Task 3.4" # if current task (in this case "Phase 3" "Task 3.5") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
+plan.sh remove-task-dependency PLAN.md "Phase 2" "Task 2.4" "Task 2.1" # if current task (in this case "Phase 2" "Task 2.4") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
+plan.sh remove-task-dependency PLAN.md "Phase 3" "Task 3.5" "Task 3.4" # if current task (in this case "Phase 3" "Task 3.5") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
 
 #
 # get-plan — structured plan output (read-only, no file lock needed)
@@ -339,9 +339,9 @@ Always use scripts to update `PLAN.md`.
 # View modes: --list (flat) or --tree (nested). Default: --list.
 # Output formats: --json or --yaml. Default: --json.
 #
-./plan.sh get-plan PLAN.md                 # default: --list --json
-./plan.sh get-plan PLAN.md --list --json   # flat list, JSON (same as default)
-./plan.sh get-plan PLAN.md --list --yaml   # flat list, YAML
-./plan.sh get-plan PLAN.md --tree --json   # nested tree, JSON
-./plan.sh get-plan PLAN.md --tree --yaml   # nested tree, YAML
+plan.sh get-plan PLAN.md                 # default: --list --json
+plan.sh get-plan PLAN.md --list --json   # flat list, JSON (same as default)
+plan.sh get-plan PLAN.md --list --yaml   # flat list, YAML
+plan.sh get-plan PLAN.md --tree --json   # nested tree, JSON
+plan.sh get-plan PLAN.md --tree --yaml   # nested tree, YAML
 ```

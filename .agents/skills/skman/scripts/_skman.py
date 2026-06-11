@@ -63,7 +63,7 @@ description: {description}
 Run from the `scripts/` directory:
 
 ```bash
-./{script_name}.sh --help
+{script_name}.sh --help
 ```
 
 """)
@@ -274,7 +274,7 @@ def _check_script_permissions(skill_dir, fm_name):
 
 
 def _check_script_usage_refs(body, fm_name):
-    """Check that SKILL.md body uses `./<name>.sh` instead of `scripts/<name>.sh`
+    """Check that SKILL.md body uses `<name>.sh` instead of `./<name>.sh`
     for usage/instructional references.
 
     Scans outside fenced code blocks (``` ... ```) since those often show
@@ -300,18 +300,18 @@ def _check_script_usage_refs(body, fm_name):
             continue
         if in_fence:
             continue
-        # Check for scripts/<name>.sh patterns (both fm_name and base_name)
+        # Check for ./<name>.sh patterns (both fm_name and base_name)
         for candidate in (fm_name, base_name):
-            pattern = f'scripts/{candidate}.sh'
+            pattern = f'./{candidate}.sh'
             if pattern in stripped:
                 bad_refs.add((lineno, pattern))
 
     if bad_refs:
         unique_lines = sorted(set(l for l, _ in bad_refs))
         lines_str = ', '.join(f"line {l}" for l in unique_lines)
-        preferred = f'./{fm_name}.sh'
+        preferred = f'{fm_name}.sh'
         warnings.append(
-            f"script usage reference(s) use 'scripts/<name>.sh' instead of '{preferred}' ({lines_str})"
+            f"script usage reference(s) use './<name>.sh' instead of '{preferred}' ({lines_str})"
         )
 
     return errors, warnings
@@ -532,7 +532,7 @@ def cmd_validate(args):
         for w in ref_warnings:
             results.append(("WARN", w))
         if not ref_errors and not ref_warnings:
-            results.append(("PASS", "script usage references use './<name>.sh' format"))
+            results.append(("PASS", "script usage references use '<name>.sh' format"))
 
     # --- Body checks ---
     body_lines = body.splitlines()
