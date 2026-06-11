@@ -5,6 +5,8 @@ description: Phase/task based workflow system with PLAN.md as single source of t
 
 # plan
 
+Create, read, execute and update plan(s).
+
 ## Overview
 
 Plan/phase/task based planning system with `PLAN.md` as single source of truth.
