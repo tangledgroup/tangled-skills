@@ -310,7 +310,7 @@ def cmd_create(args):
         print(f"create: {skill_md_path} already exists — skipping", file=sys.stderr)
         sys.exit(1)
 
-    content = DEFAULT_SKILL_MD.format(name=name, description=description, title=h1_title)
+    content = DEFAULT_SKILL_MD.format(name=dir_name, description=description, title=h1_title)
     with open(skill_md_path, 'w') as f:
         f.write(content)
 
@@ -425,13 +425,12 @@ def cmd_validate(args):
         dir_name, dir_version = _strip_version_suffix(dir_basename)
         fm_name = fm.get('name', '')
         # Accept frontmatter name as either base name ('uv') or full name ('uv-0-11-19')
-        fm_name_base, _ = _strip_version_suffix(fm_name) if fm_name else ('', None)
-        name_matches = (fm_name == dir_basename or fm_name_base == dir_name)
+        name_matches = (fm_name == dir_basename)
         if fm_name and not name_matches:
             results.append(
                 ("WARN",
                  f"directory name '{dir_basename}' does not match "
-                 f"frontmatter name '{fm_name}' (expected '{dir_name}' or '{dir_basename}')")
+                 f"frontmatter name '{fm_name}' (expected '{dir_basename}')")
             )
         else:
             results.append(("PASS", f"directory name matches frontmatter name '{fm_name}'"))

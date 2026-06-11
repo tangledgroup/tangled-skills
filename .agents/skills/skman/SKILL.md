@@ -47,7 +47,7 @@ A skill is a directory containing a `SKILL.md` file. Everything else is optional
 
 | Field | Required | Rules |
 |---|---|---|
-| `name` | Yes | 1-64 chars, lowercase a-z, 0-9, hyphens; no leading/trailing/consecutive hyphens |
+| `name` | Yes | 1-64 chars, lowercase a-z, 0-9, hyphens; no leading/trailing/consecutive hyphens; must match directory name exactly (e.g., `uv-0-11-19` for `uv-0-11-19/`); meta skills without versions use plain name (e.g., `skman`, `plan`) |
 | `description` | Yes | Non-empty, max 1024 chars, third-person, must not contain XML/HTML tags (`<tag>`) |
 
 ### Frontmatter Template
@@ -65,7 +65,7 @@ Follow these steps in order:
 
 1. **Choose a name** — lowercase, hyphens, numbers only (e.g., `pdf-processing`, `git-8-20-0`). No leading/trailing/consecutive hyphens.
 
-2. **Write the frontmatter** — exactly `name` and `description` at minimum. The description determines when the agent loads this skill; make it specific with trigger terms.
+2. **Write the frontmatter** — exactly `name` and `description` at minimum. The `name` must match the directory name exactly (e.g., `name: uv-0-11-19` for `uv-0-11-19/`). The description determines when the agent loads this skill; make it specific with trigger terms.
 
 3. **Write the body** — concise instructions, under 500 lines. Must start with a level-1 heading matching `# <name>` or `# <name> <version>`. Structure:
    - `# <name>` (e.g., `# skman`) or `# <name> <version>` (e.g., `# uv 0.11.19`)
@@ -103,7 +103,7 @@ The script validates name and description before creating files.
 
 When writing files directly, ensure:
 - Directory is named after the skill (e.g., `skman`) or `<skill-name>-<version>` (e.g., `uv-0-11-19`)
-- Frontmatter `name` is the base skill name (e.g., `uv`), or the full name including version (e.g., `uv-0-11-19`) — both accepted
+- Frontmatter `name` must match the directory name exactly (e.g., `name: uv-0-11-19` for `uv-0-11-19/`, or `name: skman` for `skman/`)
 - `SKILL.md` exists at the directory root
 - Body starts with `# <name>` or `# <name> <version>` matching the directory (e.g., `# uv 0.11.19` for `uv-0-11-19/`)
 
@@ -178,7 +178,7 @@ Guidelines:
 - Move detailed content to `references/` files linked from SKILL.md
 - Avoid deeply nested references — all reference files should link directly from SKILL.md
 - Include a table of contents in reference files longer than 100 lines
-- **Reference file naming** — use numeric prefixes (`00-`, `01-`, `02-`, …) for deterministic ordering and easy insertion. Files should be named `NN-topic.md` where `NN` is a zero-padded incrementing number
+- **Reference file naming** — use numeric prefixes (`01-`, `02-`, `03-`, …) for deterministic ordering and easy insertion. Files should be named `NN-topic.md` where `NN` is an incrementing number starting from 01
 - **Multi-domain skills** — when a skill supports multiple variants (frameworks, platforms), organize by domain in references:
   ```
   cloud-deploy/
@@ -198,8 +198,8 @@ Guidelines:
 
 - **Scaffolded `.sh` files may lose execute permission** — `skman.sh create --with-scripts` sets `chmod 0o755`, but editors or git checkouts can strip it. Always verify with `ls -l scripts/<name>.sh`; the validator warns if the bit is missing.
 - **`--strict` turns section warnings into errors** — optional sections (`## Overview`, `## Usage`, `## Gotchas`, `## References`) produce warnings by default. In strict mode, any missing optional section fails validation. Not every skill needs all sections, but they're recommended for completeness.
-- **Frontmatter `name` must match the directory basename** — the validator accepts base name (`uv`) or full name with version (`uv-0-11-19`). Warns on mismatch (e.g., directory `my-tool/` with `name: my_tool`). Fix by renaming the directory or correcting the frontmatter.
-- **H1 heading must match `# <name>` or `# <name> <version>`** — the validator errors if the first heading doesn't match. For `skman/` it must be `# skman`; for `uv-0-11-19/` it must be `# uv 0.11.19`.
+- **Frontmatter `name` must match the directory basename exactly** — e.g., `uv-0-11-19/` requires `name: uv-0-11-19`, `skman/` requires `name: skman`. The validator warns on mismatch. Fix by renaming the directory or correcting the frontmatter.
+- **H1 heading must match `# <name>` or `# <base> <version>`** — the validator errors if the first heading doesn't match. For `skman/` it must be `# skman`; for `uv-0-11-19/` it must be `# uv 0.11.19` (version uses dots, not hyphens). The version in the H1 must correspond to the hyphenated version suffix in the directory/frontmatter name.
 - **Reference files are loaded on demand, not into context** — keep SKILL.md self-contained for core instructions; move deep-dive content to `references/NN-topic.md` and link from the body.
 
 ## References
