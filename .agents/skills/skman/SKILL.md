@@ -133,7 +133,8 @@ Checks performed:
 - Body line count warning (>500 lines)
 - Name vs directory basename consistency (warns on mismatch)
 - H1 heading format (`# <name>` or `# <name> <version>` — errors on mismatch)
-- Optional section presence (`## Overview`, `## Usage`, `## Gotchas`, `## References` — warns if missing)
+- Recommended section presence (`## Overview` — warns if missing)
+- Truly optional sections (`## Usage`, `## Gotchas`, `## References` — no warning when absent)
 - Script executability (`scripts/<name>.sh` must be `chmod +x` — warns if not)
 
 ## Best Practices
@@ -197,7 +198,7 @@ Guidelines:
 ## Gotchas
 
 - **Scaffolded `.sh` files may lose execute permission** — `skman.sh create --with-scripts` sets `chmod 0o755`, but editors or git checkouts can strip it. Always verify with `ls -l scripts/<name>.sh`; the validator warns if the bit is missing.
-- **`--strict` turns section warnings into errors** — optional sections (`## Overview`, `## Usage`, `## Gotchas`, `## References`) produce warnings by default. In strict mode, any missing optional section fails validation. Not every skill needs all sections, but they're recommended for completeness.
+- **`--strict` turns section warnings into errors** — only `## Overview` produces a warning when missing. `## Usage`, `## Gotchas`, and `## References` are truly optional and never warn (knowledge-only skills often have no Usage section). In strict mode, any warning fails validation.
 - **Frontmatter `name` must match the directory basename exactly** — e.g., `uv-0-11-19/` requires `name: uv-0-11-19`, `skman/` requires `name: skman`. The validator warns on mismatch. Fix by renaming the directory or correcting the frontmatter.
 - **H1 heading must match `# <name>` or `# <base> <version>`** — the validator errors if the first heading doesn't match. For `skman/` it must be `# skman`; for `uv-0-11-19/` it must be `# uv 0.11.19` (version uses dots, not hyphens). The version in the H1 must correspond to the hyphenated version suffix in the directory/frontmatter name.
 - **Reference files are loaded on demand, not into context** — keep SKILL.md self-contained for core instructions; move deep-dive content to `references/NN-topic.md` and link from the body.

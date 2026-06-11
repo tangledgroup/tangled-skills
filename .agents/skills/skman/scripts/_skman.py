@@ -179,7 +179,11 @@ def _validate_frontmatter(fm):
 
 
 REQUIRED_SECTIONS = {'#'}  # body must start with a level-1 heading
-OPTIONAL_SECTIONS = {'## Overview', '## Usage', '## Gotchas', '## References'}
+# Warns when missing — every skill should explain what it does
+RECOMMENDED_SECTIONS = {'## Overview'}
+# Truly optional — no warning when absent
+# (## Usage is for skills with commands/tools; knowledge-only skills don't need it)
+TRULY_OPTIONAL_SECTIONS = {'## Usage', '## Gotchas', '## References'}
 
 
 def _find_skill_md(path):
@@ -195,7 +199,10 @@ def _find_skill_md(path):
 
 
 def _check_sections(body):
-    """Check for required and optional sections in the body.
+    """Check for required and recommended sections in the body.
+
+    ## Overview warns if missing — every skill should explain what it does.
+    ## Usage, ## Gotchas, and ## References are truly optional — no warning.
 
     Returns (errors, warnings) lists.
     """
@@ -213,11 +220,11 @@ def _check_sections(body):
         if not in_fence and stripped.startswith('#'):
             found_headings.add(stripped)
 
-    # Check optional sections — warn if missing
-    missing_optional = OPTIONAL_SECTIONS - found_headings
-    if missing_optional:
+    # Check recommended sections — warn if missing
+    missing_recommended = RECOMMENDED_SECTIONS - found_headings
+    if missing_recommended:
         warnings.append(
-            f"missing optional section(s): {', '.join(sorted(missing_optional))}"
+            f"missing recommended section(s): {', '.join(sorted(missing_recommended))}"
         )
 
     return errors, warnings
@@ -495,7 +502,7 @@ def cmd_validate(args):
     for w in sec_warnings:
         results.append(("WARN", w))
     if not sec_errors and not sec_warnings:
-        results.append(("PASS", "all optional sections present"))
+        results.append(("PASS", "all recommended sections present"))
 
     # --- Report ---
     error_count = sum(1 for label, _ in results if label == "ERROR")
