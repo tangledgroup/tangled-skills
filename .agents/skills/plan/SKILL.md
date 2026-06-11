@@ -3,7 +3,7 @@ name: plan
 description: Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require structured iteration through Planning, Analysis, Design, Implementation, Testing, Deployment, Maintenance, etc phases with clear dependency graphs.
 ---
 
-# Plan - create, read, execute and update plan(s)
+# plan
 
 ## Overview
 
@@ -23,7 +23,7 @@ Strict task numbering (`[emoji-of-task] Task X.Y ➖ Task Title ⚓ ...`), with 
 
 ## PLAN.md Header Template
 
-Command `python3 -B scripts/plan.py create PLAN.md ...` creates PLAN.md like:
+Command `scripts/plan.sh create PLAN.md ...` creates PLAN.md like:
 
 ```markdown
 <!-- required: Plan header -->
@@ -235,101 +235,101 @@ Always use scripts to update `PLAN.md`.
 #
 # Create a new PLAN.md with header
 #
-python3 -B scripts/plan.py create PLAN.md "My Project"
-python3 -B scripts/plan.py create PLAN.md "Plan ABC" "../other/PLAN.md"
-python3 -B scripts/plan.py create PLAN.md "Plan XYZ" "../a/PLAN.md" "../../b/PLAN.md"
+scripts/plan.sh create PLAN.md "My Project"
+scripts/plan.sh create PLAN.md "Plan ABC" "../other/PLAN.md"
+scripts/plan.sh create PLAN.md "Plan XYZ" "../a/PLAN.md" "../../b/PLAN.md"
 
 #
 # Header reads
 #
-python3 -B scripts/plan.py get-plan-title PLAN.md
-python3 -B scripts/plan.py get-plan-depends-on PLAN.md
-python3 -B scripts/plan.py get-plan-created PLAN.md
-python3 -B scripts/plan.py get-plan-updated PLAN.md
-python3 -B scripts/plan.py get-plan-current-phase PLAN.md
-python3 -B scripts/plan.py get-plan-current-task PLAN.md
+scripts/plan.sh get-plan-title PLAN.md
+scripts/plan.sh get-plan-depends-on PLAN.md
+scripts/plan.sh get-plan-created PLAN.md
+scripts/plan.sh get-plan-updated PLAN.md
+scripts/plan.sh get-plan-current-phase PLAN.md
+scripts/plan.sh get-plan-current-task PLAN.md
 
 #
 # Header writes
 #
-python3 -B scripts/plan.py set-plan-title PLAN.md "My Project"
-python3 -B scripts/plan.py set-plan-depends-on PLAN.md NONE
-python3 -B scripts/plan.py set-plan-depends-on PLAN.md "../other/PLAN.md"
-python3 -B scripts/plan.py set-plan-depends-on PLAN.md "../a/PLAN.md" "../../b/PLAN.md"
-python3 -B scripts/plan.py set-plan-created PLAN.md --now # UTC ISO format "%Y-%m-%dT%H:%M:%SZ"
-python3 -B scripts/plan.py set-plan-created PLAN.md $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-python3 -B scripts/plan.py set-plan-updated PLAN.md --now # UTC ISO format "%Y-%m-%dT%H:%M:%SZ"
-python3 -B scripts/plan.py set-plan-updated PLAN.md $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-python3 -B scripts/plan.py set-plan-current-phase PLAN.md "Phase 2" # copies `[emoji-of-phase]` of "Phase 2"
-python3 -B scripts/plan.py set-plan-current-task PLAN.md "Task 2.3" # copies `[emoji-of-task]` of "Task 2.3"
+scripts/plan.sh set-plan-title PLAN.md "My Project"
+scripts/plan.sh set-plan-depends-on PLAN.md NONE
+scripts/plan.sh set-plan-depends-on PLAN.md "../other/PLAN.md"
+scripts/plan.sh set-plan-depends-on PLAN.md "../a/PLAN.md" "../../b/PLAN.md"
+scripts/plan.sh set-plan-created PLAN.md --now # UTC ISO format "%Y-%m-%dT%H:%M:%SZ"
+scripts/plan.sh set-plan-created PLAN.md $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+scripts/plan.sh set-plan-updated PLAN.md --now # UTC ISO format "%Y-%m-%dT%H:%M:%SZ"
+scripts/plan.sh set-plan-updated PLAN.md $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+scripts/plan.sh set-plan-current-phase PLAN.md "Phase 2" # copies `[emoji-of-phase]` of "Phase 2"
+scripts/plan.sh set-plan-current-task PLAN.md "Task 2.3" # copies `[emoji-of-task]` of "Task 2.3"
 
 #
 # Status reads
 #
-python3 -B scripts/plan.py get-plan-status PLAN.md # returns `[emoji-of-plan]` of plan
-python3 -B scripts/plan.py get-phase-status PLAN.md "Phase 2" # returns `[emoji-of-phase]` of "Phase 2"
-python3 -B scripts/plan.py get-task-status PLAN.md "Task 2.3" # returns `[emoji-of-task]` of "Task 2.3"
+scripts/plan.sh get-plan-status PLAN.md # returns `[emoji-of-plan]` of plan
+scripts/plan.sh get-phase-status PLAN.md "Phase 2" # returns `[emoji-of-phase]` of "Phase 2"
+scripts/plan.sh get-task-status PLAN.md "Task 2.3" # returns `[emoji-of-task]` of "Task 2.3"
 
 #
 # Status writes
 #
-python3 -B scripts/plan.py set-all-statuses PLAN.md ☐ # set plan, all phases, and all tasks status to be the same - use with caution
-python3 -B scripts/plan.py set-plan-status PLAN.md ⚙️ # sets `[emoji-of-plan]` for plan
-python3 -B scripts/plan.py set-phase-status PLAN.md "Phase 2" ⚙️ # sets `[emoji-of-phase]` for "Phase 2"
-python3 -B scripts/plan.py set-task-status PLAN.md "Task 2.3" ⚙️ # sets `[emoji-of-task]` for "Task 2.3"
+scripts/plan.sh set-all-statuses PLAN.md ☐ # set plan, all phases, and all tasks status to be the same - use with caution
+scripts/plan.sh set-plan-status PLAN.md ⚙️ # sets `[emoji-of-plan]` for plan
+scripts/plan.sh set-phase-status PLAN.md "Phase 2" ⚙️ # sets `[emoji-of-phase]` for "Phase 2"
+scripts/plan.sh set-task-status PLAN.md "Task 2.3" ⚙️ # sets `[emoji-of-task]` for "Task 2.3"
 
 # 
 # add-phase
 # 
-python3 -B scripts/plan.py add-phase PLAN.md "Phase 2 ➖ Description of phase..." # sets phase status to ☐
+scripts/plan.sh add-phase PLAN.md "Phase 2 ➖ Description of phase..." # sets phase status to ☐
 
 #
 # add-task
 #
-python3 -B scripts/plan.py add-task PLAN.md "Phase 2" "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase status ❓
-python3 -B scripts/plan.py add-task PLAN.md "Phase 2" "Task 2.5 ➖ Depends on prior tasks ⚓ Task 2.1 , Task 2.3" # with dependencies
+scripts/plan.sh add-task PLAN.md "Phase 2" "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase status ❓
+scripts/plan.sh add-task PLAN.md "Phase 2" "Task 2.5 ➖ Depends on prior tasks ⚓ Task 2.1 , Task 2.3" # with dependencies
 # or
-python3 -B scripts/plan.py add-task PLAN.md "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase status ❓
+scripts/plan.sh add-task PLAN.md "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase status ❓
 
 #
 # update-phase
 #
-python3 -B scripts/plan.py update-phase PLAN.md "Phase 2 ➖ New description of phase..." # sets phase status to ❓
+scripts/plan.sh update-phase PLAN.md "Phase 2 ➖ New description of phase..." # sets phase status to ❓
 
 #
 # update-task
 #
-python3 -B scripts/plan.py update-task PLAN.md "Phase 2" "Task 2.4 ➖ New description of task..." # sets status to ❓
+scripts/plan.sh update-task PLAN.md "Phase 2" "Task 2.4 ➖ New description of task..." # sets status to ❓
 # or
-python3 -B scripts/plan.py update-task PLAN.md "Phase 2 ➖ New description of phase..." "Task 2.4 ➖ New description of task..." # sets status to ❓
+scripts/plan.sh update-task PLAN.md "Phase 2 ➖ New description of phase..." "Task 2.4 ➖ New description of task..." # sets status to ❓
 
 #
 # remove-phase
 #
-python3 -B scripts/plan.py remove-phase PLAN.md "Phase 2" # sets plan status to ❓
+scripts/plan.sh remove-phase PLAN.md "Phase 2" # sets plan status to ❓
 # or
-python3 -B scripts/plan.py remove-phase PLAN.md "Phase 2 ➖ Description of phase..." # sets plan status to ❓
+scripts/plan.sh remove-phase PLAN.md "Phase 2 ➖ Description of phase..." # sets plan status to ❓
 
 #
 # remove-task
 #
-python3 -B scripts/plan.py remove-task PLAN.md "Phase 2" "Task 2.4" # sets plan and phase status to ❓
+scripts/plan.sh remove-task PLAN.md "Phase 2" "Task 2.4" # sets plan and phase status to ❓
 # or
-python3 -B scripts/plan.py remove-task PLAN.md "Phase 2" "Task 2.4 ➖ Description of task..." # sets plan and phase status to ❓
+scripts/plan.sh remove-task PLAN.md "Phase 2" "Task 2.4 ➖ Description of task..." # sets plan and phase status to ❓
 # or
-python3 -B scripts/plan.py remove-task PLAN.md "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # sets plan and phase status to ❓
+scripts/plan.sh remove-task PLAN.md "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # sets plan and phase status to ❓
 
 #
 # add-task-dependency
 # 
-python3 -B scripts/plan.py add-task-dependency PLAN.md "Phase 2" "Task 2.4" "Task 2.1" # if current task (in this case "Phase 2" "Task 2.4") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
-python3 -B scripts/plan.py add-task-dependency PLAN.md "Phase 3" "Task 3.5" "Task 3.4" # if current task (in this case "Phase 3" "Task 3.5") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
+scripts/plan.sh add-task-dependency PLAN.md "Phase 2" "Task 2.4" "Task 2.1" # if current task (in this case "Phase 2" "Task 2.4") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
+scripts/plan.sh add-task-dependency PLAN.md "Phase 3" "Task 3.5" "Task 3.4" # if current task (in this case "Phase 3" "Task 3.5") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
 
 #
 # remove-task-dependency
 # 
-python3 -B scripts/plan.py remove-task-dependency PLAN.md "Phase 2" "Task 2.4" "Task 2.1" # if current task (in this case "Phase 2" "Task 2.4") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
-python3 -B scripts/plan.py remove-task-dependency PLAN.md "Phase 3" "Task 3.5" "Task 3.4" # if current task (in this case "Phase 3" "Task 3.5") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
+scripts/plan.sh remove-task-dependency PLAN.md "Phase 2" "Task 2.4" "Task 2.1" # if current task (in this case "Phase 2" "Task 2.4") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
+scripts/plan.sh remove-task-dependency PLAN.md "Phase 3" "Task 3.5" "Task 3.4" # if current task (in this case "Phase 3" "Task 3.5") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
 
 #
 # get-plan — structured plan output (read-only, no file lock needed)
@@ -337,9 +337,9 @@ python3 -B scripts/plan.py remove-task-dependency PLAN.md "Phase 3" "Task 3.5" "
 # View modes: --list (flat) or --tree (nested). Default: --list.
 # Output formats: --json or --yaml. Default: --json.
 #
-python3 -B scripts/plan.py get-plan PLAN.md                 # default: --list --json
-python3 -B scripts/plan.py get-plan PLAN.md --list --json   # flat list, JSON (same as default)
-python3 -B scripts/plan.py get-plan PLAN.md --list --yaml   # flat list, YAML
-python3 -B scripts/plan.py get-plan PLAN.md --tree --json   # nested tree, JSON
-python3 -B scripts/plan.py get-plan PLAN.md --tree --yaml   # nested tree, YAML
+scripts/plan.sh get-plan PLAN.md                 # default: --list --json
+scripts/plan.sh get-plan PLAN.md --list --json   # flat list, JSON (same as default)
+scripts/plan.sh get-plan PLAN.md --list --yaml   # flat list, YAML
+scripts/plan.sh get-plan PLAN.md --tree --json   # nested tree, JSON
+scripts/plan.sh get-plan PLAN.md --tree --yaml   # nested tree, YAML
 ```

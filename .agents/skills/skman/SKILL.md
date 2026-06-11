@@ -135,7 +135,8 @@ Checks performed:
 - H1 heading format (`# <name>` or `# <name> <version>` — errors on mismatch)
 - Recommended section presence (`## Overview` — warns if missing)
 - Truly optional sections (`## Usage`, `## Gotchas`, `## References` — no warning when absent)
-- Script executability (`scripts/<name>.sh` must be `chmod +x` — warns if not)
+- Script executability (`./<name>.sh` must be `chmod +x` — warns if not)
+- Script usage references (`scripts/<name>.sh` → `./<name>.sh` — warns if the body uses the former outside fenced code blocks)
 
 ## Best Practices
 
@@ -171,7 +172,7 @@ Skills use a four-level loading system:
 
 1. **Metadata** (name + description) — always in context (~100 words). This is what determines whether the skill triggers.
 2. **SKILL.md body** — loaded when skill triggers (<500 lines ideal). Contains the core instructions.
-3. **Scripts** — executed (not loaded into context). Run via `scripts/<name>.sh`.
+3. **Scripts** — executed (not loaded into context). Run via `./<name>.sh`.
 4. **References** — loaded as needed (unlimited). Reference files load on demand.
 
 Guidelines:
@@ -197,7 +198,7 @@ Guidelines:
 
 ## Gotchas
 
-- **Scaffolded `.sh` files may lose execute permission** — `skman.sh create --with-scripts` sets `chmod 0o755`, but editors or git checkouts can strip it. Always verify with `ls -l scripts/<name>.sh`; the validator warns if the bit is missing.
+- **Scaffolded `.sh` files may lose execute permission** — `skman.sh create --with-scripts` sets `chmod 0o755`, but editors or git checkouts can strip it. Always verify with `ls -l ./<name>.sh`; the validator warns if the bit is missing.
 - **`--strict` turns section warnings into errors** — only `## Overview` produces a warning when missing. `## Usage`, `## Gotchas`, and `## References` are truly optional and never warn (knowledge-only skills often have no Usage section). In strict mode, any warning fails validation.
 - **Frontmatter `name` must match the directory basename exactly** — e.g., `uv-0-11-19/` requires `name: uv-0-11-19`, `skman/` requires `name: skman`. The validator warns on mismatch. Fix by renaming the directory or correcting the frontmatter.
 - **H1 heading must match `# <name>` or `# <base> <version>`** — the validator errors if the first heading doesn't match. For `skman/` it must be `# skman`; for `uv-0-11-19/` it must be `# uv 0.11.19` (version uses dots, not hyphens). The version in the H1 must correspond to the hyphenated version suffix in the directory/frontmatter name.

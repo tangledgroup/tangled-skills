@@ -46,6 +46,28 @@ description: {description}
 
 """)
 
+DEFAULT_SKILL_MD_WITH_SCRIPTS = textwrap.dedent("""\
+---
+name: {name}
+description: {description}
+---
+
+# {title}
+
+## Overview
+
+[Describe what this skill does and when to use it.]
+
+## Usage
+
+Run from the `scripts/` directory:
+
+```bash
+./{script_name}.sh --help
+```
+
+""")
+
 # Matches trailing version suffix: -<digit>[-<digit>]* at end of dir name
 # e.g. "uv-0-11-19" -> "0-11-19", "git-8-20-0" -> "8-20-0"
 VERSION_SUFFIX_RE = re.compile(r'-(\d+(?:-\d+)+)$')
@@ -251,6 +273,50 @@ def _check_script_permissions(skill_dir, fm_name):
     return errors, warnings
 
 
+def _check_script_usage_refs(body, fm_name):
+    """Check that SKILL.md body uses `./<name>.sh` instead of `scripts/<name>.sh`
+    for usage/instructional references.
+
+    Scans outside fenced code blocks (``` ... ```) since those often show
+    directory trees where `scripts/` is structural, not invocational.
+
+    Returns (errors, warnings) lists.
+    """
+    errors = []
+    warnings = []
+
+    if not fm_name:
+        return errors, warnings
+
+    # Also check for the dir basename variant (e.g. uv-0-11-19 vs uv)
+    base_name, _ = _strip_version_suffix(fm_name)
+
+    in_fence = False
+    bad_refs = set()  # (lineno, pattern)
+    for lineno, line in enumerate(body.splitlines(), 1):
+        stripped = line.strip()
+        if stripped.startswith('```'):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        # Check for scripts/<name>.sh patterns (both fm_name and base_name)
+        for candidate in (fm_name, base_name):
+            pattern = f'scripts/{candidate}.sh'
+            if pattern in stripped:
+                bad_refs.add((lineno, pattern))
+
+    if bad_refs:
+        unique_lines = sorted(set(l for l, _ in bad_refs))
+        lines_str = ', '.join(f"line {l}" for l in unique_lines)
+        preferred = f'./{fm_name}.sh'
+        warnings.append(
+            f"script usage reference(s) use 'scripts/<name>.sh' instead of '{preferred}' ({lines_str})"
+        )
+
+    return errors, warnings
+
+
 def _strip_version_suffix(dir_basename):
     """Strip trailing -<version> suffix from directory basename.
 
@@ -317,7 +383,13 @@ def cmd_create(args):
         print(f"create: {skill_md_path} already exists — skipping", file=sys.stderr)
         sys.exit(1)
 
-    content = DEFAULT_SKILL_MD.format(name=dir_name, description=description, title=h1_title)
+    if args.with_scripts:
+        content = DEFAULT_SKILL_MD_WITH_SCRIPTS.format(
+            name=dir_name, description=description, title=h1_title,
+            script_name=name,
+        )
+    else:
+        content = DEFAULT_SKILL_MD.format(name=dir_name, description=description, title=h1_title)
     with open(skill_md_path, 'w') as f:
         f.write(content)
 
@@ -452,6 +524,15 @@ def cmd_validate(args):
             sh_path = os.path.join(skill_dir, 'scripts', f'{fm_name}.sh')
             if os.path.isfile(sh_path):
                 results.append(("PASS", f"scripts/{fm_name}.sh is executable"))
+
+        # Script usage reference style check (outside fenced code blocks)
+        ref_errors, ref_warnings = _check_script_usage_refs(body, fm_name)
+        for e in ref_errors:
+            results.append(("ERROR", e))
+        for w in ref_warnings:
+            results.append(("WARN", w))
+        if not ref_errors and not ref_warnings:
+            results.append(("PASS", "script usage references use './<name>.sh' format"))
 
     # --- Body checks ---
     body_lines = body.splitlines()
