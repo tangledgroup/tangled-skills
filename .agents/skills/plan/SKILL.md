@@ -224,10 +224,14 @@ When building or refining a plan, actively manage task dependencies using `add-t
 
 Dependencies are managed incrementally — there is no "add all at once" command. Call `add-task-dependency` for each individual dependency edge.
 
+## Gotchas
+
+- **Never remove-and-re-add phases or tasks** — if you need to change a phase's title, description, status, or dependencies, use the update commands (`update-phase`, `update-task`, `set-task-status`, `add-task-dependency`, etc.). Removing and re-adding loses task numbering continuity, breaks dependency anchors (`⚓`), resets statuses, and can introduce race conditions. The only reason to remove a phase or task is when it is genuinely no longer part of the plan.
+- **Updating a plan usually means changing statuses** — most plan "updates" are status transitions (`set-task-status`, `set-phase-status`). Title or description changes via `update-phase` / `update-task` are rare and should only happen when the scope itself has changed, not as a workaround for adding details (use sub-bullets under tasks for that).
+
 ## Dependencies
 
-Scripts require: `python3` 3.10+ with only built-in modules (`argparse`, `re`, `sys`, `datetime`, `pathlib`).
-No third-party packages needed.
+Scripts require: `python3` 3.10+ with only built-in modules, and no third-party packages needed.
 
 ## Usage
 
