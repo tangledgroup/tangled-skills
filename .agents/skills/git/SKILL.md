@@ -1,6 +1,9 @@
 ---
 name: git
 description: Git version control. Use when the user mentions git, commits, branches, pushing, pulling, merging, rebasing, stashing, worktrees, submodules, or any version control task. Covers straightforward workflows (add/commit/push) and advanced topics.
+metadata:
+  tags:
+    - meta
 ---
 
 # git

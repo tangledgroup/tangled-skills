@@ -81,7 +81,7 @@ def _parse_frontmatter(text):
     """Return (frontmatter_dict, body_text) or (None, text) if no frontmatter.
 
     Handles single-line values, quoted multi-line values, block scalars (|, >),
-    and indented continuation lines.
+    indented continuation lines, and nested mappings/lists (e.g. metadata.tags).
     """
     m = FRONTMATTER_RE.match(text)
     if not m:
@@ -141,6 +141,56 @@ def _parse_frontmatter(text):
                 i += 1
             fm[key] = '\n'.join(parts)
             continue
+        # Handle nested mapping: key with no value, followed by indented children
+        if not value:
+            i += 1
+            child = {}
+            while i < len(lines):
+                nline = lines[i]
+                if not nline or nline[0] not in (' ', '\t'):
+                    break
+                nstripped = nline.strip()
+                if not nstripped or nstripped.startswith('#'):
+                    i += 1
+                    continue
+                # Check for list items (- item)
+                if nstripped.startswith('- '):
+                    # Collect all list items under the nearest sub-key
+                    # Find the sub-key by looking at previous context
+                    list_items = [nstripped[2:].strip()]
+                    i += 1
+                    while i < len(lines):
+                        lline = lines[i]
+                        if not lline or lline[0] not in (' ', '\t'):
+                            break
+                        lstripped = lline.strip()
+                        if lstripped.startswith('- '):
+                            list_items.append(lstripped[2:].strip())
+                            i += 1
+                        elif not lstripped or lstripped.startswith('#'):
+                            i += 1
+                        else:
+                            break
+                    # Assign to last sub-key seen
+                    if child:
+                        last_key = list(child.keys())[-1]
+                        child[last_key] = list_items
+                    continue
+                # Sub-key: value
+                slm = YAML_LINE_RE.match(nstripped)
+                if slm:
+                    skey = slm.group('key')
+                    sval = slm.group('value').strip()
+                    if not sval:
+                        # Nested sub-mapping (rare, treat as empty string)
+                        child[skey] = {}
+                    else:
+                        child[skey] = sval
+                    i += 1
+                else:
+                    i += 1
+            fm[key] = child
+            continue
         # Handle indented continuation lines (next line is indented more)
         i += 1
         while i < len(lines):
@@ -188,6 +238,34 @@ def _validate_description(desc):
     if re.search(r'<[a-zA-Z/][^>]*>', desc):
         errors.append("description must not contain XML/HTML tags")
     return errors
+
+
+def _validate_metadata(metadata):
+    """Return list of warning strings for optional metadata field.
+
+    metadata should be a dict (mapping). If present, 'tags' must be a list of strings.
+    Returns warnings only (metadata is optional).
+    """
+    warnings = []
+    if metadata is None:
+        return warnings
+    if not isinstance(metadata, dict):
+        warnings.append(
+            f"metadata should be a mapping (got {type(metadata).__name__})"
+        )
+        return warnings
+    tags = metadata.get('tags')
+    if tags is not None:
+        if not isinstance(tags, list):
+            warnings.append(
+                f"metadata.tags should be an array of strings (got {type(tags).__name__})"
+            )
+        elif not all(isinstance(t, str) for t in tags):
+            non_str = [t for t in tags if not isinstance(t, str)]
+            warnings.append(
+                f"metadata.tags must contain only strings (found: {non_str})"
+            )
+    return warnings
 
 
 def _validate_frontmatter(fm):
@@ -491,12 +569,22 @@ def cmd_validate(args):
             results.append(("PASS", "description is valid"))
 
         # Unknown fields
-        known_fields = {'name', 'description'}
+        known_fields = {'name', 'description', 'metadata'}
         unknown = set(fm.keys()) - known_fields
         if unknown:
             results.append(("WARN", f"unknown frontmatter fields: {', '.join(sorted(unknown))}"))
         else:
             results.append(("PASS", "no unknown frontmatter fields"))
+
+        # Metadata validation (optional)
+        metadata = fm.get('metadata')
+        if metadata is not None:
+            meta_warnings = _validate_metadata(metadata)
+            for w in meta_warnings:
+                results.append(("WARN", f"metadata: {w}"))
+            if not meta_warnings:
+                results.append(("PASS", "metadata structure is valid"))
+        # else: metadata absent — that's fine, it's optional
 
         # Name vs directory basename consistency
         skill_dir = os.path.dirname(skill_md)
@@ -642,8 +730,14 @@ def cmd_info(args):
             val = fm.get(key)
             if val is not None:
                 print(f"  {key}: {val}")
+        # Show metadata if present
+        metadata = fm.get('metadata')
+        if metadata is not None:
+            tags = metadata.get('tags', [])
+            if tags:
+                print(f"  metadata.tags: {', '.join(tags)}")
         # Show any extra fields
-        known_fields = {'name', 'description'}
+        known_fields = {'name', 'description', 'metadata'}
         extra = set(fm.keys()) - known_fields
         for key in sorted(extra):
             print(f"  {key}: {fm[key]}")

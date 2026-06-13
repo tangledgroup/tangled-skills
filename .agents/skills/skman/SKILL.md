@@ -1,6 +1,9 @@
 ---
 name: skman
 description: Scaffold, validate, and inspect agent skills (SKILL.md files). Use when creating new skills, checking skill format compliance, or reviewing skill structure.
+metadata:
+  tags:
+    - meta
 ---
 
 # skman
@@ -100,6 +103,7 @@ A skill is a directory containing a `SKILL.md` file. Everything else is optional
 |---|---|---|
 | `name` | Yes | 1-64 chars, lowercase a-z, 0-9, hyphens; no leading/trailing/consecutive hyphens; must match directory name exactly (e.g., `demo-skill-2-4-1` for `demo-skill-2-4-1/`); meta skills without versions use plain name (e.g., `skman`, `plan`) |
 | `description` | Yes | Non-empty, max 1024 chars, third-person, must not contain XML/HTML tags (`<tag>`) |
+| `metadata` | No | Optional object. May contain `tags` (array of strings, e.g., `["meta", "devops"]`). Validator warns if `metadata` is not a mapping or `tags` is not a string array.
 
 ### Frontmatter Template
 
@@ -107,6 +111,9 @@ A skill is a directory containing a `SKILL.md` file. Everything else is optional
 ---
 name: my-skill
 description: What this skill does and when to use it. Be specific.
+metadata:
+  tags:
+    - meta
 ---
 ```
 
@@ -155,6 +162,7 @@ Checks performed:
 - Frontmatter presence and required fields
 - Name format (case, characters, length, hyphen rules)
 - Description presence, length, and absence of XML/HTML tags
+- `metadata` structure (warns if present but not a mapping; warns if `tags` is not a string array)
 - Body starts with a level-1 heading
 - Body line count warning (>500 lines)
 - Name vs directory basename consistency (warns on mismatch)

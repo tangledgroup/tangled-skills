@@ -1,6 +1,9 @@
 ---
 name: plan
 description: Phase/task based workflow system with PLAN.md as single source of truth. Use when tackling projects that require structured iteration through Planning, Analysis, Design, Implementation, Testing, Deployment, Maintenance, etc phases with clear dependency graphs.
+metadata:
+  tags:
+    - meta
 ---
 
 # plan

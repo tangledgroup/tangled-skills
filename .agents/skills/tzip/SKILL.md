@@ -1,6 +1,9 @@
 ---
 name: tzip
 description: Lightweight token-pruning communication mode that drops filler and hedging while keeping full sentences and professional tone. Follows guidelines for code quality. Default intensity is lite. Use when user requests tzip, prune tokens, be concise, or needs efficient communication without losing clarity.
+metadata:
+  tags:
+    - meta
 ---
 
 # tzip
