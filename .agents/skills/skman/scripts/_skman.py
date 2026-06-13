@@ -69,7 +69,7 @@ Run from the `scripts/` directory:
 """)
 
 # Matches trailing version suffix: -<digit>[-<digit>]* at end of dir name
-# e.g. "uv-0-11-19" -> "0-11-19", "git-8-20-0" -> "8-20-0"
+# e.g. "demo-skill-2-4-1" -> "2-4-1", "git-8-20-0" -> "8-20-0"
 VERSION_SUFFIX_RE = re.compile(r'-(\d+(?:-\d+)+)$')
 
 
@@ -288,7 +288,7 @@ def _check_script_usage_refs(body, fm_name):
     if not fm_name:
         return errors, warnings
 
-    # Also check for the dir basename variant (e.g. uv-0-11-19 vs uv)
+    # Also check for the dir basename variant (e.g. demo-skill-2-4-1 vs demo-skill)
     base_name, _ = _strip_version_suffix(fm_name)
 
     in_fence = False
@@ -321,7 +321,7 @@ def _strip_version_suffix(dir_basename):
     """Strip trailing -<version> suffix from directory basename.
 
     Returns (name, version_with_hyphens_or_None).
-    e.g. 'uv-0-11-19' -> ('uv', '0-11-19')
+    e.g. 'demo-skill-2-4-1' -> ('demo-skill', '2-4-1')
          'skman'       -> ('skman', None)
     """
     m = VERSION_SUFFIX_RE.search(dir_basename)
@@ -503,7 +503,7 @@ def cmd_validate(args):
         dir_basename = os.path.basename(skill_dir)
         dir_name, dir_version = _strip_version_suffix(dir_basename)
         fm_name = fm.get('name', '')
-        # Accept frontmatter name as either base name ('uv') or full name ('uv-0-11-19')
+        # Accept frontmatter name as either base name ('demo-skill') or full name ('demo-skill-2-4-1')
         name_matches = (fm_name == dir_basename)
         if fm_name and not name_matches:
             results.append(
@@ -816,7 +816,7 @@ def build_parser():
               skman.sh create my-skill "Does X and Y"
               skman.sh create my-skill "Desc" --with-scripts --with-references
               skman.sh create my-skill "Desc" -o ./custom-skills
-              skman.sh create uv "Package manager" --version 0.11.19
+              skman.sh create demo-skill "Dummy example skill" --version 2.4.1
         """),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )

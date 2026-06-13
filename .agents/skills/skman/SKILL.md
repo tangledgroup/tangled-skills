@@ -22,8 +22,8 @@ Tools and guidelines for creating, validating, and managing agent skills. Use `s
 # Scaffold a new skill
 skman.sh create <name> "<description>"
 
-# Create with version (dir: uv-0-11-19/, H1: # uv 0.11.19)
-skman.sh create uv "Fast Python package manager" --version 0.11.19
+# Create with version (dir: demo-skill-2-4-1/, H1: # demo-skill 2.4.1)
+skman.sh create demo-skill "Dummy example skill" --version 2.4.1
 
 # Create with scripts and references
 skman.sh create my-skill "Desc" --with-scripts --with-references
@@ -52,8 +52,8 @@ skman.sh generate --help
 # Into default location (.agents/skills/my-skill/)
 skman.sh create my-skill "Extracts text from PDF files"
 
-# With version (dir: uv-0-11-19/, H1: # uv 0.11.19)
-skman.sh create uv "Fast Python package manager" --version 0.11.19
+# With version (dir: demo-skill-2-4-1/, H1: # demo-skill 2.4.1)
+skman.sh create demo-skill "Dummy example skill" --version 2.4.1
 
 # With scripts and references
 skman.sh create my-skill "Desc" --with-scripts --with-references
@@ -98,7 +98,7 @@ A skill is a directory containing a `SKILL.md` file. Everything else is optional
 
 | Field | Required | Rules |
 |---|---|---|
-| `name` | Yes | 1-64 chars, lowercase a-z, 0-9, hyphens; no leading/trailing/consecutive hyphens; must match directory name exactly (e.g., `uv-0-11-19` for `uv-0-11-19/`); meta skills without versions use plain name (e.g., `skman`, `plan`) |
+| `name` | Yes | 1-64 chars, lowercase a-z, 0-9, hyphens; no leading/trailing/consecutive hyphens; must match directory name exactly (e.g., `demo-skill-2-4-1` for `demo-skill-2-4-1/`); meta skills without versions use plain name (e.g., `skman`, `plan`) |
 | `description` | Yes | Non-empty, max 1024 chars, third-person, must not contain XML/HTML tags (`<tag>`) |
 
 ### Frontmatter Template
@@ -116,10 +116,10 @@ Follow these steps in order:
 
 1. **Choose a name** — lowercase, hyphens, numbers only (e.g., `pdf-processing`, `git-8-20-0`). No leading/trailing/consecutive hyphens.
 
-2. **Write the frontmatter** — exactly `name` and `description` at minimum. The `name` must match the directory name exactly (e.g., `name: uv-0-11-19` for `uv-0-11-19/`). The description determines when the agent loads this skill; make it specific with trigger terms.
+2. **Write the frontmatter** — exactly `name` and `description` at minimum. The `name` must match the directory name exactly (e.g., `name: demo-skill-2-4-1` for `demo-skill-2-4-1/`). The description determines when the agent loads this skill; make it specific with trigger terms.
 
 3. **Write the body** — concise instructions, under 500 lines. Must start with a level-1 heading matching `# <name>` or `# <name> <version>`. Structure:
-   - `# <name>` (e.g., `# skman`) or `# <name> <version>` (e.g., `# uv 0.11.19`)
+   - `# <name>` (e.g., `# skman`) or `# <name> <version>` (e.g., `# demo-skill 2.4.1`)
    - `## Overview` — what it does
    - `## Usage` — Optional: how to use it with examples
    - `## Gotchas` — Optional: The most useful part of teaching a skill is listing its hidden traps. Instead of vague advice, provide specific rules that stop the agent from making predictable, common-sense mistakes in that specific environment.
@@ -135,10 +135,10 @@ Follow these steps in order:
 ### Manual Creation
 
 When writing files directly, ensure:
-- Directory is named after the skill (e.g., `skman`) or `<skill-name>-<version>` (e.g., `uv-0-11-19`)
-- Frontmatter `name` must match the directory name exactly (e.g., `name: uv-0-11-19` for `uv-0-11-19/`, or `name: skman` for `skman/`)
+- Directory is named after the skill (e.g., `skman`) or `<skill-name>-<version>` (e.g., `demo-skill-2-4-1`)
+- Frontmatter `name` must match the directory name exactly (e.g., `name: demo-skill-2-4-1` for `demo-skill-2-4-1/`, or `name: skman` for `skman/`)
 - `SKILL.md` exists at the directory root
-- Body starts with `# <name>` or `# <name> <version>` matching the directory (e.g., `# uv 0.11.19` for `uv-0-11-19/`)
+- Body starts with `# <name>` or `# <name> <version>` matching the directory (e.g., `# demo-skill 2.4.1` for `demo-skill-2-4-1/`)
 
 ## Editing a Skill
 
@@ -226,6 +226,6 @@ Guidelines:
 
 - **Scaffolded `.sh` files may lose execute permission** — `skman.sh create --with-scripts` sets `chmod 0o755`, but editors or git checkouts can strip it. Always verify with `ls -l <name>.sh`; the validator warns if the bit is missing.
 - **`--strict` turns section warnings into errors** — only `## Overview` produces a warning when missing. `## Usage`, `## Gotchas`, and `## References` are truly optional and never warn (knowledge-only skills often have no Usage section). In strict mode, any warning fails validation.
-- **Frontmatter `name` must match the directory basename exactly** — e.g., `uv-0-11-19/` requires `name: uv-0-11-19`, `skman/` requires `name: skman`. The validator warns on mismatch. Fix by renaming the directory or correcting the frontmatter.
-- **H1 heading must match `# <name>` or `# <base> <version>`** — the validator errors if the first heading doesn't match. For `skman/` it must be `# skman`; for `uv-0-11-19/` it must be `# uv 0.11.19` (version uses dots, not hyphens). The version in the H1 must correspond to the hyphenated version suffix in the directory/frontmatter name.
+- **Frontmatter `name` must match the directory basename exactly** — e.g., `demo-skill-2-4-1/` requires `name: demo-skill-2-4-1`, `skman/` requires `name: skman`. The validator warns on mismatch. Fix by renaming the directory or correcting the frontmatter.
+- **H1 heading must match `# <name>` or `# <base> <version>`** — the validator errors if the first heading doesn't match. For `skman/` it must be `# skman`; for `demo-skill-2-4-1/` it must be `# demo-skill 2.4.1` (version uses dots, not hyphens). The version in the H1 must correspond to the hyphenated version suffix in the directory/frontmatter name.
 - **Reference files are loaded on demand, not into context** — keep SKILL.md self-contained for core instructions; move deep-dive content to `references/NN-topic.md` and link from the body.
