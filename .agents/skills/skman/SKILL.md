@@ -5,9 +5,11 @@ description: Scaffold, validate, and inspect agent skills (SKILL.md files). Use 
 
 # skman
 
+Tools and guidelines for creating, validating, and managing agent skills. Use `skman.sh` to scaffold new skill directories, check format compliance, inspect structure, and regenerate the repository README.
+
 ## Overview
 
-`skman` is a CLI tool for scaffolding, validating, and inspecting agent skills (SKILL.md files). It provides four commands:
+`skman` is a skill for scaffolding, validating, and inspecting agent skills (SKILL.md files). It provides four functionalities:
 
 - **`create`** — Scaffold a new skill directory with SKILL.md, optional scripts, and references
 - **`validate`** — Check a skill against the format specification (frontmatter, naming, structure)
