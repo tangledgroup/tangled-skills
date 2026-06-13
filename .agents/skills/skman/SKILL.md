@@ -1,453 +1,239 @@
 ---
 name: skman
-description: Skill Package Manager, skman, it is meta skill for skill authoring and skill package manager for AI agents.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.3.1"
-tags:
-  - meta
-  - meta skill
-  - skill manager
-  - skill package manager
-  - authoring
-category: meta
-external_references:
-  - https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
-  - https://opencode.ai/docs/skills
-  - https://pi.dev/docs/latest/skills
+description: Scaffold, validate, and inspect agent skills (SKILL.md files). Use when creating new skills, checking skill format compliance, or reviewing skill structure.
+metadata:
+  tags:
+    - meta
 ---
 
-# skman - Skill Package Manager
+# skman
+
+Tools and guidelines for creating, validating, and managing agent skills. Use `skman.sh` to scaffold new skill directories, check format compliance, inspect structure, and regenerate the repository README.
 
 ## Overview
 
-It is meta skill for skill authoring and skill package manager for AI agents.
+`skman` is a skill for scaffolding, validating, and inspecting agent skills (SKILL.md files). It provides four functionalities:
 
-Generates spec-compliant, cross-platform agent skills from user requirements. Takes project/tool name, version, and documentation sources (URLs or filesystem paths), then produces complete SKILL.md files that work on pi, opencode, Claude Code, and Codex platforms.
+- **`create`** — Scaffold a new skill directory with SKILL.md, optional scripts, and references
+- **`validate`** — Check a skill against the format specification (frontmatter, naming, structure)
+- **`info`** — Inspect frontmatter, body stats, and heading hierarchy
+- **`generate`** — Regenerate the repository README.md with skills table and statistics
 
-Skills are Markdown-only by default — no scripts or assets are generated unless the user explicitly requests them. If OS-level operations are needed, inline bash or Python with built-in modules is used instead.
-
-## When to Use
-
-- Creating a new agent skill from scratch for a project, library, or tool
-- Converting existing documentation into a skill format
-- Generating skills from official documentation URLs or local codebases
-- Updating an existing skill for a new upstream version
-- Any task that requires producing spec-compliant `.agents/skills/<name>/SKILL.md` files
-
-## Core Concepts
-
-### Source Types
-
-The user provides at least one source:
-
-- **URLs** — HTTP(S) links to web pages, documentation, or raw files
-- **Filesystem paths** — absolute or relative paths to directories or files
-- **Mixed** — combination of both
-
-### Output Structure
-
-Generated skills are created in `.agents/skills/<skill-name>/`:
-
-**Simple skill** (single SKILL.md):
-```
-my-skill/
-└── SKILL.md              # All content inline
-```
-
-Use simple when the topic is conceptual, single-domain, or has no natural subtopic split.
-
-**Complex skill** (SKILL.md + reference/):
-```
-my-skill/
-├── SKILL.md              # Overview + navigation hub
-└── reference/           # Flat structure, numbered files
-    ├── 01-core-concepts.md
-    └── 02-advanced-topics.md
-```
-
-Use complex when content has distinct subtopics that benefit from progressive disclosure — an agent would only need 1-2 reference files per task. Line count is secondary; a 200-line skill covering 4 domains should still split.
-
-**Opt-in extras** (only when user explicitly requests scripts or assets):
-```
-my-skill/
-├── SKILL.md
-├── reference/
-├── scripts/              # Only if explicitly requested
-│   └── validate.sh       # Validation script
-│   ├── analyze_form.py   # Utility script (executed, not loaded into context)
-│   ├── fill_form.lua     # Form filling script
-└── assets/               # Only if explicitly requested
-    └── example-config.yaml
-```
-
-**Script quality rules:**
-- Scripts must handle errors explicitly (never punt to the agent with bare exceptions)
-- All constants must be documented with justification
-- Provide clear, specific error messages that help the agent fix issues
-- **Make execution intent explicit**: Always state whether the agent should execute or read a script:
-  - **Execute** (preferred): "Run `analyze_form.py` to extract fields" — the script runs via bash, only output consumes tokens. More reliable and token-efficient.
-  - **Read as reference**: "See `extract_algorithm.py` for the field extraction logic" — the agent reads the source code to understand complex algorithms or adapt the approach.
-- When in doubt, prefer execution over reading. Scripts that run deterministically are more reliable than agent-generated equivalents.
-
-### Progressive Disclosure Patterns
-
-- **High-level guide with references**: SKILL.md provides quick-start examples, then links to detailed reference files for advanced features. Agent loads references only when needed.
-- **Domain-specific organization**: For skills covering multiple domains, split by domain (e.g., `reference/01-finance.md`, `reference/02-sales.md`) so the agent loads only relevant context.
-- **Conditional details**: Show basic content in SKILL.md, link to advanced content that the agent reads conditionally based on the task.
-
-**Keep references one level deep from SKILL.md.** All reference files should link directly from SKILL.md. Never chain references (reference → reference → reference) — this causes incomplete information loading.
-
-## Advanced Topics
-
-**Evaluation-Driven Development**: Build evaluations before writing skill content, iterate based on real agent behavior → [Evaluation-Driven Development](reference/01-evaluation-driven-development.md)
-
-**Degrees of Freedom**: Match instruction specificity to task fragility — high, medium, or low freedom → [Degrees of Freedom](reference/02-degrees-of-freedom.md)
-
-## Commands
-
-All paths are relative to this skill's directory (where SKILL.md lives).
-
-### sync — Sync local .agents/skills with tangled-skills
-
-Download the latest skills from the tangled-skills repository and merge them into your local `.agents/skills/` directory.
+## Usage
 
 ```bash
-bash scripts/sync.sh [TARGET_DIR]
+# Scaffold a new skill
+skman.sh create <name> "<description>"
+
+# Create with version (dir: demo-skill-2-4-1/, H1: # demo-skill 2.4.1)
+skman.sh create demo-skill "Dummy example skill" --version 2.4.1
+
+# Create with scripts and references
+skman.sh create my-skill "Desc" --with-scripts --with-references
+
+# Validate a skill
+skman.sh validate ./my-skill
+skman.sh validate --strict ./my-skill
+
+# Inspect frontmatter and structure
+skman.sh info ./my-skill
+
+# Regenerate README.md Skills Table and Statistics
+skman.sh generate
+
+# Help at every level
+skman.sh --help
+skman.sh create --help
+skman.sh validate --help
+skman.sh info --help
+skman.sh generate --help
 ```
 
-**Arguments:**
-- `TARGET_DIR` — Directory where `.agents/skills` will be created/updated (default: current directory `.`)
+### Scaffold New Skill
 
-**What it does:** Fetches the `main` branch of tangled-skills from GitHub, extracts the `.agents/skills/` contents into `TARGET_DIR/.agents/skills/`, overwriting existing skills with upstream versions.
+```bash
+# Into default location (.agents/skills/my-skill/)
+skman.sh create my-skill "Extracts text from PDF files"
 
-**Dependencies:** bash, curl, tar
+# With version (dir: demo-skill-2-4-1/, H1: # demo-skill 2.4.1)
+skman.sh create demo-skill "Dummy example skill" --version 2.4.1
 
-## Generation Workflow
+# With scripts and references
+skman.sh create my-skill "Desc" --with-scripts --with-references
 
-### Step 0: Detect Mode
+# Into a specific parent directory
+skman.sh create my-skill "Desc" -o ./custom-skills
+```
 
-Determine whether this is a **new skill** or an **update**:
+The script validates name and description before creating files.
 
-- **New**: No existing directory matches the name. Proceed with full generation.
-- **Update**: Existing skill directory found (e.g., `curl-8-19-0` → `curl-8-20-0`). Read the existing SKILL.md, crawl new sources, diff against old content, preserve structure and working sections, update only changed parts. Create a new versioned directory — never overwrite the old one.
+### Validate
 
-**Conflict detection:** Before creating, check `.agents/skills/` for:
-- Exact name match (same version) → warn user, ask if they meant to update
-- Name without version that overlaps → suggest versioned naming
-- Near-duplicate coverage → note the overlap in description
+Run the built-in validator:
 
-### Step 1: Validate Input
+```bash
+skman.sh validate ./my-skill
+skman.sh validate --strict ./my-skill
+```
 
-Check that the skill name matches `^[a-z0-9]+(-[a-z0-9]+)*$`. The upstream project version goes into the skill name/directory (e.g., `curl-8-20-0`). The YAML `version` field tracks the skill file's own version, starting at `0.1.0` and following SemVer.
+## Skill Format
 
-### Step 2: Crawl and Collect Content
+A skill is a directory containing a `SKILL.md` file. Everything else is optional.
 
-Follow the crawling strategy to gather all source material.
+### Directory Layout
 
-**URL Crawling:** Recursively follow all links within the same domain and subdomains.
+```
+<skill-name>/
+├── SKILL.md              # Required: frontmatter + instructions
+├── scripts/              # Optional: helper scripts (executed, not loaded into context)
+│   ├── <skill-name>.sh   # Bash wrapper — the entry point referenced in SKILL.md
+│   └── _<skill-name>.py  # Python implementation (underscore prefix, not called directly)
 
-**Filesystem Path Crawling:** Recursively visit all files and directories.
+> Use `skman.sh create --with-scripts` to scaffold these.
+├── references/           # Optional: detailed docs loaded on demand (numbered prefix)
+│   └── 01-topic.md
+│   └── 02-abc.md
+│   └── 03-xyz.md
+└── assets/               # Optional: templates, configs, etc.
+```
 
-**Analyzable extensions:**
+### Frontmatter Fields
 
-- **Markdown**: `.md`, `.mdx`, `.markdown`, `.mkd` — direct read (`.md` and `.mdx` are treated identically), or `curl -sL` then read
-- **RST/Docs**: `.rst`, `.adoc` — direct read. For `.rst` sources (common in Python docs), you may need to read many files to reconstruct the hierarchical document structure before synthesizing skill content
-- **Text**: `.txt` — direct read
-- **HTML**: `.html`, `.htm` — `pandoc -f html -t markdown`, fallback raw
-- **PDF**: `.pdf` — `pdftotext -layout` or `gs`
-- **Config**: `.yaml`, `.yml`, `.json`, `.toml`, `.ini`, `.cfg` — direct read
-- **Scripts**: `.sh`, `.bash`, `.py`, `.c`, `.h`, `.cpp`, `.rs`, `.go`, `.js`, `.ts` — direct read
-- **Man pages**: `.1`–`.9` — direct read
+| Field | Required | Rules |
+|---|---|---|
+| `name` | Yes | 1-64 chars, lowercase a-z, 0-9, hyphens; no leading/trailing/consecutive hyphens; must match directory name exactly (e.g., `demo-skill-2-4-1` for `demo-skill-2-4-1/`); meta skills without versions use plain name (e.g., `skman`, `plan`) |
+| `description` | Yes | Non-empty, max 1024 chars, third-person, must not contain XML/HTML tags (`<tag>`) |
+| `metadata` | No | Optional object. May contain `tags` (array of strings, e.g., `["meta", "devops"]`). Validator warns if `metadata` is not a mapping or `tags` is not a string array.
 
-**Skip rules:**
-- Binary files (`.png`, `.jpg`, `.gif`, `.zip`, `.tar`, `.gz`, `.whl`, `.pyc`, `.so`, `.dll`, `.exe`)
-- Hidden files/directories (`.` prefix) unless explicitly requested
-- Environment configuration files (`.env`, `.env*`) unless explicitly requested
-- Version control dirs (`.git/`, `.svn/`, `.hg/`) always
-- **Do not skip by size** — large files may be complex text documents
-
-### Step 3: Analyze and Determine Structure
-
-Assess collected content to decide simple vs complex output structure. Consider:
-- Does the content have 2+ distinct subtopics? → complex
-- Would an agent typically need only part of the skill per task? → complex
-- Is it a single cohesive topic under 300 lines? → simple
-
-### Step 4: Generate YAML Header
-
-Create a valid YAML header with validated name, description, version, and metadata fields.
-
-YAML Header Rules:
-
-Every generated skill MUST have a valid YAML header. Invalid YAML prevents loading on all platforms.
+### Frontmatter Template
 
 ```yaml
 ---
-name: <skill-name>
-description: <1-1024 char description, third person, includes WHAT and WHEN>
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - <tag1>
-  - <tag2>
-category: <category>
-external_references:
-  - https://<user-provided-url>
+name: my-skill
+description: What this skill does and when to use it. Be specific.
+metadata:
+  tags:
+    - meta
 ---
 ```
 
-Field Rules:
-- `name` — **Required**. 1-64 chars, regex `^[a-z0-9]+(-[a-z0-9]+)*$`, matches directory name. Include the upstream version hyphenated in the name (e.g., `curl-8-20-0`, `pacote-21-5-0`).
-- `description` — **Required**. 1-1024 chars, third person, includes WHAT and WHEN.
-- `license` — **Always MIT** — this is the skill file's license, never the upstream project's.
-- `author` — Format: `Name <email@example.com>`.
-- `version` — The **skill file's own version**, independent of the upstream project version. Always start at `0.1.0`. Follows SemVer 2.0.0: bump patch for corrections/typos, minor for new content or sections, major for structural rewrites.
-- `tags` — Array of string tags, 3-7 recommended. Mix broad and specific. Include the upstream project name when distinctive.
-- `category` — Skill category classification. Common values: `tooling`, `networking`, `database`, `language-runtime`, `ml-ai`, `web-framework`, `cli-tool`, `library`, `protocol`, `devops`.
-- `external_references` — User-provided starting URLs only.
-- `compatibility` — Max 500 chars, environment requirements.
-- `metadata` — String-to-string map.
-- `allowed-tools` — Pre-approved tools (experimental, pi only).
-- `disable-model-invocation` — Hidden from system prompt (pi only).
-
-Name Validation:
-
-```
-^[a-z0-9]+(-[a-z0-9]+)*$
-```
-
-Valid: `pdf-processing`, `data-analysis`, `fastapi-0-115`
-Invalid: `PDF-Processing`, `-pdf`, `pdf--processing`, `pdf processing`
-
-Version Field Rules:
-
-The `version` field tracks the **skill file's own version**, independent of the upstream project version. The upstream version lives in the skill name/directory (e.g., `curl-8-20-0` means curl v8.20.0).
-
-- **Always start at `0.1.0`** for new skills
-- **SemVer 2.0.0**: `MAJOR.MINOR.PATCH`
-- **Patch bump** (`0.1.0` → `0.1.1`): typo fixes, minor corrections
-- **Minor bump** (`0.1.0` → `0.2.0`): new content, new sections, substantive improvements
-- **Major bump** (`0.2.0` → `1.0.0`): structural rewrites, breaking changes to instruction semantics
-
-When constructing the **directory name**, include the upstream version hyphenated: `project-1-2-3`, `project-0-16`, `project-2025-11-25`. The `name` field in YAML must match the directory name exactly.
-
-Description Formula — Construct descriptions using this pattern:
-
-```
-[WHAT it does] + [key capabilities, comma-separated] + Use when [specific scenarios].
-```
-
-Aim for **150-400 characters**. Under 100 = too vague, over 600 = token waste.
-
-**Key terms checklist**: The description is the primary signal agents use to select this skill from potentially 100+ available skills. Ensure it includes:
-- **WHAT**: What the skill does (action verb + domain)
-- **WHEN**: Specific trigger scenarios that tell the agent when to load this skill
-- **Key terms**: Include distinctive keywords from the project/tool name and its primary use cases
-- **Third person only**: Never "I can help" or "you can use" — write as objective description
-
-```yaml
-# Good — specific, third person, includes WHAT and WHEN
-description: Extracts text and tables from PDF files and merges multiple PDFs. Use when working with PDF documents.
-
-# Good — includes key capabilities for discoverability
-description: Complete toolkit for NumPy 2.4 providing n-dimensional arrays, mathematical functions, linear algebra, and Fourier transforms. Use when building Python programs requiring numerical array computing or high-performance vectorized computation.
-
-# Poor — too vague
-description: Helps with PDFs.
-
-# Poor — first person (breaks discovery)
-description: I can help you process Excel files and generate reports.
-
-# Poor — missing WHEN
-description: A library for working with PDF documents including extraction and merging.
-```
-
-Output File Templates — SKILL.md Template:
-
-Every generated skill MUST include the YAML header and these core sections:
-
-```markdown
----
-name: <skill-name>
-description: <specific description with WHAT and WHEN>
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - <tag1>
-  - <tag2>
-category: <category>
-external_references:
-  - https://<user-provided-url>
----
-
-# <Project Name> <Version>
-
-## Overview
-
-Brief description of what the project/tool does and its primary use cases.
-
-## When to Use
-
-Clear guidance on when this skill should be invoked. Include specific scenarios.
-
-## Core Concepts
-
-Key concepts, terminology, and fundamental ideas related to the topic.
-```
-
-The following sections are **optional** — include only when applicable:
-
-`## Installation / Setup` — Include when the tool/library requires installation, configuration, or environment setup steps. Skip for conceptual, guideline, or meta-skills that have no install process.
-
-`## Usage Examples` — Include when practical code examples are relevant. Provide copy-pasteable code blocks with language tags. Skip for conceptual, guideline, or meta-skills where code examples don't apply.
-
-`## Advanced Topics` — Include **only** when the skill has companion reference files in `reference/`. Use this section as a navigation hub linking to them:
-
-```markdown
-## Advanced Topics
-
-**Core Concepts**: Deep dive into fundamentals → [Core Concepts](reference/01-core-concepts.md)
-**Advanced Workflow**: Complex patterns and edge cases → [Advanced Workflow](reference/02-advanced-workflow.md)
-**API Reference**: Detailed function/method documentation → [API Reference](reference/03-api-reference.md)
-```
-
-### Reference File Template
-
-```markdown
-# <Topic Name>
-
-## Contents
-- Subsection 1
-- Subsection 2
-- Subsection 3
-
-## Subsection 1
-Content here...
-
-## Subsection 2
-Content here...
-```
-
-For reference files longer than 100 lines, include a table of contents at the top so the agent can see the full scope of available information even when previewing.
-
-### Step 5: Write Output Files
-
-Write SKILL.md (simple) or SKILL.md + reference/ (complex).
-
-### Step 5a: Avoid Anti-Patterns
-
-Check the generated skill against these common mistakes before proceeding to validation:
-
-**Windows-style paths**: Always use forward slashes in file references (e.g. `reference/guide.md`, not `reference\guide.md`). Backslash paths cause errors on Unix systems and break cross-platform compatibility.
-
-**Offering too many options**: Don't present multiple approaches unless necessary. Give a single recommended approach. If alternatives exist, put them in a reference file, not the main SKILL.md. Multiple options confuse the agent and increase token usage.
-
-**Time-sensitive information**: Don't include details that will become outdated (e.g., "the latest version is 3.2"). If historical context is needed, use an "old patterns" section clearly labeled as legacy.
-
-**Over-explaining basics**: The target agent already knows common concepts (what HTTP is, what a database does). Only add context the agent doesn't already have. Challenge each paragraph: "Does this justify its token cost?"
-
-**Inconsistent terminology**: Choose one term per concept and use it throughout (always "API endpoint," not sometimes "URL" or "route"). Inconsistency confuses the agent.
-
-### Step 6: Validate
-
-Run the structural validator first, then perform the LLM-judgment checks.
-
-#### 6a. Run Structural Validator
-
-```bash
-bash scripts/validate-skill.sh [--strict] <SKILL_DIR>
-```
-
-The `validate-skill.sh` script checks **structural integrity only**:
-- YAML header fields (presence, format, length)
-- Directory layout (SKILL.md, reference/, scripts/, assets/)
-- File naming conventions (`NN-*.md` in reference/)
-- Section presence (Overview, When to Use, Advanced Topics)
-- Script references exist on disk
-
-Use `--strict` to promote warnings to errors.
-
-**What the script does NOT validate** (requires LLM judgment):
-- Content accuracy and completeness
-- No hallucinated content
-- Code example quality
-- Consistent terminology
-- Concise writing without over-explanation
-- Single recommended approach (not multiple options)
-- Script execution clarity and error handling
-
-#### 6b. LLM Judgment Checks
-
-After the structural validator passes, review these items manually:
-
-#### Contents
-1. YAML Header Checks (automated by `validate-skill.sh`)
-2. Structure Checks (automated by `validate-skill.sh`)
-3. Content Checks (LLM judgment)
-4. Script Checks (if applicable)
-
-#### 1. YAML Header
-
-- File starts with `---` on line 1
-- Valid YAML block between first pair of `---` delimiters
-- `name` present and matches directory name
-- `name` matches regex `^[a-z0-9]+(-[a-z0-9]+)*$`
-- `description` present (1-1024 characters)
-- `license` is "MIT" (always — this is the skill file's license, not the upstream project's)
-- `author` format: `Name <email@example.com>`
-- `version` is valid SemVer (skill file version, starts at `0.1.0`, not the upstream project version)
-- Header ends with `---` before main content
-
-#### 2. Structure
-
-- Directory name matches skill name
-- SKILL.md exists
-- If complex: `reference/` with zero-padded two-digit numbered files (`01-`, `02-`, … `10-`, `11-`)
-- No nested `reference/` directories
-- SKILL.md under 500 lines (if references exist)
-- No `scripts/` or `assets/` unless explicitly requested by user
-- All file paths use forward slashes (no backslashes)
-- Reference files are one level deep from SKILL.md (no chained references)
-
-#### 3. Content
-
-- "Overview" section present
-- "When to Use" with specific scenarios
-- At least one code example (if applicable to the skill type)
-- No hallucinated content — all from downloaded sources
-- Content is concise — no over-explaining basics the agent already knows
-- Consistent terminology throughout (one term per concept)
-- No time-sensitive information (or placed in "old patterns" section)
-- Single recommended approach given (not multiple options causing confusion)
-
-#### 4. Scripts (if explicitly requested)
-
-- Script paths use forward slashes
-- Execution intent is clear ("Run" vs "See for reference")
-- Scripts handle errors explicitly (no bare exceptions)
-- All constants documented with justification
-- Expected output format shown in SKILL.md
-- No install instructions in scripts (only system-available tools)
-
-### Step 7: Report
-
-Report success with file tree and validation results.
-
-### Step 8: Regenerate Skills Table in README.md
-
-After **every** skill addition, deletion, rename, update, or YAML header edit, regenerate the README.md skills table:
-
-```bash
-bash scripts/gen-skills-table.sh [SKILLS_DIR] [README_PATH]
-```
-
-Arguments (both optional):
-- `SKILLS_DIR` — path to the skills directory (default: `.agents/skills`)
-- `README_PATH` — path to README.md to update (default: `README.md`)
-
-This keeps the public skills index in sync with the actual `.agents/skills/` contents.
-
-The script is a pure bash tool — no Python or external YAML parsers required. It extracts YAML headers from each SKILL.md, derives project names by stripping version suffixes, truncates descriptions to ~120 characters, and rewrites the Skills Table section in README.md.
+## Creating a New Skill
+
+Follow these steps in order:
+
+1. **Choose a name** — lowercase, hyphens, numbers only (e.g., `pdf-processing`, `git-8-20-0`). No leading/trailing/consecutive hyphens.
+
+2. **Write the frontmatter** — exactly `name` and `description` at minimum. The `name` must match the directory name exactly (e.g., `name: demo-skill-2-4-1` for `demo-skill-2-4-1/`). The description determines when the agent loads this skill; make it specific with trigger terms.
+
+3. **Write the body** — concise instructions, under 500 lines. Must start with a level-1 heading matching `# <name>` or `# <name> <version>`. Structure:
+   - `# <name>` (e.g., `# skman`) or `# <name> <version>` (e.g., `# demo-skill 2.4.1`)
+   - `## Overview` — what it does
+   - `## Usage` — Optional: how to use it with examples
+   - `## Gotchas` — Optional: The most useful part of teaching a skill is listing its hidden traps. Instead of vague advice, provide specific rules that stop the agent from making predictable, common-sense mistakes in that specific environment.
+   - `## References` — Optional: Provides on-demand reference material for agents.
+
+4. **Create a main script** (if automation is needed) — write the implementation as `scripts/_<skill-name>.py` (underscore prefix) and a thin bash wrapper `scripts/<skill-name>.sh` that passes all arguments through. Scripts are **executed** (not loaded into context). The SKILL.md references only the `.sh` file. Include `--help` at every level. Use stdlib only unless instructed otherwise. Scaffold with `--with-scripts`.
+
+5. **Validate** — run the validation script:
+   ```bash
+   skman.sh validate <path-to-skill>
+   ```
+
+### Manual Creation
+
+When writing files directly, ensure:
+- Directory is named after the skill (e.g., `skman`) or `<skill-name>-<version>` (e.g., `demo-skill-2-4-1`)
+- Frontmatter `name` must match the directory name exactly (e.g., `name: demo-skill-2-4-1` for `demo-skill-2-4-1/`, or `name: skman` for `skman/`)
+- `SKILL.md` exists at the directory root
+- Body starts with `# <name>` or `# <name> <version>` matching the directory (e.g., `# demo-skill 2.4.1` for `demo-skill-2-4-1/`)
+
+## Editing a Skill
+
+Common operations:
+
+- **Update description** — edit the frontmatter; this is what agents see in the system prompt
+- **Split long content** — move sections >100 lines into `references/NN-topic.md`, link from SKILL.md
+- **Add a script** — place in `scripts/` with the skill's name as base name
+- **Restructure references** — keep references one level deep; all should link directly from SKILL.md
+
+## Validation
+
+Checks performed:
+- Frontmatter presence and required fields
+- Name format (case, characters, length, hyphen rules)
+- Description presence, length, and absence of XML/HTML tags
+- `metadata` structure (warns if present but not a mapping; warns if `tags` is not a string array)
+- Body starts with a level-1 heading
+- Body line count warning (>500 lines)
+- Name vs directory basename consistency (warns on mismatch)
+- H1 heading format (`# <name>` or `# <name> <version>` — errors on mismatch)
+- Recommended section presence (`## Overview` — warns if missing)
+- Truly optional sections (`## Usage`, `## Gotchas`, `## References` — no warning when absent)
+- Script executability (`<name>.sh` must be `chmod +x` — warns if not)
+- Script usage references (`./<name>.sh` → `<name>.sh` — warns if the body uses `./<name>.sh` outside fenced code blocks)
+
+## Best Practices
+
+### Conciseness
+- Context window is shared — every token competes with conversation history
+- Default assumption: the model already knows basics (what PDFs are, how libraries work)
+- Challenge each paragraph: "Does this justify its token cost?"
+
+### Match Specificity to Task Fragility
+- **High freedom** (text instructions): multiple valid approaches, context-dependent decisions
+- **Medium freedom** (pseudocode/scripts with parameters): preferred pattern exists, some variation OK
+- **Low freedom** (exact commands): fragile operations, consistency is critical
+
+### Description Writing
+- Always third person ("Processes Excel files" not "I can help you")
+- Include both what the skill does and when to use it
+- Include key terms that trigger discovery (file extensions, tool names, task types)
+- **Combat under-triggering** — models tend to under-use skills. Make the description slightly "pushy" by explicitly naming trigger phrases and adjacent contexts the user might say, even if they don't name the skill directly. Example:
+  ```
+  # Weak
+  How to build a simple fast dashboard to display internal data.
+
+  # Pushy
+  How to build a simple fast dashboard to display internal data. Use this skill whenever the user mentions dashboards, data visualization, internal metrics, or wants to display any kind of company data, even if they don't explicitly ask for a "dashboard."
+  ```
+
+### Writing Style
+- **Use imperative voice** — "Run this command" not "You should run this command"
+- **Explain the why, avoid rigid MUST/ALWAYS/NEVER in caps** — modern models respond better to reasoning than rigid commands. If something is critical, explain why it matters
+
+### Progressive Disclosure
+Skills use a four-level loading system:
+
+1. **Metadata** (name + description) — always in context (~100 words). This is what determines whether the skill triggers.
+2. **SKILL.md body** — loaded when skill triggers (<500 lines ideal). Contains the core instructions.
+3. **Scripts** — executed (not loaded into context). Run via `<name>.sh`.
+4. **References** — loaded as needed (unlimited). Reference files load on demand.
+
+Guidelines:
+- Keep SKILL.md body under 500 lines
+- Move detailed content to `references/` files linked from SKILL.md
+- Avoid deeply nested references — all reference files should link directly from SKILL.md
+- Include a table of contents in reference files longer than 100 lines
+- **Reference file naming** — use numeric prefixes (`01-`, `02-`, `03-`, …) for deterministic ordering and easy insertion. Files should be named `NN-topic.md` where `NN` is an incrementing number starting from 01
+- **Multi-domain skills** — when a skill supports multiple variants (frameworks, platforms), organize by domain in references:
+  ```
+  cloud-deploy/
+  ├── SKILL.md              # workflow + variant selection logic
+  └── references/
+      ├── 00-aws.md
+      ├── 01-gcp.md
+      └── 02-azure.md
+  ```
+
+### Model Compatibility
+- SLMs (small models): need more explicit guidance, numbered steps, less ambiguity
+- LLMs (large models): prefer concise instructions, avoid over-explaining
+- Aim for instructions that work across both: clear structure, explicit rules, no fluff
+
+## Gotchas
+
+- **Scaffolded `.sh` files may lose execute permission** — `skman.sh create --with-scripts` sets `chmod 0o755`, but editors or git checkouts can strip it. Always verify with `ls -l <name>.sh`; the validator warns if the bit is missing.
+- **`--strict` turns section warnings into errors** — only `## Overview` produces a warning when missing. `## Usage`, `## Gotchas`, and `## References` are truly optional and never warn (knowledge-only skills often have no Usage section). In strict mode, any warning fails validation.
+- **Frontmatter `name` must match the directory basename exactly** — e.g., `demo-skill-2-4-1/` requires `name: demo-skill-2-4-1`, `skman/` requires `name: skman`. The validator warns on mismatch. Fix by renaming the directory or correcting the frontmatter.
+- **H1 heading must match `# <name>` or `# <base> <version>`** — the validator errors if the first heading doesn't match. For `skman/` it must be `# skman`; for `demo-skill-2-4-1/` it must be `# demo-skill 2.4.1` (version uses dots, not hyphens). The version in the H1 must correspond to the hyphenated version suffix in the directory/frontmatter name.
+- **Reference files are loaded on demand, not into context** — keep SKILL.md self-contained for core instructions; move deep-dive content to `references/NN-topic.md` and link from the body.

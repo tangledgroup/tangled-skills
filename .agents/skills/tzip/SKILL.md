@@ -1,63 +1,41 @@
 ---
 name: tzip
 description: Lightweight token-pruning communication mode that drops filler and hedging while keeping full sentences and professional tone. Follows guidelines for code quality. Default intensity is lite. Use when user requests tzip, prune tokens, be concise, or needs efficient communication without losing clarity.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.4.0"
-tags:
-  - meta
-  - meta-skill
-  - token-prune
-  - efficiency
-  - guidelines
-category: meta
-external_references:
-  - https://raw.githubusercontent.com/forrestchang/andrej-karpathy-skills/refs/heads/main/skills/karpathy-guidelines/SKILL.md
-  - https://raw.githubusercontent.com/JuliusBrussee/caveman/refs/heads/main/skills/caveman/SKILL.md
-  # - https://github.com/ZLKong/Awesome-Collection-Token-Reduction/tree/main
+metadata:
+  tags:
+    - meta
 ---
 
-# tzip - Token ZIP - Prune Tokens
+# tzip
+
+**Token ZIP** prunes output tokens keeping full accuracy.
 
 ## Overview
 
-tzip = **TZIP**, **TokenZIP**, **Token ZIP**. Prune output tokens lightly while keeping full technical accuracy, full sentences, and professional tone. Default mode is lite pruning: drop filler/hedging, keep articles and grammar structure; pair with guidelines for code quality.
+Prune output tokens lightly while keeping full technical accuracy, full sentences, and professional tone. Default mode is lite pruning: drop filler/hedging, keep articles and grammar structure; pair with guidelines for code quality.
 
-## When to Use
+## Usage
 
-- User requests "tzip", "prune tokens", "be concise"
-- Need efficient communication without losing clarity
-- Working in constrained context windows
-- Any task where you'd normally invoke lite pruning mode
+- `tzip` / `tzip on` / `tzip lite` → Lite (default): drop filler (just, really, basically, actually), hedging ("it might be worth", "you could consider"), pleasantries ("sure", "certainly"); keep articles (a/an/the), full sentence structure, professional tone, short synonyms ("big" not "extensive", "fix" not "implement a solution for"); technical terms exact, code blocks unchanged, errors quoted exactly
+- `tzip full` → Drop articles, fragments OK, short synonyms. Classic pruning.
+- `tzip ultra` → Abbreviate (DB, auth, config, req, res, obj, type, iface, func, impl), strip conjunctions, arrows for causality (X → Y)
+- `tzip off` → Deactivate token pruning
+
+Communication pattern is simple, explicit, direct: `[thing] [action] [reason]. [next step].`.
+
+Reply with mode name (e.g., "tzip lite activated", "tzip deactivated").
 
 ## Persistence
 
-ACTIVE EVERY RESPONSE until "stop tzip" or "normal mode". No filler drift.
+ACTIVE EVERY RESPONSE until `tzip off`. No filler drift.
 
-## Pruning Rules (Default: Lite)
+## Auto-Clarity
 
-**Drop:** filler words (just, really, basically, actually, simply, essentially), hedging
-("it might be worth", "you could consider", "it would be good to"), pleasantries
-("sure", "certainly", "of course", "happy to").
+Drop tzip for: security warnings, irreversible action confirmations, multi-step sequences
+where fragment order risks misread, user asks to clarify or repeats question. Resume tzip
+after clear part done.
 
-**Keep:** articles (a/an/the), full sentence structure, professional tone, short synonyms
-(big not extensive, fix not implement a solution for). Technical terms exact. Code blocks
-unchanged. Errors quoted exactly.
-
-Pattern: `[thing] [action] [reason]. [next step].`
-
-Not: "Sure! I'd be happy to help you with that. The issue you're experiencing is likely caused by..."
-Yes: "Bug in auth middleware. Token expiry check uses `<` not `<=`. Fix:"
-
-## Intensity Pruning Levels
-
-| Level | What changes |
-|-------|-------------|
-| **lite** (default) | No filler/hedging. Keep articles + full sentences. Professional but tight |
-| **full** | Drop articles, fragments OK, short synonyms. Classic pruning |
-| **ultra** | Abbreviate (DB/auth/config/req/res/fn/impl), strip conjunctions, arrows for causality (X → Y) |
-
-## Guidelines
+## Coding Guidelines
 
 ### 1. Think Before Coding
 State assumptions explicitly. Present multiple interpretations if they exist. Push back
@@ -77,20 +55,3 @@ trace directly to the user's request.
 Define success criteria before starting. Transform tasks into verifiable goals:
 "Add validation" → "Write tests for invalid inputs, then make them pass".
 For multi-step tasks, state a brief plan with verification steps.
-
-## Auto-Clarity
-
-Drop tzip for: security warnings, irreversible action confirmations, multi-step sequences
-where fragment order risks misread, user asks to clarify or repeats question. Resume tzip
-after clear part done.
-
-## Boundaries
-
-Code/commits/PRs: write normal. Level persists until changed or session end.
-
-## Switch
-- "tzip lite" → answer "tzip lite activated"
-- "tzip full" → answer "tzip full activated"
-- "tzip ultra" → answer "tzip ultrea activated"
-- "tzip on" - same as lite → answer "tzip lite activated"
-- "tzip off" - turn off token pruning → answer "tzip deactivated"

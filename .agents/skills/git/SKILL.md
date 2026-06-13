@@ -1,190 +1,64 @@
 ---
 name: git
-description: >
-  Complete Git 2.54.0 toolkit covering version control workflows, Conventional Commits v1.0.0,
-  Keep a Changelog message bodies, and Semantic Versioning 2.0.0. Use when managing repositories,
-  writing structured commit messages with conventional types and changelog-style bodies,
-  bumping versions, or analyzing codebase health through git history.
-version: "0.2.1"
-author: Tangled <noreply@tangledgroup.com>
-license: MIT
-tags:
-  - meta
-  - meta-skill
-  - git
-  - version-control
-  - conventional-commits
-  - keep-a-changelog
-  - semver
-  - devops
-category: meta
-external_references:
-  - https://git-scm.com/cheat-sheet
-  - https://git-scm.com/docs/user-manual.html
-  - https://www.conventionalcommits.org/en/v1.0.0/
-  - https://raw.githubusercontent.com/conventional-commits/conventionalcommits.org/refs/heads/master/content/v1.0.0/index.md
-  - https://semver.org/spec/v2.0.0.html
-  - https://raw.githubusercontent.com/semver/semver/refs/heads/master/semver.md
-  - https://keepachangelog.com/en/1.1.0/
-  - https://piechowski.io/post/git-commands-before-reading-code/
-  - https://raw.githubusercontent.com/forrestchang/andrej-karpathy-skills/refs/heads/main/skills/karpathy-guidelines/SKILL.md
-  - https://gitcheatsheet.dev/docs/everyday-git/merging/
-  - https://github.com/newren/git-filter-repo
+description: Git version control. Use when the user mentions git, commits, branches, pushing, pulling, merging, rebasing, stashing, worktrees, submodules, or any version control task. Covers straightforward workflows (add/commit/push) and advanced topics.
+metadata:
+  tags:
+    - meta
 ---
 
-# Git version control
+# git
+
+Git workflow shorthand — describe what you want, not exact commands.
 
 ## Overview
 
-Git version control, structured commit conventions (Conventional Commits), semantic versioning rules, and changelog formatting. Covers common daily workflows — no plumbing commands or obscure edge cases.
+Map natural descriptions to git operations. Use concise shorthand patterns instead of verbose command chains. All paths are relative to the repo root unless stated otherwise.
 
-## When to Use
+## Commit Messages
 
-- Setting up a new repository or cloning an existing one
-- Staging, committing, branching, merging, or rebasing changes
-- Writing commit messages following Conventional Commits format
-- Determining whether a change warrants a major/minor/patch version bump
-- Creating or updating a CHANGELOG following Keep a Changelog format
-- Diagnosing a new codebase by analyzing its git history
+`acp` rephrases descriptions into structured commit messages. First line uses [Conventional Commits](references/08-conventional-commits.md) type and summary. Body (multi-change commits) uses [Keep a Changelog](references/09-keep-a-changelog.md) categories.
 
-## Core Concepts
+## Usage
 
-Git tracks snapshots through a directed acyclic graph of commits. Four areas:
+### `acp` — Auto Commit and Push
 
-**Staging area (index)** — Intermediate layer between working tree and repo. Use `git add` to choose which changes enter the next commit, giving fine-grained control over commit granularity.
-
-**Branches** — Lightweight movable pointers to commits. Default is usually `main` or `master`. Branches let you develop features or fix bugs without affecting the main codebase.
-
-**Commits** — Snapshots with a unique 40-character SHA-1 hash. Each records what changed, who made it, when, and why (via the commit message).
-
-**Remotes** — Named references to other repositories (e.g., `origin`). Push to share commits, fetch/pull to sync with others.
-
-## Workflow Shorthands
-
-When the user says "add, commit, push" (or similar shorthand), interpret as a three-step workflow operating on **all** changes by default, scoped to specific files if provided.
-
-### Default Behavior — All Changes
-
-"add" / "add all" → `git add .`
-"commit" / "commit all" → `git commit -a -m '<message>'`
-"push" / "push all" → `git push origin <current-branch>`
-"add, commit, push" → all three steps in order
-"acp" → short for "add, commit, push"
-
-### No File-Specific Overrides
-
-When no files are specified, **always operate on all changes**:
-```bash
-git add .
-git commit -m "<descriptive message following Conventional Commits>"
-git push origin <current-branch>
-```
-
-### File-Specific Overrides
-
-If the user names specific files or directories, scope only those:
-```bash
-git add path/to/file.py src/utils/
-git commit -m "<descriptive message following Conventional Commits>"
-git push origin <current-branch>
-```
-
-### When to Ask for Clarification
-
-- User says "add" without a message → propose a Conventional Commits message from `git diff --staged` or `git status`
-- User says "push" but no commits to push → suggest checking `git log origin/<branch>..HEAD`
-- Dirty working directory and user says "push" → warn about pushing without committing first
-
-## Commit Conventions
-
-### Conventional Commits Format
-
-Structure commit messages as:
+The primary workflow: fetch, sync, rephrase message, stage all, commit, push.
 
 ```
-<type>[optional scope]: <description>
-
-[optional body]
-
-[optional footer(s)]
+acp ["natural language description"]
 ```
 
-- `fix:` — Bug fix (→ PATCH bump)
-- `feat:` — New feature (→ MINOR bump)
-- `BREAKING CHANGE:` in footer or `!` before colon → MAJOR bump
+1. **Fetch and sync** — pull latest (merge or rebase per config)
+2. **Resolve conflicts** — automatic if they arise
+3. **Rephrase** — convert to Conventional Commit format
+4. **Stage, commit, push** — `add -A`, commit, push
 
-Other accepted types: `build:`, `chore:`, `ci:`, `docs:`, `style:`, `refactor:`, `perf:`, `test:`.
+If no message given, infer from staged changes.
 
-### Examples
+### Command Reference
 
-```bash
-# Simple fix
-git commit -m "fix: handle null pointer in user parser"
-# Feature with scope
-git commit -m "feat(auth): add OAuth2 token refresh flow"
-# Breaking change with bang
-git commit -m "feat(api)!: remove deprecated /v1 endpoints"
-# With body and footer
-git commit -m "fix: prevent racing of requests
+For full command tables (clone, branch, inspect, tags, remote, common workflows), see [Command Reference](references/01-command-reference.md).
 
-Introduce a request id and reference to latest request.
-Dismiss incoming responses other than from the latest.
+## Gotchas
 
-Remove obsolete timeouts.
-Reviewed-by: Z
-Refs: #123"
-```
+- **`push --force` is dangerous** — use `--force-with-lease` which rejects if others pushed. Only force when you own the branch.
+- **`reset --hard` destroys uncommitted work** — stash or commit first if you might need the changes.
+- **Detached HEAD** after checking out a commit/tag — create a branch immediately: `checkout -b <name>`.
+- **Merge conflicts block commits** — resolve all `<<<<<<<` markers, then `add <files>` and complete.
+- **`pull` defaults to merge** — use `pull --rebase` for linear history, or `git config --global pull.rebase true`.
+- **Untracked files survive `reset --hard`** — use `clean -fd` to remove (irreversible).
+- **Submodules need explicit init** — `submodule update --init --recursive` after clone.
+- **`stash pop` fails on conflicts** — stash is preserved. Resolve, then `stash drop`.
 
-### SemVer Bumping Rules
+## References
 
-Given version `MAJOR.MINOR.PATCH`:
-
-- **MAJOR** — Incompatible API changes (use `BREAKING CHANGE`)
-- **MINOR** — Backward-compatible additions (use `feat:`)
-- **PATCH** — Backward-compatible fixes (use `fix:`)
-- Pre-release: `1.0.0-alpha`, `1.0.0-beta.2`
-- Build metadata: `1.0.0+20130313144700` (ignored in precedence)
-
-## Changelog Format
-
-```markdown
-# Changelog
-
-All notable changes to this project will be documented in this file.
-The format is based on Keep a Changelog, and this project adheres to SemVer.
-
-[Unreleased]
-
-...
-
-## v<MAJOR>.<MINOR>.<PATCH>
-
-### Added
-- New feature description
-
-### Changed
-- Modified behavior description
-
-### Deprecated
-- Soon-to-be-removed feature
-
-### Removed
-- Feature that has been removed
-
-### Fixed
-- Bug fix description
-
-### Security
-- Vulnerability fixes
-```
-
-Section order: **Added, Changed, Deprecated, Removed, Fixed, Security**.
-Omit empty sections.
-For unknown next `v<MAJOR>.<MINOR>.<PATCH>`, include `[Unreleased]` for work not yet shipped.
-
-## Advanced Topics
-
-**Essential Commands**: Init, clone, add, commit, branch, diff, stash, reset, remote, log → [Essential Commands](reference/01-essential-commands.md)
-**Merging Patterns**: Merge types, flags, conflicts, strategies, rebase decisions → [Merging Patterns](reference/02-merging-patterns.md)
-**Codebase Diagnostics**: Churn hotspots, bus factor, bug clusters, velocity → [Codebase Diagnostics](reference/03-codebase-diagnostics.md)
-**History Rewriting**: git filter-repo for stripping files, renaming paths, removing secrets, rewriting authors → [History Rewriting](reference/04-filter-repo.md)
+- [Command Reference](references/01-command-reference.md) — command tables, shorthand, common workflows
+- [Worktrees](references/02-worktrees.md) — parallel working directories on one repo
+- [Request Pull](references/03-request-pull.md) — generate PR URLs for bare repos and email workflows
+- [Rebase Strategies](references/04-rebase-strategies.md) — interactive rebase, merge vs rebase, when to use each
+- [Stash / Reset / Revert](references/05-undo-operations.md) — detailed undo patterns, cherry-pick, revert
+- [Submodules](references/06-submodules.md) — adding, updating, migrating submodules
+- [Bisect and Debugging](references/07-bisect-debugging.md) — bisect, blame, log search, finding regressions
+- [Conventional Commits](references/08-conventional-commits.md) — types, scopes, breaking changes, rephrasing guide
+- [Keep a Changelog](references/09-keep-a-changelog.md) — categories, commit body format, CHANGELOG.md structure
+- [Semantic Versioning](references/10-semver.md) — MAJOR.MINOR.PATCH rules, pre-release, bump mapping

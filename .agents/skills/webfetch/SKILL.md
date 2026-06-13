@@ -1,84 +1,47 @@
 ---
 name: webfetch
-description: Fetches any URL and converts the full page to clean AI-targeted markdown using scrapling. Use when scraping arbitrary web pages, documentation, articles, or HTML content into a format suitable for AI context without requiring an API key.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.2.1"
-tags:
-  - webfetch
-  - web-scraping
-  - url-fetch
-  - markdown
-  - scrapling
-  - ai-targeted
-category: meta
-external_references:
-  - https://scrapling.io/
+description: Fetches web pages as markdown or HTML for LLM consumption. Use when the user wants to fetch, scrape, download, retrieve, grab, pull, or access any URL or webpage content. Supports uvx, pipx, curl, wget, and python3 fallbacks. Always impersonates Safari to avoid blocks. Use this whenever the user asks to read a website, get page content, or fetch a URL.
+metadata:
+  tags:
+    - meta
 ---
 
-# Web Fetch — URL to Markdown
+# webfetch
 
 ## Overview
 
-Fetches any URL and converts the full page to clean AI-targeted markdown using `scrapling[shell]`'s `--ai-targeted` mode. The output is readable markdown optimized for AI context — no raw HTML, no noise.
-
-A deterministic bash script handles all fetch execution — the agent always runs `bash scripts/webfetch.sh <URL>` and never constructs commands on the fly. This ensures consistent behavior and prevents command-generation errors.
-
-No API key or external service required. Uses `uvx 'scrapling[shell]'` for ephemeral execution — no persistent installs.
-
-## When to Use
-
-- Scraping arbitrary web pages into AI-readable markdown
-- Fetching documentation, articles, or blog posts for context
-- Converting HTML content to clean markdown without an API key
-- Extracting page content from any public URL
+Fetches web pages and outputs them as LLM-friendly markdown or raw HTML.
 
 ## Usage
 
-### Basic Fetch
-
-Run `webfetch.sh` with a URL:
-
 ```bash
-bash scripts/webfetch.sh <URL>
+# Fetch as markdown to stdout (default)
+webfetch.sh https://example.com
+
+# Fetch as raw HTML to stdout
+webfetch.sh --html https://example.com
+
+# Explicitly fetch as markdown
+webfetch.sh --md https://example.com
+webfetch.sh --markdown https://example.com
+
+# Save to file (nothing printed to stdout)
+webfetch.sh --file ./page.md https://example.com
+webfetch.sh --html --file ./page.html https://example.com
+
+# Force a specific tool (skips auto-detection)
+webfetch.sh --tool curl https://example.com
+webfetch.sh --tool python https://example.com
+webfetch.sh --tool uvx --html https://example.com
 ```
 
-### Fetch to Specific Path
+`--file` auto-detects format from extension (`.md` → markdown, `.html`/`.htm` → HTML) unless `--html`/`--md` is also given.
 
-Use `--output` to save to a specific location:
+`--tool` accepts: `uvx`, `pipx`, `curl`, `wget`, `python` (alias `python3`). If the chosen tool is not installed, it exits with an error.
 
-```bash
-bash scripts/webfetch.sh <URL> --output ./output.md
-```
+## Gotchas
 
-The file persists at the specified path (not auto-deleted).
-
-### Error Handling
-
-If the URL cannot be reached, the script reports the error and exits non-zero:
-
-```
-Error: Failed to fetch URL: https://example.com
-```
-
-The script does not attempt to guess or correct URLs — it reports the fetch failure as-is.
-
-## Core Concepts
-
-### Deterministic Script Execution
-
-The agent always runs `bash scripts/webfetch.sh <URL>` — it never constructs `uvx` or `scrapling` commands on the fly. This ensures:
-
-- **Consistent execution**: Always uses scrapling with correct flags
-- **No command errors**: No risk of malformed `uvx` invocations
-- **Clean output**: AI-targeted markdown, no raw HTML or noise
-- **Temp file output**: Output saved to randomized temp file, path printed to stdout
-
-### URL Validation
-
-The script requires URLs to start with `http://` or `https://`. Missing schemes are rejected with a clear error message. If a URL cannot be fetched, the script reports the error without attempting to guess or correct it.
-
-### Dependencies
-
-- **bash** — shell scripting
-- **uvx** — ephemeral Python package execution (runs `scrapling[shell]`)
+- **`uvx` is preferred but not always installed** — the script auto-falls back through `pipx`, `curl`, `wget`, `python3`. If all fail, it exits with an error.
+- **`--tool` bypasses auto-detection** — if you force a tool that isn't installed (e.g., `--tool uvx` on a system without `uvx`), the script exits with an error. Without `--tool`, it automatically tries the next available option.
+- **HTML-to-markdown conversion is best-effort** — when using `curl`/`wget`/`python3`, HTML tags are stripped and basic elements (headings, lists, links, bold/italic) are converted. Complex layouts may lose structure.
+- **Follows redirects by default** — curl uses `-L`, `wget` follows redirects natively, python3 urllib follows redirects automatically.

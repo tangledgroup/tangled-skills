@@ -11,7 +11,7 @@ tangled-skills/
 ├── .agents/skills/
 │   ├── <skill-name>/
 │   │   ├── SKILL.md                  # Main skill file (required, must include YAML header)
-│   │   └── reference/                # Optional reference files (flat structure, numbered)
+│   │   └── references/               # Optional reference files (flat structure, numbered)
 │   │   │   ├── 01-topic-name.md
 │   │   │   └── 02-another-topic.md
 │   │   │   ⋮
