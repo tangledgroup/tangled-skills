@@ -132,7 +132,7 @@ Follow these steps in order:
    - `## Gotchas` — Optional: The most useful part of teaching a skill is listing its hidden traps. Instead of vague advice, provide specific rules that stop the agent from making predictable, common-sense mistakes in that specific environment.
    - `## References` — Optional: Provides on-demand reference material for agents.
 
-4. **Create a main script** (if automation is needed) — write the implementation as `scripts/_<skill-name>.py` (underscore prefix) and a thin bash wrapper `scripts/<skill-name>.sh` that passes all arguments through. Scripts are **executed** (not loaded into context). The SKILL.md references only the `.sh` file. Include `--help` at every level. Use stdlib only unless instructed otherwise. Scaffold with `--with-scripts`.
+4. **Create a main script** (if automation is needed) — write the implementation as `scripts/_<skill-name>.py` (underscore prefix) and a thin bash wrapper `scripts/<skill-name>.sh` that passes all arguments through. Scripts are **executed** (not loaded into context). The SKILL.md references only the `.sh` file. Include `--help` at every level. Default: `python3` 3.10+ with built-in modules only (see *Scripting Defaults* below). On explicit user request, any programming language and libraries/frameworks are allowed. Scaffold with `--with-scripts`.
 
 5. **Validate** — run the validation script:
    ```bash
@@ -178,6 +178,10 @@ Checks performed:
 - Context window is shared — every token competes with conversation history
 - Default assumption: the model already knows basics (what PDFs are, how libraries work)
 - Challenge each paragraph: "Does this justify its token cost?"
+
+### Scripting Defaults
+- **Default: `python3` 3.10+ with built-in modules only.** Allowed stdlib modules include: `os`, `sys`, `re`, `math`, `time`, `datetime`, `pathlib`, `argparse`, `asyncio`, `subprocess`, `urllib`, `hashlib`, `json`, `csv`, `io`, `collections`, `itertools`, `functools`, `textwrap`, `shutil`, `glob`, `tempfile`, `logging`, `struct`, `socket`, `ssl`, `email`, `html`, `xml.etree`, and other standard library modules. No third-party packages (no `pip install`, no `requests`, no `pyyaml`, etc.) unless explicitly requested.
+- **Explicit override: any technology allowed.** When the user explicitly requests a specific language, framework, or library — or asks for something that requires external dependencies — use whatever fits. Users have full freedom to write tools for any scenario. The default only applies when no preference is stated.
 
 ### Match Specificity to Task Fragility
 - **High freedom** (text instructions): multiple valid approaches, context-dependent decisions
