@@ -9,17 +9,59 @@ Tools and guidelines for creating, validating, and managing agent skills.
 
 ## Usage
 
-Scaffold a new skill with the helper script:
-
 ```bash
+# Scaffold a new skill
 skman.sh create <name> "<description>"
+
+# Create with version (dir: uv-0-11-19/, H1: # uv 0.11.19)
+skman.sh create uv "Fast Python package manager" --version 0.11.19
+
+# Create with scripts and references
+skman.sh create my-skill "Desc" --with-scripts --with-references
+
+# Validate a skill
+skman.sh validate ./my-skill
+skman.sh validate --strict ./my-skill
+
+# Inspect frontmatter and structure
+skman.sh info ./my-skill
+
+# Regenerate README.md Skills Table and Statistics
+skman.sh generate
+
+# Help at every level
+skman.sh --help
+skman.sh create --help
+skman.sh validate --help
+skman.sh info --help
+skman.sh generate --help
 ```
 
-Discover available commands:
+### Scaffold New Skill
 
 ```bash
-skman.sh --help
-skman.sh <subcommand> --help
+# Into default location (.agents/skills/my-skill/)
+skman.sh create my-skill "Extracts text from PDF files"
+
+# With version (dir: uv-0-11-19/, H1: # uv 0.11.19)
+skman.sh create uv "Fast Python package manager" --version 0.11.19
+
+# With scripts and references
+skman.sh create my-skill "Desc" --with-scripts --with-references
+
+# Into a specific parent directory
+skman.sh create my-skill "Desc" -o ./custom-skills
+```
+
+The script validates name and description before creating files.
+
+### Validate
+
+Run the built-in validator:
+
+```bash
+skman.sh validate ./my-skill
+skman.sh validate --strict ./my-skill
 ```
 
 ## Skill Format
@@ -81,24 +123,6 @@ Follow these steps in order:
    skman.sh validate <path-to-skill>
    ```
 
-### Using the Scaffold Script
-
-```bash
-# Into default location (.agents/skills/my-skill/)
-skman.sh create my-skill "Extracts text from PDF files"
-
-# With version (dir: uv-0-11-19/, H1: # uv 0.11.19)
-skman.sh create uv "Fast Python package manager" --version 0.11.19
-
-# With scripts and references
-skman.sh create my-skill "Desc" --with-scripts --with-references
-
-# Into a specific parent directory
-skman.sh create my-skill "Desc" -o ./custom-skills
-```
-
-The script validates name and description before creating files.
-
 ### Manual Creation
 
 When writing files directly, ensure:
@@ -117,13 +141,6 @@ Common operations:
 - **Restructure references** — keep references one level deep; all should link directly from SKILL.md
 
 ## Validation
-
-Run the built-in validator:
-
-```bash
-skman.sh validate ./my-skill
-skman.sh validate --strict ./my-skill
-```
 
 Checks performed:
 - Frontmatter presence and required fields
@@ -203,38 +220,3 @@ Guidelines:
 - **Frontmatter `name` must match the directory basename exactly** — e.g., `uv-0-11-19/` requires `name: uv-0-11-19`, `skman/` requires `name: skman`. The validator warns on mismatch. Fix by renaming the directory or correcting the frontmatter.
 - **H1 heading must match `# <name>` or `# <base> <version>`** — the validator errors if the first heading doesn't match. For `skman/` it must be `# skman`; for `uv-0-11-19/` it must be `# uv 0.11.19` (version uses dots, not hyphens). The version in the H1 must correspond to the hyphenated version suffix in the directory/frontmatter name.
 - **Reference files are loaded on demand, not into context** — keep SKILL.md self-contained for core instructions; move deep-dive content to `references/NN-topic.md` and link from the body.
-
-## References
-
-For detailed background on skill design decisions and agent behavior patterns, see:
-
-- Agent prompt engineering best practices (progressive disclosure, token budgeting)
-- Skill discovery mechanics (how descriptions trigger loading)
-- Multi-domain skill organization patterns
-
-## Generating README
-
-After adding, removing, or renaming skills, regenerate the auto-generated section of `README.md`:
-
-```bash
-skman.sh generate
-```
-
-This scans `.agents/skills/` for all `SKILL.md` files, parses their frontmatter, and replaces everything from the auto-generated marker to end of file with a fresh Skills Table and Statistics section.
-
-## Script Reference
-
-```bash
-skman.sh --help              # Top-level help
-skman.sh create --help       # Create subcommand
-skman.sh validate --help     # Validate subcommand
-skman.sh info --help         # Info subcommand
-skman.sh generate --help     # Generate subcommand
-```
-
-| Command | Purpose |
-|---|---|
-| `create <name> <desc> [--version <ver>]` | Scaffold a new skill directory with SKILL.md |
-| `validate <path>` | Check SKILL.md against spec rules |
-| `info <path>` | Print frontmatter and structural summary |
-| `generate` | Generate Skills Table and Statistics in README.md |
