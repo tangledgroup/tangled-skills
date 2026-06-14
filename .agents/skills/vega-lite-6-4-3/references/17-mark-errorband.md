@@ -56,12 +56,14 @@ Layer a line through the center of the band:
 
 ## Error Band with Stdev Extent
 
+Use `"stdev"` for standard deviation-based bands:
+
 ```vega-lite
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Error band with standard deviation.",
+  "description": "Error band with standard deviation extent.",
   "data": {"url": "data/cars.json"},
-  "mark": {"type": "errorband", "extent": {"stdev": 1}},
+  "mark": {"type": "errorband", "extent": "stdev"},
   "encoding": {
     "x": {"timeUnit": "year", "field": "Year"},
     "y": {"field": "Miles_per_Gallon", "type": "quantitative", "scale": {"zero": false}}
@@ -99,7 +101,7 @@ Add color grouping:
 
 | Property | Default | Description |
 |---|---|---|
-| `extent` | `"ci"` | Error extent (`"ci"`, `{"stdev": N}`, `{"iqr": true}`) |
+| `extent` | `"stderr"` | Error extent (`"ci"`, `"stderr"`, `"stdev"`, `"iqr"`) |
 | `borders` | `false` | Show border outline around the band |
 | `fillOpacity` | `0.2` | Opacity of the band fill |
 

@@ -67,16 +67,18 @@ Use mark object form to customize whisker extent:
 }
 ```
 
-## Boxplot with Custom Mid-Tick Color
+## Boxplot with Custom Median Color
+
+Use the `median` property to style the median line:
 
 ```vega-lite
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Boxplot with styled median tick.",
+  "description": "Boxplot with styled median line.",
   "data": {"url": "data/penguins.json"},
   "mark": {
     "type": "boxplot",
-    "midTickColor": "red"
+    "median": {"color": "red", "size": 3}
   },
   "encoding": {
     "y": {"field": "Body Mass (g)", "type": "quantitative", "scale": {"zero": false}}
@@ -84,24 +86,23 @@ Use mark object form to customize whisker extent:
 }
 ```
 
-## Pre-Aggregated Boxplot
+## Boxplot with Hidden Outliers
 
-When data is already aggregated:
+Control outlier display with the `outliers` property:
 
 ```vega-lite
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Pre-aggregated boxplot.",
-  "data": {
-    "values": [
-      {"group": "A", "q1": 20, "median": 30, "q3": 40, "min": 10, "max": 50}
-    ]
+  "description": "Boxplot with outliers hidden.",
+  "data": {"url": "data/penguins.json"},
+  "mark": {
+    "type": "boxplot",
+    "outliers": false
   },
-  "mark": {"type": "boxplot", "extent": "min-max"},
   "encoding": {
-    "y": {"field": "median", "type": "quantitative"},
-    "yError": {"field": "q3", "type": "quantitative"},
-    "yError2": {"field": "q1", "type": "quantitative"}
+    "x": {"field": "Species", "type": "nominal"},
+    "y": {"field": "Body Mass (g)", "type": "quantitative", "scale": {"zero": false}},
+    "color": {"field": "Species", "type": "nominal"}
   }
 }
 ```

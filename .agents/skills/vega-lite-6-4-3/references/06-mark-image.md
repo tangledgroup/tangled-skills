@@ -4,18 +4,24 @@ The `image` mark renders images at specified positions. Useful for embedding log
 
 ## Basic Image
 
+Use the `url` encoding channel to set image sources:
+
 ```vega-lite
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Image mark at a fixed position.",
-  "data": {"values": [{"x": 50, "y": 50}]},
-  "mark": {
-    "type": "image",
-    "from": "https://example.com/logo.png"
+  "description": "Scatter plot with image markers.",
+  "data": {
+    "values": [
+      {"x": 0.5, "y": 0.5, "img": "data/ffox.png"},
+      {"x": 1.5, "y": 1.5, "img": "data/gimp.png"},
+      {"x": 2.5, "y": 2.5, "img": "data/7zip.png"}
+    ]
   },
+  "mark": {"type": "image", "width": 50, "height": 50},
   "encoding": {
     "x": {"field": "x", "type": "quantitative"},
-    "y": {"field": "y", "type": "quantitative"}
+    "y": {"field": "y", "type": "quantitative"},
+    "url": {"field": "img", "type": "nominal"}
   }
 }
 ```
@@ -58,13 +64,12 @@ The `image` mark renders images at specified positions. Useful for embedding log
 
 | Property | Default | Description |
 |---|---|---|
-| `from` | — | Direct image URL (alternative to encoding `url`) |
 | `width` | auto | Image width in pixels |
 | `height` | auto | Image height in pixels |
 
 ## Gotchas
 
 - Images must be served with proper CORS headers if loaded from a different origin.
-- The `url` encoding channel maps data fields to image URLs; the `from` mark property sets a single URL for all marks.
+- The `url` encoding channel maps data fields to image URLs; use a constant `"value"` in the `url` encoding for a single shared image.
 - Image marks are rect-based, so they share sizing properties with bar and rect marks.
 - Large images can slow rendering — resize before embedding or use small thumbnails.

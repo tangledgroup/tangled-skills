@@ -35,21 +35,27 @@ The `rect` mark renders rectangles, commonly used for heatmaps, mosaic plots, an
 }
 ```
 
-## Mosaic Plot
+## Gantt Chart (Ranged Rectangles)
 
-Use `x2` and `y2` for proportional rectangles:
+Use `x2` to define the end position of ranged rectangles:
 
 ```vega-lite
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Mosaic plot of car origins.",
-  "data": {"url": "data/cars.json"},
+  "description": "Gantt chart with ranged rectangles.",
+  "data": {
+    "values": [
+      {"task": "A", "start": 1, "end": 3},
+      {"task": "B", "start": 3, "end": 8},
+      {"task": "C", "start": 8, "end": 10}
+    ]
+  },
   "mark": "rect",
   "encoding": {
-    "x": {"field": "Origin", "type": "nominal"},
-    "y": {"field": "Cylinders", "type": "ordinal"},
-    "x2": {"aggregate": "count", "type": "quantitative"},
-    "color": {"field": "Origin", "type": "nominal"}
+    "y": {"field": "task", "type": "ordinal"},
+    "x": {"field": "start", "type": "quantitative"},
+    "x2": {"field": "end"},
+    "color": {"field": "task", "type": "nominal"}
   }
 }
 ```

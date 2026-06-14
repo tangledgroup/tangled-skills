@@ -107,7 +107,7 @@ Highlight nearest data point on hover:
   "params": [
     {
       "name": "hover",
-      "select": {"type": "single", "nearest": true, "on": "mouseenter"}
+      "select": {"type": "point", "nearest": true, "on": "mouseenter"}
     }
   ],
   "mark": "circle",

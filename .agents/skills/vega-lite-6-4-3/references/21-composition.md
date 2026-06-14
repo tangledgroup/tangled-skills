@@ -11,20 +11,22 @@ Overlay multiple marks on the same coordinate system:
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "description": "Bar chart with error bars.",
   "data": {"url": "data/cars.json"},
+  "encoding": {
+    "x": {"field": "Cylinders", "type": "nominal"},
+    "xOffset": {"field": "Origin", "type": "nominal"}
+  },
   "layer": [
     {
       "mark": "bar",
       "encoding": {
-        "x": {"field": "Origin", "type": "nominal"},
-        "y": {"aggregate": "mean", "field": "Horsepower"}
+        "y": {"aggregate": "mean", "field": "Acceleration", "type": "quantitative"},
+        "color": {"field": "Origin", "type": "nominal"}
       }
     },
     {
       "mark": "errorbar",
       "encoding": {
-        "x": {"field": "Origin", "type": "nominal"},
-        "y": {"aggregate": "mean", "field": "Horsepower"},
-        "yError": {"ci": 0.95, "field": "Horsepower"}
+        "y": {"field": "Acceleration", "type": "quantitative"}
       }
     }
   ]
@@ -128,20 +130,20 @@ Split a single view into panels by a categorical field:
 }
 ```
 
-## Column Facet
+## Column Facet (via Encoding)
 
-Facet by columns:
+Use `column` inside encoding for column-faceted views:
 
 ```vega-lite
 {
-  "column": {"field": "Origin", "type": "nominal"},
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Column-faceted bar chart by origin.",
   "data": {"url": "data/cars.json"},
-  "spec": {
-    "mark": "bar",
-    "encoding": {
-      "x": {"field": "Cylinders", "type": "ordinal"},
-      "y": {"aggregate": "count"}
-    }
+  "mark": "bar",
+  "encoding": {
+    "column": {"field": "Origin", "type": "nominal"},
+    "x": {"field": "Cylinders", "type": "ordinal"},
+    "y": {"aggregate": "count"}
   }
 }
 ```

@@ -83,7 +83,7 @@ Add a `color` encoding for automatic stacking:
 
 ## Grouped (Dodged) Bar Chart
 
-Use `x` for groups and `color` with `"stack": null`:
+Use `xOffset` (or `yOffset`) to dodge bars within groups — this automatically disables stacking:
 
 ```vega-lite
 {
@@ -96,34 +96,36 @@ Use `x` for groups and `color` with `"stack": null`:
     "x": {"field": "age", "type": "ordinal"},
     "y": {"aggregate": "sum", "field": "people", "type": "quantitative"},
     "color": {"field": "gender", "type": "nominal"},
-    " xOffset": {"field": "gender", "type": "nominal"}
+    "xOffset": {"field": "gender", "type": "nominal"}
   }
 }
 ```
 
 ## Bar Chart with Error Bars
 
-Layer error bars using `layer`:
+Layer error bars using `layer`. The `errorbar` composite mark computes bounds automatically:
 
 ```vega-lite
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "description": "Bar chart with error bars.",
   "data": {"url": "data/cars.json"},
+  "encoding": {
+    "x": {"field": "Cylinders", "type": "nominal"},
+    "xOffset": {"field": "Origin", "type": "nominal"}
+  },
   "layer": [
     {
       "mark": "bar",
       "encoding": {
-        "x": {"field": "Origin", "type": "nominal"},
-        "y": {"aggregate": "mean", "field": "Horsepower"}
+        "y": {"aggregate": "mean", "field": "Acceleration", "type": "quantitative"},
+        "color": {"field": "Origin", "type": "nominal"}
       }
     },
     {
       "mark": "errorbar",
       "encoding": {
-        "x": {"field": "Origin", "type": "nominal"},
-        "y": {"aggregate": "mean", "field": "Horsepower"},
-        "yError": {"ci": 0.95, "field": "Horsepower"}
+        "y": {"field": "Acceleration", "type": "quantitative"}
       }
     }
   ]

@@ -20,7 +20,7 @@ The `text` mark renders text labels and annotations. Use it for data labels, axi
 
 ## Data Labels on Bar Chart
 
-Layer text on bars:
+Layer text on bars. Share common encoding at top level, add mark-specific encoding per layer:
 
 ```vega-lite
 {
@@ -28,26 +28,28 @@ Layer text on bars:
   "description": "Bar chart with value labels.",
   "data": {
     "values": [
-      {"category": "A", "value": 4},
-      {"category": "B", "value": 6},
-      {"category": "C", "value": 10}
+      {"a": "A", "b": 28},
+      {"a": "B", "b": 55},
+      {"a": "C", "b": 43}
     ]
+  },
+  "encoding": {
+    "y": {"field": "a", "type": "nominal"},
+    "x": {"field": "b", "type": "quantitative", "scale": {"domain": [0, 60]}}
   },
   "layer": [
     {
-      "mark": "bar",
-      "encoding": {
-        "x": {"field": "category", "type": "nominal"},
-        "y": {"field": "value", "type": "quantitative"}
-      }
+      "mark": "bar"
     },
     {
-      "mark": "text",
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 3
+      },
       "encoding": {
-        "x": {"field": "category", "type": "nominal"},
-        "y": {"field": "value", "type": "quantitative"},
-        "text": {"field": "value", "type": "quantitative"},
-        "dy": {"value": -10}
+        "text": {"field": "b", "type": "quantitative"}
       }
     }
   ]

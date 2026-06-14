@@ -56,21 +56,34 @@ Use mark object form to add a line on top of the area:
 
 ## Layered Area Chart (Non-Stacked)
 
-Use `"stack": null` to overlay areas without stacking:
+Use a `layer` with separate data groups to overlay areas without stacking:
 
 ```vega-lite
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "description": "Layered (non-stacked) area chart.",
   "data": {"url": "data/unemployment-across-industries.json"},
-  "mark": "area",
-  "encoding": {
-    "x": {"timeUnit": "yearmonth", "field": "date"},
-    "y": {"aggregate": "sum", "field": "count"},
-    "color": {"field": "industry", "type": "nominal"},
-    "opacity": {"value": 0.3}
-  },
-  "config": {"area": {"stack": null}}
+  "transform": [{"filter": "datum.industry === 'Construction' || datum.industry === 'Mining'"}],
+  "layer": [
+    {
+      "transform": [{"filter": "datum.industry === 'Construction'"}],
+      "mark": "area",
+      "encoding": {
+        "x": {"timeUnit": "yearmonth", "field": "date"},
+        "y": {"aggregate": "sum", "field": "count"},
+        "color": {"value": "#4c78a8"}
+      }
+    },
+    {
+      "transform": [{"filter": "datum.industry === 'Mining'"}],
+      "mark": "area",
+      "encoding": {
+        "x": {"timeUnit": "yearmonth", "field": "date"},
+        "y": {"aggregate": "sum", "field": "count"},
+        "color": {"value": "#f58518"}
+      }
+    }
+  ]
 }
 ```
 
@@ -93,20 +106,29 @@ Control the curve interpolation style:
 
 ## Gradient Fill
 
-Use Vega's gradient syntax for filled areas:
+Use a gradient color definition on the mark for filled areas:
 
 ```vega-lite
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "description": "Area chart with gradient fill.",
-  "data": {"url": "data/unemployment-across-industries.json"},
+  "data": {"url": "data/stocks.csv"},
+  "transform": [{"filter": "datum.symbol==='GOOG'"}],
   "mark": {
     "type": "area",
-    "fill": {"gradient": "linear", "stops": [{"offset": 0, "color": "#4c78a8", "opacity": 0.8}, {"offset": 1, "color": "#4c78a8", "opacity": 0.1}]}
+    "line": {"color": "darkgreen"},
+    "color": {
+      "x1": 1, "y1": 1, "x2": 1, "y2": 0,
+      "gradient": "linear",
+      "stops": [
+        {"offset": 0, "color": "white"},
+        {"offset": 1, "color": "darkgreen"}
+      ]
+    }
   },
   "encoding": {
-    "x": {"timeUnit": "yearmonth", "field": "date"},
-    "y": {"aggregate": "sum", "field": "count"}
+    "x": {"field": "date", "type": "temporal"},
+    "y": {"field": "price", "type": "quantitative"}
   }
 }
 ```

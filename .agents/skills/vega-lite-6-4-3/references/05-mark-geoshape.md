@@ -97,7 +97,7 @@ Layer point marks on a geoshape base:
   "width": 500,
   "height": 300,
   "description": "Graticule grid overlay.",
-  "data": {"graticule": null},
+  "data": {"graticule": true},
   "projection": {"type": "equirectangular"},
   "mark": "geoshape",
   "encoding": {

@@ -1,108 +1,149 @@
 # Errorbar Mark Reference
 
-The `errorbar` composite mark renders error bars showing uncertainty around aggregate values. It compiles to layered `rule` and `tick` marks.
+The `errorbar` composite mark renders error bars showing uncertainty around aggregate values. It compiles to layered `rule` (stem) and `tick` (end cap) marks.
 
-## Basic Error Bar (Aggregate)
+## Basic Error Bar (Confidence Interval)
+
+The `errorbar` mark computes error bounds automatically from the data:
 
 ```vega-lite
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Error bars showing min-max of population by age.",
-  "data": {"url": "data/population.json"},
-  "transform": [{"filter": "datum.year == 2000"}],
+  "description": "Error bars with confidence intervals for barley yield by variety.",
+  "data": {"url": "data/barley.json"},
   "mark": "errorbar",
   "encoding": {
-    "x": {"field": "age", "type": "ordinal"},
-    "y": {"aggregate": "mean", "field": "people", "type": "quantitative"},
-    "yError": {"ci": 0.95, "field": "people"}
+    "x": {"field": "yield", "type": "quantitative", "scale": {"zero": false}},
+    "y": {"field": "variety", "type": "ordinal"}
   }
 }
 ```
 
-## Error Bars on Bar Chart
+## Error Bar with CI Extent
 
-Layer errorbars on bars:
+Explicitly set confidence interval extent:
 
 ```vega-lite
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Bar chart with error bars.",
+  "description": "Error bars with explicit CI extent.",
   "data": {"url": "data/cars.json"},
+  "mark": {"type": "errorbar", "extent": "ci"},
+  "encoding": {
+    "y": {"field": "Miles_per_Gallon", "type": "quantitative", "scale": {"zero": false}},
+    "x": {"timeUnit": "year", "field": "Year"}
+  }
+}
+```
+
+## Error Bar with Ticks
+
+Add tick marks at the ends of error bars:
+
+```vega-lite
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Error bars with tick marks at ends.",
+  "data": {"url": "data/cars.json"},
+  "mark": {"type": "errorbar", "extent": "ci", "ticks": true},
+  "encoding": {
+    "y": {"field": "Miles_per_Gallon", "type": "quantitative", "scale": {"zero": false}},
+    "x": {"timeUnit": "year", "field": "Year"}
+  }
+}
+```
+
+## Manual Error Bars (Min/Max Range)
+
+For custom error ranges, use a layer of `rule` + `tick` marks:
+
+```vega-lite
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Manual error bars showing min-max range.",
+  "data": {"url": "data/population.json"},
+  "transform": [{"filter": "datum.year == 2000"}],
   "layer": [
     {
-      "mark": "bar",
+      "mark": "rule",
       "encoding": {
-        "x": {"field": "Origin", "type": "nominal"},
-        "y": {"aggregate": "mean", "field": "Horsepower"}
+        "x": {"field": "age", "type": "ordinal"},
+        "y": {"aggregate": "min", "field": "people", "type": "quantitative", "title": "population"},
+        "y2": {"aggregate": "max", "field": "people"}
       }
     },
     {
-      "mark": "errorbar",
+      "mark": "tick",
       "encoding": {
-        "x": {"field": "Origin", "type": "nominal"},
-        "y": {"aggregate": "mean", "field": "Horsepower"},
-        "yError": {"ci": 0.95, "field": "Horsepower"}
+        "x": {"field": "age", "type": "ordinal"},
+        "y": {"aggregate": "min", "field": "people"},
+        "size": {"value": 5}
+      }
+    },
+    {
+      "mark": "tick",
+      "encoding": {
+        "x": {"field": "age", "type": "ordinal"},
+        "y": {"aggregate": "max", "field": "people"},
+        "size": {"value": 5}
+      }
+    },
+    {
+      "mark": "point",
+      "encoding": {
+        "x": {"field": "age", "type": "ordinal"},
+        "y": {"aggregate": "mean", "field": "people"},
+        "size": {"value": 2}
       }
     }
   ]
 }
 ```
 
-## Error Bars with Stdev
-
-Use standard deviation instead of confidence intervals:
-
-```vega-lite
-{
-  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Error bars with standard deviation.",
-  "data": {"url": "data/cars.json"},
-  "mark": "errorbar",
-  "encoding": {
-    "x": {"field": "Origin", "type": "nominal"},
-    "y": {"aggregate": "mean", "field": "Horsepower"},
-    "yError": {"stdev": 1, "field": "Horsepower"}
-  }
-}
-```
-
 ## Horizontal Error Bars
+
+Swap x and y for horizontal error bars:
 
 ```vega-lite
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "description": "Horizontal error bars.",
-  "data": {"url": "data/cars.json"},
-  "mark": "errorbar",
-  "encoding": {
-    "y": {"field": "Origin", "type": "nominal"},
-    "x": {"aggregate": "mean", "field": "Horsepower"},
-    "xError": {"ci": 0.95, "field": "Horsepower"}
-  }
-}
-```
-
-## Pre-Aggregated Error Bars
-
-When data already has error values:
-
-```vega-lite
-{
-  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Pre-aggregated error bars.",
-  "data": {
-    "values": [
-      {"group": "A", "mean": 30, "lower": 25, "upper": 35},
-      {"group": "B", "mean": 40, "lower": 33, "upper": 47}
-    ]
-  },
-  "mark": "errorbar",
-  "encoding": {
-    "x": {"field": "group", "type": "nominal"},
-    "y": {"field": "mean", "type": "quantitative"},
-    "yError": {"field": "upper"},
-    "yError2": {"field": "lower"}
-  }
+  "data": {"url": "data/population.json"},
+  "transform": [{"filter": "datum.year == 2000"}],
+  "layer": [
+    {
+      "mark": "rule",
+      "encoding": {
+        "y": {"field": "age", "type": "ordinal"},
+        "x": {"aggregate": "min", "field": "people", "type": "quantitative", "title": "population"},
+        "x2": {"aggregate": "max", "field": "people"}
+      }
+    },
+    {
+      "mark": "tick",
+      "encoding": {
+        "y": {"field": "age", "type": "ordinal"},
+        "x": {"aggregate": "min", "field": "people"},
+        "size": {"value": 5}
+      }
+    },
+    {
+      "mark": "tick",
+      "encoding": {
+        "y": {"field": "age", "type": "ordinal"},
+        "x": {"aggregate": "max", "field": "people"},
+        "size": {"value": 5}
+      }
+    },
+    {
+      "mark": "point",
+      "encoding": {
+        "y": {"field": "age", "type": "ordinal"},
+        "x": {"aggregate": "mean", "field": "people"},
+        "size": {"value": 2}
+      }
+    }
+  ]
 }
 ```
 
@@ -110,33 +151,24 @@ When data already has error values:
 
 | Channel | Role |
 |---|---|
-| `x`, `y` | Position of the error bar center |
-| `xError`, `yError` | Upper error bound |
-| `xError2`, `yError2` | Lower error bound (asymmetric errors) |
+| `x`, `y` | Position of the error bar (quantitative field for automatic computation) |
 | `color` | Error bar color |
 | `opacity` | Transparency |
-
-## Error Specifications
-
-| Spec | Description |
-|---|---|
-| `{"ci": 0.95, "field": "x"}` | 95% confidence interval |
-| `{"stdev": 1, "field": "x"}` | ±1 standard deviation |
-| `{"field": "upper"}` | Direct field for upper bound |
-| `{"field": "upper"}, {"field2": "lower"}` | Asymmetric bounds from fields |
+| `tooltip` | Hover tooltip content |
 
 ## Mark Properties
 
 | Property | Default | Description |
 |---|---|---|
-| `extent` | auto | Error extent specification |
+| `extent` | `"ci"` | Error extent (`"ci"` for confidence interval, `"stdev"` for standard deviation) |
+| `ticks` | `false` | Show tick marks at error bar ends |
 | `tickSize` | auto | Width of the end ticks |
 | `strokeWidth` | `1.5` | Line thickness |
 
 ## Gotchas
 
-- Errorbar is a composite mark — it compiles to `rule` (stem) + `tick` (end caps).
-- Use `yError`/`yError2` for asymmetric errors where upper and lower bounds differ.
-- When layering errorbars on bars, the errorbar layer should come after the bar layer for proper z-ordering.
-- For `ci` (confidence interval), Vega-Lite computes it from the data — ensure sufficient samples per group.
-- Set `"scale": {"zero": false}` when error ranges don't meaningfully include zero.
+- The `errorbar` composite mark computes errors automatically from raw data — it does not use `yError`/`xError` encoding channels.
+- For manual/custom error ranges (pre-computed min/max), build error bars manually using `layer` with `rule` + `tick` marks and `y`/`y2` or `x`/`x2` encodings.
+- Use `"scale": {"zero": false}` when error ranges don't meaningfully include zero.
+- Set `extent: "stdev"` for standard deviation-based error bars instead of confidence intervals.
+- The `ticks` property adds end-cap marks; `tickSize` controls their width.
