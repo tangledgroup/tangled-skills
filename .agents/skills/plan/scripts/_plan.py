@@ -63,7 +63,7 @@ def _acquire_exclusive_lock(plan_path: str, timeout: float = LOCK_TIMEOUT) -> in
     """Acquire an exclusive (write) advisory lock on the plan.
 
     Returns the file descriptor holding the lock.
-    Caller must call _release_lock(fd) when done.
+    Caller must call _release_lock(fd, plan_path) when done.
 
     The lock is held for the ENTIRE read-transform-write cycle so
     concurrent editors serialize deterministically — no lost updates.
@@ -95,17 +95,28 @@ def _acquire_shared_lock(plan_path: str) -> int:
 
     Multiple readers coexist; blocks only when a writer holds LOCK_EX.
     Returns the file descriptor holding the lock.
-    Caller must call _release_lock(fd) when done.
+    Caller must call _release_lock(fd, plan_path) when done.
     """
     fd = os.open(_lock_path(plan_path), os.O_CREAT | os.O_RDWR)
     fcntl.flock(fd, fcntl.LOCK_SH)
     return fd
 
 
-def _release_lock(fd: int) -> None:
-    """Release an advisory lock and close its file descriptor."""
+def _release_lock(fd: int, plan_path: str) -> None:
+    """Release an advisory lock, close its file descriptor, and remove the lock file.
+
+    The lock file is unlinked after the fd is closed. On Linux this is safe:
+    any other process holding a fd to the same inode (e.g. a reader that opened
+    the file before we deleted it) keeps its lock until it closes its own fd.
+    The inode is reclaimed automatically when the last fd closes.
+    """
     fcntl.flock(fd, fcntl.LOCK_UN)
     os.close(fd)
+    lock_file = _lock_path(plan_path)
+    try:
+        os.unlink(lock_file)
+    except FileNotFoundError:
+        pass  # another concurrent release already cleaned it up
 
 
 def write_plan_atomic(path: str, content: str) -> None:
@@ -299,7 +310,7 @@ def _safe_edit(plan_path: str, transform_fn) -> str:
 
         return final_content
     finally:
-        _release_lock(fd)
+        _release_lock(fd, plan_path)
 
 
 def _safe_read(plan_path: str) -> str:
@@ -319,7 +330,7 @@ def _safe_read(plan_path: str) -> str:
             )
         return _strip_checksum(raw)
     finally:
-        _release_lock(fd)
+        _release_lock(fd, plan_path)
 
 
 def write_plan(path: str, content: str) -> None:
