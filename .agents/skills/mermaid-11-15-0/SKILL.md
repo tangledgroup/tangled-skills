@@ -114,6 +114,8 @@ mermaid.sh validate --json docs/
 mermaid.sh validate -q docs/
 ```
 
+The validator uses `bun` to run `_mermaid.js`, which imports `mermaid`, `svgdom`, `jsdom`, and `dompurify` at runtime (no explicit install needed — bun resolves them from npm). It calls `mermaid.parse()` for syntax validation across all 28 diagram types.
+
 Exit codes: `0` = all valid, `1` = syntax errors found, `2` = usage error.
 
 ### Styling nodes
@@ -130,6 +132,7 @@ Use `%%` for single-line comments (must be on their own line).
 
 ## Gotchas
 
+- **`mermaid.sh` requires `bun`**: The validator script invokes `bun` to run `_mermaid.js`. Install bun from https://bun.sh if not available.
 - **"end" keyword**: Using lowercase `end` as a node label breaks parsing. Capitalize (`End`, `END`) or wrap in quotes/brackets.
 - **Single-letter "o" or "x" at edge start**: `A---oB` creates a circle edge, not text. Add a space or capitalize: `A--- ops`.
 - **External CSS doesn't work reliably**: Mermaid injects styles with `!important` and scoped SVG IDs. Use `classDef` instead of external CSS.
