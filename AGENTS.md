@@ -4,7 +4,7 @@ This document provides guidance for AI agents working with the tangled-skills re
 
 ## Repository Structure
 
-**Ignore misc directory content**: Ignore content from `misc/` directory.
+**Ignore misc directory content**: Ignore content from `misc/` and `backup/` directories.
 
 ```
 tangled-skills/
