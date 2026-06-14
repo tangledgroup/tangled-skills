@@ -61,6 +61,34 @@ Optional top-level properties:
 - **`config`** — default configuration overrides
 - **`width` / `height`** — viewport dimensions (`"container"` for responsive)
 
+### Validation
+
+Validate specs against the official v6.4.3 JSON schema using `vega-lite.sh`:
+
+```bash
+# Validate a single file
+vega-lite.sh validate spec.vl.json
+
+# Validate a directory recursively
+vega-lite.sh validate ./specs/
+
+# From stdin
+echo '{"$schema": "...", "data": {...}, "mark": "bar"}' | vega-lite.sh validate -
+
+# JSON output (for CI/CD)
+vega-lite.sh validate --json spec.vl.json
+
+# Quiet mode (errors only)
+vega-lite.sh validate -q ./specs/
+
+# Schema info
+vega-lite.sh schema
+```
+
+The validator uses `bun` to run `_vega-lite.js`, which imports `ajv` and `ajv-formats` at runtime (no explicit install needed — bun resolves them from npm). The JSON schema is **bundled offline** in the scripts directory (`vega-lite-schema.json`), so no network access is required. It validates specs against the official v6.4.3 schema using AJV, matching the validation approach used in the vega-lite test suite.
+
+Exit codes: `0` = all valid, `1` = schema errors found, `2` = usage error.
+
 ### Mark Types
 
 | Category | Marks |
@@ -98,6 +126,7 @@ Vega-Lite recognizes four data types:
 
 ## Gotchas
 
+- **`vega-lite.sh` requires `bun`**: The validator script invokes `bun` to run `_vega-lite.js`. Install bun from https://bun.sh if not available.
 - **Vega-Lite is JSON, not JavaScript** — specs are pure JSON objects. No variables, no functions, no template literals. Use transforms for computed fields.
 - **`aggregate` vs `bin`** — `aggregate` reduces data (sum, mean, count), `bin` groups continuous values into ranges. They serve different purposes and can be combined.
 - **Stacking is automatic** — bar, area, and tick marks stack by default when a third encoding channel (like `color`) creates groups. Use `"stack": null` to disable.
