@@ -93,6 +93,29 @@ npx @mermaid-js/mermaid-cli -i input.mmd -o output.svg
 npx @mermaid-js/mermaid-cli -i input.mmd -o output.png -w 1200
 ```
 
+### Diagram validation
+
+Validate diagram syntax before rendering using the built-in validator:
+
+```bash
+# Validate a single file
+mermaid.sh validate README.md
+
+# Validate all diagrams in a directory
+mermaid.sh validate docs/
+
+# Validate from stdin
+echo "graph TD; A-->B" | mermaid.sh validate -
+
+# JSON output (for CI/CD)
+mermaid.sh validate --json docs/
+
+# Quiet mode (only errors)
+mermaid.sh validate -q docs/
+```
+
+Exit codes: `0` = all valid, `1` = syntax errors found, `2` = usage error.
+
 ### Styling nodes
 
 ```mermaid
