@@ -13,6 +13,9 @@ Create, read, execute and update plan(s).
 ## Overview
 
 Plan/phase/task based planning system with `PLAN.md` as single source of truth.
+
+**All PLAN.md operations MUST go through `plan.sh` scripts — never write or edit PLAN.md directly.** This includes creating plans, adding phases/tasks, changing statuses, updating dependencies, and modifying headers. The scripts enforce status transitions, derive emojis automatically, check dependency cycles, and maintain file integrity via atomic writes and checksums. Direct edits bypass all these safeguards and will corrupt the plan.
+
 There can be many `PLAN.md` files in different locations.
 Plan files create a dependency graph via `**Depends On:** ...`.
 Strict phase numbering (`[emoji-of-phase] Phase X ➖ Phase Title`), inline phase dependency tracking, and emoji-coded statuses within current plan.
@@ -26,20 +29,17 @@ Strict task numbering (`[emoji-of-task] Task X.Y ➖ Task Title ⚓ ...`), with 
 - Resuming interrupted work by tracking current phase and task state
 - Any workflow where having a single source of truth for progress is valuable
 
-## PLAN.md Header Template
+## PLAN.md Structure
 
-Command `plan.sh create PLAN.md ...` creates PLAN.md like:
+`PLAN.md` files are created and modified exclusively via `plan.sh`. The file structure is an implementation detail of the script — do not write or edit it manually.
 
-```markdown
-<!-- required: Plan header -->
-# ☐ Plan ➖ Plan Title
-- Depends On: ...
-- Created: ...
-- Updated: ...
-- Current Phase: ...
-- Current Task: ...
-<!-- required: Phases with Tasks start here -->
-```
+A plan file contains:
+- A title line with derived status emoji: `# [emoji] Plan ➖ Title`
+- Header fields (`Depends On`, `Created`, `Updated`, `Current Phase`, `Current Task`)
+- Phase sections (`## [emoji] Phase N ➖ Title`) with task lists underneath
+- A checksum comment at the bottom (integrity verification)
+
+All of this is managed by the script. Use `plan.sh get-plan PLAN.md --tree --json` to inspect a plan's structure.
 
 ## Universal emoji-coded statuses
 
@@ -75,6 +75,8 @@ These are valid state transitions for `[emoji-of-plan]`:
 - ❌ → ❓ — need clarification to proceed
 
 ⚙️ (Doing) is always required before reaching ☑ (Done). You cannot skip to Done from Todo or Error states.
+
+These transitions are **enforced by `plan.sh`** — calling `plan.sh set-task-status` with an invalid transition will error. Do not manually set emojis in PLAN.md.
 
 ### Plan Status Derivation
 
@@ -229,6 +231,7 @@ Dependencies are managed incrementally — there is no "add all at once" command
 
 ## Gotchas
 
+- **Never write or edit PLAN.md directly** — even if you know the exact format. The script enforces status transitions, auto-derives phase/plan emojis from task states, checks dependency cycles, and maintains a SHA-256 checksum. Direct edits bypass all of this and will cause checksum failures, inconsistent statuses, and silent corruption. If a section of this skill describes PLAN.md formatting, it is for your understanding only — always use `plan.sh` commands to modify the file.
 - **Never remove-and-re-add phases or tasks** — if you need to change a phase's title, description, status, or dependencies, use the update commands (`update-phase`, `update-task`, `set-task-status`, `add-task-dependency`, etc.). Removing and re-adding loses task numbering continuity, breaks dependency anchors (`⚓`), resets statuses, and can introduce race conditions. The only reason to remove a phase or task is when it is genuinely no longer part of the plan.
 - **Updating a plan usually means changing statuses** — most plan "updates" are status transitions (`set-task-status`, `set-phase-status`). Title or description changes via `update-phase` / `update-task` are rare and should only happen when the scope itself has changed, not as a workaround for adding details (use sub-bullets under tasks for that).
 
@@ -238,7 +241,7 @@ Scripts require: `python3` 3.10+ with only built-in modules, and no third-party 
 
 ## Usage
 
-Always use scripts to update `PLAN.md`.
+Use `plan.sh` for every PLAN.md operation. Never edit PLAN.md directly — not even to fix a typo or add a comment. The script is the only valid way to interact with plan files.
 
 ```bash
 #
