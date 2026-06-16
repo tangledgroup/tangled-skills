@@ -4,7 +4,7 @@ Fishbone (cause-and-effect) diagrams for root cause analysis.
 
 ## Syntax
 
-```
+```mermaid
 ishikawa-beta
     Blurry Photo              %% The problem (head of fish)
     Process                   %% Main cause category

@@ -4,7 +4,7 @@ Show relationships between sets using overlapping circles.
 
 ## Syntax
 
-```
+```mermaid
 venn-beta
     title "Title"              %% Optional
     set A["Label"]             %% Define a set

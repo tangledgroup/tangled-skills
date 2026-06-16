@@ -77,7 +77,7 @@ state Active {
 
 ## Direction
 
-```
+```mermaid
 stateDiagram-v2
     direction LR     %% LR, RL, TB, TD, BT
     [*] --> A
@@ -117,9 +117,18 @@ Crash:::badEvent --> [*]
 
 ## Comments
 
-```
+```mermaid
 stateDiagram-v2
     [*] --> Still
     Still --> Moving %% inline comment
 %% full-line comment
+```
+
+### Spaces in state names
+
+Quote state names containing spaces:
+
+```
+state "State with spaces" as s1
+s1 --> "Another state" : transition
 ```

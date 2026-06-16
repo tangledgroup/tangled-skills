@@ -43,7 +43,7 @@ Attributes are defined inside `{}` blocks. Type precedes name.
 
 ## Direction
 
-```
+```mermaid
 erDiagram
     direction LR     %% LR, RL, TB, TD, BT
     CUSTOMER ||--o{ ORDER : places

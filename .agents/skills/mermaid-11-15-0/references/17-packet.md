@@ -13,6 +13,15 @@ packet
     106: "URG"                      %% Single bit
 ```
 
+### Range syntax
+
+| Syntax | Meaning |
+| --- | --- |
+| `0-15` | Bits 0 through 15 (inclusive) |
+| `106` | Single bit at position 106 |
+
+Ranges indicate absolute bit positions. Each line defines one field.
+
 ### Bit count syntax (v11.7.0+)
 
 ```
@@ -22,4 +31,24 @@ packet
     32-47: "Length"                %% Can mix range and count syntax
 ```
 
-`+N` means N bits starting from the end of the previous field.
+`+N` means N bits starting from the end of the previous field. Mix range and count syntax freely.
+
+### Sub-fields (v11+)
+
+Fields can be subdivided with nested `+` counts:
+
+```
+packet
+    title "Ethernet Header"
+    0-47: "Destination MAC"
+    48-63: "Source MAC"
+    +16: "EtherType"
+```
+
+## Configuration
+
+Packet diagrams accept config under the `packet` key, but theme variables are currently non-functional due to an upstream bug (values do not propagate into the rendering styles).
+
+## Gotchas
+
+- Theme variables (`byteFontSize`, `startByteColor`, `endByteColor`, `labelColor`) exist in the schema but are not applied at render time. Check upstream for fixes.

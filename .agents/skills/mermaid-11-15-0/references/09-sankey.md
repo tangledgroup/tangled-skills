@@ -6,7 +6,7 @@ Visualize flows from one set of values to another. Nodes are entities, links sho
 
 CSV-like format: `source,target,value`
 
-```
+```mermaid
 sankey
     NodeA,NodeB,124.7
     NodeB,NodeC,50

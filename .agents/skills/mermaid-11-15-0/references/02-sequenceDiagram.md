@@ -6,14 +6,14 @@ Interaction diagrams showing how processes operate with one another and in what 
 
 ### Implicit declaration (by first message)
 
-```
+```mermaid
 sequenceDiagram
     Alice->>John: Hello John, how are you?
 ```
 
 ### Explicit declaration (controls order)
 
-```
+```mermaid
 sequenceDiagram
     participant Alice
     participant Bob
@@ -229,7 +229,7 @@ Can be nested. Colors: `rgb()`, `rgba()`.
 
 ## Sequence numbers
 
-```
+```mermaid
 sequenceDiagram
     autonumber
     Alice->>John: Hello

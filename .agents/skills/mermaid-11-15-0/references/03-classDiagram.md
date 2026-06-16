@@ -6,7 +6,7 @@ UML class diagrams describing system structure: classes, attributes, methods, an
 
 ### Explicit declaration
 
-```
+```mermaid
 classDiagram
     class Animal
 ```
@@ -108,6 +108,17 @@ Animal <|--|> Zebra
 ```
 
 Syntax: `[RelationType][Link][RelationType]` where RelationType is `<\|`, `\*`, `o`, `>`, `<`, or `\|>`, and Link is `--` or `..`.
+
+### Cardinality / multiplicity
+
+Add quoted numbers to show relationship cardinality:
+
+```
+Customer "1" --> "*" Ticket
+User "1" --> "0..*" Order
+```
+
+Place the cardinality string between the relation and the target class.
 
 ### Lollipop interfaces
 

@@ -67,3 +67,10 @@ style B fill:#969,stroke:#333,stroke-width:4px
 classDef highlight fill:#f96
 cssClass "B" highlight
 ```
+
+## Troubleshooting
+
+- **Incorrect linking**: Ensure connector syntax uses `-->` or `--` between valid block ids.
+- **Overlapping blocks**: Add `space` or `space:2` between crowded blocks to force padding.
+- **Nested groups not rendering**: Close every `group` with `end`; nesting depth is limited.
+- **Missing shapes**: Only the listed shape keywords are recognized — check spelling.

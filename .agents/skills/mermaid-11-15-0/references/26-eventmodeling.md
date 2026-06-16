@@ -31,7 +31,7 @@ Each time frame has a unique number and entity identifier. Numbers don't need to
 
 ## Relaxed notation
 
-```
+```mermaid
 eventmodeling
     timeframe 01 ui CartUI
     timeframe 02 command AddItem

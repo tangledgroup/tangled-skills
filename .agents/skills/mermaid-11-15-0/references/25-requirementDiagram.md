@@ -4,13 +4,14 @@ SysML-style requirements visualization with traces, conflicts, and hierarchy.
 
 ## Requirements
 
-```
-requirement test_req {
-    id: 1
-    text: The test text.
-    risk: high
-    verifymethod: test
-}
+```mermaid
+requirementDiagram
+    requirement test_req {
+        id: 1
+        text: "The test text."
+        risk: high
+        verifymethod: test
+    }
 ```
 
 ### Types
@@ -57,3 +58,39 @@ req1 - contains -> req2          %% Hierarchy
 | `traces` | `- traces ->` | Requirement derives from another |
 | `conflicts` | `- conflicts ->` | Requirements conflict |
 | `contains` | `- contains ->` | Parent-child hierarchy |
+
+## Direction
+
+```
+direction TB   %% Top-to-bottom (default)
+direction BT   %% Bottom-to-top
+direction LR   %% Left-to-right
+direction RL   %% Right-to-left
+```
+
+## Styling
+
+### Direct styling
+
+```mermaid
+requirementDiagram
+    requirement test_req {
+        id: 1
+        text: "styling example"
+    }
+    style test_req fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+### Class definitions
+
+```mermaid
+requirementDiagram
+    requirement test_req {
+        id: 1
+        text: "class example"
+    }
+    classDef critical fill:#f00,color:white,font-weight:bold
+    class test_req critical
+```
+
+Multiple requirements and classes can be assigned at once. The shorthand `:::` assigns multiple classes to a single requirement.

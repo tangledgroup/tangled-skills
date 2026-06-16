@@ -4,7 +4,7 @@ Project schedule visualization with tasks, sections, milestones, and critical pa
 
 ## Syntax
 
-```
+```mermaid
 gantt
     title Project Title
     dateFormat  YYYY-MM-DD
@@ -93,3 +93,47 @@ Uses day.js format: `YYYY-MM-DD`, `DD/MM/YYYY`, `HH:mm`, etc.
 ### Output (`axisFormat`)
 
 Uses d3-time-format: `%Y-%m-%d`, `%b %Y`, `%H:%M`, etc.
+
+## Today marker
+
+Style or hide the current-date marker:
+
+```
+todayMarker stroke-width:5px,stroke:#0f0,opacity:0.5
+todayMarker off          %% Hide the marker
+```
+
+## Compact mode
+
+Set `compact: true` in config to reduce spacing between rows.
+
+## Interaction (click events)
+
+```
+gantt
+    click task1 callback "Tooltip"
+    click task2 href "https://example.com" "Tooltip" _blank
+    click task3 call myFunc() "Tooltip"
+```
+
+## Configuration
+
+Under the `gantt` config key:
+
+| Option      | Type    | Default | Description                    |
+|-------------|---------|---------|--------------------------------|
+| `compact`   | boolean | `false` | Compact row spacing            |
+| `topAxis`   | boolean | `false` | Show axis labels on top        |
+| `barHeight` | number  | `20`    | Task bar height                |
+| `barGap`    | number  | `4`     | Gap between bars               |
+| `fontSize`  | string  | `11px`  | Font size                      |
+
+```yaml
+---
+config:
+  gantt:
+    compact: true
+    topAxis: true
+    barHeight: 25
+---
+```

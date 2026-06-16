@@ -50,3 +50,42 @@ min 0
 ```
 
 Defaults to auto-scaling if not specified.
+
+## Configuration
+
+Under the `radar` config key:
+
+| Option          | Type   | Default  | Description                          |
+|-----------------|--------|----------|--------------------------------------|
+| `width`         | number | `600`    | Diagram width                        |
+| `height`        | number | `600`    | Diagram height                       |
+| `marginTop`     | number | `50`     | Top margin                           |
+| `marginBottom`  | number | `50`     | Bottom margin                        |
+| `marginLeft`    | number | `50`     | Left margin                          |
+| `marginRight`   | number | `50`     | Right margin                         |
+| `axisScaleFactor` | number | `1`  | Scale factor for the axis            |
+| `axisLabelFactor` | number | `1.05` | Axis label position factor           |
+| `curveTension`  | number | `0.17`   | Tension for rounded curves           |
+
+```yaml
+---
+config:
+  radar:
+    width: 800
+    height: 600
+    curveTension: 0.3
+---
+```
+
+## Theme variables
+
+Use `cScale0` through `cScale12` to set curve colors (theme-dependent defaults):
+
+```yaml
+---
+config:
+  themeVariables:
+    cScale0: "#FF0000"
+    cScale1: "#00FF00"
+---
+```

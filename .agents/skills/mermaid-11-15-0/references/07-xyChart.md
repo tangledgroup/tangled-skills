@@ -56,3 +56,36 @@ xychart beta
 ```
 
 Each chart type keyword adds a new series.
+
+## Legend (v11+)
+
+Name a series by adding a quoted label to include it in the legend. Unnamed plots are omitted.
+
+```
+xychart beta
+    x-axis [Jan, Feb, Mar]
+    y-axis "Values" 0 --> 100
+    line "Actual" [10, 50, 80]
+    bar "Target" [20, 40, 60]
+```
+
+## Configuration
+
+Under the `xyChart` config key:
+
+| Option              | Type   | Default | Description               |
+|---------------------|--------|---------|---------------------------|
+| `chartWidth`        | number | —       | Chart width in pixels     |
+| `chartHeight`       | number | —       | Chart height in pixels    |
+| `legendFontSize`    | number | `14`    | Legend font size          |
+| `legendPadding`     | number | `10`    | Padding around legend     |
+
+```yaml
+---
+config:
+  xyChart:
+    chartWidth: 800
+    chartHeight: 400
+    legendFontSize: 12
+---
+```

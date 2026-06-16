@@ -4,7 +4,7 @@ High-level user workflow visualization with satisfaction scores.
 
 ## Syntax
 
-```
+```mermaid
 journey
     title My Working Day
     section Go to work

@@ -204,7 +204,7 @@ Subgraphs can have edges to/from other subgraphs. Nested subgraphs are supported
 
 Wrap text in backticks for markdown formatting (bold, italics, auto-wrap):
 
-```
+```mermaid
 ---
 config:
   htmlLabels: false

@@ -4,7 +4,7 @@ Strategic maps positioning components along visibility and evolution axes.
 
 ## Syntax
 
-```
+```mermaid
 wardley-beta
     title "Tea Shop Value Chain"
 
@@ -64,6 +64,26 @@ note "Comment text" [y, x]
 
 Positioned annotations on the map.
 
+## Advanced features
+
+### Label positioning
+
+Fine-tune label placement with `label [offsetX, offsetY]`:
+
+```
+component Name [y, x] label [-20, 10]
+```
+
+Negative X moves left, positive X moves right. Negative Y moves up, positive Y moves down.
+
+### Custom canvas size
+
+```
+wardley-beta
+  title Custom Size
+  size [800, 1000]
+```
+
 ## Evolution stages
 
 | Stage | X range | Description |
@@ -73,3 +93,8 @@ Positioned annotations on the map.
 | Product | 0.4–0.6 | Reusable offerings |
 | Commodity | 0.6–0.8 | Standardized, competitive |
 | Utility | 0.8–1.0 | Expected, ubiquitous |
+
+## Gotchas
+
+- Hand-drawn mode (`look: handDrawn`) is not supported — uses a custom D3 renderer.
+- Supports standard Mermaid theme system for styling.

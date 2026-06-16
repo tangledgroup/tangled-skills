@@ -4,7 +4,7 @@
 
 ## Syntax
 
-```
+```mermaid
 quadrantChart
     title "Title"
     x-axis Low --> High
@@ -56,3 +56,29 @@ Point Name: [x, y]
 | `titleFontSize` | 20 | Title font size |
 | `quadrantLabelFontSize` | 16 | Quadrant text font size |
 | `xAxisLabelFontSize` | 16 | X-axis label font size |
+
+## Theme variables
+
+Override via `themeVariables`:
+
+| Variable                              | Description                  |
+|---------------------------------------|------------------------------|
+| `quadrant1Fill`–`quadrant4Fill`       | Fill color per quadrant      |
+| `quadrant1TextFill`–`quadrant4TextFill` | Text color per quadrant    |
+| `quadrantPointFill`                   | Points fill color            |
+| `quadrantPointTextFill`               | Points text color            |
+| `quadrantXAxisTextFill`               | X-axis text color            |
+| `quadrantYAxisTextFill`               | Y-axis text color            |
+| `quadrantInternalBorderStrokeFill`    | Inner border color           |
+| `quadrantExternalBorderStrokeFill`    | Outer border color           |
+| `quadrantTitleFill`                   | Title color                  |
+
+```yaml
+---
+config:
+  themeVariables:
+    quadrant1Fill: "#ffcccc"
+    quadrant2Fill: "#ccffcc"
+    quadrantPointFill: "#333333"
+---
+```

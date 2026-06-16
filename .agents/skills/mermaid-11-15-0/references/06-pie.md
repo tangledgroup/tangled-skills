@@ -4,7 +4,7 @@ Circular statistical graphics divided into slices to illustrate numerical propor
 
 ## Syntax
 
-```
+```mermaid
 pie showData          %% Optional: show data values after legend
     title "Title"     %% Optional title
     "Label 1" : 386
@@ -22,13 +22,23 @@ pie showData          %% Optional: show data values after legend
 ---
 config:
   pie:
-    textPosition: 0.5          %% Position of labels (0.0 to 1.0, default ~0.75)
+    textPosition: 0.5          %% Label position (0.0 to 1.0, default ~0.75)
+    donutHole: 0.4              %% Donut hole ratio (0 = no hole, 0.4 = donut)
+    legendPosition: "right"     %% "right" (default), "left", "bottom"
+    highlightSlice: [0, 2]      %% Array of slice indices to highlight
   themeVariables:
     pieOuterStrokeWidth: "5px"
     pieOuterStrokeColor: "#333"
     pieOpacity: 0.8
 ---
 ```
+
+| Option             | Type     | Default  | Description                        |
+|--------------------|----------|----------|------------------------------------|
+| `textPosition`     | number   | ~0.75    | Label radial position              |
+| `donutHole`        | number   | `0`      | Donut hole ratio (0–1)             |
+| `legendPosition`   | string   | `right`  | Legend placement                   |
+| `highlightSlice`   | array    | —        | Slice indices to highlight         |
 
 ## Theme variables
 

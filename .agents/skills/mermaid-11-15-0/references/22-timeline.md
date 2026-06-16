@@ -4,7 +4,7 @@ Chronological event visualization with grouping and icons.
 
 ## Syntax
 
-```
+```mermaid
 timeline
     title History of Social Media
     2002 : LinkedIn
@@ -23,7 +23,7 @@ timeline
 
 ## Grouping
 
-```
+```mermaid
 timeline
     title Tech Timeline
     2000s
@@ -38,9 +38,26 @@ Indented blocks create visual groupings.
 
 ## Icons
 
-```
+```mermaid
 timeline
     title Events
     2024 : Launch ::icon(fa fa-rocket)
          : Update ::icon(fa fa-code-branch)
 ```
+
+## Text wrapping
+
+Long text wraps automatically. Force breaks with `<br>`:
+
+```
+timeline
+    2024 : Launch of the product<br>and subsequent updates
+```
+
+## Styling
+
+Each section gets its own color scheme. Without sections, each time period (and its events) uses an individual color by default.
+
+## Themes
+
+Use standard Mermaid themes: `default`, `base`, `dark`, `forest`, `neutral`.

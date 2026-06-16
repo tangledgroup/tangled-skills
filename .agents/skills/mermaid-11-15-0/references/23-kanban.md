@@ -4,7 +4,7 @@ Visual workflow representation with columns and tasks.
 
 ## Syntax
 
-```
+```mermaid
 kanban
     todo[Todo]
         task1[Task Description]
@@ -42,3 +42,21 @@ task1[Description]@{ ticket: MC-2037, assigned: 'knsv', priority: 'High' }
 | `ticket` | Any string (issue/ticket ID) |
 | `assigned` | Person name |
 | `priority` | `Very High`, `High`, `Low`, `Very Low` |
+
+## Configuration
+
+Under the `kanban` config key:
+
+| Option          | Type   | Default | Description                                      |
+|-----------------|--------|---------|--------------------------------------------------|
+| `ticketBaseUrl` | string | —       | Base URL for ticket links; `#TICKET#` is replaced |
+
+```yaml
+---
+config:
+  kanban:
+    ticketBaseUrl: 'https://yourproject.atlassian.net/browse/#TICKET#'
+---
+```
+
+When a task has a `ticket` metadata key, the ticket ID becomes a clickable link using the base URL.

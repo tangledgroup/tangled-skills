@@ -4,7 +4,7 @@ Cloud-style diagrams showing relationships between services and resources in dep
 
 ## Syntax
 
-```
+```mermaid
 architecture-beta
     group api(cloud)[API]
     service db(database)[Database] in api
@@ -57,3 +57,23 @@ Junctions are connection points for multiple edges.
 ## Icons
 
 Common icons: `cloud`, `database`, `disk`, `server`, `lock`, `user`, `gear`, `code`, `monitor`, `network`, `storage`, `firewall`, `loadbalancer`, `queue`, `lambda`, `container`, `kubernetes`, `docker`, `git`, `ci-cd`, `api`, `web`, `mobile`, `email`, `chat`, `search`, `analytics`, `ml`, `cache`, `cdn`, `dns`.
+
+## Configuration (v11.14.0+)
+
+| Option      | Type    | Default  | Description                                        |
+|-------------|---------|----------|----------------------------------------------------|
+| `randomize` | boolean | `false`  | Randomize initial node positions before layout     |
+| `seed`      | number  | —        | Lock layout deterministically (overrides randomize) |
+
+By default nodes start at deterministic seed positions (`randomize: false`). Setting `randomize: true` may produce better-spaced layouts on complex diagrams. Use `seed` to lock the layout fully for reproducible renders.
+
+```yaml
+---
+config:
+  architecture:
+    randomize: true
+    seed: 42
+---
+```
+
+> `randomize: false` alone is not enough to guarantee identical renders — the underlying fcose layout still calls `Math.random()`. Use `seed` for full determinism.
