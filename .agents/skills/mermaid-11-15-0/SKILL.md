@@ -104,6 +104,7 @@ The CLI reads `.mmd` files (raw mermaid) or `.md` files (extracts fenced mermaid
 
 ## Gotchas
 
+- **Always validate after generating** — run `mermaid.sh validate -` with the diagram piped to stdin, or `mermaid.sh validate <file>` for files. Do this every time you generate a mermaid diagram, whether it's inline in a markdown block or written to `.md` or `.mmd` file. Fix any parser errors before presenting the diagram.
 - **The word `end` breaks flowcharts** — if a node label contains lowercase "end", capitalize it ("End") or wrap in quotes. Same applies to sequence diagrams: use parentheses, brackets, or quotes around the word.
 - **Leading `o` or `x` in flowchart nodes** — `A---oB` creates a circle edge, not a node named "oB". Add a space or capitalize: `A--- Ops`.
 - **Every example must start with ` ```mermaid`** — the validator extracts blocks matching this fence. Do not use ` ```mermaid-example` or other variants in final output.
