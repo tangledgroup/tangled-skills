@@ -18,7 +18,7 @@ metadata:
 
 ## Overview
 
-Mermaid renders diagrams from markdown-like text inside \`\`\`mermaid \`\`\` code blocks or `<pre class="mermaid">` HTML tags. Version 11.15.0 supports **28 diagram types** spanning flowcharts, sequence diagrams, Gantt charts, class diagrams, ER diagrams, mindmaps, pie charts, state machines, git graphs, C4 models, timelines, architecture diagrams, and more.
+Mermaid renders diagrams from markdown-like text inside \`\`\`mermaid \`\`\` code blocks or `<pre class="mermaid">` HTML tags. Version 11.15.0 supports **28 diagram types**: flowchart, sequenceDiagram, classDiagram, gitGraph, stateDiagram, pie, xychart, radar, sankey, treemap, venn, quadrantChart, block, architecture, C4 (Context/Container/Component/Dynamic/Deployment), erDiagram, packet, treeView, zenuml, wardley, gantt, timeline, kanban, journey, requirement, eventModeling, ishikawa, mindmap.
 
 ### Frontmatter config example
 
