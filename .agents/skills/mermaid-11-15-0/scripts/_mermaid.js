@@ -332,12 +332,124 @@ async function cmdValidate(args) {
     process.exit(totalInvalid > 0 ? 1 : 0);
 }
 
+// --- Render command (SVG/PNG) ---
+
+function printRenderUsage() {
+    console.log(`
+Usage: mermaid.sh render [OPTIONS]
+
+Convert a Mermaid diagram file to SVG or PNG using @mermaid-js/mermaid-cli.
+
+Options:
+  -i, --input <file>    Input file (.mmd, .mermaid, or .md with fenced mermaid blocks) [required]
+  -o, --output <path>   Output file path (.svg or .png). Default: same name as input with .svg extension
+  -t, --theme <name>    Theme: default, dark, forest, neutral, base (default: default)
+  -w, --width <px>      Page width in pixels (default: 800)
+  -H, --height <px>     Page height in pixels (default: 600)
+  -s, --scale <number>  Canvas scale factor (default: 1)
+  -c, --config <file>   Path to config file (mermaid-config.json or .json)
+  -h, --help            Show this help message
+
+Examples:
+  mermaid.sh render -i diagram.mmd
+  mermaid.sh render -i diagram.mmd -o output.png
+  mermaid.sh render -i diagram.mmd -t dark -o output.svg
+  mermaid.sh render -i notes.md -o output/
+`);
+}
+
+async function cmdRender(args) {
+    let output = null;
+    let theme = "default";
+    let width = 800;
+    let height = 600;
+    let scale = 1;
+    let configFile = null;
+    let input = null;
+
+    for (let i = 0; i < args.length; i++) {
+        const arg = args[i];
+        if (arg === "-h" || arg === "--help") {
+            printRenderUsage();
+            process.exit(0);
+        } else if (arg === "-i" || arg === "--input") {
+            input = args[++i];
+        } else if (arg === "-o" || arg === "--output") {
+            output = args[++i];
+        } else if (arg === "-t" || arg === "--theme") {
+            theme = args[++i];
+        } else if (arg === "-w" || arg === "--width") {
+            width = parseInt(args[++i], 10);
+        } else if (arg === "-H" || arg === "--height") {
+            height = parseInt(args[++i], 10);
+        } else if (arg === "-s" || arg === "--scale") {
+            scale = parseFloat(args[++i]);
+        } else if (arg === "-c" || arg === "--config") {
+            configFile = args[++i];
+        } else if (arg.startsWith("-")) {
+            console.error(`${RED}Error: Unknown option: ${arg}${RESET}`);
+            printRenderUsage();
+            process.exit(2);
+        } else {
+            console.error(`${RED}Error: Unexpected positional argument: ${arg}${RESET}`);
+            printRenderUsage();
+            process.exit(2);
+        }
+    }
+
+    if (!input) {
+        console.error(`${RED}Error: No input file specified.${RESET}`);
+        printRenderUsage();
+        process.exit(2);
+    }
+
+    // Check input exists
+    try {
+        await stat(input);
+    } catch {
+        console.error(`${RED}Error: Input file does not exist: ${input}${RESET}`);
+        process.exit(2);
+    }
+
+    // Build mmdc command args
+    const mmdcArgs = [];
+    mmdcArgs.push("-i", input);
+    if (output) {
+        mmdcArgs.push("-o", output);
+    }
+    mmdcArgs.push("-t", theme);
+    mmdcArgs.push("-w", String(width));
+    mmdcArgs.push("-H", String(height));
+    mmdcArgs.push("-s", String(scale));
+    if (configFile) {
+        mmdcArgs.push("-c", configFile);
+    }
+
+    // Spawn bun x @mermaid-js/mermaid-cli with the args
+    const proc = Bun.spawn(
+        ["bun", "x", "@mermaid-js/mermaid-cli", ...mmdcArgs],
+        {
+            stdio: ["inherit", "inherit", "inherit"],
+        }
+    );
+
+    const exitCode = await proc.exited;
+    process.exit(exitCode);
+}
+
 // --- Main entry point ---
 async function main() {
     const args = process.argv.slice(2);
 
     if (args.length === 0 || args[0] === "-h" || args[0] === "--help") {
-        printUsage();
+        console.log(`
+Usage: mermaid.sh <subcommand> [OPTIONS]
+
+Subcommands:
+  validate    Validate Mermaid diagram syntax using the official parser
+  render      Convert .mmd or .md files to SVG or PNG
+
+Run 'mermaid.sh <subcommand> --help' for details on each subcommand.`);
         process.exit(0);
     }
 
@@ -348,9 +460,14 @@ async function main() {
         case "validate":
             await cmdValidate(subArgs);
             break;
+        case "render":
+            await cmdRender(subArgs);
+            break;
         default:
             console.error(`${RED}Error: Unknown subcommand: ${subcommand}${RESET}`);
-            printUsage();
+            console.log(`
+Available subcommands: validate, render
+Run 'mermaid.sh --help' for usage.`);
             process.exit(2);
     }
 }

@@ -1,11 +1,11 @@
 ---
 name: mermaid-11-15-0
 description: >
-  Mermaid 11.15.0 diagram syntax reference and validation. Use when writing, debugging,
-  or converting Mermaid diagrams (flowchart, sequenceDiagram, stateDiagram, classDiagram,
+  Mermaid diagram syntax reference and validation. Use when writing, debugging,
+  or converting Mermaid diagrams: flowchart, sequenceDiagram, stateDiagram, classDiagram,
   gantt, erDiagram, pie, gitgraph, journey, mindmap, timeline, xychart, radar-beta,
   quadrantChart, sankey, block, architecture-beta, c4, packet, treemap-beta, venn-beta,
-  wardley-beta, ishikawa-beta, kanban, requirementDiagram).
+  wardley-beta, ishikawa-beta, kanban, requirementDiagram.
 metadata:
   tags:
     - diagrams
@@ -54,53 +54,54 @@ mermaid.sh validate --json ./diagram.md
 
 ### Convert to SVG/PNG
 
-Use `bun x` (aka `bunx` which is `npx` equivalent) to run `@mermaid-js/mermaid-cli` without installing it globally. The `-i` flag sets input, `-o` sets output:
+Use `mermaid.sh render` to convert `.mmd` or `.md` files to SVG or PNG:
 
 ```bash
-# Single file to SVG
-bun x @mermaid-js/mermaid-cli -i diagram.mmd -o diagram.svg
+# Single file to SVG (default output format)
+mermaid.sh render -i diagram.mmd
 
-# Single file to PNG
-bun x @mermaid-js/mermaid-cli -i diagram.mmd -o diagram.png
+# Explicit output path
+mermaid.sh render -i diagram.mmd -o diagram.svg
+mermaid.sh render -i diagram.mmd -o diagram.png
 
 # With theme
-bun x @mermaid-js/mermaid-cli -i diagram.mmd -o diagram.svg -t dark
+mermaid.sh render -i diagram.mmd -t dark -o diagram.svg
 
 # From a markdown file (extracts mermaid blocks)
-bun x @mermaid-js/mermaid-cli -i notes.md -o output/
+mermaid.sh render -i notes.md -o output/
 ```
 
-The CLI reads `.mmd` files (raw mermaid) or `.md` files (extracts fenced mermaid blocks). Output directory is inferred from the `-o` path.
+The script reads `.mmd` files (raw mermaid) or `.md` files (extracts fenced mermaid blocks). Output format is inferred from the `-o` extension (default: `.svg`). Run `mermaid.sh render --help` for all options.
 
 ### Diagram types at a glance
 
-| Keyword | Diagram Type | Reference |
-|---|---|---|
-| `flowchart` / `graph` | Flowcharts and graphs | [01-flowchart.md](references/01-flowchart.md) |
-| `sequenceDiagram` | Sequence diagrams | [02-sequenceDiagram.md](references/02-sequenceDiagram.md) |
-| `stateDiagram-v2` / `stateDiagram` | State diagrams | [03-stateDiagram.md](references/03-stateDiagram.md) |
-| `classDiagram` | Class (UML) diagrams | [04-classDiagram.md](references/04-classDiagram.md) |
-| `gantt` | Gantt charts | [05-gantt.md](references/05-gantt.md) |
-| `erDiagram` | Entity-relationship diagrams | [06-erDiagram.md](references/06-erDiagram.md) |
-| `pie` | Pie charts | [07-pie.md](references/07-pie.md) |
-| `gitGraph` | Git commit graphs | [08-gitGraph.md](references/08-gitGraph.md) |
-| `journey` | User journey diagrams | [09-userJourney.md](references/09-userJourney.md) |
-| `mindmap` | Mind maps | [10-mindmap.md](references/10-mindmap.md) |
-| `timeline` | Timeline diagrams | [11-timeline.md](references/11-timeline.md) |
-| `xychart` | XY charts (bar/line) | [12-xyChart.md](references/12-xyChart.md) |
-| `radar-beta` | Radar/spider charts | [13-radar.md](references/13-radar.md) |
-| `quadrantChart` | Quadrant charts | [14-quadrantChart.md](references/14-quadrantChart.md) |
-| `sankey` | Sankey flow diagrams | [15-sankey.md](references/15-sankey.md) |
-| `block` | Block diagrams | [16-block.md](references/16-block.md) |
-| `architecture-beta` | Cloud architecture | [17-architecture.md](references/17-architecture.md) |
-| `C4Context` / `C4Container` / etc. | C4 model diagrams | [18-c4.md](references/18-c4.md) |
-| `packet` | Network packet diagrams | [19-packet.md](references/19-packet.md) |
-| `treemap-beta` | Treemap diagrams | [20-treemap.md](references/20-treemap.md) |
-| `venn-beta` | Venn diagrams | [21-venn.md](references/21-venn.md) |
-| `wardley-beta` | Wardley maps | [22-wardley.md](references/22-wardley.md) |
-| `ishikawa-beta` | Fishbone/Ishikawa | [23-ishikawa.md](references/23-ishikawa.md) |
-| `kanban` | Kanban boards | [24-kanban.md](references/24-kanban.md) |
-| `requirementDiagram` | Requirements (SysML) | [25-requirementDiagram.md](references/25-requirementDiagram.md) |
+| Keyword | Diagram Type |
+|---|---|
+| `flowchart` / `graph` | Flowcharts and graphs |
+| `sequenceDiagram` | Sequence diagrams |
+| `stateDiagram-v2` / `stateDiagram` | State diagrams |
+| `classDiagram` | Class (UML) diagrams |
+| `gantt` | Gantt charts |
+| `erDiagram` | Entity-relationship diagrams |
+| `pie` | Pie charts |
+| `gitGraph` | Git commit graphs |
+| `journey` | User journey diagrams |
+| `mindmap` | Mind maps |
+| `timeline` | Timeline diagrams |
+| `xychart` | XY charts (bar/line) |
+| `radar-beta` | Radar/spider charts |
+| `quadrantChart` | Quadrant charts |
+| `sankey` | Sankey flow diagrams |
+| `block` | Block diagrams |
+| `architecture-beta` | Cloud architecture |
+| `C4Context` / `C4Container` / etc. | C4 model diagrams |
+| `packet` | Network packet diagrams |
+| `treemap-beta` | Treemap diagrams |
+| `venn-beta` | Venn diagrams |
+| `wardley-beta` | Wardley maps |
+| `ishikawa-beta` | Fishbone/Ishikawa |
+| `kanban` | Kanban boards |
+| `requirementDiagram` | Requirements (SysML) |
 
 ## Gotchas
 
