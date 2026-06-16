@@ -18,21 +18,7 @@ metadata:
 
 ## Overview
 
-Mermaid renders diagrams from markdown-like text inside ````mermaid` code blocks or `<pre class="mermaid">` HTML tags. Version 11.15.0 supports **28 diagram types** spanning flowcharts, sequence diagrams, Gantt charts, class diagrams, ER diagrams, mindmaps, pie charts, state machines, git graphs, C4 models, timelines, architecture diagrams, and more.
-
-### Deployment modes
-
-- **Live Editor**: <https://mermaid.live> — write code, preview instantly
-- **Markdown embedding**: ```` ```mermaid` blocks in GitHub, GitLab, Obsidian, Notion, etc.
-- **JavaScript API**: import `mermaid.esm.min.mjs` from CDN or npm package
-- **CLI**: `npx @mermaid-js/mermaid-cli` for SVG/PNG export
-
-### Configuration layers (applied in order)
-
-1. Default configuration (built-in)
-2. Site-level `mermaid.initialize()` overrides
-3. Diagram frontmatter `config:` block (v10.5.0+, preferred)
-4. Directives `%%{init: {...}}%%` (deprecated, still works)
+Mermaid renders diagrams from markdown-like text inside \`\`\`mermaid \`\`\` code blocks or `<pre class="mermaid">` HTML tags. Version 11.15.0 supports **28 diagram types** spanning flowcharts, sequence diagrams, Gantt charts, class diagrams, ER diagrams, mindmaps, pie charts, state machines, git graphs, C4 models, timelines, architecture diagrams, and more.
 
 ### Frontmatter config example
 
@@ -60,7 +46,11 @@ flowchart TD
 
 ### Layout algorithms
 
-Specify via `config: { layout: <name> }`. Options: `dagre` (default), `elk` (better for large/complex diagrams), `cose-bilkent` (force-directed), `tidy-tree` (hierarchical).
+Specify via `config: { layout: <name> }`:
+- `dagre` - default
+- `elk` - better for large/complex diagrams
+- `cose-bilkent` - force-directed
+- `tidy-tree` - hierarchical
 
 ## Usage
 
@@ -89,8 +79,8 @@ graph TD
 ### CLI (PNG/SVG export)
 
 ```bash
-npx @mermaid-js/mermaid-cli -i input.mmd -o output.svg
-npx @mermaid-js/mermaid-cli -i input.mmd -o output.png -w 1200
+bun x @mermaid-js/mermaid-cli -i input.mmd -o output.svg
+bun x @mermaid-js/mermaid-cli -i input.mmd -o output.png -w 1200
 ```
 
 ### Diagram validation
@@ -114,8 +104,6 @@ mermaid.sh validate --json docs/
 mermaid.sh validate -q docs/
 ```
 
-The validator uses `bun` to run `_mermaid.js`, which imports `mermaid`, `svgdom`, `jsdom`, and `dompurify` at runtime (no explicit install needed — bun resolves them from npm). It calls `mermaid.parse()` for syntax validation across all 28 diagram types.
-
 Exit codes: `0` = all valid, `1` = syntax errors found, `2` = usage error.
 
 ### Styling nodes
@@ -132,7 +120,8 @@ Use `%%` for single-line comments (must be on their own line).
 
 ## Gotchas
 
-- **`mermaid.sh` requires `bun`**: The validator script invokes `bun` to run `_mermaid.js`. Install bun from https://bun.sh if not available.
+- **`@mermaid-js/mermaid-cli` requires `bun`**: PNG/SVG export.
+- **`mermaid.sh` requires `bun`**: The validator script invokes `bun` to run `_mermaid.js`.
 - **"end" keyword**: Using lowercase `end` as a node label breaks parsing. Capitalize (`End`, `END`) or wrap in quotes/brackets.
 - **Single-letter "o" or "x" at edge start**: `A---oB` creates a circle edge, not text. Add a space or capitalize: `A--- ops`.
 - **External CSS doesn't work reliably**: Mermaid injects styles with `!important` and scoped SVG IDs. Use `classDef` instead of external CSS.
