@@ -121,14 +121,14 @@ Load these on demand for detailed API coverage:
 
 | Reference | Content |
 |-----------|---------|
-| [00-core-api](references/00-core-api.md) | BaseEstimator, mixins, Pipeline, ColumnTransformer, clone, config |
-| [01-classifiers](references/01-classifiers.md) | All classification estimators and their key parameters |
-| [02-regressors](references/02-regressors.md) | All regression estimators and their key parameters |
-| [03-clustering](references/03-clustering.md) | Clustering algorithms: KMeans, DBSCAN, Agglomerative, etc. |
-| [04-preprocessing](references/04-preprocessing.md) | Scalers, encoders, imputers, transformers |
-| [05-model-selection](references/05-model-selection.md) | CV splitters, GridSearchCV, cross_validate, learning curves |
-| [06-metrics](references/06-metrics.md) | Classification/regression metrics, scorers, display classes |
-| [07-feature-selection](references/07-feature-selection.md) | RFE, SelectKBest, VarianceThreshold, mutual info |
-| [08-dimensionality-reduction](references/08-dimensionality-reduction.md) | PCA, SVD, NMF, manifold methods |
-| [09-data-io](references/09-data-io.md) | Built-in datasets, fetch_openml, synthetic data generators |
-| [10-advanced-topics](references/10-advanced-topics.md) | Callbacks, metadata routing, FrozenEstimator, experimental features |
+| [01-core-api](references/01-core-api.md) | BaseEstimator, mixins, Pipeline, ColumnTransformer, clone, config |
+| [02-classifiers](references/02-classifiers.md) | All classification estimators and their key parameters |
+| [03-regressors](references/03-regressors.md) | All regression estimators and their key parameters |
+| [04-clustering](references/04-clustering.md) | Clustering algorithms: KMeans, DBSCAN, Agglomerative, etc. |
+| [05-preprocessing](references/05-preprocessing.md) | Scalers, encoders, imputers, transformers |
+| [06-model-selection](references/06-model-selection.md) | CV splitters, GridSearchCV, cross_validate, learning curves |
+| [07-metrics](references/07-metrics.md) | Classification/regression metrics, scorers, display classes |
+| [08-feature-selection](references/08-feature-selection.md) | RFE, SelectKBest, VarianceThreshold, mutual info |
+| [09-dimensionality-reduction](references/09-dimensionality-reduction.md) | PCA, SVD, NMF, manifold methods |
+| [10-data-io](references/10-data-io.md) | Built-in datasets, fetch_openml, synthetic data generators |
+| [11-advanced-topics](references/11-advanced-topics.md) | Callbacks, metadata routing, FrozenEstimator, experimental features |
