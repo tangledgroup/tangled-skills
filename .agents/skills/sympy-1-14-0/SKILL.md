@@ -132,5 +132,8 @@ collect(a*x**2 + b*x**2 + c*x, x)  # (a+b)*x**2 + c*x
 - [05-matrices-linear-algebra](references/05-matrices-linear-algebra.md) — Matrix construction, operations, eigenvalues, decompositions
 - [06-special-functions](references/06-special-functions.md) — Gamma, Bessel, elliptic, hypergeometric, orthogonal polynomials
 - [07-simplification-patterns](references/07-simplification-patterns.md) — simplify family, collect, fraction, CSE
-
-Remaining references pending: number theory, geometry, transforms, printing/codegen, physics.
+- [08-number-theory](references/08-number-theory.md) — Primes, factorization, modular arithmetic, continued fractions
+- [09-geometry](references/09-geometry.md) — Points, lines, circles, polygons, intersections
+- [10-transforms-discrete](references/10-transforms-discrete.md) — Laplace, Fourier, Mellin, FFT, NTT
+- [11-printing-codegen](references/11-printing-codegen.md) — LaTeX, pretty print, C/Fortran/R code generation
+- [12-physics-modules](references/12-physics-modules.md) — Quantum mechanics, rigid body dynamics, units
