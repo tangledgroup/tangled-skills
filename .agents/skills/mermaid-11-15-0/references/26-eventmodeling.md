@@ -6,11 +6,11 @@ Describe systems through information flow over time. Entities organized in swiml
 
 ```
 eventmodeling
-    tf 01 ui CartUI
-    tf 02 cmd AddItem
-    tf 03 evt ItemAdded
-    tf 04 agg ShoppingCart
-    tf 05 policy ValidateStock
+    timeframe 01 ui CartUI
+    timeframe 02 command AddItem
+    timeframe 03 event ItemAdded
+    timeframe 04 aggregate ShoppingCart
+    timeframe 05 policy ValidateStock
 ```
 
 ### Entity types (shorthand)
@@ -35,8 +35,8 @@ Add data examples on the same line in curly braces:
 
 ```
 eventmodeling
-    tf 02 cmd AddItem { description: string }
-    tf 03 evt ItemAdded { description: string }
+    timeframe 02 command AddItem { description: string }
+    timeframe 03 event ItemAdded { description: string }
 ```
 
 ### Data blocks
@@ -45,8 +45,8 @@ Reference structured data with `[[identifier]]`. Define blocks separately with `
 
 ```
 eventmodeling
-    tf 02 cmd AddItem [[AddItem01]]
-    tf 03 evt ItemAdded [[ItemAdded]]
+    timeframe 02 command AddItem [[AddItem01]]
+    timeframe 03 event ItemAdded [[ItemAdded]]
 
     data AddItem01 {
       description: 'john'
@@ -66,7 +66,7 @@ Suffix identifiers with numbers when the same entity appears multiple times (e.g
 Prepend backtick-quoted type for syntax highlighting: `json`, `jsobj`, `md`, `html`, `text`, `uri`, `figma`, `salt`.
 
 ```
-    tf 01 rmo UserAdded `json`{ "name": "foo" }
+    timeframe 01 readmodel UserAdded `json`{ "name": "foo" }
 ```
 
 ### Reset frames
@@ -75,13 +75,13 @@ Break inferred flow with `rf` / `resetframe`. New frames start a fresh inference
 
 ```
 eventmodeling
-    tf 01 ui CartUI
-    tf 02 cmd AddItem
-    tf 03 evt ItemAdded
+    timeframe 01 ui CartUI
+    timeframe 02 command AddItem
+    timeframe 03 event ItemAdded
 
-    rf 04 evt External.InventoryChanged
-    tf 05 pcr InventoryProcessor
-    tf 06 cmd ChangeInventory
+    resetframe 04 event External.InventoryChanged
+    timeframe 05 processor InventoryProcessor
+    timeframe 06 command ChangeInventory
 ```
 
 ### Multiple relations
@@ -90,10 +90,10 @@ Use `->>` to link a read model to multiple events:
 
 ```
 eventmodeling
-    rf 02 evt CartCreated
-    rf 03 evt ItemAdded
-    rf 04 evt ItemRemoved
-    tf 01 rmo CartUI ->> 02 ->> 03 ->> 04
+    resetframe 02 event CartCreated
+    resetframe 03 event ItemAdded
+    resetframe 04 event ItemRemoved
+    timeframe 01 readmodel CartUI ->> 02 ->> 03 ->> 04
 ```
 
 ## Relaxed notation
@@ -123,8 +123,8 @@ Prefix entity identifiers with `Namespace.` to create custom swimlanes. Order of
 
 ```
 eventmodeling
-    rf 01 evt Inventory.InventoryChanged
-    rf 02 evt External.InventoryChanged
+    resetframe 01 event Inventory.InventoryChanged
+    resetframe 02 event External.InventoryChanged
 ```
 
 ## Patterns

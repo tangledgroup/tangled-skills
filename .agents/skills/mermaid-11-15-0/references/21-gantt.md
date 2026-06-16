@@ -111,9 +111,13 @@ Set `compact: true` in config to reduce spacing between rows.
 
 ```
 gantt
-    click task1 callback "Tooltip"
-    click task2 href "https://example.com" "Tooltip" _blank
-    click task3 call myFunc() "Tooltip"
+    title Project with Click Events
+    dateFormat  YYYY-MM-DD
+    section Tasks
+        Task One :done, task1, 2024-01-01, 5d
+        Task Two :active, task2, after task1, 3d
+    click task1 callback "Tooltip for task1"
+    click task2 href "https://example.com" "Open in new tab" _blank
 ```
 
 ## Configuration

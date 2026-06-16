@@ -54,6 +54,16 @@ timeline
     2024 : Launch of the product<br>and subsequent updates
 ```
 
+## Direction (v11.14.0+)
+
+Change rendering direction with a keyword after `timeline`:
+
+```
+timeline TD     %% Top-down (default)
+timeline LR     %% Left-right
+timeline BT     %% Bottom-top
+```
+
 ## Styling
 
 Each section gets its own color scheme. Without sections, each time period (and its events) uses an individual color by default.

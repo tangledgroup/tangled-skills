@@ -42,7 +42,7 @@ Use `<br/>` for line breaks within node text.
 
 ## Classes
 
-Apply `classDef` and `class` to style nodes:
+Apply `classDef` and `class` to style nodes. Note: `classDef` must be inside the mermaid block:
 
 ```
 mindmap

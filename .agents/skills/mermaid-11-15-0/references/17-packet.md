@@ -6,11 +6,13 @@ Visualize network packet structures and protocol field layouts.
 
 ```
 packet
-    title "TCP Packet"              %% Optional
-    0-15: "Source Port"             %% Range syntax
+    title "TCP Header"
+    0-15: "Source Port"
     16-31: "Destination Port"
     32-63: "Sequence Number"
-    106: "URG"                      %% Single bit
+    64-95: "Acknowledgment Number"
+    96-99: "Data Offset"
+    100-111: "Flags"
 ```
 
 ### Range syntax

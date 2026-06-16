@@ -4,8 +4,8 @@ description: >-
   Mermaid v11.15.0 — render diagrams from text using the `mermaid` code block syntax.
   Use this skill whenever the user mentions Mermaid, diagrams, flowcharts, sequence diagrams,
   Gantt charts, class diagrams, ER diagrams, mindmaps, pie charts, state machines, git graphs,
-  C4 models, timelines, cynefin framework, railroad/EBNF grammars, swimlanes, or any
-text-to-diagram visualization. Covers all 31 diagram types, configuration (themes,
+  C4 models, timelines, wardley maps, sankey diagrams, or any
+text-to-diagram visualization. Covers all 28 diagram types, configuration (themes,
   frontmatter, layouts), and styling. Load the matching reference file for detailed syntax
   of a specific diagram type.
 metadata:
@@ -19,7 +19,7 @@ metadata:
 
 ## Overview
 
-Mermaid renders diagrams from markdown-like text inside \`\`\`mermaid \`\`\` code blocks or `<pre class="mermaid">` HTML tags. Version 11.15.0 supports **31 diagram types**: flowchart, sequenceDiagram, classDiagram, gitGraph, stateDiagram, pie, xychart, radar, sankey, treemap, venn, quadrantChart, block, architecture, C4 (Context/Container/Component/Dynamic/Deployment), erDiagram, packet, treeView, zenuml, wardley, gantt, timeline, kanban, journey, requirement, eventModeling, ishikawa, mindmap, cynefin, railroad, swimlanes.
+Mermaid renders diagrams from markdown-like text inside \`\`\`mermaid \`\`\` code blocks or `<pre class="mermaid">` HTML tags. Version 11.15.0 supports **28 diagram types**: flowchart, sequenceDiagram, classDiagram, gitGraph, stateDiagram, pie, xychart, radar, sankey, treemap, venn, quadrantChart, block, architecture, C4 (Context/Container/Component/Dynamic/Deployment), erDiagram, packet, treeView, zenuml, wardley, gantt, timeline, kanban, journey, requirement, eventModeling, ishikawa, mindmap.
 
 ### Frontmatter config example
 
@@ -148,7 +148,6 @@ Each diagram type has a dedicated reference file with complete syntax, examples,
 | [03-classDiagram.md](references/03-classDiagram.md) | Class diagrams: UML classes, inheritance, composition, namespaces, generics, annotations |
 | [04-gitgraph.md](references/04-gitgraph.md) | Git graphs: commits, branches, merges, cherry-picks, styling |
 | [05-stateDiagram.md](references/05-stateDiagram.md) | State diagrams: states, transitions, composite states, concurrency, history |
-| [31-railroad.md](references/31-railroad.md) | Railroad diagrams: EBNF grammar visualization |
 
 ### Data visualization
 
@@ -174,7 +173,6 @@ Each diagram type has a dedicated reference file with complete syntax, examples,
 | [18-treeView.md](references/18-treeView.md) | Tree views: file/folder hierarchy display |
 | [19-zenuml.md](references/19-zenuml.md) | ZenUML: UML-like class diagrams with simplified syntax |
 | [20-wardley.md](references/20-wardley.md) | Wardley maps: value chain, evolution stages, topology |
-| [30-cynefin.md](references/30-cynefin.md) | Cynefin framework: complexity domains, transitions |
 
 ### Project management & process
 
@@ -184,7 +182,6 @@ Each diagram type has a dedicated reference file with complete syntax, examples,
 | [22-timeline.md](references/22-timeline.md) | Timelines: chronological events with grouping and icons |
 | [23-kanban.md](references/23-kanban.md) | Kanban boards: columns, tickets, status tracking |
 | [24-userJourney.md](references/24-userJourney.md) | User journey: steps, actors, satisfaction levels |
-| [32-swimlanes.md](references/32-swimlanes.md) | Swimlanes: process-by-responsibility diagrams |
 | [25-requirementDiagram.md](references/25-requirementDiagram.md) | Requirements: FR/NFR, traces, conflicts, hierarchy |
 | [26-eventmodeling.md](references/26-eventmodeling.md) | Event modeling: events, commands, aggregates, policies |
 | [27-ishikawa.md](references/27-ishikawa.md) | Ishikawa (fishbone): cause-and-effect analysis |

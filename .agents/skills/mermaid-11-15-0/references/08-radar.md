@@ -6,14 +6,15 @@ Multi-axis circular charts for comparing entities across dimensions. Also known 
 
 ```
 radar-beta
-    title "Title"                    %% Optional
-    axis id["Label"], id2["Label2"]  %% Define axes (multiple per line)
-    axis id3["Label3"]
-    curve c1["Name"]{v1, v2, v3}    %% Data curve
-    curve c2["Name"]{v1, v2, v3}
+    title "Skills"
+    axis m["Math"]
+    axis s["Science"]
+    axis e["English"]
+    curve alice["Alice"]{85, 90, 80}
+    curve bob["Bob"]{70, 75, 85}
 
-    max 100                          %% Scale maximum
-    min 0                            %% Scale minimum
+    max 100
+    min 0
 ```
 
 ## Details

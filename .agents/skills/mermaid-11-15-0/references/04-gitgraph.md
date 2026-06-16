@@ -61,10 +61,11 @@ Ordering precedence: main branch first (default order 0), then branches without 
 ## Orientation
 
 ```
-gitGraph LR:    %% Left-to-right (default)
-gitGraph TB:    %% Top-to-bottom
-gitGraph BT:    %% Bottom-to-top (v11.0.0+)
+gitGraph LR     %% Left-to-right (default)
+    commit
 ```
+
+Other orientations: `gitGraph TB` (top-to-bottom), `gitGraph BT` (bottom-to-top, v11.0.0+).
 
 ## Configuration
 

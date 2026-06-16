@@ -8,9 +8,7 @@ Flowcharts are composed of **nodes** (shapes) and **edges** (arrows/lines). Supp
 
 ```
 flowchart TD   %% Top-down (TB is alias)
-flowchart LR   %% Left-right
-flowchart BT   %% Bottom-top
-flowchart RL   %% Right-left
+    A --> B
 ```
 
 ## Node shapes (classic syntax)

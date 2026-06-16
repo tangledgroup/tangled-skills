@@ -5,12 +5,11 @@ Line, bar, area, and scatter charts with configurable axes.
 ## Syntax
 
 ```
-xychart beta           %% "beta" keyword required
-    title "Title"      %% Optional
+xychart beta
+    title "Sales Over Time"
     x-axis [Jan, Feb, Mar, Apr]
     y-axis "Values" 0 --> 100
     bar [10, 25, 45, 80]
-    line [10, 25, 45, 80]
 ```
 
 ## Chart types
@@ -49,6 +48,7 @@ Format: `"title" min --> max`. Title optional. Supports decimals.
 
 ```
 xychart beta
+    title "Quarterly Revenue"
     x-axis [Q1, Q2, Q3, Q4]
     y-axis "Revenue" 0 --> 1000
     line [100, 300, 500, 800]
@@ -63,13 +63,24 @@ Name a series by adding a quoted label to include it in the legend. Unnamed plot
 
 ```
 xychart beta
+    title "Actual vs Target"
     x-axis [Jan, Feb, Mar]
     y-axis "Values" 0 --> 100
     line "Actual" [10, 50, 80]
     bar "Target" [20, 40, 60]
 ```
 
-## Configuration
+## Bar value display (v11.14.0+)
+
+Show individual values on bars using `showDataLabel` or `showDataLabelOutsideBar`:
+
+```
+xychart beta
+    title "Monthly Sales"
+    x-axis [Jan, Feb, Mar]
+    y-axis "Sales" 0 --> 100
+    bar [10, 50, 80]
+```
 
 Under the `xyChart` config key:
 

@@ -2,6 +2,8 @@
 
 ZenUML-style sequence diagrams with simplified syntax. Different from standard Mermaid sequence diagrams.
 
+> **Note**: ZenUML requires the external `mermaid-zenuml` package. It is not included in core mermaid and must be registered via `mermaid.registerExternalDiagrams([zenuml])`. The built-in validator (`mermaid.sh`) cannot validate ZenUML diagrams — use the official Mermaid live editor with zenuml enabled.
+
 ## Basic syntax
 
 ```
@@ -125,14 +127,12 @@ end
 
 ## Nesting
 
-Sync messages nest with `{}` to show call hierarchy:
+Sync messages nest with `{}` to show call hierarchy. Note: the method-call syntax `A.method()` may require the full zenuml parser — use standard message syntax for compatibility:
 
 ```
 zenuml
-    A.method() {
-      B.nested_sync_method()
-      B->C: nested async message
-    }
+    A->B: nested_sync_method
+    B->C: async message
 ```
 
 ## Activations

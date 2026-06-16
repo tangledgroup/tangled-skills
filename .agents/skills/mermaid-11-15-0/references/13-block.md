@@ -6,8 +6,11 @@ Manual-layout diagrams with full author control over block positioning. Unlike f
 
 ```
 block
-    columns 3        %% Number of columns
-    a b c d          %% Blocks fill left-to-right, wrap to next row
+    columns 3
+    a["A"]
+    b["B"]
+    c["C"]
+    d["D"]
 ```
 
 Space-separated blocks on a line are placed in columns.

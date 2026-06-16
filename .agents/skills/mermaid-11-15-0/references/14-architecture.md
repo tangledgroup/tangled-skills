@@ -98,3 +98,25 @@ config:
 ```
 
 > `randomize: false` alone is not enough to guarantee identical renders — the underlying fcose layout still calls `Math.random()`. Use `seed` for full determinism.
+
+### Layout tuning (v11.15.0+)
+
+Fine-tune the underlying [fcose](https://github.com/iVis-at-Bilkent/cytoscape.js-fcose) force-directed layout:
+
+| Option                      | Type   | Default | Description                                                              |
+|-----------------------------|--------|---------|--------------------------------------------------------------------------|
+| `nodeSeparation`            | number | `75`    | Minimum pixel separation between sibling nodes in the same group         |
+| `idealEdgeLengthMultiplier` | number | `1.5`   | Multiplier on icon size for ideal edge length; increase for more spacing |
+| `edgeElasticity`            | number | `0.45`  | Spring elasticity (0–1) on same-group edges; higher pulls nodes closer   |
+| `numIter`                   | number | `2500`  | Maximum fcose iterations; increase for quality on large diagrams         |
+
+```yaml
+---
+config:
+  architecture:
+    idealEdgeLengthMultiplier: 3
+    nodeSeparation: 100
+---
+```
+
+> These knobs tune force-directed spacing. They cannot separate nodes that share the same logical position — use `align row|column` for that.
