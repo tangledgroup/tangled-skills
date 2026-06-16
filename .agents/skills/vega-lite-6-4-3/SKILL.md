@@ -20,9 +20,9 @@ metadata:
 
 ## Overview
 
-Vega-Lite is a high-level grammar of graphics that compiles to [Vega](https://vega.github.io/vega) specifications. It provides a concise JSON syntax for creating interactive multi-view visualizations. A Vega-Lite spec describes *what* the chart should show — the compiler figures out *how* to render it.
+Vega-Lite is a high-level grammar of graphics that compiles to vega/vega-lite specifications. It provides a concise JSON syntax for creating interactive multi-view visualizations. A Vega-Lite spec describes *what* the chart should show — the compiler figures out *how* to render it.
 
-Every spec is valid JSON that can be validated against the [official JSON schema](https://vega.github.io/schema/vega-lite/v6.json). This skill uses a local copy of the v6.4.3 schema with [AJV](https://ajv.js.org/) (run via `bun`) to validate every chart example.
+Vega-Lite supports the following chart types via its mark system: **bar**, **line**, **area**, **circle**, **point**, **square**, **tick**, **trail**, **rect** (heatmaps), **arc** (pie/donut), **rule**, **text**, **geoshape** (maps), and **image** as primitive marks, plus **boxplot**, **errorbar**, and **errorband** as composite marks. These combine with encoding channels and composition operators (`layer`, `facet`, `concat`, `hconcat`, `vconcat`, `repeat`) to cover virtually any chart or visualization pattern.
 
 ### Core Concepts
 
@@ -55,7 +55,9 @@ Vega-Lite recognizes four data types for encoding channels:
 
 ### Validation
 
-Every vega-lite spec in this skill is validated against the official v6.4.3 JSON schema using AJV:
+Every Vega-Lite spec you write **must** be validated with `vega-lite.sh` before it is considered final. If validation reports errors, fix them and re-validate until the spec passes cleanly. Never leave an invalid spec in a file.
+
+`vega-lite.sh` is the **only** way to validate Vega-Lite specs. Do not use online validators, manual schema checks, or any other tool.
 
 ```bash
 # Validate a markdown file (checks all ```vega-lite blocks)
@@ -68,13 +70,13 @@ vega-lite.sh validate references/
 echo '{"$schema":"...","data":{"values":[]},"mark":"bar"}' | vega-lite.sh validate -
 ```
 
-The validator (`scripts/vega-lite.sh`) is a thin bash wrapper around `scripts/_vega-lite.js` (run via `bun`). It loads the local schema from `scripts/vega-lite-schema.json` and uses AJV for strict JSON Schema validation. It extracts `vega-lite` code blocks from markdown, parses the JSON, and reports any schema violations with instance paths and error messages.
+`vega-lite.sh` loads the local v6.4.3 JSON schema for strict validation. It extracts `vega-lite` code blocks from markdown, parses the JSON, and reports any schema violations with instance paths and error messages.
 
 ### Creating a Spec
 
 Minimal valid spec structure:
 
-```json
+```vega-lite
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "description": "Chart description",
@@ -103,7 +105,7 @@ Vega-Lite specs are compiled to Vega by the `vega-lite` library, then rendered b
 
 ## Gotchas
 
-- **Always include `$schema`** — Omitting it means the validator cannot determine the spec version. Use `https://vega.github.io/schema/vega-lite/v6.json` for v6.x compatibility.
+- **Always include `$schema`** — Omitting it means `vega-lite.sh validate` cannot determine the spec version. Use `https://vega.github.io/schema/vega-lite/v6.json` for v6.x compatibility.
 - **Data must be accessible at runtime** — Specs using `"url"` for data need a running server or public URL. For validation and portability, use inline `"values"` arrays.
 - **Mark vs mark definition** — `"mark": "bar"` is shorthand; `"mark": {"type": "bar", "tooltip": true}` is the full object form. Use the object form when customizing mark properties like `filled`, `cornerRadius`, or `aria`.
 - **Encoding channels override mark properties** — If you set `color` in encoding, it overrides any `color` property in the mark definition.
@@ -116,28 +118,26 @@ Vega-Lite specs are compiled to Vega by the `vega-lite` library, then rendered b
 
 ## References
 
-Detailed documentation for each mark type and composition pattern:
+Each reference file covers one mark type or composition pattern with syntax rules and validated examples:
 
-| Reference | Content |
-|---|---|
-| [01-bar.md](references/01-bar.md) | Bar charts — simple, stacked, grouped, horizontal, aggregated, binned, corner radius, normalized |
-| [02-line.md](references/02-line.md) | Line charts — simple, multi-series, with points, temporal, time unit, dashed, slope |
-| [03-area.md](references/03-area.md) | Area charts — simple, stacked, y2 range, normalized, layered with line overlay |
-| [04-circle.md](references/04-circle.md) | Circle marks — scatter plots, colored, bubble charts, binned 2D histogram, dot plots |
-| [05-point.md](references/05-point.md) | Point marks — simple, shape encoding, filled, 1D distribution |
-| [06-rect.md](references/06-rect.md) | Rect marks — heatmaps, binned 2D histogram, with text labels, mosaic |
-| [07-arc.md](references/07-arc.md) | Arc marks — pie charts, donut, with labels, radial histogram |
-| [08-rule.md](references/08-rule.md) | Rule marks — vertical references, diagonal ranges, bar annotations, slope lines |
-| [09-square.md](references/09-square.md) | Square marks — scatter plots, colored with size, filled |
-| [10-text.md](references/10-text.md) | Text marks — labels, bar value labels, formatted colored text, scatter with labels |
-| [11-tick.md](references/11-tick.md) | Tick marks — 1D distribution, grouped by category, histogram, horizontal strip |
-| [12-trail.md](references/12-trail.md) | Trail marks — variable-width lines, comet charts, multi-series |
-| [13-boxplot.md](references/13-boxplot.md) | Boxplots — vertical, horizontal, with color, custom extent |
-| [14-errorbar.md](references/14-errorbar.md) | Error bars — auto-computed CI, with points, horizontal, custom extent (stdev) |
-| [15-errorband.md](references/15-errorband.md) | Error bands — auto-computed CI, with line overlay, horizontal, borders + stdev |
-| [16-geoshape.md](references/16-geoshape.md) | Geo shapes — choropleth, world map with projection, with circle overlay |
-| [17-image.md](references/17-image.md) | Image marks — simple placement, scatter, with tooltips |
-| [18-layer.md](references/18-layer.md) | Layered specs — bar+line overlay, scatter+regression, dual axis, histogram+mean |
-| [19-facet.md](references/19-facet.md) | Faceted specs — column facet, row facet, row+column grid, independent scales |
-| [20-concat.md](references/20-concat.md) | Concatenated specs — hconcat, vconcat, nested 2x2 grid, shared data reference |
-| [21-repeat.md](references/21-repeat.md) | Repeat specs — column repeat, row repeat, row+column grid, with layers |
+- [01-bar.md](references/01-bar.md) — Bar charts: simple, stacked, grouped, horizontal, aggregated, binned, corner radius, normalized
+- [02-line.md](references/02-line.md) — Line charts: simple, multi-series, with points, temporal, time unit, dashed, slope
+- [03-area.md](references/03-area.md) — Area charts: simple, stacked, y2 range, normalized, layered with line overlay
+- [04-circle.md](references/04-circle.md) — Circle marks: scatter plots, colored, bubble charts, binned 2D histogram, dot plots
+- [05-point.md](references/05-point.md) — Point marks: simple, shape encoding, filled, 1D distribution
+- [06-rect.md](references/06-rect.md) — Rect marks: heatmaps, binned 2D histogram, with text labels, mosaic
+- [07-arc.md](references/07-arc.md) — Arc marks: pie charts, donut, with labels, radial histogram
+- [08-rule.md](references/08-rule.md) — Rule marks: vertical references, diagonal ranges, bar annotations, slope lines
+- [09-square.md](references/09-square.md) — Square marks: scatter plots, colored with size, filled
+- [10-text.md](references/10-text.md) — Text marks: labels, bar value labels, formatted colored text, scatter with labels
+- [11-tick.md](references/11-tick.md) — Tick marks: 1D distribution, grouped by category, histogram, horizontal strip
+- [12-trail.md](references/12-trail.md) — Trail marks: variable-width lines, comet charts, multi-series
+- [13-boxplot.md](references/13-boxplot.md) — Boxplots: vertical, horizontal, with color, custom extent
+- [14-errorbar.md](references/14-errorbar.md) — Error bars: auto-computed CI, with points, horizontal, custom extent (stdev)
+- [15-errorband.md](references/15-errorband.md) — Error bands: auto-computed CI, with line overlay, horizontal, borders + stdev
+- [16-geoshape.md](references/16-geoshape.md) — Geo shapes: choropleth, world map with projection, with circle overlay
+- [17-image.md](references/17-image.md) — Image marks: simple placement, scatter, with tooltips
+- [18-layer.md](references/18-layer.md) — Layered specs: bar+line overlay, scatter+regression, dual axis, histogram+mean
+- [19-facet.md](references/19-facet.md) — Faceted specs: column facet, row facet, row+column grid, independent scales
+- [20-concat.md](references/20-concat.md) — Concatenated specs: hconcat, vconcat, nested 2x2 grid, shared data reference
+- [21-repeat.md](references/21-repeat.md) — Repeat specs: column repeat, row repeat, row+column grid, with layers
