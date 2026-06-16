@@ -73,19 +73,55 @@ xychart beta
 
 Under the `xyChart` config key:
 
-| Option              | Type   | Default | Description               |
-|---------------------|--------|---------|---------------------------|
-| `chartWidth`        | number | —       | Chart width in pixels     |
-| `chartHeight`       | number | —       | Chart height in pixels    |
-| `legendFontSize`    | number | `14`    | Legend font size          |
-| `legendPadding`     | number | `10`    | Padding around legend     |
+| Option                  | Type    | Default     | Description                        |
+|-------------------------|---------|-------------|------------------------------------|
+| `width`                 | number  | `700`       | Chart width in pixels              |
+| `height`                | number  | `500`       | Chart height in pixels             |
+| `chartOrientation`      | string  | `vertical`  | `horizontal` or `vertical`         |
+| `showLegend`            | boolean | `true`      | Show legend for named plots        |
+| `legendFontSize`        | number  | `14`        | Legend font size                   |
+| `showDataLabel`         | boolean | `false`     | Show value inside bars             |
+| `showDataLabelOutsideBar` | boolean | `false`   | Show bar values outside the bar    |
+| `plotReservedSpacePercent` | number  | `50`      | Minimum plot space (%)             |
+
+### Axis config (`xAxis`, `yAxis`)
+
+| Option        | Type    | Default | Description                        |
+|---------------|---------|---------|------------------------------------|
+| `showLabel`   | boolean | `true`  | Show tick values                   |
+| `labelFontSize` | number  | `14`   | Label font size                    |
+| `showTitle`   | boolean | `true`  | Show axis title                    |
+| `titleFontSize` | number  | `16`   | Axis title font size               |
+| `showTick`    | boolean | `true`  | Show tick marks                    |
+| `tickLength`  | number  | `5`     | Tick length                        |
+| `labelRotation` | number  | `0`    | Label rotation degrees (x-axis)    |
+
+### Theme variables (`xyChart`)
+
+| Variable           | Description                |
+|--------------------|----------------------------|
+| `backgroundColor`  | Chart background color     |
+| `titleColor`       | Title text color           |
+| `dataLabelColor`   | Data label color           |
+| `legendTextColor`  | Legend text color          |
+| `xAxisLabelColor`  | X-axis label color         |
+| `xAxisTitleColor`  | X-axis title color         |
+| `xAxisTickColor`   | X-axis tick color          |
+| `xAxisLineColor`   | X-axis line color          |
+| `yAxisLabelColor`  | Y-axis label color         |
+| `yAxisTitleColor`  | Y-axis title color         |
+| `yAxisTickColor`   | Y-axis tick color          |
+| `yAxisLineColor`   | Y-axis line color          |
+| `plotColorPalette` | Comma-separated colors     |
 
 ```yaml
 ---
 config:
   xyChart:
-    chartWidth: 800
-    chartHeight: 400
-    legendFontSize: 12
+    showDataLabel: true
+    chartOrientation: horizontal
+  themeVariables:
+    xyChart:
+      plotColorPalette: "#4e79a7,#f28e2b,#e15759"
 ---
 ```

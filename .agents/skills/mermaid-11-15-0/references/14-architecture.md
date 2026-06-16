@@ -38,11 +38,32 @@ Same syntax as groups. Services are leaf nodes.
 
 ```
 {id}:{T|B|L|R} -- {T|B|L|R}:{id}
-{id}:R --> L:{id2}      %% With arrow
+{id}:R --> L:{id2}      %% Arrow into right side
 {id}:T <--> B:{id2}     %% Bidirectional
 ```
 
-Direction: `T` (top), `B` (bottom), `L` (left), `R` (right).
+Direction: `T` (top), `B` (bottom), `L` (left), `R` (right). Arrows (`<`, `>`) attach to either side.
+
+#### Edges from groups
+
+Use `{group}` modifier on a service to route the edge from its parent group boundary:
+
+```
+server{group}:B --> T:subnet{group}
+```
+
+Edges go out of `groupOne` adjacent to `server` and into `groupTwo` adjacent to `subnet`. Group ids cannot be used directly — only services within groups with the `{group}` modifier.
+
+### Aligning siblings
+
+Prevent overlapping when multiple services share the same edge target:
+
+```
+align row {idA} {idB} {idC}     %% Same y-axis (horizontal row)
+align column {idA} {idB}        %% Same x-axis (vertical stack)
+```
+
+Use `column` when members connect via same horizontal ports (`R --> L:target`). Use `row` when connecting via same vertical ports (`B --> T:target`). Order in directive determines layout order.
 
 ### Junctions
 

@@ -13,7 +13,7 @@ treeView-beta
     "README.md"
 ```
 
-Hierarchy is defined entirely by indentation. Quoted strings are node labels. No distinction between folders and files — structure comes from nesting.
+Hierarchy is defined by indentation. Quoted strings are node labels. Trailing `/` marks directories (folder icon, bold text). Files are auto-detected by extension and get matching icons. Quoted labels support spaces.
 
 ## Configuration
 
@@ -60,11 +60,8 @@ treeView-beta
 
 ### Comments
 
-Lines starting with `%%` are ignored:
+Inline comments with `##`: `src/ ## source files`. Full-line comments start with `%%`.
 
-```
-treeView-beta
-    %% Root directory
-    src/
-        App.tsx
-```
+### Icons
+
+Append `icon(name)` to a node for custom icons. Supported: `react`, `vue`, `angular`, `typescript`, `javascript`, `python`, `java`, `go`, `rust`, `docker`, `kubernetes`, `github`, `gitlab`, `npm`, `yarn`, `pnpm`, `readme`, `config`, `env`, `lock`, `image`, `video`, `audio`, `pdf`, `zip`.

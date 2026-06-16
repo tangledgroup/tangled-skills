@@ -64,6 +64,23 @@ note "Comment text" [y, x]
 
 Positioned annotations on the map.
 
+### Decorators
+
+Append `(decorator)` after a component to mark strategic properties:
+
+| Decorator | Symbol | Meaning |
+| --- | --- | --- |
+| `(inertia)` | ⚠ | Resistant to change |
+| `(build)` | △ | Build in-house |
+| `(buy)` | ◇ | Buy from market |
+| `(outsource)` | □ | Outsource |
+| `(market)` | ○ | Market-driven |
+
+```
+component Legacy [0.45, 0.40] (inertia)
+component NewPlatform [0.65, 0.45] (build)
+```
+
 ## Advanced features
 
 ### Label positioning

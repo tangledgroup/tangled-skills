@@ -29,6 +29,18 @@ Space-separated blocks on a line are placed in columns.
 | `a("Label")` | Cylinder (database) |
 | `a<["Label"]>(down)` | Arrow pointing down |
 
+## Block width (spanning columns)
+
+Append `:N` to a block or group to span N columns:
+
+```
+block
+    columns 3
+    a b:2 c:2 d
+```
+
+Block `b` spans 2 columns. Groups can also span: `block:group1:2`.
+
 ## Block groups
 
 ```
@@ -41,6 +53,33 @@ ID --> D
 ```
 
 Groups have an id and can be connected like individual blocks. Use `columns N` inside groups.
+
+### Nested blocks
+
+Blocks can be nested without explicit ids:
+
+```
+block
+    block
+      D
+    end
+    A["A wide one"]
+```
+
+### Column width in groups
+
+Groups can span columns with `block:id:width` syntax. Inner columns are auto-sized to the widest child.
+
+```
+block
+    columns 3
+    a:3
+    block:group1:2
+        columns 2
+        h i j k
+    end
+    g
+```
 
 ## Connectors
 
