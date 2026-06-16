@@ -128,7 +128,7 @@ continued_fraction_periodic(a=0, q=1, periodic=[2])   # √2
 ```python
 from sympy import egyptian_fraction
 
-egyptian_fraction(Rational(12, 13))    # [1/2, 1/5, 1获得超过
+egyptian_fraction(Rational(12, 13))    # [1/2, 1/10, 1/65]
 # 12/13 = 1/2 + 1/10 + 1/65 (sum of distinct unit fractions)
 ```
 
