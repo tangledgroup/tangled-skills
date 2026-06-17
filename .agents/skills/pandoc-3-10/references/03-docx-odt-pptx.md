@@ -8,20 +8,44 @@ Detailed reference for converting to and from Microsoft Word (docx), LibreOffice
 
 ```bash
 # Markdown → docx
-pandoc -o document.docx document.md
+pandoc -f markdown -t docx document.md -o document.docx
 
-# docx → Markdown (bi-directional)
+# docx → Markdown (bi-directional, preserves structure)
 pandoc -f docx -t markdown document.docx -o document.md
 
-# docx → HTML
-pandoc -f docx -t html document.docx -o document.html
+# docx → HTML (standalone with CSS)
+pandoc -s -f docx -t html document.docx -o document.html
 
-# docx → PDF (via LaTeX)
-pandoc -f docx -o document.pdf document.docx
+# docx → plain text
+pandoc -f docx -t plain document.docx
+
+# docx → GFM (GitHub-Flavored Markdown)
+pandoc -f docx -t gfm document.docx -o document.md
+
+# docx → LaTeX
+pandoc -f docx -t latex document.docx -o document.tex
 
 # Multiple Markdown files → single docx
-pandoc -o report.docx intro.md body.md conclusion.md
+pandoc -f markdown -t docx intro.md body.md conclusion.md -o report.docx
 ```
+
+### Round-Trip Quality: Markdown → docx → Markdown
+
+**Preserved**:
+- Bold (`**text**`), italic (`*text*`), inline code (`` `code` ``)
+- Ordered and unordered lists (including nested)
+- Tables (pipe tables → grid tables, structurally equivalent)
+- Code blocks (fenced → indented, both valid markdown)
+- Block quotes
+- Links (`[text](url)`)
+- Math: inline `$...$` and display `$$...$$`
+- Grid tables (from complex docx with merged cells)
+
+**Lost/Changed**:
+- YAML front matter → becomes heading + paragraph text
+- Image files → placeholder with alt text (missing images produce `[WARNING] Could not fetch resource`)
+- Custom styles → mapped to standard markdown formatting
+- Page layout, margins, headers/footers → not preserved in markdown
 
 ### Custom Styling with Reference Documents
 
@@ -106,7 +130,7 @@ pandoc -f docx+citations -t latex --citeproc document.docx
 
 ```bash
 # Markdown → ODT
-pandoc -o document.odt document.md
+pandoc -f markdown -t odt document.md -o document.odt
 
 # ODT → Markdown (bi-directional)
 pandoc -f odt -t markdown document.odt -o document.md
@@ -115,7 +139,7 @@ pandoc -f odt -t markdown document.odt -o document.md
 pandoc -f odt -t html document.odt -o document.html
 
 # ODT → PDF (via LaTeX)
-pandoc -f odt -o document.pdf document.odt
+pandoc -f odt -t pdf document.odt -o document.pdf
 
 # ODT → docx
 pandoc -f odt -t docx document.odt -o document.docx
@@ -155,14 +179,36 @@ Math in ODT output is rendered using MathML when possible. For complex formulas,
 
 ```bash
 # Markdown → PowerPoint
-pandoc -o presentation.pptx slides.md
+pandoc -f markdown -t pptx slides.md -o presentation.pptx
 
 # PowerPoint → Markdown (bi-directional)
 pandoc -f pptx -t markdown presentation.pptx -o slides.md
 
+# PowerPoint → HTML
+pandoc -f pptx -t html presentation.pptx -o slides.html
+
+# PowerPoint → LaTeX
+pandoc -f pptx -t latex presentation.pptx -o slides.tex
+
+# PowerPoint → plain text
+pandoc -f pptx -t plain presentation.pptx
+
 # HTML slides → PowerPoint
 pandoc -f html -t pptx slides.html -o presentation.pptx
 ```
+
+### Round-Trip Quality: Markdown → pptx → Markdown
+
+**Preserved**:
+- Headings (become `## <heading> {#slide-N}`)
+- Tables (pipe tables → simple tables, structurally equivalent)
+- Paragraph text content
+
+**Lost/Changed**:
+- YAML front matter (title/author) → becomes first slide heading + paragraph
+- List markers (`-`, `*`) → become plain paragraphs without bullets
+- Heading levels → all become level-2 (`##`) with `{#slide-N}` identifiers
+- Slide transitions, animations, speaker notes → not preserved in markdown
 
 ### Slide Structure
 
@@ -190,7 +236,7 @@ Manual slide break (use --slide-level=0)
 
 ```bash
 # Use a PowerPoint template
-pandoc -o presentation.pptx slides.md --reference-doc=template.pptx
+pandoc -f markdown -t pptx slides.md --reference-doc=template.pptx -o presentation.pptx
 ```
 
 Templates must contain layouts named:
@@ -203,10 +249,10 @@ Microsoft PowerPoint 2013+ templates (`.pptx` or `.potx`) are known to work.
 
 ```bash
 # Headings at level 2 create slides
-pandoc -o presentation.pptx slides.md --slide-level=2
+pandoc -f markdown -t pptx slides.md --slide-level=2 -o presentation.pptx
 
 # Manual slide breaks only (no automatic heading-based splits)
-pandoc -o presentation.pptx slides.md --slide-level=0
+pandoc -f markdown -t pptx slides.md --slide-level=0 -o presentation.pptx
 ```
 
 ## Common Options for Office Formats
@@ -214,10 +260,10 @@ pandoc -o presentation.pptx slides.md --slide-level=0
 ### Extracting Media
 
 ```bash
-# Extract images and embedded files
+# Extract images and embedded files from docx
 pandoc -f docx -t markdown --extract-media=./media document.docx
 
-# Specify media directory
+# Extract media from pptx
 pandoc -f pptx -t markdown --extract-media=./slides-media presentation.pptx
 ```
 
@@ -225,26 +271,48 @@ pandoc -f pptx -t markdown --extract-media=./slides-media presentation.pptx
 
 ```bash
 # Treat top-level headings as chapters (adds section breaks in docx)
-pandoc -t docx --top-level-division=chapter input.md -o output.docx
+pandoc -f markdown -t docx --top-level-division=chapter input.md -o output.docx
 
 # Treat as parts
-pandoc -t docx --top-level-division=part input.md -o output.docx
+pandoc -f markdown -t docx --top-level-division=part input.md -o output.docx
 ```
 
 ### Numbered Sections
 
 ```bash
 # Number section headings in docx
-pandoc -t docx --number-sections input.md -o output.docx
+pandoc -f markdown -t docx --number-sections input.md -o output.docx
 
 # With custom offset (first heading = 6)
-pandoc -t docx --number-sections --number-offset=5 input.md -o output.docx
+pandoc -f markdown -t docx --number-sections --number-offset=5 input.md -o output.docx
 ```
 
-## Conversion Quality Notes
+## Conversion Quality Summary
 
-- **docx → markdown**: Preserves headings, paragraphs, lists, tables, images, links. Complex formatting (text boxes, smart art, charts) is lost.
-- **odt → markdown**: Similar to docx. MathML in ODT converts to LaTeX math delimiters.
-- **pptx → markdown**: Extracts text content and structure. Speaker notes are included. Animations and transitions are lost.
-- **markdown → docx/odt**: High fidelity for standard elements. Custom styles via reference documents.
-- **Cross-format (docx ↔ odt)**: Structure preserved, style mapping may differ between Office suites.
+### docx → markdown
+- **Headings**: Preserved (levels 1–6)
+- **Paragraphs**: Preserved with inline formatting (bold, italic, underline)
+- **Lists**: Ordered and unordered preserved
+- **Tables**: Simple tables well-preserved; complex merged-cell tables become grid tables
+- **Images**: Extracted to `--extract-media` directory; linked in markdown
+- **Code blocks**: Preserved as fenced code blocks
+- **Block quotes**: Preserved
+- **Math**: LaTeX math delimiters preserved
+- **Lost**: Custom styles, page layout, headers/footers, comments, track changes
+
+### odt → markdown
+- Similar to docx → markdown
+- MathML in ODT converts to LaTeX math delimiters
+- OpenDocument-specific formatting may not map perfectly
+
+### pptx → markdown
+- **Slide titles**: Become `##` headings with `{#slide-N}` IDs
+- **Text content**: Preserved as paragraphs
+- **Tables**: Preserved as simple tables
+- **Lists**: Bullet markers lost (become plain paragraphs)
+- **Lost**: Animations, transitions, speaker notes, embedded media, custom layouts
+
+### markdown → docx/odt/pptx
+- High fidelity for standard elements (headings, paragraphs, lists, tables)
+- Custom styles via reference documents
+- YAML front matter mapped to document metadata (title, author, date)

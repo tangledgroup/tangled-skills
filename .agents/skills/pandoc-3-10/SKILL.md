@@ -1,6 +1,6 @@
 ---
 name: pandoc-3-10
-description: Convert documents between formats using Pandoc 3.10. Use when the user mentions pandoc, document conversion, format transformation, or needs to convert between Markdown, HTML, LaTeX, PDF, Word (docx), OpenDocument (odt), PowerPoint (pptx), EPUB, reStructuredText, Org mode, AsciiDoc, RTF, Textile, CommonMark, GFM, or any markup/format conversion task. Also use when user asks about pandoc filters, templates, defaults files, citeproc, or Lua filters.
+description: Convert documents between formats using Pandoc 3.10. Use when the user mentions pandoc, document conversion, format transformation, or needs to convert between Markdown, HTML, LaTeX, PDF, Word (docx), OpenDocument (odt), PowerPoint (pptx), Excel (xlsx), CSV, TSV, EPUB, reStructuredText, Org mode, AsciiDoc, RTF, Textile, CommonMark, GFM, or any markup/format conversion task. Also use when user asks about pandoc filters, templates, defaults files, citeproc, or Lua filters.
 metadata:
   tags:
     - document-conversion
@@ -59,29 +59,90 @@ pdflatex report.tex
 
 **PDF engines**: `pdflatex`, `xelatex`, `lualatex`, `latexmk`, `tectonic`, `wkhtmltopdf`, `weasyprint`, `pagedjs-cli`, `prince`, `context`, `groff`, `pdfroff`, `typst`.
 
-### Microsoft Office Documents (docx, pptx)
+### Word Documents (docx) — Bi-directional
 
 ```bash
-# Markdown to Word docx
-pandoc -o document.docx document.md
+# Markdown → Word docx
+pandoc -f markdown -t docx document.md -o document.docx
 
-# Word docx to Markdown (bi-directional)
+# Word docx → Markdown (preserves headings, lists, tables, bold/italic, code)
 pandoc -f docx -t markdown document.docx -o document.md
 
-# Use a custom reference docx for styling
-pandoc -o styled.docx document.md --reference-doc=template.docx
+# Word docx → HTML (standalone with CSS)
+pandoc -s -f docx -t html document.docx -o document.html
 
-# Markdown to PowerPoint slides
-pandoc -o presentation.pptx slides.md
-
-# PowerPoint to Markdown (bi-directional)
-pandoc -f pptx -t markdown presentation.pptx -o slides.md
-
-# Extract text from docx (plain text output)
+# Word docx → plain text
 pandoc -f docx -t plain document.docx
+
+# Custom styling via reference docx
+pandoc -o styled.docx document.md --reference-doc=template.docx
 ```
 
-Customize docx styling by extracting the default reference: `pandoc -o custom-reference.docx --print-default-data-file reference.docx`, then modify styles in Word/LibreOffice.
+Round-trip `markdown → docx → markdown` preserves: bold, italic, inline code, lists (ordered/unordered), tables, block quotes, links, math (`$...$`, `$$...$$`). YAML front matter becomes heading + paragraph text.
+
+### Excel Spreadsheets (xlsx) — Input Only
+
+**xlsx is input-only** (no output format). Each sheet becomes a level-2 heading + pipe table. First row = header, remaining rows = body. Bold/italic cell formatting preserved.
+
+```bash
+# All sheets → Markdown (each sheet = ## heading + table)
+pandoc -f xlsx -t markdown data.xlsx -o data.md
+
+# All sheets → HTML (each sheet = <h2> + <table>)
+pandoc -f xlsx -t html data.xlsx -o data.html
+
+# All sheets → LaTeX (each sheet = \subsection + longtable)
+pandoc -f xlsx -t latex data.xlsx -o data.tex
+
+# All sheets → plain text
+pandoc -f xlsx -t plain data.xlsx
+
+# JSON AST (for programmatic sheet access)
+pandoc -f xlsx -t json data.xlsx | python3 -m json.tool
+```
+
+**Selecting specific sheets**: Use a Lua filter since pandoc has no built-in sheet selection:
+
+```bash
+# Keep only non-empty sheets (those with tables)
+pandoc -f xlsx --lua-filter=filter-empty-sheets.lua data.xlsx -t markdown
+
+# Select a named sheet via metadata: -M sheet-name="Sheet1"
+pandoc -f xlsx --lua-filter=select-sheet.lua -M sheet-name="Sales" data.xlsx -t markdown
+```
+
+### CSV/TSV — Input Only
+
+CSV and TSV are input-only formats. Each file produces a single pipe table.
+
+```bash
+# CSV → Markdown (simple table)
+pandoc -f csv -t markdown data.csv
+
+# TSV → HTML
+pandoc -f tsv -t html data.tsv
+```
+
+### PowerPoint (pptx) — Bi-directional
+
+```bash
+# Markdown → PowerPoint
+pandoc -f markdown -t pptx slides.md -o presentation.pptx
+
+# PowerPoint → Markdown (each slide = ## heading with {#slide-N})
+pandoc -f pptx -t markdown presentation.pptx -o slides.md
+
+# PowerPoint → HTML
+pandoc -f pptx -t html presentation.pptx -o slides.html
+
+# PowerPoint → LaTeX
+pandoc -f pptx -t latex presentation.pptx -o slides.tex
+
+# PowerPoint → plain text
+pandoc -f pptx -t plain presentation.pptx
+```
+
+Round-trip `markdown → pptx → markdown`: tables preserved, but lists lose bullet markers (become paragraphs), YAML front matter becomes heading + paragraph.
 
 ### OpenDocument/LibreOffice (odt)
 
@@ -156,6 +217,9 @@ Inspect the intermediate representation to understand how pandoc parses a docume
 # JSON AST (human-readable)
 pandoc -t json input.md | python3 -m json.tool
 
+# xlsx → JSON AST (for programmatic sheet access)
+pandoc -f xlsx -t json data.xlsx | python3 -m json.tool
+
 # Native Haskell AST (compact)
 pandoc -t native input.md
 
@@ -165,6 +229,11 @@ pandoc -t xml input.md
 
 ## Gotchas
 
+- **xlsx, csv, tsv are input-only** — you can read them but cannot write to these formats. Use markdown tables or HTML tables as intermediate output instead.
+- **xlsx converts all sheets** — no built-in option to select individual sheets. Each sheet becomes `## <sheet-name>` + table. Use a Lua filter (`--lua-filter`) to extract specific sheets by name or filter empty ones.
+- **xlsx sheet path bug** — the xlsx reader may fail with `Entry not found: xl//xl/worksheets/sheet1.xml` on files created by some tools (e.g., openpyxl) that use absolute paths in workbook relationships. Files from Excel/LibreOffice work correctly.
+- **pptx round-trip loses list markers** — bullet points become plain paragraphs when converting `pptx → markdown`. Tables and headings are preserved.
+- **docx YAML front matter is lost** — metadata becomes heading + paragraph text on `docx → markdown` round-trip.
 - **Binary formats (docx, odt, epub, pdf) cannot output to stdout** unless forced with `-o -`. They always write to a file.
 - **PDF requires an external engine**: `pdflatex` needs TeX Live installed. For no-LaTeX PDF, use `--pdf-engine=weasyprint` (requires weasyprint) or `--pdf-engine=typst`.
 - **Conversions are not perfectly lossless**. Complex LaTeX tables, advanced docx formatting, and custom styles may degrade through the AST. Pandoc preserves structure, not presentation details like margin sizes.
@@ -185,3 +254,4 @@ pandoc -t xml input.md
 - [08-citations-bibliography](references/08-citations-bibliography.md) — Citation syntax, CSL styles, citeproc, bibliography formats
 - [09-extensions](references/09-extensions.md) — Format extensions reference table, per-format capabilities
 - [10-metadata-yaml](references/10-metadata-yaml.md) — YAML metadata blocks, variable passing, front matter
+- [11-excel-csv-spreadsheets](references/11-excel-csv-spreadsheets.md) — Excel (xlsx), CSV, TSV input handling, sheet selection via Lua filters
