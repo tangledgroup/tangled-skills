@@ -1,10 +1,10 @@
 ---
-name: basedpyright
+name: basedpyright-1-39-8
 description: >
   Static type checking for Python via basedpyright — a fork of pyright with stricter defaults, new diagnostic rules, baseline support, pylance features in open-source, and improved CI integration. Use when the user mentions basedpyright, pyright, type checking, static analysis, type stubs, pyrightconfig, or wants to configure/resolve Python type errors.
 ---
 
-# basedpyright
+# basedpyright 1.39.8
 
 ## Overview
 
@@ -94,11 +94,9 @@ See reference files for full configuration options.
 
 ## References
 
-| File | Topic |
-|------|-------|
-| [01-installation-and-setup.md](references/01-installation-and-setup.md) | Installation methods, IDE configuration, language server setup |
-| [02-configuration.md](references/02-configuration.md) | Config files, environment options, execution environments, CLI flags |
-| [03-diagnostic-rules.md](references/03-diagnostic-rules.md) | All diagnostic rules organized by category with default severities |
-| [04-basedpyright-specific-features.md](references/04-basedpyright-specific-features.md) | New rules, baseline, better defaults, pylance features, CI integration |
-| [05-type-system.md](references/05-type-system.md) | Type concepts, inference, narrowing, generics, type guards |
-| [06-import-resolution-and-stubs.md](references/06-import-resolution-and-stubs.md) | Import resolution order, type stubs, editable installs |
+- [01-installation-and-setup](references/01-installation-and-setup.md) — Installation methods, IDE configuration, language server setup
+- [02-configuration](references/02-configuration.md) — Config files, environment options, execution environments, CLI flags
+- [03-diagnostic-rules](references/03-diagnostic-rules.md) — All diagnostic rules organized by category with default severities
+- [04-basedpyright-specific-features](references/04-basedpyright-specific-features.md) — New rules, baseline, better defaults, pylance features, CI integration
+- [05-type-system](references/05-type-system.md) — Type concepts, inference, narrowing, generics, type guards
+- [06-import-resolution-and-stubs](references/06-import-resolution-and-stubs.md) — Import resolution order, type stubs, editable installs
