@@ -213,6 +213,10 @@ Key environment variables:
 | `UV_NO_ENV_FILE` | Disable dotenv loading |
 | `UV_GIT_LFS` | Default Git LFS behavior for all sources |
 | `UV_LOCK_TIMEOUT` | Cache lock timeout (default: 5 min) |
+| `UV_NO_INSTALL_PROJECT` | Skip installing the project itself |
+| `UV_NO_INSTALL_WORKSPACE` | Skip installing workspace members |
+| `UV_NO_INSTALL_LOCAL` | Skip installing local path dependencies |
+| `UV_NO_SYSTEM_CONFIG` | Disable reading system config file |
 
 ## Partial Installations
 
@@ -232,6 +236,15 @@ UV_MALWARE_CHECK=1 uv sync
 ```
 
 Scans lockfile against OSV/OpenSSF malicious packages database. Terminates sync on match.
+
+## Running Type Checks (Preview)
+
+`uv check` runs the `ty` type checker from within uv:
+```bash
+uv check                              # Run ty on current project
+uv check --isolated                   # Ignore project config
+```
+This integrates Astral's `ty` type checker with uv's workspace and environment management.
 
 ## Lockfile Versioning
 

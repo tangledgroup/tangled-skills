@@ -135,6 +135,7 @@ Overrides are absolute — they completely replace a package's requirements. Use
 
 ```bash
 uv pip list                              # List installed packages
+uv pip list --find-links /path/to/wheels # With find-links source
 uv pip freeze                            # Freeze (pip-compatible output)
 uv pip show flask                        # Show package details
 uv pip check                             # Check compatibility

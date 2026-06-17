@@ -20,7 +20,7 @@ uv venv --python /usr/bin/python3.12  # Specific executable
 uv venv --python /path/to/venv/       # Directory of venv
 ```
 
-Implementation names: `cpython`/`cp`, `pypy`/`pp`, `graalpy`/`gp`, `pyodide`
+Implementation names: `cpython`/`cp`, `pypy`/`pp`, `graalpy`/`gp`, `pyodide`, `pyemscripten`
 
 ## Installing Python Versions
 
@@ -148,3 +148,5 @@ Debug builds are slower with assertions enabled. Useful for C-level debugging. N
 | Rosetta 2 (x86_64 on ARM) | ✅ | — | — |
 | Windows on ARM emulation | — | — | ✅ |
 | Windows registry registration | — | — | ✅ |
+| PyEmscripten (PEP 783) | ✅ | ✅ | ✅ |
+| Pyodide 2025 | ✅ | ✅ | ✅ |

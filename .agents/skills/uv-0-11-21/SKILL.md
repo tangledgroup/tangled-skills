@@ -1,6 +1,6 @@
 ---
-name: uv
-description: Manage Python projects, scripts, tools, environments, and packages with uv — the fast Python package manager. Use when working with pyproject.toml, virtual environments, pip alternatives, venv creation, dependency locking (uv.lock), running Python scripts with inline metadata, installing/running CLI tools via uvx, managing Python versions, building wheels/sdists, publishing to PyPI, workspace management, or migrating from pip/pip-tools/virtualenv. Covers uv run, uv add, uv sync, uv lock, uv build, uv publish, uv venv, uv pip, uv tool, uv python, and all related workflows.
+name: uv-0-11-21
+description: Manage Python projects, scripts, tools, environments, and packages with uv (0.11.21) — the fast Python package manager. Use when working with pyproject.toml, virtual environments, pip alternatives, venv creation, dependency locking (uv.lock), running Python scripts with inline metadata, installing/running CLI tools via uvx, managing Python versions, building wheels/sdists, publishing to PyPI, workspace management, or migrating from pip/pip-tools/virtualenv. Covers uv run, uv add, uv sync, uv lock, uv build, uv publish, uv venv, uv pip, uv tool, uv python, uv check, uv upgrade, and all related workflows.
 metadata:
   tags:
     - python
@@ -8,9 +8,9 @@ metadata:
     - devops
 ---
 
-# uv
+# uv 0.11.21
 
-uv is an extremely fast Python package manager and resolver, written in Rust. It replaces `pip`, `pip-tools`, `virtualenv`, `pipx`, and more with a single unified tool.
+uv is an extremely fast Python package manager and resolver, written in Rust. It replaces `pip`, `pip-tools`, `virtualenv`, `pipx`, and more with a single unified tool. Version 0.11.21 (released 2026-06-11) adds packaged apps as the default for `uv init`, extends `uv upgrade` with per-constraint updates, introduces `environment.root` in workspace metadata, and adds CPython 3.13.14 and 3.14.6.
 
 ## Overview
 
@@ -39,12 +39,13 @@ uv publish                  # Publish to PyPI
 
 | Task | Command |
 |------|---------|
-| Create project | `uv init <name>` / `uv init --lib` / `uv init --package` |
+| Create project | `uv init <name>` (packaged/src layout by default) / `uv init --no-package` / `uv init --lib` |
 | Add dependency | `uv add <package>` / `uv add --dev pytest` / `uv add --optional extra pkg` |
 | Remove dependency | `uv remove <package>` |
 | Run command | `uv run <command>` / `uv run --with httpx script.py` |
 | Lock dependencies | `uv lock` / `uv lock --upgrade` / `uv lock --upgrade-package pkg` |
 | Sync environment | `uv sync` / `uv sync --extra foo` / `uv sync --no-dev` |
+| Upgrade dependency | `uv upgrade <package>` (preview) |
 | Run tool (ephemeral) | `uvx ruff` / `uvx ruff@0.6.0 check` |
 | Install tool (persistent) | `uv tool install ruff` |
 | Create venv | `uv venv` / `uv venv --python 3.12` |
@@ -58,9 +59,11 @@ uv publish                  # Publish to PyPI
 | View dependency tree | `uv tree` |
 | Export lockfile | `uv export --format requirements.txt` / `uv export --format pylock.toml` |
 | Cache management | `uv cache clean` / `uv cache prune --ci` |
+| Run ty (type check) | `uv check` (preview) |
 
 ## Gotchas
 
+- **`uv init` defaults to packaged apps** — since 0.11.21, `uv init` creates a `src/` layout with `[build-system]` by default. Use `uv init --no-package` for flat layout without a build system, or `uv init --bare` for minimal.
 - **`uv run` auto-locks and syncs** — by default, `uv run` ensures the lockfile and environment are up-to-date before running. Use `--locked` to error if outdated, `--frozen` to skip checking, or `--no-sync` to skip syncing.
 - **Scripts with inline metadata are isolated from projects** — even inside a project directory, a script with `# /// script` metadata runs in its own environment, ignoring the project's dependencies. This is intentional and cannot be disabled per-script.
 - **`uvx` vs `uv run --with`** — `uvx tool` runs isolated from any project. If the tool needs your project installed (e.g., `pytest`, `mypy`), use `uv run pytest` instead of `uvx pytest`.
@@ -71,10 +74,11 @@ uv publish                  # Publish to PyPI
 - **`--system` flag required for non-virtualenv targets** — uv refuses to modify system Python by default. Use `--system` explicitly (appropriate in CI/containers).
 - **Cache directory matters for performance** — keep the cache on the same filesystem as the target environment to enable hard-linking instead of slow copies.
 - **Free-threaded Python requires explicit request** — use `3.13t` or `3.13+freethreaded` to select free-threaded CPython 3.13+. For 3.14+, it's available but GIL-enabled is still preferred by default.
+- **`uv upgrade` is preview** — `uv upgrade <package>` (from 0.11.20) updates dependency constraints. Git revisions are rejected in `uv upgrade`. Use `--upgrade-package` with `uv lock` for the stable equivalent.
 
 ## References
 
-- [01-projects.md](./references/01-projects.md) — Project creation, structure, dependencies, lockfiles, syncing, running commands
+- [01-projects.md](./references/01-projects.md) — Project creation (packaged default), structure, dependencies, lockfiles, syncing, running commands
 - [02-scripts.md](./references/02-scripts.md) — Standalone scripts with inline metadata (PEP 723), shebangs, locking scripts
 - [03-tools.md](./references/03-tools.md) — Running and installing tools with `uvx` / `uv tool`, version pinning, extras, plugins
 - [04-python-versions.md](./references/04-python-versions.md) — Installing, discovering, and managing Python interpreters

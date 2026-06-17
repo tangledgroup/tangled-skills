@@ -2,23 +2,31 @@
 
 ## Project Creation
 
-### Basic application
+### Basic application (default: packaged/src layout)
+Since 0.11.21, `uv init` defaults to a **packaged application** with `src/` layout:
 ```bash
-uv init my-project          # Flat layout, no build system
+uv init my-project          # src/ layout with build system (DEFAULT)
 cd my-project
 ```
-Creates: `pyproject.toml`, `main.py`, `.python-version`, `README.md`, `.git/`, `.gitignore`
+Creates: `src/my_project/__init__.py`, `[build-system]` with `uv_build`, `[project.scripts]` entry point, `.python-version`, `README.md`, `.git/`, `.gitignore`
 
-### Packaged application (src layout)
+### Flat layout (no package)
 ```bash
-uv init --package my-app     # src/ layout with build system
+uv init --no-package my-project   # Flat layout, no build system
 ```
-Creates: `src/my_app/__init__.py`, `[build-system]` with `uv_build`, `[project.scripts]` entry point
+Creates: `pyproject.toml`, `main.py`, `.python-version`, `README.md`, `.git/`, `.gitignore`
 
 ### Library
 ```bash
 uv init --lib my-lib         # Implies --package, adds py.typed marker
 ```
+
+### Library
+```bash
+uv init --lib my-lib         # Implies --package, adds py.typed marker
+```
+
+
 
 ### With specific build backend
 ```bash
@@ -144,6 +152,15 @@ uv lock --upgrade                        # Upgrade all packages
 uv lock --upgrade-package requests       # Upgrade specific package
 uv lock --upgrade-package requests==2.31 # Upgrade to exact version
 uv lock --check                          # Check if lockfile is current (CI)
+```
+
+### Upgrading dependencies (preview)
+`uv upgrade` updates dependency constraints in `pyproject.toml`:
+```bash
+uv upgrade requests                    # Upgrade to latest
+uv upgrade requests --upgrade-package  # Update a single constraint
+```
+Git revisions are rejected in `uv upgrade`.
 uv sync                                  # Sync environment from lockfile
 uv sync --extra foo                      # Sync with extra
 ```
@@ -177,6 +194,8 @@ uv export --format requirements.txt     # pip-compatible
 uv export --format pylock.toml          # PEP 751 standard
 uv export --format cyclonedx1.5         # SBOM (preview)
 uv export --format requirements.txt --output-file requirements.txt
+uv export --emit-index-url              # Include index URL in output
+uv export --emit-find-links             # Include --find-links in output
 ```
 
 ## Version Management
