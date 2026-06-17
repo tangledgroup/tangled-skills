@@ -1,5 +1,5 @@
 ---
-name: pytest
+name: pytest-9-1-0
 description: Write, run, and debug Python tests with pytest 9.1.0. Use when the user mentions pytest, writing tests, test fixtures, parametrization, test discovery, conftest.py, pytest plugins, test marks, skip/xfail, monkeypatch, tmp_path, capsys, caplog, assertion rewriting, or any Python testing task.
 metadata:
   tags:
@@ -7,7 +7,7 @@ metadata:
     - testing
 ---
 
-# pytest
+# pytest 9.1.0
 
 ## Overview
 
