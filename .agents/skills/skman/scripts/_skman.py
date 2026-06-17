@@ -330,6 +330,157 @@ def _check_sections(body):
     return errors, warnings
 
 
+def _check_references_section(body):
+    """Check that a ## References section (if present) uses a bulleted list.
+
+    The spec requires bulleted lists like:
+      - [01-topic](references/01-topic.md) — description
+
+    Tables are not allowed in the References section.
+
+    Returns (errors, warnings) lists.
+    """
+    errors = []
+    warnings = []
+
+    # Find ## References heading (outside fenced code blocks)
+    lines = body.splitlines()
+    in_fence = False
+    ref_section_start = None
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith('```'):
+            in_fence = not in_fence
+            continue
+        if not in_fence and stripped == '## References':
+            ref_section_start = i
+            break
+
+    if ref_section_start is None:
+        # No References section — nothing to check
+        return errors, warnings
+
+    # Collect lines after ## References until next heading or end of body
+    section_lines = []
+    for i in range(ref_section_start + 1, len(lines)):
+        stripped = lines[i].strip()
+        if stripped.startswith('```'):
+            break  # stop at code fences
+        if re.match(r'^#{1,6}\s', stripped) or re.match(r'^#{1,6}$', stripped):
+            break  # stop at next heading
+        section_lines.append(stripped)
+
+    # Filter out blank lines and prose (non-list, non-table lines)
+    content_lines = [l for l in section_lines if l and not l.startswith('|')]
+    table_lines = [l for l in section_lines if l.startswith('|')]
+
+    # Check if there's a bulleted list with reference links
+    bullet_ref_pattern = re.compile(r'^-\s+\[.+\]\(.*references/.*\)')
+    has_bullet_refs = any(bullet_ref_pattern.match(l) for l in content_lines)
+
+    # Check if table format is used instead
+    has_table = len(table_lines) > 1  # header + separator + rows = multiple pipe lines
+
+    if has_table and not has_bullet_refs:
+        warnings.append(
+            "## References uses a table format; use a bulleted list instead "
+            "(e.g. '- [01-topic](references/01-topic.md) — description')"
+        )
+    elif has_bullet_refs:
+        pass  # valid bulleted list format
+    else:
+        warnings.append(
+            "## References section does not contain a bulleted list of reference links; "
+            "expected lines like '- [01-topic](references/01-topic.md) — description'"
+        )
+
+    return errors, warnings
+
+
+def _check_reference_files(skill_dir):
+    """Check that files in references/ directory follow NN-topic.md naming.
+
+    Validates:
+      - Each file starts with a numeric prefix (01-, 02-, …)
+      - Prefixes are sequential with no gaps
+      - Files end in .md
+
+    Returns (errors, warnings) lists.
+    """
+    errors = []
+    warnings = []
+
+    ref_dir = os.path.join(skill_dir, 'references')
+    if not os.path.isdir(ref_dir):
+        return errors, warnings
+
+    entries = sorted(os.listdir(ref_dir))
+    # Filter to only files (skip subdirectories)
+    files = [e for e in entries if os.path.isfile(os.path.join(ref_dir, e))]
+
+    if not files:
+        warnings.append("references/ directory is empty")
+        return errors, warnings
+
+    # Pattern: NN-topic.md where NN is 2+ digit number
+    prefix_re = re.compile(r'^(\d{2,})-(.+\.md)$')
+    found_prefixes = []
+    bad_names = []
+
+    for fname in files:
+        m = prefix_re.match(fname)
+        if m:
+            found_prefixes.append(int(m.group(1)))
+        else:
+            bad_names.append(fname)
+
+    if bad_names:
+        warnings.append(
+            f"references/ file(s) missing numeric prefix: "
+            f"{', '.join(bad_names)} (expected NN-topic.md)"
+        )
+
+    # Check sequential ordering (no gaps)
+    found_prefixes.sort()
+    if found_prefixes:
+        expected = list(range(1, len(found_prefixes) + 1))
+        expected_fmt = [f"{e:02d}" for e in expected]
+        actual_fmt = [f"{p:02d}" for p in found_prefixes]
+
+        if found_prefixes != expected:
+            # Build detailed gap info
+            gaps = []
+            duplicates = []
+            seen = set()
+            for p in found_prefixes:
+                if p in seen:
+                    duplicates.append(f"{p:02d}")
+                seen.add(p)
+            missing = [e for e in expected if e not in seen]
+            if missing:
+                gaps.extend([f"{m:02d}" for m in missing])
+
+            detail_parts = []
+            if gaps:
+                detail_parts.append(f"missing gaps: {', '.join(gaps)}")
+            if duplicates:
+                detail_parts.append(f"duplicate prefixes: {', '.join(duplicates)}")
+            if found_prefixes[-1] > len(found_prefixes):
+                detail_parts.append(
+                    f"last prefix {found_prefixes[-1]:02d} but only "
+                    f"{len(found_prefixes)} files (expected {len(found_prefixes):02d})"
+                )
+
+            warnings.append(
+                f"references/ prefixes not sequential ({', '.join(detail_parts)}); "
+                f"found {actual_fmt}, expected {expected_fmt}"
+            )
+        else:
+            pass  # sequential, no warning
+
+    return errors, warnings
+
+
 def _check_script_permissions(skill_dir, fm_name):
     """Check that scripts/<name>.sh is executable if it exists.
 
@@ -676,6 +827,24 @@ def cmd_validate(args):
         results.append(("WARN", w))
     if not sec_errors and not sec_warnings:
         results.append(("PASS", "all recommended sections present"))
+
+    # References section format check (only when ## References exists)
+    ref_errors, ref_warnings = _check_references_section(body)
+    for e in ref_errors:
+        results.append(("ERROR", e))
+    for w in ref_warnings:
+        results.append(("WARN", w))
+    if not ref_errors and not ref_warnings:
+        results.append(("PASS", "references section format is correct (or absent)"))
+
+    # Reference files naming check (references/ directory on disk)
+    rf_errors, rf_warnings = _check_reference_files(skill_dir)
+    for e in rf_errors:
+        results.append(("ERROR", e))
+    for w in rf_warnings:
+        results.append(("WARN", w))
+    if not rf_errors and not rf_warnings:
+        results.append(("PASS", "reference files follow NN-topic.md naming (or absent)"))
 
     # --- Report ---
     error_count = sum(1 for label, _ in results if label == "ERROR")

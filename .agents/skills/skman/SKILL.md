@@ -130,7 +130,14 @@ Follow these steps in order:
    - `## Overview` — what it does
    - `## Usage` — Optional: how to use it with examples
    - `## Gotchas` — Optional: The most useful part of teaching a skill is listing its hidden traps. Instead of vague advice, provide specific rules that stop the agent from making predictable, common-sense mistakes in that specific environment.
-   - `## References` — Optional: Provides on-demand reference material for agents.
+   - `## References` — Optional: Provides on-demand reference material for agents. Always use a bulleted list, never a table:
+     ```
+     ## References
+
+     - [01-core-expressions](references/01-core-expressions.md) — Symbols, expressions, numbers
+     - [02-algebra-polynomials](references/02-algebra-polynomials.md) — Polynomial rings, factoring
+     ```
+     Each line: link to the file followed by a dash and a brief topic summary.
 
 4. **Create a main script** (if automation is needed) — write the implementation as `scripts/_<skill-name>.py` (underscore prefix) and a thin bash wrapper `scripts/<skill-name>.sh` that passes all arguments through. Scripts are **executed** (not loaded into context). The SKILL.md references only the `.sh` file. Include `--help` at every level. Default: `python3` 3.10+ with built-in modules only (see *Scripting Defaults* below). On explicit user request, any programming language and libraries/frameworks are allowed. Scaffold with `--with-scripts`.
 
