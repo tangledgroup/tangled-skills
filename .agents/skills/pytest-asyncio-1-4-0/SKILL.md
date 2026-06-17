@@ -1,5 +1,5 @@
 ---
-name: pytest-asyncio
+name: pytest-asyncio-1-4-0
 description: >
   Test async/await code with pytest using event loops, async fixtures, and loop scopes.
   Use when writing async tests, configuring asyncio mode (auto/strict), managing event loop scopes,
@@ -9,7 +9,7 @@ description: >
   or migrating from older pytest-asyncio versions. Covers pytest-asyncio 1.4.0+ and Python 3.10+.
 ---
 
-# pytest-asyncio
+# pytest-asyncio 1.4.0
 
 pytest-asyncio is a pytest plugin that enables testing of `asyncio`-based code. It provides event loop management, async test support, and async fixtures. This skill covers version **1.4.0** (Python 3.10+, pytest 8.4+).
 
@@ -98,13 +98,11 @@ pytestmark = pytest.mark.asyncio(loop_scope="module")
 
 ## References
 
-| File | Topic |
-|------|-------|
-| [01-core-concepts.md](references/01-core-concepts.md) | Event loop architecture, auto vs strict mode, test execution model |
-| [02-markers-and-marking.md](references/02-markers-and-marking.md) | `@pytest.mark.asyncio`, `loop_scope`, `pytestmark` patterns, marker validation |
-| [03-async-fixtures.md](references/03-async-fixtures.md) | `@pytest_asyncio.fixture`, loop_scope vs scope, async generators, contextvars |
-| [04-configuration.md](references/04-configuration.md) | pyproject.toml options, CLI flags, default values, report header |
-| [05-loop-factories.md](references/05-loop-factories.md) | `pytest_asyncio_loop_factories` hook, custom loops, uvloop, per-test selection |
-| [06-scope-patterns.md](references/06-scope-patterns.md) | Class/module/package/session scope patterns with complete examples |
-| [07-port-fixtures.md](references/07-port-fixtures.md) | `unused_tcp_port`, `unused_udp_port`, factory fixtures, network testing |
-| [08-advanced-topics.md](references/08-advanced-topics.md) | Hypothesis integration, `is_async_test()`, migration guides, deprecated patterns |
+- [01-core-concepts](references/01-core-concepts.md) — Event loop architecture, auto vs strict mode, test execution model
+- [02-markers-and-marking](references/02-markers-and-marking.md) — `@pytest.mark.asyncio`, `loop_scope`, `pytestmark` patterns, marker validation
+- [03-async-fixtures](references/03-async-fixtures.md) — `@pytest_asyncio.fixture`, loop_scope vs scope, async generators, contextvars
+- [04-configuration](references/04-configuration.md) — pyproject.toml options, CLI flags, default values, report header
+- [05-loop-factories](references/05-loop-factories.md) — `pytest_asyncio_loop_factories` hook, custom loops, uvloop, per-test selection
+- [06-scope-patterns](references/06-scope-patterns.md) — Class/module/package/session scope patterns with complete examples
+- [07-port-fixtures](references/07-port-fixtures.md) — `unused_tcp_port`, `unused_udp_port`, factory fixtures, network testing
+- [08-advanced-topics](references/08-advanced-topics.md) — Hypothesis integration, `is_async_test()`, migration guides, deprecated patterns
