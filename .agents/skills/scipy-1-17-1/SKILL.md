@@ -1,9 +1,9 @@
 ---
-name: scipy
+name: scipy-1-17-1
 description: SciPy (scientific Python) library reference for mathematics, science, and engineering. Covers optimization, integration, linear algebra, statistics, signal processing, FFT, interpolation, sparse matrices, spatial algorithms, special functions, image processing, clustering, I/O, and physical constants. Use when the user needs scientific computing in Python, numerical methods, data analysis with scipy, solving equations, statistical tests, Fourier transforms, ODE systems, matrix operations, or any math-heavy computation. Also triggers on mentions of scipy, SciPy, scientific Python, numerical Python, or packages like numpy/scipy together.
 ---
 
-# scipy
+# scipy 1.17.1
 
 SciPy is the core scientific computing library for Python, built on NumPy arrays. It provides efficient numerical routines across mathematics, science, and engineering domains.
 
