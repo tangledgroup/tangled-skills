@@ -1,5 +1,5 @@
 ---
-name: networkx
+name: networkx-3-6-1
 description: >
   Python graph library (NetworkX 3.6.1) for creating, manipulating, and analyzing complex networks.
   Use this skill whenever the user works with graphs, networks, nodes, edges, shortest paths, centrality,
@@ -10,7 +10,7 @@ description: >
   and anything involving NetworkX or the `nx` module.
 ---
 
-# networkx
+# networkx 3.6.1
 
 NetworkX is a Python library for creating, manipulating, and studying the structure, dynamics, and functions of complex networks. Version 3.6.1 supports Python 3.10+ and relies on NumPy/SciPy for matrix operations.
 
@@ -115,19 +115,15 @@ nx.is_connected(G)                                  # single component?
 
 ## References
 
-Detailed reference material organized by topic:
-
-| File | Topic |
-|---|---|
-| [01-graph-classes](references/01-graph-classes.md) | Graph, DiGraph, MultiGraph, MultiDiGraph; node/edge APIs; views |
-| [02-generators](references/02-generators.md) | Classic graphs, random graphs, geometric, social networks |
-| [03-shortest-paths](references/03-shortest-paths.md) | BFS, DFS, Dijkstra, Bellman-Ford, A*, Floyd-Warshall, Johnson |
-| [04-centrality](references/04-centrality.md) | Degree, betweenness, closeness, eigenvector, Katz, PageRank, HITs |
-| [05-communities](references/05-communities.md) | Louvain, Leiden, Girvan-Newman, label propagation, modularity |
-| [06-connectivity-components](references/06-connectivity-components.md) | Connected/strongly connected components, biconnected, articulation points, bridges |
-| [07-flow-matching](references/07-flow-matching.md) | Max flow, min-cost flow, Gomory-Hu, matching algorithms |
-| [08-dag-algorithms](references/08-dag-algorithms.md) | Topological sort, ancestors/descendants, transitive closure/reduction |
-| [09-conversion-io](references/09-conversion-io.md) | NumPy/Pandas/SciPy conversion; GraphML, GEXF, edgelist, JSON |
-| [10-matrices-linalg](references/10-matrices-linalg.md) | Adjacency/Laplacian/incidence matrices, spectra, algebraic connectivity |
-| [11-graph-operators](references/11-graph-operators.md) | Union, intersection, difference, symmetric difference, products, complement |
-| [12-drawing-layout](references/12-drawing-layout.md) | Matplotlib drawing, layout algorithms, Graphviz/PyDot export |
+- [01-graph-classes](references/01-graph-classes.md) — Graph, DiGraph, MultiGraph, MultiDiGraph; node/edge APIs; views
+- [02-generators](references/02-generators.md) — Classic graphs, random graphs, geometric, social networks
+- [03-shortest-paths](references/03-shortest-paths.md) — BFS, DFS, Dijkstra, Bellman-Ford, A*, Floyd-Warshall, Johnson
+- [04-centrality](references/04-centrality.md) — Degree, betweenness, closeness, eigenvector, Katz, PageRank, HITs
+- [05-communities](references/05-communities.md) — Louvain, Leiden, Girvan-Newman, label propagation, modularity
+- [06-connectivity-components](references/06-connectivity-components.md) — Connected/strongly connected components, biconnected, articulation points, bridges
+- [07-flow-matching](references/07-flow-matching.md) — Max flow, min-cost flow, Gomory-Hu, matching algorithms
+- [08-dag-algorithms](references/08-dag-algorithms.md) — Topological sort, ancestors/descendants, transitive closure/reduction
+- [09-conversion-io](references/09-conversion-io.md) — NumPy/Pandas/SciPy conversion; GraphML, GEXF, edgelist, JSON
+- [10-matrices-linalg](references/10-matrices-linalg.md) — Adjacency/Laplacian/incidence matrices, spectra, algebraic connectivity
+- [11-graph-operators](references/11-graph-operators.md) — Union, intersection, difference, symmetric difference, products, complement
+- [12-drawing-layout](references/12-drawing-layout.md) — Matplotlib drawing, layout algorithms, Graphviz/PyDot export
