@@ -1,5 +1,5 @@
 ---
-name: matplotlib
+name: matplotlib-3-11-0
 description: >
   Matplotlib plotting library (v3.11). Use this skill whenever the user mentions
   plots, charts, graphs, figures, data visualization, matplotlib, pyplot, or
@@ -9,7 +9,7 @@ description: >
   both the pyplot (state-based) and object-oriented APIs.
 ---
 
-# matplotlib
+# matplotlib 3.11.0
 
 ## Overview
 
@@ -114,19 +114,17 @@ fig, axes = plt.subplots(2, 2, constrained_layout=True)
 
 Detailed topic guides loaded on demand:
 
-| File | Topic |
-|------|-------|
-| [01-core-api](references/01-core-api.md) | Figure/Axes/Artist hierarchy, pyplot vs OO, backends |
-| [02-plot-types](references/02-plot-types.md) | Line, scatter, bar, histogram, area, errorbar, stem, pie |
-| [03-layout](references/03-layout.md) | subplots, gridspec, subplot_mosaic, constrained_layout |
-| [04-colors-and-colormaps](references/04-colors-and-colormaps.md) | Color specs, colormaps, normalization, color sequences |
-| [05-text-and-annotations](references/05-text-and-annotations.md) | Text, titles, labels, annotations, math text, fonts |
-| [06-ticks-and-axes](references/06-ticks-and-axes.md) | Locators, formatters, scales, spines, twin axes |
-| [07-legend-and-colorbar](references/07-legend-and-colorbar.md) | Legends, colorbars, custom handles |
-| [08-patches-and-shapes](references/08-patches-and-shapes.md) | Rectangle, Circle, Polygon, Arrow, FancyBboxPatch |
-| [09-transforms](references/09-transforms.md) | Coordinate systems, Affine2D, blitting |
-| [10-styling-and-themes](references/10-styling-and-themes.md) | rcParams, style.use(), contexts, custom styles |
-| [11-dates-and-times](references/11-dates-and-times.md) | Date plotting, locators, formatters, timezones |
-| [12-image-and-contour](references/12-image-and-contour.md) | imshow, pcolormesh, contour, quiver, streamplot |
-| [13-animation-and-widgets](references/13-animation-and-widgets.md) | FuncAnimation, widgets (Slider, Button, Cursor) |
-| [14-saving-and-exporting](references/14-saving-and-exporting.md) | savefig formats, DPI, vector vs raster, PDF/SVG |
+- [01-core-api](references/01-core-api.md) — Figure/Axes/Artist hierarchy, pyplot vs OO, backends
+- [02-plot-types](references/02-plot-types.md) — Line, scatter, bar, histogram, area, errorbar, stem, pie
+- [03-layout](references/03-layout.md) — subplots, gridspec, subplot_mosaic, constrained_layout
+- [04-colors-and-colormaps](references/04-colors-and-colormaps.md) — Color specs, colormaps, normalization, color sequences
+- [05-text-and-annotations](references/05-text-and-annotations.md) — Text, titles, labels, annotations, math text, fonts
+- [06-ticks-and-axes](references/06-ticks-and-axes.md) — Locators, formatters, scales, spines, twin axes
+- [07-legend-and-colorbar](references/07-legend-and-colorbar.md) — Legends, colorbars, custom handles
+- [08-patches-and-shapes](references/08-patches-and-shapes.md) — Rectangle, Circle, Polygon, Arrow, FancyBboxPatch
+- [09-transforms](references/09-transforms.md) — Coordinate systems, Affine2D, blitting
+- [10-styling-and-themes](references/10-styling-and-themes.md) — rcParams, style.use(), contexts, custom styles
+- [11-dates-and-times](references/11-dates-and-times.md) — Date plotting, locators, formatters, timezones
+- [12-image-and-contour](references/12-image-and-contour.md) — imshow, pcolormesh, contour, quiver, streamplot
+- [13-animation-and-widgets](references/13-animation-and-widgets.md) — FuncAnimation, widgets (Slider, Button, Cursor)
+- [14-saving-and-exporting](references/14-saving-and-exporting.md) — savefig formats, DPI, vector vs raster, PDF/SVG
