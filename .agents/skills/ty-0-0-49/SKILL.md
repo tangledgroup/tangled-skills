@@ -1,5 +1,5 @@
 ---
-name: ty
+name: ty-0-0-49
 description: >
   Use ty, the extremely fast Python type checker and language server by Astral (creators of uv and Ruff).
   Use this skill whenever the user mentions ty, Python type checking, mypy migration, pyright migration,
@@ -8,7 +8,7 @@ description: >
   ty is 10x–100x faster than mypy/Pyright and supports full LSP (completions, hover, navigate, etc.).
 ---
 
-# ty
+# ty 0.0.49
 
 ty is an extremely fast Python type checker and language server written in Rust, by Astral (creators of uv and Ruff). It offers 10x–100x speedups over mypy and Pyright while providing comprehensive diagnostics, rich editor integration, and advanced type system features like intersection types and reachability-based analysis.
 
