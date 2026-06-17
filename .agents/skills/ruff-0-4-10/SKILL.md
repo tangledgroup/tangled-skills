@@ -1,5 +1,5 @@
 ---
-name: ruff
+name: ruff-0-4-10
 description: >
   Lint, format, and configure Python code with Ruff (v0.4+). Use when the user mentions
   ruff, python linting, python formatting, code quality, replacing flake8/black/isort/pyupgrade,
@@ -9,7 +9,7 @@ description: >
   migrating from flake8 + black + isort to a single tool.
 ---
 
-# ruff
+# ruff 0.4.10
 
 Ruff is an extremely fast Python linter and code formatter written in Rust. It replaces Flake8 (plus dozens of plugins), Black, isort, pydocstyle, pyupgrade, autoflake, and more — all in one binary executing 10–100× faster.
 
