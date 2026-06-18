@@ -149,18 +149,14 @@ subset = df.loc[mask].copy()
 
 ## References
 
-Detailed reference material organized by topic:
-
-| File | Topic |
-|------|-------|
-| [01-core-structures](references/01-core-structures.md) | DataFrame, Series, Index constructors and core attributes |
-| [02-data-types](references/02-data-types.md) | dtypes, nullable types, ArrowDtype, string dtype, type conversion |
-| [03-io-operations](references/03-io-operations.md) | CSV, Excel, Parquet, SQL, JSON, HTML, XML, pickle, clipboard |
-| [04-indexing-selection](references/04-indexing-selection.md) | loc, iloc, at, iat, boolean indexing, slicing, IndexSlice |
-| [05-groupby-aggregation](references/05-groupby-aggregation.md) | GroupBy, agg, transform, filter, apply, NamedAgg |
-| [06-reshaping-merging](references/06-reshaping-merging.md) | merge, concat, pivot_table, melt, stack/unstack, get_dummies |
-| [07-timeseries](references/07-timeseries.md) | Timestamp, Timedelta, date_range, resample, offset, holiday calendars |
-| [08-window-rolling](references/08-window-rolling.md) | Rolling, Expanding, EWM windows; first/last/nunique (v3.0) |
-| [09-accessors](references/09-accessors.md) | .str accessor, .dt accessor, .cat accessor, .array property |
-| [10-copy-on-write](references/10-copy-on-write.md) | Copy-on-Write semantics, migration from v2.x, common pitfalls |
-| [11-v3-changes](references/11-v3-changes.md) | Full v3.0 breaking changes, deprecations, new features, migration guide |
+- [01-core-structures](references/01-core-structures.md) — DataFrame, Series, Index constructors and core attributes
+- [02-data-types](references/02-data-types.md) — dtypes, nullable types, ArrowDtype, string dtype, type conversion
+- [03-io-operations](references/03-io-operations.md) — CSV, Excel, Parquet, SQL, JSON, HTML, XML, pickle, clipboard
+- [04-indexing-selection](references/04-indexing-selection.md) — loc, iloc, at, iat, boolean indexing, slicing, IndexSlice
+- [05-groupby-aggregation](references/05-groupby-aggregation.md) — GroupBy, agg, transform, filter, apply, NamedAgg
+- [06-reshaping-merging](references/06-reshaping-merging.md) — merge, concat, pivot_table, melt, stack/unstack, get_dummies
+- [07-timeseries](references/07-timeseries.md) — Timestamp, Timedelta, date_range, resample, offset, holiday calendars
+- [08-window-rolling](references/08-window-rolling.md) — Rolling, Expanding, EWM windows; first/last/nunique (v3.0)
+- [09-accessors](references/09-accessors.md) — .str accessor, .dt accessor, .cat accessor, .array property
+- [10-copy-on-write](references/10-copy-on-write.md) — Copy-on-Write semantics, migration from v2.x, common pitfalls
+- [11-v3-changes](references/11-v3-changes.md) — Full v3.0 breaking changes, deprecations, new features, migration guide
