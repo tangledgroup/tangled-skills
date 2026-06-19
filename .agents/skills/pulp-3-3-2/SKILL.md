@@ -13,7 +13,7 @@ description: >
   resolve workflows, and common modeling patterns. Install via `pip install "pulp[cbc]==3.3.2"` (the `[cbc]` extra bundles the CBC solver).
 ---
 
-# pulp-3-3-2 3.3.2
+# pulp 3.3.2
 
 ## Overview
 

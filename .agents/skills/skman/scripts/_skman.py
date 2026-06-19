@@ -701,6 +701,11 @@ def cmd_validate(args):
 
     results = []  # list of (label, message) where label in {"PASS", "WARN", "ERROR"}
 
+    # Derive directory info unconditionally (needed by body checks too)
+    skill_dir = os.path.dirname(skill_md)
+    dir_basename = os.path.basename(skill_dir)
+    dir_name, dir_version = _strip_version_suffix(dir_basename)
+
     # --- Frontmatter presence ---
     if fm is None:
         results.append(("ERROR", "no YAML frontmatter found (must start with ---)"))
@@ -742,9 +747,6 @@ def cmd_validate(args):
         # else: metadata absent — that's fine, it's optional
 
         # Name vs directory basename consistency
-        skill_dir = os.path.dirname(skill_md)
-        dir_basename = os.path.basename(skill_dir)
-        dir_name, dir_version = _strip_version_suffix(dir_basename)
         fm_name = fm.get('name', '')
         # Accept frontmatter name as either base name ('demo-skill') or full name ('demo-skill-2-4-1')
         name_matches = (fm_name == dir_basename)
