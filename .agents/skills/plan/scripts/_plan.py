@@ -650,6 +650,146 @@ def extract_phases_lines(content: str) -> list[tuple[int, int]]:
     return ranges
 
 
+def _sorted_phase_insert_index(lines: list[str], phase_num: int) -> int:
+    """Find the line index where a new phase should be inserted to maintain numeric order.
+
+    Scans for existing ## Phase headings and returns the position just before
+    the first phase whose number is >= phase_num, or at the end of all phases
+    if no such phase exists.
+
+    The caller should prepend a blank separator line before the new phase heading.
+    """
+    for i, line in enumerate(lines):
+        p = parse_phase_heading(line)
+        if p is not None and p[1] >= phase_num:
+            return i
+
+    # No phase found with number >= phase_num — insert after last phase section
+    last_phase_end = -1
+    for i, line in enumerate(lines):
+        if parse_phase_heading(line) is not None:
+            last_phase_end = i
+
+    if last_phase_end >= 0:
+        # Find end of last phase content (tasks + sub-bullets)
+        end = last_phase_end + 1
+        while end < len(lines):
+            if parse_phase_heading(lines[end]) is not None:
+                break
+            if parse_task_line(lines[end]) is not None:
+                # Skip task and its sub-bullets
+                end += 1
+                while end < len(lines) and lines[end].startswith("  - "):
+                    end += 1
+            elif lines[end].strip() == "":
+                # Trailing blank — stop here
+                break
+            else:
+                end += 1
+        return end
+    else:
+        # No phases exist yet — insert after header fields
+        for i, line in enumerate(lines):
+            if line.startswith("## "):
+                return i
+        return len(lines)
+
+
+def _sorted_task_insert_index(lines: list[str], target_phase: int, task_num: int) -> tuple[int | None, str]:
+    """Find the line index where a new task should be inserted within its phase.
+
+    Returns (insert_index, error_message). insert_index is None on error.
+    Inserts in sorted position relative to existing task numbers in the phase.
+    Also accounts for sub-bullets under each task.
+    """
+    phase_heading_idx = None
+    for i, line in enumerate(lines):
+        p = parse_phase_heading(line)
+        if p and p[1] == target_phase:
+            phase_heading_idx = i
+            break
+
+    if phase_heading_idx is None:
+        return None, f"Phase {target_phase} not found"
+
+    # Collect existing tasks in this phase with their line indices and sub-bullet spans
+    task_entries: list[tuple[int, int, int]] = []  # (task_num, task_line_idx, end_of_subbullets_idx)
+    j = phase_heading_idx + 1
+    while j < len(lines):
+        t = parse_task_line(lines[j])
+        if t and t[1] == target_phase:
+            end = j + 1
+            k = end
+            # Sub-bullets are indented (start with "  - "), not task lines ("- [emoji] Task")
+            while k < len(lines) and lines[k].startswith("  - "):
+                k += 1
+            task_entries.append((t[2], j, k))
+            j = k
+        elif parse_phase_heading(lines[j]) is not None:
+            break
+        else:
+            j += 1
+
+    # Find insertion point: first task with number >= task_num
+    for idx, (tnum, tline, tend) in enumerate(task_entries):
+        if tnum >= task_num:
+            return tline, ""
+
+    # Insert after last task's sub-bullets
+    if task_entries:
+        _, _, last_end = task_entries[-1]
+        return last_end, ""
+    else:
+        # No tasks yet — insert right after phase heading.
+        # Preserve any existing blank separator line.
+        insert_at = phase_heading_idx + 1
+        if insert_at < len(lines) and lines[insert_at].strip() == "":
+            insert_at += 1
+        # Add blank separator after heading if none exists
+        if insert_at == phase_heading_idx + 1:
+            lines.insert(insert_at, "")
+            insert_at += 1
+        return insert_at, ""
+
+
+def _extract_phase_sections(content: str) -> list[tuple[int, list[str]]]:
+    """Extract each phase section as (phase_num, lines).
+
+    Each section includes the ## heading line and all lines until the next
+    phase heading or EOF. Leading blank separator lines are included.
+    """
+    lines = content.splitlines()
+    sections: list[tuple[int, list[str]]] = []
+    i = 0
+    # Skip header (title + bullet fields) — find first ## Phase line
+    while i < len(lines) and parse_phase_heading(lines[i]) is None:
+        i += 1
+
+    header_lines = lines[:i]
+
+    while i < len(lines):
+        p = parse_phase_heading(lines[i])
+        if p is None:
+            i += 1
+            continue
+
+        start = i
+        # Include leading blank line if present
+        if start > 0 and lines[start - 1].strip() == "" and start - 1 >= len(header_lines):
+            start -= 1
+
+        # Find end of this phase section
+        j = i + 1
+        while j < len(lines) and parse_phase_heading(lines[j]) is None:
+            j += 1
+
+        section_lines = lines[start:j]
+        sections.append((p[1], section_lines))
+        i = j
+
+    return header_lines, sections
+
+
 # ---------------------------------------------------------------------------
 # Status derivation
 # ---------------------------------------------------------------------------
@@ -1265,13 +1405,12 @@ def cmd_set_task_status(args: argparse.Namespace) -> None:
 # ---------------------------------------------------------------------------
 
 def cmd_add_phase(args: argparse.Namespace) -> None:
-    """Add a new phase at the end of the plan."""
-    phase_arg = args.phase_title  # e.g. "Phase 2 - Description..." or just "Description..."
+    """Add a new phase, inserted in sorted numeric position."""
+    phase_arg = args.phase_title  # e.g. "Phase 2 ➖ Description..." or just "Description..."
     description = getattr(args, "description", "") or ""
 
     # Resolve title before locking (pure computation from user input)
     explicit_num, title = parse_phase_add_arg(phase_arg)
-    # phase_num is resolved inside _transform since it depends on existing content
 
     def _transform(content: str) -> str:
         lines = content.splitlines()
@@ -1283,15 +1422,27 @@ def cmd_add_phase(args: argparse.Namespace) -> None:
         else:
             phase_num = len(phases) + 1
 
-        # Build new phase section
+        # Build new phase section (leading blank + heading + optional description + trailing blank)
         new_phase_lines = [
             "",
             format_phase_heading(STATUS_TODO, phase_num, title),
         ]
         if description:
             new_phase_lines.append(description)
+        new_phase_lines.append("")
 
-        content = "\n".join(lines) + "\n" + "\n".join(new_phase_lines) + "\n"
+        # Find insertion point, collapse adjacent blank lines into one separator
+        insert_idx = _sorted_phase_insert_index(lines, phase_num)
+        # Strip trailing blanks before insertion (replaced by our leading blank)
+        while insert_idx > 0 and lines[insert_idx - 1].strip() == "":
+            insert_idx -= 1
+        # Strip leading blanks from what follows (replaced by our trailing blank)
+        end_idx = insert_idx
+        while end_idx < len(lines) and lines[end_idx].strip() == "":
+            end_idx += 1
+        lines = lines[:insert_idx] + new_phase_lines + lines[end_idx:]
+
+        content = "\n".join(lines) + "\n"
         content = _touch_updated(args.path, content)
         return content
 
@@ -1392,7 +1543,7 @@ def cmd_remove_phase(args: argparse.Namespace) -> None:
 # ---------------------------------------------------------------------------
 
 def cmd_add_task(args: argparse.Namespace) -> None:
-    """Add a new task to an existing phase."""
+    """Add a new task to an existing phase, inserted in sorted numeric position."""
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
     task_arg = args.task_title  # e.g. "Task 2.4 ➖ Do thing ⚓ Task 2.1 , Task 2.2" or just "Do thing"
 
@@ -1438,34 +1589,10 @@ def cmd_add_task(args: argparse.Namespace) -> None:
                             max_task = t[2]
             tn = max_task + 1
 
-        insert_idx = None
-        for i, line in enumerate(lines):
-            p = parse_phase_heading(line)
-            if p and p[1] == target_phase:
-                # Find the last task in this phase
-                insert_idx = i + 1
-                for j in range(i + 1, len(lines)):
-                    t = parse_task_line(lines[j])
-                    if t and t[1] == target_phase:
-                        # Also skip sub-bullets
-                        insert_idx = j + 1
-                        k = j + 1
-                        while k < len(lines) and lines[k].strip().startswith("- "):
-                            k += 1
-                        insert_idx = k
-                    elif lines[j].strip() == "" and j > i:
-                        # blank line after heading, skip
-                        insert_idx = j + 1
-                    elif parse_phase_heading(lines[j]) is not None:
-                        # next phase, stop
-                        break
-                    else:
-                        insert_idx = j
-                        break
-                break
-
+        # Insert at sorted position within the phase
+        insert_idx, err = _sorted_task_insert_index(lines, target_phase, tn)
         if insert_idx is None:
-            print(f"Error: {phase_ref} not found", file=sys.stderr)
+            print(f"Error: {err}", file=sys.stderr)
             sys.exit(1)
 
         task_line = format_task_line(STATUS_TODO, tp, tn, clean_title, deps)
@@ -1534,7 +1661,7 @@ def cmd_remove_task(args: argparse.Namespace) -> None:
                 # Skip sub-bullets
                 remove_end = i + 1
                 j = i + 1
-                while j < len(lines) and lines[j].strip().startswith("- "):
+                while j < len(lines) and lines[j].startswith("  - "):
                     remove_end = j + 1
                     j += 1
                 break
@@ -1788,6 +1915,135 @@ def cmd_remove_task_dependency(args: argparse.Namespace) -> None:
 
     _safe_edit(args.path, _transform)
     print(f"Removed dependency: {task_ref} -> {dep_task_ref}")
+
+
+# ---------------------------------------------------------------------------
+# Commands — sort
+# ---------------------------------------------------------------------------
+
+def cmd_sort(args: argparse.Namespace) -> None:
+    """Sort phases by number and tasks within each phase by number."""
+    def _transform(content: str) -> str:
+        lines = content.splitlines()
+
+        # Find header end (first ## Phase line)
+        header_end = 0
+        for i, line in enumerate(lines):
+            if parse_phase_heading(line) is not None:
+                header_end = i
+                break
+        else:
+            # No phases found — nothing to sort
+            content = "\n".join(lines)
+            content = _touch_updated(args.path, content)
+            return content
+
+        header_lines = lines[:header_end]
+        # Strip trailing blank lines from header (separator added during reconstruction)
+        while header_lines and header_lines[-1].strip() == "":
+            header_lines.pop()
+        phase_block = lines[header_end:]
+
+        # Find the last line that belongs to any phase section.
+        # A line is phase content if it's a phase heading, a task line,
+        # or an indented sub-bullet (starts with "  - ").
+        last_content_idx = -1
+        for i, line in enumerate(phase_block):
+            if parse_phase_heading(line) is not None:
+                last_content_idx = i
+            elif parse_task_line(line) is not None:
+                last_content_idx = i
+            elif line.startswith("  - "):
+                last_content_idx = i
+        # Include trailing blank lines up to the next non-content line
+        actual_end = last_content_idx + 1
+        while actual_end < len(phase_block) and phase_block[actual_end].strip() == "":
+            actual_end += 1
+
+        # Extract phase sections from the trimmed block
+        sections: list[tuple[int, list[str]]] = []
+        i = 0
+        while i < actual_end:
+            p = parse_phase_heading(phase_block[i])
+            if p is None:
+                i += 1
+                continue
+
+            start = i
+
+            # Find end of this section (next phase heading or actual_end)
+            j = i + 1
+            while j < actual_end and parse_phase_heading(phase_block[j]) is None:
+                j += 1
+
+            # Sort tasks within this section by task number
+            section_lines = phase_block[start:j]
+            sorted_section = _sort_tasks_in_section(section_lines)
+            sections.append((p[1], sorted_section))
+            i = j
+
+        # Sort phases by number and reconstruct
+        sections.sort(key=lambda s: s[0])
+        sorted_phase_lines = []
+        for idx, (_, section) in enumerate(sections):
+            # Blank separator before each phase heading (always)
+            sorted_phase_lines.append("")
+            sorted_phase_lines.extend(section)
+
+        new_lines = header_lines + sorted_phase_lines
+        content = "\n".join(new_lines) + "\n"
+        content = _touch_updated(args.path, content)
+        content = validate_status_set(content)
+        return content
+
+    _safe_edit(args.path, _transform)
+    print("Sorted phases and tasks")
+
+
+def _sort_tasks_in_section(section_lines: list[str]) -> list[str]:
+    """Sort tasks within a phase section by task number, preserving sub-bullets."""
+    if not section_lines:
+        return section_lines
+
+    # Find the phase heading line
+    heading_idx = None
+    for i, line in enumerate(section_lines):
+        if parse_phase_heading(line) is not None:
+            heading_idx = i
+            break
+
+    if heading_idx is None:
+        return section_lines
+
+    heading = [section_lines[heading_idx]]
+    rest = section_lines[heading_idx + 1:]
+
+    # Collect task blocks (task line + sub-bullets)
+    task_blocks: list[tuple[int, list[str]]] = []
+    i = 0
+    while i < len(rest):
+        t = parse_task_line(rest[i])
+        if t is not None:
+            block = [rest[i]]
+            j = i + 1
+            while j < len(rest) and rest[j].startswith("  - "):
+                block.append(rest[j])
+                j += 1
+            task_blocks.append((t[2], block))
+            i = j
+        else:
+            # Skip blank lines and other non-task content (formatting artifacts)
+            i += 1
+
+    # Sort task blocks by task number
+    task_blocks.sort(key=lambda b: b[0])
+
+    # Reconstruct: heading + blank separator + sorted tasks
+    result = list(heading)
+    result.append("")
+    for _, block in task_blocks:
+        result.extend(block)
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -2283,6 +2539,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_rm_dep.add_argument("task_ref", help='Task reference, e.g. "Task 2.4"')
     p_rm_dep.add_argument("dep_task_ref", help='Dependency task reference, e.g. "Task 2.1"')
 
+    # --- sort ---
+    _add_path(sub, "sort", help="Sort phases and tasks by number")
+
     return parser
 
 
@@ -2320,6 +2579,7 @@ COMMAND_MAP = {
     "remove-task": cmd_remove_task,
     "add-task-dependency": cmd_add_task_dependency,
     "remove-task-dependency": cmd_remove_task_dependency,
+    "sort": cmd_sort,
 }
 
 

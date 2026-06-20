@@ -107,6 +107,8 @@ Phase is strictly formatted as `## [emoji-of-phase] Phase X ➖ Phase Title`, wh
 Every Phase **MUST** have a unique ID in the exact format `## [emoji-of-phase] Phase X` (X = phase number, starting from 1).
 All phases, tasks and their additions, changes, removals, transitions and dependencies live ONLY in `PLAN.md` file.
 
+Phases are always inserted in ascending numeric order — adding Phase 3 after Phase 1 places it correctly between Phase 1 and any existing higher-numbered phases. Use `plan.sh sort PLAN.md` to reorder an existing plan if phases or tasks become out of order.
+
 If a phase has zero tasks, emit a warning — it can never reach ☑ (Done) and is likely a mistake.
 
 ## Tasks
@@ -122,6 +124,8 @@ Tasks are markdown list items. Each task is strictly formatted as:
 The `⚓ ...` suffix is **optional** — omit it entirely when a task has no dependencies.
 
 Every task **MUST** have a unique ID in the exact format `- [emoji-of-task] Task X.Y` (X = phase number, Y = sequential task number **within that phase**).
+
+Tasks are always inserted in ascending numeric order within their phase — adding Task 2.1 after Task 2.3 places it correctly before Task 2.3. Use `plan.sh sort PLAN.md` to reorder an existing plan if tasks become out of order.
 
 Sub-bullets under a task are optional and carry no status tracking — they exist only to capture acceptance criteria, implementation notes, or context. They do not affect plan status derivation.
 
@@ -342,6 +346,11 @@ plan.sh add-task-dependency PLAN.md "Phase 3" "Task 3.5" "Task 3.4" # if current
 # 
 plan.sh remove-task-dependency PLAN.md "Phase 2" "Task 2.4" "Task 2.1" # if current task (in this case "Phase 2" "Task 2.4") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
 plan.sh remove-task-dependency PLAN.md "Phase 3" "Task 3.5" "Task 3.4" # if current task (in this case "Phase 3" "Task 3.5") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
+
+#
+# sort — reorder phases and tasks by number
+#
+plan.sh sort PLAN.md  # sorts phases by number, then tasks within each phase
 
 #
 # get-plan — structured plan output (read-only, no file lock needed)
