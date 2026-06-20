@@ -678,7 +678,9 @@ def _sorted_phase_insert_index(lines: list[str], phase_num: int) -> int:
             last_phase_end = i
 
     if last_phase_end >= 0:
-        # Find end of last phase content (tasks + sub-bullets)
+        # Find end of last phase content (tasks + sub-bullets).
+        # Skip blank lines that are followed by tasks — the file format
+        # uses blank separators between headings and task lists.
         end = last_phase_end + 1
         while end < len(lines):
             if parse_phase_heading(lines[end]) is not None:
@@ -689,8 +691,15 @@ def _sorted_phase_insert_index(lines: list[str], phase_num: int) -> int:
                 while end < len(lines) and lines[end].startswith("  - "):
                     end += 1
             elif lines[end].strip() == "":
-                # Trailing blank — stop here
-                break
+                # Blank line — check if tasks follow after it.
+                # If yes, keep scanning; if no (checksum/EOF), stop.
+                peek = end + 1
+                while peek < len(lines) and lines[peek].strip() == "":
+                    peek += 1
+                if peek < len(lines) and parse_task_line(lines[peek]) is not None:
+                    end = peek  # continue scanning from the task
+                else:
+                    break  # truly trailing blank
             else:
                 end += 1
         return end
