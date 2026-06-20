@@ -475,12 +475,20 @@ def parse_task_add_arg(arg: str) -> tuple[int, int, str]:
 
     If arg matches 'Task X.Y ➖ Title...', use explicit numbers.
     Otherwise treat entire arg as the title and return (0, 0, title) for auto-numbering.
+    Strips a leading '➖ ' from auto-numbered titles to avoid double delimiters.
     """
     m = re.match(r"^Task\s+\d+\.\d+\s*➖\s+(.+)$", arg.strip())
     if m:
         num_m = re.match(r"Task\s+(\d+)\.(\d+)", arg.strip())
         return int(num_m.group(1)), int(num_m.group(2)), m.group(1).strip()
-    return 0, 0, arg.strip()
+    title = arg.strip()
+    # Strip leading delimiter if user included it for auto-numbered task
+    # Handle both "➖ Title" and " ➖ Title" forms
+    if title.startswith("➖ "):
+        title = title[2:]
+    elif title == "➖":
+        title = ""
+    return 0, 0, title
 
 
 # ---------------------------------------------------------------------------
@@ -1310,8 +1318,10 @@ def check_dependency_cycle(plan_path: str, depends_on: list[str]) -> None:
     to plan_path.
     """
     base_resolved = str(Path(plan_path).resolve())
+    plan_dir = os.path.dirname(base_resolved)
     visited = set()
-    stack = [str(Path(d).resolve()) for d in depends_on]
+    # Resolve initial deps relative to the plan file's directory, not CWD
+    stack = [str(Path(plan_dir, d).resolve()) for d in depends_on]
 
     while stack:
         current_resolved = stack.pop()
@@ -1332,7 +1342,10 @@ def check_dependency_cycle(plan_path: str, depends_on: list[str]) -> None:
             if deps_str and deps_str != "NONE":
                 deps = [d.strip() for d in deps_str.split(",")]
                 for d in deps:
-                    resolved_d = str(Path(d).resolve())
+                    # Resolve relative to the directory of the dependency file,
+                    # not the current working directory
+                    dep_dir = os.path.dirname(current_resolved)
+                    resolved_d = str(Path(dep_dir, d).resolve())
                     stack.append(resolved_d)
         except (FileNotFoundError, SystemExit, PermissionError):
             pass  # plan doesn't exist, skip
@@ -2307,6 +2320,17 @@ def cmd_add_task(args: argparse.Namespace) -> None:
                         if t[2] > max_task:
                             max_task = t[2]
             tn = max_task + 1
+
+        # Check for duplicate task ID before inserting
+        for emoji, num, t_title, tasks in phases:
+            if num == target_phase:
+                for t in tasks:
+                    if t[2] == tn:
+                        print(
+                            f"Error: Task {target_phase}.{tn} already exists in Phase {target_phase}",
+                            file=sys.stderr,
+                        )
+                        sys.exit(1)
 
         # Insert at sorted position within the phase
         insert_idx, err = _sorted_task_insert_index(lines, target_phase, tn)

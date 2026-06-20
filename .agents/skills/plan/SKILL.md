@@ -19,7 +19,7 @@ Structured planning system using phases and tasks, tracked in `PLAN.md` files.
 1. **Always use `plan.sh` — never write or edit PLAN.md directly.** The LLM should not generate PLAN.md content itself. All operations (create, add, update, remove, status changes) go through `plan.sh` commands. Scripts enforce status transitions, auto-derive emojis, detect dependency cycles, and maintain integrity via checksums. Direct edits bypass all safeguards and corrupt the plan.
 2. **Smaller models especially must not hallucinate PLAN.md content.** When unsure of a command, read the Usage section or run `plan.sh --help`. Do not guess the file format.
 3. **There can be multiple `PLAN.md` files** in different locations, forming a DAG via `Depends On` headers.
-4. **Status emojis are derived automatically** by the script — never set them manually.
+4. **Status emojis are derived automatically** by the script after every mutation.** Prefer relying on auto-derivation. `set-plan-status` and `set-phase-status` exist for manual override (e.g., marking a plan as ❓ when scope is unclear), but `check --fix` will re-derive them from actual task states.
 
 ### File Format (for understanding only)
 
@@ -148,7 +148,7 @@ A phase emoji is **derived from its tasks**, not set independently:
 - ❌ **Error** — when no task is ⚙️ or ☑ but at least one is ❌
 - ☐ **Todo** — all tasks are still ☐
 
-The script auto-derives phase and plan emojis after every task status change. Phase and plan emojis are always derived — never set manually.
+The script auto-derives phase and plan emojis after every mutation. You can temporarily override with `set-plan-status` or `set-phase-status`, but `check --fix` will restore derived values.
 
 ## Phase and Task Statuses
 
@@ -261,8 +261,8 @@ plan.sh get-task-status PLAN.md "Task 2.3" # returns `[emoji-of-task]` of "Task 
 # Status writes
 #
 plan.sh set-all-statuses PLAN.md ☐ # set plan, all phases, and all tasks status to be the same - use with caution
-plan.sh set-plan-status PLAN.md ⚙️ # sets `[emoji-of-plan]` for plan
-plan.sh set-phase-status PLAN.md "Phase 2" ⚙️ # sets `[emoji-of-phase]` for "Phase 2"
+plan.sh set-plan-status PLAN.md ⚙️ # manual override — `check --fix` re-derives from phases
+plan.sh set-phase-status PLAN.md "Phase 2" ⚙️ # manual override — `check --fix` re-derives from tasks
 plan.sh set-task-status PLAN.md "Task 2.3" ⚙️ # sets `[emoji-of-task]` for "Task 2.3"
 
 # 
@@ -273,50 +273,50 @@ plan.sh add-phase PLAN.md "Phase 2 ➖ Description of phase..." # sets phase sta
 #
 # add-task
 #
-plan.sh add-task PLAN.md "Phase 2" "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase status ❓
+plan.sh add-task PLAN.md "Phase 2" "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase/plan status auto-derived
 plan.sh add-task PLAN.md "Phase 2" "Task 2.5 ➖ Depends on prior tasks ⚓ Task 2.1 , Task 2.3" # with dependencies
 # or
-plan.sh add-task PLAN.md "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase status ❓
+plan.sh add-task PLAN.md "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase/plan status auto-derived
 
 #
 # update-phase
 #
-plan.sh update-phase PLAN.md "Phase 2 ➖ New description of phase..." # sets phase status to ❓
+plan.sh update-phase PLAN.md "Phase 2 ➖ New description of phase..." # preserves phase emoji, re-derives plan status
 
 #
 # update-task
 #
-plan.sh update-task PLAN.md "Phase 2" "Task 2.4 ➖ New description of task..." # sets status to ❓
+plan.sh update-task PLAN.md "Phase 2" "Task 2.4 ➖ New description of task..." # preserves task emoji, re-derives phase/plan status
 # or
-plan.sh update-task PLAN.md "Phase 2 ➖ New description of phase..." "Task 2.4 ➖ New description of task..." # sets status to ❓
+plan.sh update-task PLAN.md "Phase 2 ➖ New description of phase..." "Task 2.4 ➖ New description of task..." # preserves task emoji, re-derives phase/plan status
 
 #
 # remove-phase
 #
-plan.sh remove-phase PLAN.md "Phase 2" # sets plan status to ❓
+plan.sh remove-phase PLAN.md "Phase 2" # re-derives plan status from remaining phases
 # or
-plan.sh remove-phase PLAN.md "Phase 2 ➖ Description of phase..." # sets plan status to ❓
+plan.sh remove-phase PLAN.md "Phase 2 ➖ Description of phase..." # re-derives plan status from remaining phases
 
 #
 # remove-task
 #
-plan.sh remove-task PLAN.md "Phase 2" "Task 2.4" # sets plan and phase status to ❓
+plan.sh remove-task PLAN.md "Phase 2" "Task 2.4" # re-derives phase and plan status from remaining tasks
 # or
-plan.sh remove-task PLAN.md "Phase 2" "Task 2.4 ➖ Description of task..." # sets plan and phase status to ❓
+plan.sh remove-task PLAN.md "Phase 2" "Task 2.4 ➖ Description of task..." # re-derives phase and plan status from remaining tasks
 # or
-plan.sh remove-task PLAN.md "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # sets plan and phase status to ❓
+plan.sh remove-task PLAN.md "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # re-derives phase and plan status from remaining tasks
 
 #
 # add-task-dependency
 # 
-plan.sh add-task-dependency PLAN.md "Phase 2" "Task 2.4" "Task 2.1" # if current task (in this case "Phase 2" "Task 2.4") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
-plan.sh add-task-dependency PLAN.md "Phase 3" "Task 3.5" "Task 3.4" # if current task (in this case "Phase 3" "Task 3.5") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
+plan.sh add-task-dependency PLAN.md "Phase 2" "Task 2.4" "Task 2.1" # re-derives phase and plan status
+plan.sh add-task-dependency PLAN.md "Phase 3" "Task 3.5" "Task 3.4" # re-derives phase and plan status
 
 #
 # remove-task-dependency
 # 
-plan.sh remove-task-dependency PLAN.md "Phase 2" "Task 2.4" "Task 2.1" # if current task (in this case "Phase 2" "Task 2.4") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
-plan.sh remove-task-dependency PLAN.md "Phase 3" "Task 3.5" "Task 3.4" # if current task (in this case "Phase 3" "Task 3.5") state is ☐ then sets plan and phase status to ☐ , otherwise to ❓
+plan.sh remove-task-dependency PLAN.md "Phase 2" "Task 2.4" "Task 2.1" # re-derives phase and plan status
+plan.sh remove-task-dependency PLAN.md "Phase 3" "Task 3.5" "Task 3.4" # re-derives phase and plan status
 
 #
 # sort — reorder phases and tasks by number
