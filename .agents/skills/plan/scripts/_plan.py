@@ -461,13 +461,20 @@ def parse_phase_add_arg(arg: str) -> tuple[int, str]:
 
     If arg matches 'Phase N ➖ Title...', use explicit N.
     Otherwise treat entire arg as the title and return (0, title) for auto-numbering.
+    Strips a leading '➖ ' from auto-numbered titles to avoid double delimiters.
     """
     m = re.match(r"^Phase\s+\d+\s*➖\s+(.+)$", arg.strip())
     if m:
         # Has explicit phase number
         num_m = re.match(r"Phase\s+(\d+)", arg.strip())
         return int(num_m.group(1)), m.group(1).strip()
-    return 0, arg.strip()
+    title = arg.strip()
+    # Strip leading delimiter if user included it for auto-numbered phase
+    if title.startswith("➖ "):
+        title = title[2:]
+    elif title == "➖":
+        title = ""
+    return 0, title
 
 
 def parse_task_add_arg(arg: str) -> tuple[int, int, str]:
@@ -559,6 +566,9 @@ def parse_task_deps(raw_title: str) -> tuple[str, list[str]]:
       - "Do thing" → ("Do thing", [])
       - "Do thing ⚓ Task 2.1 , Task 2.2" → ("Do thing", ["Task 2.1", "Task 2.2"])
       - "Do thing ⚓ Phase 3 - Task 3.1" → ("Do thing", ["Phase 3 - Task 3.1"])
+
+    Only treats ⚓ as a dependency anchor if ALL refs after it are valid task
+    references. Otherwise the entire string is treated as a plain title.
     """
     m = _DEPS_ANCHOR_RE.match(raw_title.strip())
     if not m:
@@ -567,10 +577,12 @@ def parse_task_deps(raw_title: str) -> tuple[str, list[str]]:
     clean = m.group(1).strip()
     deps_str = m.group(2).strip()
     deps = [d.strip() for d in deps_str.split(",")]
-    # Validate each dep ref looks like a task reference
-    for d in deps:
-        if not _SINGLE_DEP_RE.fullmatch(d):
-            print(f"Warning: malformed dependency ref {d!r}", file=sys.stderr)
+
+    # Only accept as dependencies if ALL refs are valid task references.
+    # This avoids false positives when ⚓ appears in description text.
+    if not all(_SINGLE_DEP_RE.fullmatch(d) for d in deps):
+        return raw_title.strip(), []
+
     return clean, deps
 
 
@@ -819,7 +831,15 @@ def _extract_phase_sections(content: str) -> list[tuple[int, list[str]]]:
 # ---------------------------------------------------------------------------
 
 def derive_phase_status(tasks: list[tuple[str, int, int, str]], warn: bool = False) -> str:
-    """Derive phase emoji from its tasks."""
+    """Derive phase emoji from its tasks.
+
+    Rules (matching SKILL.md):
+      - Done     — all tasks are ☑
+      - Doing    — at least one task is ⚙️
+      - Question — no task is ⚙️ or ☑, but at least one is ❓
+      - Error    — no task is ⚙️ or ☑, but at least one is ❌
+      - Todo     — fallback (e.g., all ☐, or mixed ☑+☐ with no other active status)
+    """
     if not tasks:
         if warn:
             print(f"Warning: Phase has zero tasks — it can never reach {STATUS_DONE}", file=sys.stderr)
@@ -831,15 +851,24 @@ def derive_phase_status(tasks: list[tuple[str, int, int, str]], warn: bool = Fal
         return STATUS_DONE
     if STATUS_DOING in emojis:
         return STATUS_DOING
-    if STATUS_QUESTION in emojis:
+    # Question/Error only when no task is ⚙️ or ☑
+    if STATUS_DONE not in emojis and STATUS_QUESTION in emojis:
         return STATUS_QUESTION
-    if STATUS_ERROR in emojis:
+    if STATUS_DONE not in emojis and STATUS_ERROR in emojis:
         return STATUS_ERROR
     return STATUS_TODO
 
 
 def derive_plan_status(phases: list[tuple[str, int, str, list]]) -> str:
-    """Derive plan emoji from all phases."""
+    """Derive plan emoji from all phases.
+
+    Rules (matching SKILL.md):
+      - Done     — all phases are ☑
+      - Doing    — at least one phase is ⚙️
+      - Question — no phase is ⚙️ or ☑, but at least one is ❓
+      - Error    — no phase is ⚙️ or ☑, but at least one is ❌
+      - Todo     — fallback
+    """
     if not phases:
         return STATUS_TODO
 
@@ -850,9 +879,10 @@ def derive_plan_status(phases: list[tuple[str, int, str, list]]) -> str:
         return STATUS_DONE
     if STATUS_DOING in phase_statuses:
         return STATUS_DOING
-    if STATUS_QUESTION in phase_statuses:
+    # Question/Error only when no phase is ⚙️ or ☑
+    if STATUS_DONE not in set(phase_statuses) and STATUS_QUESTION in phase_statuses:
         return STATUS_QUESTION
-    if STATUS_ERROR in phase_statuses:
+    if STATUS_DONE not in set(phase_statuses) and STATUS_ERROR in phase_statuses:
         return STATUS_ERROR
     return STATUS_TODO
 
@@ -1097,75 +1127,124 @@ def check_plan(plan_path: str, fix: bool = False) -> tuple[int, list[str]]:
 
 
 def _fix_phase_numbering(content: str, phases, task_status_map: dict) -> str:
-    """Renumber phases sequentially (1, 2, 3, ...) and update all references."""
+    """Renumber phases sequentially (1, 2, 3, ...) and update all references.
+
+    Uses position-based mapping so duplicate phase numbers are handled correctly:
+    the Nth phase heading in file order always becomes Phase N.
+    """
     lines = content.splitlines()
 
-    # Build old_num -> new_num mapping
+    # Build position-based old_num -> new_num mapping.
+    # Each (old_num, new_num) pair corresponds to a phase in file order.
     phase_nums = [p[1] for p in phases]
-    num_map: dict[int, int] = {}
-    for i, old_num in enumerate(phase_nums):
-        num_map[old_num] = i + 1
+    num_map_pairs: list[tuple[int, int]] = [(old, i + 1) for i, old in enumerate(phase_nums)]
+    # For non-duplicate numbers, build a quick dict lookup
+    unique_nums = set(phase_nums)
+    simple_map: dict[int, int] = {}
+    if len(unique_nums) == len(phase_nums):
+        for old, new in num_map_pairs:
+            simple_map[old] = new
 
     changed = False
     new_lines = list(lines)
 
-    # Update phase headings
+    # --- Update phase headings (position-based) ---
+    heading_idx = 0
     for i, line in enumerate(new_lines):
         p = parse_phase_heading(line)
-        if p and p[1] in num_map:
+        if p:
             old_num = p[1]
-            new_num = num_map[old_num]
-            if old_num != new_num:
-                new_lines[i] = format_phase_heading(p[0], new_num, p[2])
-                changed = True
+            if heading_idx < len(num_map_pairs):
+                new_num = num_map_pairs[heading_idx][1]
+                if old_num != new_num:
+                    new_lines[i] = format_phase_heading(p[0], new_num, p[2])
+                    changed = True
+            heading_idx += 1
 
-    # Update task lines — renumber phase part of task IDs
+    # --- Build context-aware phase mapping for tasks.
+    #    Walk lines tracking which phase section each task belongs to. ---
+    # For each task line, we need to know its *new* phase number based on
+    # which phase heading it falls under (by position, not by old number).
+    current_phase_idx = -1
     for i, line in enumerate(new_lines):
+        p = parse_phase_heading(line)
+        if p:
+            current_phase_idx += 1
+    # Reset and do the actual update pass
+    current_phase_idx = -1
+    for i, line in enumerate(new_lines):
+        p = parse_phase_heading(line)
+        if p:
+            current_phase_idx += 1
+            continue
         t = parse_task_line(line)
-        if t and t[1] in num_map:
+        if t and current_phase_idx >= 0 and current_phase_idx < len(num_map_pairs):
             old_phase = t[1]
-            new_phase = num_map[old_phase]
+            new_phase = num_map_pairs[current_phase_idx][1]
             if old_phase != new_phase:
                 new_lines[i] = format_task_line(t[0], new_phase, t[2], t[3], t[4])
                 changed = True
 
-    # Update dependency references in task lines
+    # --- Update dependency references in task lines (position-aware) ---
+    current_phase_idx = -1
     for i, line in enumerate(new_lines):
+        p = parse_phase_heading(line)
+        if p:
+            current_phase_idx += 1
+            continue
         t = parse_task_line(line)
-        if t:
+        if t and current_phase_idx >= 0:
+            my_new_phase = num_map_pairs[current_phase_idx][1] if current_phase_idx < len(num_map_pairs) else t[1]
             new_deps = []
             for dep_ref in t[4]:
                 dp, dt = _resolve_dep_ref(dep_ref, t[1])
-                if dp is not None and dp in num_map:
-                    new_dp = num_map[dp]
-                    # Rebuild canonical ref
-                    if new_dp == t[1]:
-                        new_deps.append(f"Task {new_dp}.{dt}")
+                if dp is not None:
+                    # Find new phase number for the dependency's phase
+                    new_dp = _find_new_phase_num(dp, num_map_pairs)
+                    if new_dp is not None:
+                        if new_dp == my_new_phase:
+                            new_deps.append(f"Task {new_dp}.{dt}")
+                        else:
+                            new_deps.append(f"Phase {new_dp} - Task {new_dp}.{dt}")
                     else:
-                        new_deps.append(f"Phase {new_dp} - Task {new_dp}.{dt}")
+                        new_deps.append(dep_ref)
                 else:
                     new_deps.append(dep_ref)
             if new_deps != t[4]:
-                new_lines[i] = format_task_line(t[0], t[1], t[2], t[3], new_deps)
+                new_lines[i] = format_task_line(t[0], my_new_phase, t[2], t[3], new_deps)
                 changed = True
 
-    # Update header fields referencing phases/tasks
+    # --- Update header fields referencing phases/tasks ---
     for field in ("Current Phase", "Current Task"):
         idx = _find_header_field_line(new_lines, field)
         if idx >= 0:
             val = new_lines[idx].split(":", 1)[1].strip()
-            # Check if value references a phase number
             pm = re.match(r"(.*)Phase\s+(\d+)(.*)", val)
             if pm:
                 prefix, old_num_str, suffix = pm.group(1), int(pm.group(2)), pm.group(3)
-                if old_num_str in num_map:
-                    new_num = num_map[old_num_str]
+                new_num = _find_new_phase_num(old_num_str, num_map_pairs)
+                if new_num is not None and new_num != old_num_str:
                     new_lines[idx] = f"- {field}: {prefix}{new_num}{suffix}"
                     changed = True
 
     if changed:
         return "\n".join(new_lines)
     return content
+
+
+def _find_new_phase_num(old_num: int, num_map_pairs: list[tuple[int, int]]) -> int | None:
+    """Find the new phase number for a given old phase number.
+
+    If the old number appears only once, returns its unique mapping.
+    If it appears multiple times (duplicates), returns the first occurrence's
+    new number as a best-effort fallback — exact resolution requires context.
+    """
+    matches = [new for old, new in num_map_pairs if old == old_num]
+    if len(matches) == 1:
+        return matches[0]
+    if len(matches) > 1:
+        return matches[0]  # Best-effort: use first occurrence
+    return None
 
 
 def _fix_task_numbering(content: str, phase_num: int, task_status_map: dict) -> str:

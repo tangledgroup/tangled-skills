@@ -90,7 +90,7 @@ The plan emoji is **derived from its phases**, not set independently:
 - ⚙️ **Doing** — when at least one phase is ⚙️ or has a task that is ⚙️
 - ❓ **Question** — when no phase is ⚙️/☑ but at least one is ❓
 - ❌ **Error** — when no phase is ⚙️/☑ but at least one is ❌
-- ☐ **Todo** — all phases are still ☐
+- ☐ **Todo** — fallback (all phases are ☐, or mixed with no active status)
 
 When a plan transitions to ☑, it means every single task in every single phase is ☑. The script auto-derives the plan emoji after every edit. Do not mark the plan as completed until this condition is met.
 
@@ -146,7 +146,7 @@ A phase emoji is **derived from its tasks**, not set independently:
 - ⚙️ **Doing** — when at least one task is ⚙️ (Doing)
 - ❓ **Question** — when no task is ⚙️ or ☑ but at least one is ❓
 - ❌ **Error** — when no task is ⚙️ or ☑ but at least one is ❌
-- ☐ **Todo** — all tasks are still ☐
+- ☐ **Todo** — fallback (all tasks are ☐, or mixed ☑+☐ with no active status)
 
 The script auto-derives phase and plan emojis after every mutation. You can temporarily override with `set-plan-status` or `set-phase-status`, but `check --fix` will restore derived values.
 
