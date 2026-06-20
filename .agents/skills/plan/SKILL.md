@@ -8,39 +8,42 @@ metadata:
 
 # plan
 
-Create, read, execute and update plan(s).
+Phase/task based workflow system with `PLAN.md` as single source of truth.
 
 ## Overview
 
-Plan/phase/task based planning system with `PLAN.md` as single source of truth.
+Structured planning system using phases and tasks, tracked in `PLAN.md` files.
 
-**All PLAN.md operations MUST go through `plan.sh` scripts — never write or edit PLAN.md directly.** This includes creating plans, adding phases/tasks, changing statuses, updating dependencies, and modifying headers. The scripts enforce status transitions, derive emojis automatically, check dependency cycles, and maintain file integrity via atomic writes and checksums. Direct edits bypass all these safeguards and will corrupt the plan.
+### Rules
 
-There can be many `PLAN.md` files in different locations.
-Plan files create a dependency graph via `**Depends On:** ...`.
-Strict phase numbering (`[emoji-of-phase] Phase X ➖ Phase Title`), inline phase dependency tracking, and emoji-coded statuses within current plan.
-Strict task numbering (`[emoji-of-task] Task X.Y ➖ Task Title ⚓ ...`), with `⚓` anchor marking task dependencies that must reach `☑` before the dependent task can proceed, and emoji-coded statuses within current plan.
+1. **Always use `plan.sh` — never write or edit PLAN.md directly.** The LLM should not generate PLAN.md content itself. All operations (create, add, update, remove, status changes) go through `plan.sh` commands. Scripts enforce status transitions, auto-derive emojis, detect dependency cycles, and maintain integrity via checksums. Direct edits bypass all safeguards and corrupt the plan.
+2. **Smaller models especially must not hallucinate PLAN.md content.** When unsure of a command, read the Usage section or run `plan.sh --help`. Do not guess the file format.
+3. **There can be multiple `PLAN.md` files** in different locations, forming a DAG via `Depends On` headers.
+4. **Status emojis are derived automatically** by the script — never set them manually.
+
+### File Format (for understanding only)
+
+The structure below describes what `plan.sh` produces. Do not write it yourself.
+
+- Title: `# [emoji] Plan ➖ Title`
+- Header fields: `Depends On`, `Created`, `Updated`, `Current Phase`, `Current Task`
+- Phases: `## [emoji] Phase N ➖ Title` with numbered tasks underneath
+- Tasks: `- [emoji] Task X.Y ➖ Title ⚓ ...` (dependencies optional)
+- Checksum comment at bottom for integrity verification
 
 ## When to Use
 
-- Starting a new project that requires structured phase-by-phase execution
+Use this skill when:
+- Starting a project that requires structured phase-by-phase execution
 - Tackling complex tasks with multiple dependent steps (implementation, testing, deployment)
-- Coordinating work across multiple PLAN.md files with inter-plan dependencies
+- Coordinating work across multiple `PLAN.md` files with inter-plan dependencies
 - Resuming interrupted work by tracking current phase and task state
-- Validating PLAN.md consistency after edits — use `plan.sh check PLAN.md --fix` to detect and auto-repair corrupted statuses, numbering gaps, or ordering issues
-- Any workflow where having a single source of truth for progress is valuable
+- Validating plan consistency — run `plan.sh check PLAN.md --fix` to detect and repair issues
+- Any workflow needing a single source of truth for progress
 
 ## PLAN.md Structure
 
-`PLAN.md` files are created and modified exclusively via `plan.sh`. The file structure is an implementation detail of the script — do not write or edit it manually.
-
-A plan file contains:
-- A title line with derived status emoji: `# [emoji] Plan ➖ Title`
-- Header fields (`Depends On`, `Created`, `Updated`, `Current Phase`, `Current Task`)
-- Phase sections (`## [emoji] Phase N ➖ Title`) with task lists underneath
-- A checksum comment at the bottom (integrity verification)
-
-All of this is managed by the script. Use `plan.sh get-plan PLAN.md --tree --json` to inspect a plan's structure.
+`PLAN.md` files are created and modified exclusively via `plan.sh`. The file structure is an implementation detail of the script — do not write or edit it manually. Use `plan.sh get-plan PLAN.md --tree --json` to inspect a plan's structure.
 
 ## Universal emoji-coded statuses
 
@@ -89,46 +92,33 @@ The plan emoji is **derived from its phases**, not set independently:
 - ❌ **Error** — when no phase is ⚙️/☑ but at least one is ❌
 - ☐ **Todo** — all phases are still ☐
 
-When a plan transitions to ☑, it means every single task in every single phase is ☑. The script auto-derives the plan emoji after edits, so this happens automatically when using `plan.py`. Do not mark the plan as completed until this condition is met.
+When a plan transitions to ☑, it means every single task in every single phase is ☑. The script auto-derives the plan emoji after every edit. Do not mark the plan as completed until this condition is met.
 
-## Plan
+## Plan Dependencies
 
-**PLAN.md = single source of truth**: project with dependency graph.
-Multiple `PLAN.md` files can exist in different locations.
-They form a directed acyclic graph (DAG) via the required `- Depends On:` header field:
+Multiple `PLAN.md` files can exist in different locations, forming a directed acyclic graph (DAG) via the `Depends On` header field. Manage dependencies with `plan.sh set-plan-depends-on`.
+
 - Multiple dependencies are comma-separated with spaces: `../a/PLAN.md , ../../b/PLAN.md`
 - Default value is `NONE` when the plan has no dependencies
-- Cycles are not allowed. Check for cycles whenever any plan is created or when `- Depends On:` is modified. If a cycle is detected (including transitive cycles), report it to the user and stop until resolved
+- Cycles are not allowed. The script checks for cycles (including transitive) whenever `Depends On` is modified. If a cycle is detected, report it to the user and stop until resolved
 - The dependency graph is resolved transitively by visiting referenced `PLAN.md` headers — not inline-expanded
-- When a dependency is incomplete, ask what to do before proceeding
+- When a dependency is incomplete, ask the user what to do before proceeding
 
 ## Phases
 
-Phase is strictly formatted as `## [emoji-of-phase] Phase X ➖ Phase Title`, where X is unique ID (X = phase number, starting from 1).
-Every Phase **MUST** have a unique ID in the exact format `## [emoji-of-phase] Phase X` (X = phase number, starting from 1).
-All phases, tasks and their additions, changes, removals, transitions and dependencies live ONLY in `PLAN.md` file.
+Add phases with `plan.sh add-phase`. Each phase has a unique ID in the format `Phase X` (X = sequential number starting from 1).
 
-Phases are always inserted in ascending numeric order — adding Phase 3 after Phase 1 places it correctly between Phase 1 and any existing higher-numbered phases. Use `plan.sh sort PLAN.md` to reorder an existing plan if phases or tasks become out of order.
+Phases are inserted in ascending numeric order — adding Phase 3 after Phase 1 places it correctly. Use `plan.sh sort PLAN.md` to reorder if phases become out of order.
 
-If a phase has zero tasks, emit a warning — it can never reach ☑ (Done) and is likely a mistake.
+A phase with zero tasks can never reach ☑ (Done) and is likely a mistake — the script will warn.
 
 ## Tasks
 
-Tasks are markdown list items. Each task is strictly formatted as:
+Add tasks with `plan.sh add-task`. Each task has a unique ID in the format `Task X.Y` (X = phase number, Y = sequential task number within that phase).
 
-```
-- [emoji-of-task] Task X.Y ➖ Task Title ⚓ Task A.B , Task C.D
-  - optional sub-bullet: acceptance criteria, notes, or implementation details
-  - optional sub-bullet: additional context
-```
+Tasks are inserted in ascending numeric order within their phase. Use `plan.sh sort PLAN.md` to reorder if tasks become out of order.
 
-The `⚓ ...` suffix is **optional** — omit it entirely when a task has no dependencies.
-
-Every task **MUST** have a unique ID in the exact format `- [emoji-of-task] Task X.Y` (X = phase number, Y = sequential task number **within that phase**).
-
-Tasks are always inserted in ascending numeric order within their phase — adding Task 2.1 after Task 2.3 places it correctly before Task 2.3. Use `plan.sh sort PLAN.md` to reorder an existing plan if tasks become out of order.
-
-Sub-bullets under a task are optional and carry no status tracking — they exist only to capture acceptance criteria, implementation notes, or context. They do not affect plan status derivation.
+Sub-bullets under a task are optional — they capture acceptance criteria, implementation notes, or context. They carry no status tracking and do not affect plan status derivation.
 
 ### Task Granularity
 
@@ -141,25 +131,12 @@ Each task should be small enough to complete in one focused work session and lar
 
 ### Task Dependencies
 
-Task dependencies are **phase-bound by default** (most will be same-phase).
+Dependencies are managed with `plan.sh add-task-dependency` and `plan.sh remove-task-dependency`. The `⚓` anchor means dependent tasks must reach ☑ before the current task can proceed.
 
-The `⚓` anchor emoji symbolizes "depends on". It means the plan needs these dependent tasks finished in state `☑` before proceeding with the current task.
+For **phase-bound** dependencies (same phase), reference by task ID: `Task X.Y`.
+For **cross-phase** dependencies, use full form: `Phase X - Task X.Y`.
 
-When a task has dependencies, append to the task title: `⚓ Task A.B , Task C.D`. If a task has no dependencies, **omit** the `⚓ ...` suffix entirely.
-
-For **phase-bound** dependencies (same phase), use `Task X.Y` where `X` is the current phase:
-```
-- ☐ Task 2.3 ➖ Build parser ⚓ Task 2.1 , Task 2.2
-```
-
-For **cross-phase** dependencies, use the full `Phase X - Task X.Y` form:
-```
-- ☐ Task 3.1 ➖ Integrate modules ⚓ Phase 2 - Task 2.3 , Phase 1 - Task 1.4
-```
-
-The `plan.py` script enforces dependency satisfaction: it will **reject** transitioning a task to `⚙️` (Doing) if any of its `⚓` dependencies are not in `☑` (Done) state.
-
-This creates a clear directed graph that any reader (human or agent) can parse instantly.
+`plan.sh` enforces dependency satisfaction: it will **reject** transitioning a task to ⚙️ if any ⚓ dependency is not ☑.
 
 ## Phase Status Derivation
 
@@ -171,7 +148,7 @@ A phase emoji is **derived from its tasks**, not set independently:
 - ❌ **Error** — when no task is ⚙️ or ☑ but at least one is ❌
 - ☐ **Todo** — all tasks are still ☐
 
-The script (`plan.py`) auto-derives phase and plan emojis after every task status change. Phase and plan emojis are always derived — never set manually.
+The script auto-derives phase and plan emojis after every task status change. Phase and plan emojis are always derived — never set manually.
 
 ## Phase and Task Statuses
 
@@ -195,24 +172,22 @@ These are valid state transitions:
 - ❌ → ⚙️ — error state, decide to retry based on experience
 - ❌ → ❓ — error state, need clarification to proceed
 
-## Argument Parsing Convention
+## Argument Convention
 
 The `" ➖ "` delimiter separates IDs from descriptions in command arguments:
 
-- **phase_title** = `{phase_id} ➖ {phase_desc}` → e.g. `"Phase 2 ➖ Description of phase..."`
-- **task_title** = `{task_id} ➖ {task_desc}` → e.g. `"Task 2.4 ➖ Description of task..."`
+- Phase: `"Phase 2 ➖ Description"` — ID required, description optional
+- Task: `"Task 2.4 ➖ Description"` — ID required, description optional
 
-The ID is always required; the description after `" ➖ "` is optional. Commands accept both forms:
-- `set-phase-status "Phase 2" ⚙️` — ID only
-- `remove-task "Phase 2 ➖ Desc..." "Task 2.4 ➖ Desc..."` — full form with descriptions
+Commands accept ID-only (`"Phase 2"`) or full form (`"Phase 2 ➖ Desc..."`).
 
 For `add-phase` and `add-task`: if the argument starts with an explicit ID (`Phase N` or `Task X.Y`), that number is used; otherwise, the next sequential number is auto-assigned.
 
 ## Plan Completion
 
-Before producing the completion report, run the validator. The plan is only considered complete when the validator reports zero errors and all tasks are ☑.
+Run `plan.sh check PLAN.md` before producing the completion report. The plan is complete only when the validator reports zero errors and all tasks are ☑.
 
-When all phases and tasks reach ☑ (Done), produce a short completion report summarizing:
+When complete, produce a short report summarizing:
 - What was accomplished (list of completed phases)
 - Any blockers or errors that were resolved
 - Any open questions or items left for future work
@@ -220,26 +195,20 @@ When all phases and tasks reach ☑ (Done), produce a short completion report su
 
 ## Dependency Management
 
-When building or refining a plan, actively manage task dependencies using `add-task-dependency` and `remove-task-dependency`. Don't wait until all tasks are listed — add dependencies as you identify them, and remove them if the dependency graph changes during planning.
+Manage dependencies incrementally as you identify them using `plan.sh add-task-dependency` and `plan.sh remove-task-dependency`. Don't wait until all tasks are listed.
 
-**Use `add-task-dependency` when:**
-- A newly added task depends on an existing task
-- An existing task acquires a new prerequisite during refinement
-- Cross-phase dependencies are discovered (e.g., implementation needs a design output)
+- **Add dependencies** when a new task depends on an existing one, or cross-phase prerequisites are discovered
+- **Remove dependencies** when restructuring makes them invalid, or a task split moves the dependency
 
-**Use `remove-task-dependency` when:**
-- A dependency is no longer valid after plan restructuring
-- A task was split and the original dependency should move to a different sub-task
-- An artificial dependency was added for safety but is no longer needed
-
-Dependencies are managed incrementally — there is no "add all at once" command. Call `add-task-dependency` for each individual dependency edge.
+There is no bulk command — call `add-task-dependency` for each individual edge.
 
 ## Gotchas
 
-- **Never write or edit PLAN.md directly** — even if you know the exact format. The script enforces status transitions, auto-derives phase/plan emojis from task states, checks dependency cycles, and maintains a SHA-256 checksum. Direct edits bypass all of this and will cause checksum failures, inconsistent statuses, and silent corruption. If a section of this skill describes PLAN.md formatting, it is for your understanding only — always use `plan.sh` commands to modify the file.
-- **Never remove-and-re-add phases or tasks** — if you need to change a phase's title, description, status, or dependencies, use the update commands (`update-phase`, `update-task`, `set-task-status`, `add-task-dependency`, etc.). Removing and re-adding loses task numbering continuity, breaks dependency anchors (`⚓`), resets statuses, and can introduce race conditions. The only reason to remove a phase or task is when it is genuinely no longer part of the plan.
-- **Updating a plan usually means changing statuses** — most plan "updates" are status transitions (`set-task-status`, `set-phase-status`). Title or description changes via `update-phase` / `update-task` are rare and should only happen when the scope itself has changed, not as a workaround for adding details (use sub-bullets under tasks for that).
-- **Run `plan.sh check PLAN.md --fix` after any plan update** — this validates checksum integrity, emoji derivation consistency, phase/task numbering (sequential without gaps), ordering (ascending by number), and dependency reference validity. The `--fix` flag auto-repairs recoverable issues (wrong emojis, numbering gaps, out-of-order phases/tasks). Non-fixable issues (dangling dependency references, duplicate task IDs) are reported but require manual resolution.
+- **Never generate PLAN.md content with the LLM** — do not write, edit, or append to PLAN.md using text generation. Always use `plan.sh` commands. The script enforces status transitions, auto-derives emojis, checks dependency cycles, and maintains a SHA-256 checksum. Any direct edit will cause checksum failures and silent corruption.
+- **Do not guess PLAN.md format** — if you are unsure of a command, read the Usage section below or run `plan.sh --help`. Smaller models are especially prone to hallucinating file content. Resist this impulse.
+- **Never remove-and-re-add phases or tasks** — use update commands (`update-phase`, `update-task`, `set-task-status`, `add-task-dependency`). Removing and re-adding loses numbering continuity, breaks dependency anchors (⚓), and resets statuses. Only remove when the item is genuinely no longer part of the plan.
+- **Updating a plan usually means changing statuses** — most "updates" are status transitions (`set-task-status`, `set-phase-status`). Title/description changes via `update-phase` / `update-task` are rare and should only happen when scope changes. Use sub-bullets for added details.
+- **Run `plan.sh check PLAN.md --fix` after any plan update** — validates checksum integrity, emoji derivation, numbering gaps, ordering, and dependency references. The `--fix` flag auto-repairs recoverable issues (wrong emojis, numbering gaps, out-of-order items). Non-fixable issues (dangling references, duplicate IDs) are reported and require manual resolution.
 
 ## Dependencies
 
