@@ -27,6 +27,7 @@ Strict task numbering (`[emoji-of-task] Task X.Y ➖ Task Title ⚓ ...`), with 
 - Tackling complex tasks with multiple dependent steps (implementation, testing, deployment)
 - Coordinating work across multiple PLAN.md files with inter-plan dependencies
 - Resuming interrupted work by tracking current phase and task state
+- Validating PLAN.md consistency after edits — use `plan.sh check PLAN.md --fix` to detect and auto-repair corrupted statuses, numbering gaps, or ordering issues
 - Any workflow where having a single source of truth for progress is valuable
 
 ## PLAN.md Structure
@@ -238,6 +239,7 @@ Dependencies are managed incrementally — there is no "add all at once" command
 - **Never write or edit PLAN.md directly** — even if you know the exact format. The script enforces status transitions, auto-derives phase/plan emojis from task states, checks dependency cycles, and maintains a SHA-256 checksum. Direct edits bypass all of this and will cause checksum failures, inconsistent statuses, and silent corruption. If a section of this skill describes PLAN.md formatting, it is for your understanding only — always use `plan.sh` commands to modify the file.
 - **Never remove-and-re-add phases or tasks** — if you need to change a phase's title, description, status, or dependencies, use the update commands (`update-phase`, `update-task`, `set-task-status`, `add-task-dependency`, etc.). Removing and re-adding loses task numbering continuity, breaks dependency anchors (`⚓`), resets statuses, and can introduce race conditions. The only reason to remove a phase or task is when it is genuinely no longer part of the plan.
 - **Updating a plan usually means changing statuses** — most plan "updates" are status transitions (`set-task-status`, `set-phase-status`). Title or description changes via `update-phase` / `update-task` are rare and should only happen when the scope itself has changed, not as a workaround for adding details (use sub-bullets under tasks for that).
+- **Run `plan.sh check PLAN.md --fix` after any plan update** — this validates checksum integrity, emoji derivation consistency, phase/task numbering (sequential without gaps), ordering (ascending by number), and dependency reference validity. The `--fix` flag auto-repairs recoverable issues (wrong emojis, numbering gaps, out-of-order phases/tasks). Non-fixable issues (dangling dependency references, duplicate task IDs) are reported but require manual resolution.
 
 ## Dependencies
 
@@ -351,6 +353,14 @@ plan.sh remove-task-dependency PLAN.md "Phase 3" "Task 3.5" "Task 3.4" # if curr
 # sort — reorder phases and tasks by number
 #
 plan.sh sort PLAN.md  # sorts phases by number, then tasks within each phase
+
+#
+# check — validate PLAN.md consistency (with optional --fix)
+#
+# Checks: checksum, emoji derivation, numbering gaps/duplicates,
+# ordering, dangling deps, empty phases.
+plan.sh check PLAN.md              # report issues
+plan.sh check PLAN.md --fix        # report + auto-fix recoverable issues
 
 #
 # get-plan — structured plan output (read-only, no file lock needed)

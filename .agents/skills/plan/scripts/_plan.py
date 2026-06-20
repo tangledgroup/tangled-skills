@@ -841,6 +841,448 @@ def derive_plan_status(phases: list[tuple[str, int, str, list]]) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Check / Validate — consistency checker with optional --fix
+# ---------------------------------------------------------------------------
+
+
+def check_plan(plan_path: str, fix: bool = False) -> tuple[int, list[str]]:
+    """Check PLAN.md for consistency issues.
+
+    Two-pass approach:
+      Pass 1: Collect ALL issues (without modifying content)
+      Pass 2 (if fix=True): Apply all auto-fixable changes, write file
+
+    Returns (exit_code, messages) where exit_code is 0 if clean, 1 if issues found.
+    In fix mode, exit_code is 0 if all fixable issues were resolved.
+
+    Checks performed:
+      1. Checksum integrity
+      2. Plan emoji derivation (must match derived status from phases)
+      3. Phase emoji derivation (must match derived status from tasks)
+      4. Phase numbering — sequential 1,2,3… without gaps or duplicates
+      5. Task numbering — within each phase, sequential X.1,X.2,… without gaps/duplicates
+      6. Number ordering — phases and tasks appear in ascending numeric order
+      7. Dependency references — all ⚓ deps must reference existing tasks
+      8. Empty phases — phases with zero tasks (warning)
+      9. Duplicate task IDs — no two tasks share the same (phase, task) number
+    """
+    p = Path(plan_path)
+    if not p.exists():
+        print(f"Error: {plan_path} does not exist", file=sys.stderr)
+        sys.exit(1)
+
+    raw = p.read_text(encoding="utf-8")
+
+    # --- Check 1: Checksum integrity (always fix immediately) ---
+    checksum_ok = _verify_checksum(raw)
+    checksum_was_fixed = False
+    if not checksum_ok:
+        if fix:
+            body = _strip_checksum(raw)
+            fixed = _add_checksum(body)
+            write_plan_atomic(plan_path, fixed)
+            raw = fixed
+            checksum_ok = True
+            checksum_was_fixed = True
+
+    content = _strip_checksum(raw)
+    lines = content.splitlines()
+    phases = extract_phases(content)
+
+    # Build task lookup: (phase_num, task_num) -> emoji
+    task_status_map: dict[tuple[int, int], str] = {}
+    for _, phase_num, _, tasks in phases:
+        for t in tasks:
+            task_status_map[(t[1], t[2])] = t[0]
+
+    # ─── PASS 1: Collect all issues ───
+    issues: list[tuple[str, bool]] = []  # (message, is_fixable)
+    needs_sort = False
+    needs_emoji_fix = False
+    phase_num_map: dict[int, int] | None = None  # old_num -> new_num
+    task_num_maps: dict[int, dict[int, int]] = {}  # phase -> {old_task -> new_task}
+
+    # Checksum issue
+    if not checksum_ok:
+        issues.append(("checksum: FAILED — stored checksum does not match content (file may be corrupted)", False))
+
+    # --- Check 9: Duplicate task IDs ---
+    seen_task_ids: set[tuple[int, int]] = set()
+    for _, phase_num, _, tasks in phases:
+        for t in tasks:
+            key = (t[1], t[2])
+            if key in seen_task_ids:
+                issues.append((f"duplicate-task-id: Task {key[0]}.{key[1]} appears more than once", False))
+            seen_task_ids.add(key)
+
+    # --- Check 4: Phase numbering ---
+    phase_nums = [ph[1] for ph in phases]
+    expected_phase_nums = list(range(1, len(phases) + 1)) if phases else []
+    if phase_nums != expected_phase_nums:
+        msg = (f"phase-numbering: got {phase_nums}, expected {expected_phase_nums} "
+               f"(phases must be numbered 1..{len(phases)} sequentially)")
+        issues.append((msg, True))
+        phase_num_map = {}
+        for i, old_num in enumerate(phase_nums):
+            phase_num_map[old_num] = i + 1
+
+    # --- Check 5: Task numbering within each phase ---
+    for emoji, phase_num, title, tasks in phases:
+        task_nums = [t[2] for t in tasks]
+        expected_task_nums = list(range(1, len(tasks) + 1)) if tasks else []
+        if task_nums != expected_task_nums:
+            msg = (f"task-numbering: Phase {phase_num} tasks got {task_nums}, "
+                   f"expected {expected_task_nums}")
+            issues.append((msg, True))
+            tmap = {}
+            for i, old_t in enumerate(task_nums):
+                tmap[old_t] = i + 1
+            task_num_maps[phase_num] = tmap
+
+    # --- Check 6: Number ordering ---
+    if phase_nums != sorted(phase_nums):
+        msg = (f"phase-ordering: phases appear as {phase_nums}, "
+               f"expected {sorted(phase_nums)}")
+        issues.append((msg, True))
+        needs_sort = True
+
+    for emoji, phase_num, title, tasks in phases:
+        task_nums_in_order = [t[2] for t in tasks]
+        if task_nums_in_order != sorted(task_nums_in_order):
+            msg = (f"task-ordering: Phase {phase_num} tasks appear as {task_nums_in_order}, "
+                   f"expected {sorted(task_nums_in_order)}")
+            issues.append((msg, True))
+            needs_sort = True
+
+    # --- Check 7: Dangling dependency references ---
+    for _, phase_num, title, tasks in phases:
+        for t in tasks:
+            for dep_ref in t[4]:
+                dp, dt = _resolve_dep_ref(dep_ref, phase_num)
+                if dp is None or (dp, dt) not in task_status_map:
+                    msg = (f"dangling-dep: Task {t[1]}.{t[2]} depends on {dep_ref!r} "
+                           f"which does not exist")
+                    issues.append((msg, False))  # not fixable
+
+    # --- Check 8: Empty phases (warning) ---
+    for emoji, phase_num, title, tasks in phases:
+        if not tasks:
+            msg = f"empty-phase: Phase {phase_num} has zero tasks (can never reach {STATUS_DONE})"
+            issues.append((msg, False))  # warning, not error
+
+    # --- Check 2: Plan emoji derivation ---
+    plan_status_derived = derive_plan_status(phases)
+    current_plan_emoji = STATUS_TODO
+    for line in lines:
+        m = _TITLE_RE.match(line.strip())
+        if m:
+            current_plan_emoji = m.group(1) or STATUS_TODO
+            break
+    if current_plan_emoji != plan_status_derived:
+        msg = (f"plan-emoji: got {current_plan_emoji} ({_STATUS_LABEL.get(current_plan_emoji, 'unknown')}), "
+               f"expected {plan_status_derived} ({_STATUS_LABEL.get(plan_status_derived, 'derived')})")
+        issues.append((msg, True))
+        needs_emoji_fix = True
+
+    # --- Check 3: Phase emoji derivation ---
+    for emoji, phase_num, title, tasks in phases:
+        derived = derive_phase_status(tasks)
+        if emoji != derived:
+            msg = (f"phase-emoji: Phase {phase_num} got {emoji} ({_STATUS_LABEL.get(emoji, 'unknown')}), "
+                   f"expected {derived} ({_STATUS_LABEL.get(derived, 'derived')})")
+            issues.append((msg, True))
+            needs_emoji_fix = True
+
+    # ─── PASS 2: Apply fixes if requested ───
+    fixed_issues: list[str] = []
+    if checksum_was_fixed:
+        fixed_issues.append("checksum: FIXED — recomputed checksum")
+    if fix and any(is_fixable for _, is_fixable in issues):
+        working = content
+
+        # Fix phase numbering
+        if phase_num_map:
+            working = _fix_phase_numbering(working, phases, task_status_map)
+            fixed_issues.append(f"phase-numbering: FIXED — renumbered to {expected_phase_nums}")
+
+        # Fix task numbering per phase
+        for pn, tmap in task_num_maps.items():
+            working = _fix_task_numbering(working, pn, task_status_map)
+            phases = extract_phases(working)
+            task_status_map.clear()
+            for _, pnum, _, tasks in phases:
+                for t in tasks:
+                    task_status_map[(t[1], t[2])] = t[0]
+            expected_nums = list(range(1, len([t for _,p,_,ts in phases if p==pn for t in ts]) + 1))
+            fixed_issues.append(f"task-numbering: FIXED Phase {pn} — renumbered to {expected_nums}")
+
+        # Fix ordering (sort)
+        if needs_sort:
+            working = cmd_sort_inline(plan_path, working)
+            fixed_issues.append("ordering: FIXED — sorted phases and tasks")
+            phases = extract_phases(working)
+            task_status_map.clear()
+            for _, pnum, _, tasks in phases:
+                for t in tasks:
+                    task_status_map[(t[1], t[2])] = t[0]
+
+        # Fix emoji derivation
+        if needs_emoji_fix:
+            working = validate_status_set(working)
+            fixed_issues.append("emoji-derivation: FIXED — re-derived plan and phase statuses")
+
+        # Write fixed content atomically
+        final = _add_checksum(working)
+        write_plan_atomic(plan_path, final)
+
+    # ─── Build output messages ───
+    messages: list[str] = []
+    if not checksum_ok and fix:
+        messages.append("checksum: FIXED — recomputed checksum")
+
+    # Report original issues, replacing fixable ones with FIXED messages
+    non_fixable_count = 0
+    for msg, is_fixable in issues:
+        if is_fixable and fix:
+            continue  # replaced by fixed_issues below
+        if is_fixable and not fix:
+            messages.append(msg)
+            non_fixable_count += 1
+        elif not is_fixable:
+            # Warnings (empty-phase) don't count as errors
+            if "empty-phase" in msg:
+                messages.append(msg)
+            else:
+                messages.append(msg)
+                non_fixable_count += 1
+
+    if fix and fixed_issues:
+        for fi in fixed_issues:
+            messages.append(fi)
+
+    # Exit code:
+    #   non-fix mode: 1 if ANY error exists (except empty-phase warning)
+    #   fix mode: 0 if all fixable issues were resolved, 1 if unfixable remain
+    has_issues = any(
+        "empty-phase" not in msg
+        for msg, is_fixable in issues
+    )
+    has_unfixable_errors = any(
+        not is_fixable and "empty-phase" not in msg
+        for msg, is_fixable in issues
+    )
+    if fix:
+        exit_code = 1 if has_unfixable_errors else 0
+    else:
+        exit_code = 1 if has_issues else 0
+
+    return (exit_code, messages)
+
+
+def _fix_phase_numbering(content: str, phases, task_status_map: dict) -> str:
+    """Renumber phases sequentially (1, 2, 3, ...) and update all references."""
+    lines = content.splitlines()
+
+    # Build old_num -> new_num mapping
+    phase_nums = [p[1] for p in phases]
+    num_map: dict[int, int] = {}
+    for i, old_num in enumerate(phase_nums):
+        num_map[old_num] = i + 1
+
+    changed = False
+    new_lines = list(lines)
+
+    # Update phase headings
+    for i, line in enumerate(new_lines):
+        p = parse_phase_heading(line)
+        if p and p[1] in num_map:
+            old_num = p[1]
+            new_num = num_map[old_num]
+            if old_num != new_num:
+                new_lines[i] = format_phase_heading(p[0], new_num, p[2])
+                changed = True
+
+    # Update task lines — renumber phase part of task IDs
+    for i, line in enumerate(new_lines):
+        t = parse_task_line(line)
+        if t and t[1] in num_map:
+            old_phase = t[1]
+            new_phase = num_map[old_phase]
+            if old_phase != new_phase:
+                new_lines[i] = format_task_line(t[0], new_phase, t[2], t[3], t[4])
+                changed = True
+
+    # Update dependency references in task lines
+    for i, line in enumerate(new_lines):
+        t = parse_task_line(line)
+        if t:
+            new_deps = []
+            for dep_ref in t[4]:
+                dp, dt = _resolve_dep_ref(dep_ref, t[1])
+                if dp is not None and dp in num_map:
+                    new_dp = num_map[dp]
+                    # Rebuild canonical ref
+                    if new_dp == t[1]:
+                        new_deps.append(f"Task {new_dp}.{dt}")
+                    else:
+                        new_deps.append(f"Phase {new_dp} - Task {new_dp}.{dt}")
+                else:
+                    new_deps.append(dep_ref)
+            if new_deps != t[4]:
+                new_lines[i] = format_task_line(t[0], t[1], t[2], t[3], new_deps)
+                changed = True
+
+    # Update header fields referencing phases/tasks
+    for field in ("Current Phase", "Current Task"):
+        idx = _find_header_field_line(new_lines, field)
+        if idx >= 0:
+            val = new_lines[idx].split(":", 1)[1].strip()
+            # Check if value references a phase number
+            pm = re.match(r"(.*)Phase\s+(\d+)(.*)", val)
+            if pm:
+                prefix, old_num_str, suffix = pm.group(1), int(pm.group(2)), pm.group(3)
+                if old_num_str in num_map:
+                    new_num = num_map[old_num_str]
+                    new_lines[idx] = f"- {field}: {prefix}{new_num}{suffix}"
+                    changed = True
+
+    if changed:
+        return "\n".join(new_lines)
+    return content
+
+
+def _fix_task_numbering(content: str, phase_num: int, task_status_map: dict) -> str:
+    """Renumber tasks within a specific phase sequentially (X.1, X.2, ...)."""
+    lines = content.splitlines()
+    phases = extract_phases(content)
+
+    # Find the phase
+    target_tasks = None
+    for _, pn, _, tasks in phases:
+        if pn == phase_num:
+            target_tasks = tasks
+            break
+    if target_tasks is None:
+        return content
+
+    # Build old_task_num -> new_task_num mapping
+    old_nums = [t[2] for t in target_tasks]
+    num_map: dict[int, int] = {}
+    for i, old_num in enumerate(old_nums):
+        num_map[old_num] = i + 1
+
+    changed = False
+    new_lines = list(lines)
+
+    # Update task lines in this phase
+    for i, line in enumerate(new_lines):
+        t = parse_task_line(line)
+        if t and t[1] == phase_num and t[2] in num_map:
+            old_task = t[2]
+            new_task = num_map[old_task]
+            if old_task != new_task:
+                new_lines[i] = format_task_line(t[0], phase_num, new_task, t[3], t[4])
+                changed = True
+
+    # Update dependency references pointing to tasks in this phase
+    for i, line in enumerate(new_lines):
+        t = parse_task_line(line)
+        if t:
+            new_deps = []
+            for dep_ref in t[4]:
+                dp, dt = _resolve_dep_ref(dep_ref, t[1])
+                if dp is not None and dp == phase_num and dt in num_map:
+                    new_dt = num_map[dt]
+                    if dp == t[1]:
+                        new_deps.append(f"Task {dp}.{new_dt}")
+                    else:
+                        new_deps.append(f"Phase {dp} - Task {dp}.{new_dt}")
+                else:
+                    new_deps.append(dep_ref)
+            if new_deps != t[4]:
+                new_lines[i] = format_task_line(t[0], t[1], t[2], t[3], new_deps)
+                changed = True
+
+    # Update header Current Task field if it references a task in this phase
+    idx = _find_header_field_line(new_lines, "Current Task")
+    if idx >= 0:
+        val = new_lines[idx].split(":", 1)[1].strip()
+        tm = re.match(r"(.*)Task\s+(\d+)\.(\d+)(.*)", val)
+        if tm:
+            prefix, p_str, t_str, suffix = tm.group(1), int(tm.group(2)), int(tm.group(3)), tm.group(4)
+            if p_str == phase_num and t_str in num_map:
+                new_t = num_map[t_str]
+                new_lines[idx] = f"- Current Task: {prefix}{phase_num}.{new_t}{suffix}"
+                changed = True
+
+    if changed:
+        return "\n".join(new_lines)
+    return content
+
+
+def cmd_sort_inline(plan_path: str, content: str) -> str:
+    """Apply sort transformation in-place (used by check --fix)."""
+    # Reuse cmd_sort logic but operate on content string directly
+    lines = content.splitlines()
+
+    header_end = 0
+    for i, line in enumerate(lines):
+        if parse_phase_heading(line) is not None:
+            header_end = i
+            break
+    else:
+        return content
+
+    header_lines = lines[:header_end]
+    while header_lines and header_lines[-1].strip() == "":
+        header_lines.pop()
+    phase_block = lines[header_end:]
+
+    last_content_idx = -1
+    for i, line in enumerate(phase_block):
+        if parse_phase_heading(line) is not None:
+            last_content_idx = i
+        elif parse_task_line(line) is not None:
+            last_content_idx = i
+        elif line.startswith("  - "):
+            last_content_idx = i
+    actual_end = last_content_idx + 1
+    while actual_end < len(phase_block) and phase_block[actual_end].strip() == "":
+        actual_end += 1
+
+    sections: list[tuple[int, list[str]]] = []
+    i = 0
+    while i < actual_end:
+        p = parse_phase_heading(phase_block[i])
+        if p is None:
+            i += 1
+            continue
+        start = i
+        j = i + 1
+        while j < actual_end and parse_phase_heading(phase_block[j]) is None:
+            j += 1
+        section_lines = phase_block[start:j]
+        sorted_section = _sort_tasks_in_section(section_lines)
+        sections.append((p[1], sorted_section))
+        i = j
+
+    sections.sort(key=lambda s: s[0])
+    sorted_phase_lines = []
+    for idx, (_, section) in enumerate(sections):
+        sorted_phase_lines.append("")
+        sorted_phase_lines.extend(section)
+
+    new_lines = header_lines + sorted_phase_lines
+    result = "\n".join(new_lines) + "\n"
+    # Touch updated timestamp
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    rlines = result.splitlines()
+    rlines = _update_header_field(rlines, "Updated", now)
+    result = "\n".join(rlines)
+    return validate_status_set(result)
+
+
+# ---------------------------------------------------------------------------
 # Validation
 # ---------------------------------------------------------------------------
 
@@ -2189,6 +2631,27 @@ def cmd_remove_task_dependency(args: argparse.Namespace) -> None:
 # Commands — sort
 # ---------------------------------------------------------------------------
 
+def cmd_check(args: argparse.Namespace) -> None:
+    """Check PLAN.md for consistency issues.
+
+    Validates structure, status derivation, numbering, and dependencies.
+    With --fix, auto-fixes recoverable issues (emoji derivation, numbering, ordering).
+    """
+    fix = getattr(args, "fix", False)
+    exit_code, messages = check_plan(args.path, fix=fix)
+
+    if not messages:
+        print(f"OK: {args.path} is consistent")
+    else:
+        for msg in messages:
+            print(msg)
+
+    if exit_code == 0:
+        print(f"OK: {args.path} passed all checks")
+
+    sys.exit(exit_code)
+
+
 def cmd_sort(args: argparse.Namespace) -> None:
     """Sort phases by number and tasks within each phase by number."""
     def _transform(content: str) -> str:
@@ -2816,6 +3279,10 @@ def build_parser() -> argparse.ArgumentParser:
     # --- sort ---
     _add_path(sub, "sort", help="Sort phases and tasks by number")
 
+    # --- check ---
+    p_check = _add_path(sub, "check", help="Check PLAN.md consistency (with optional --fix)")
+    p_check.add_argument("--fix", action="store_true", help="Auto-fix recoverable issues")
+
     return parser
 
 
@@ -2855,6 +3322,7 @@ COMMAND_MAP = {
     "add-task-dependency": cmd_add_task_dependency,
     "remove-task-dependency": cmd_remove_task_dependency,
     "sort": cmd_sort,
+    "check": cmd_check,
 }
 
 
