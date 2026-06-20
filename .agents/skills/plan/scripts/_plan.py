@@ -1756,6 +1756,18 @@ def cmd_batch(args: argparse.Namespace) -> None:
         print("Error: no valid commands found", file=sys.stderr)
         sys.exit(1)
 
+    # If file doesn't exist, first command MUST be 'create'.
+    # This prevents malformed files (mutations on empty content) and
+    # silent data loss when create is not first.
+    if not Path(path).exists():
+        first_cmd = operations[0][0]
+        if first_cmd != "create":
+            print(
+                f"Error: file {path} does not exist — first batch command must be 'create'",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+
     # Hold exclusive lock for the entire batch
     fd = _acquire_exclusive_lock(path)
     try:
@@ -2311,7 +2323,6 @@ def cmd_set_task_status(args: argparse.Namespace) -> None:
 def cmd_add_phase(args: argparse.Namespace) -> None:
     """Add a new phase, inserted in sorted numeric position."""
     phase_arg = args.phase_title  # e.g. "Phase 2 ➖ Description..." or just "Description..."
-    description = getattr(args, "description", "") or ""
 
     # Resolve title before locking (pure computation from user input)
     explicit_num, raw_title = parse_phase_add_arg(phase_arg)
@@ -2327,14 +2338,12 @@ def cmd_add_phase(args: argparse.Namespace) -> None:
         else:
             phase_num = len(phases) + 1
 
-        # Build new phase section (leading blank + heading + optional description + trailing blank)
+        # Build new phase section (leading blank + heading + trailing blank)
         new_phase_lines = [
             "",
             format_phase_heading(STATUS_TODO, phase_num, title),
+            "",
         ]
-        if description:
-            new_phase_lines.append(description)
-        new_phase_lines.append("")
 
         # Find insertion point, collapse adjacent blank lines into one separator
         insert_idx = _sorted_phase_insert_index(lines, phase_num)
@@ -3469,8 +3478,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     # --- phase CRUD ---
     p_add_phase = _add_path(sub, "add-phase", help="Add a new phase")
-    p_add_phase.add_argument("phase_title", help="Phase title")
-    p_add_phase.add_argument("description", nargs="?", default="", help="Optional description")
+    p_add_phase.add_argument("phase_title", help='Phase title, e.g. "Phase 2 ➖ Description" or just "Description"')
 
     p_upd_phase = _add_path(sub, "update-phase", help="Update phase title/description")
     p_upd_phase.add_argument("phase_title", help='Phase ref with optional new description, e.g. "Phase 2 ➖ New description"')
