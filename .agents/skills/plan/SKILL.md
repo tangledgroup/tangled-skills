@@ -363,4 +363,29 @@ plan.sh get-plan PLAN.md --list --json   # flat list, JSON (same as default)
 plan.sh get-plan PLAN.md --list --yaml   # flat list, YAML
 plan.sh get-plan PLAN.md --tree --json   # nested tree, JSON
 plan.sh get-plan PLAN.md --tree --yaml   # nested tree, YAML
+
+#
+# batch — chain multiple operations under a single lock
+# Reads commands from stdin or a file (--input FILE). Mode auto-detected from
+# file extension: .txt/.md → line mode, .json → JSON mode. Use --json to force.
+#
+# Line mode (stdin):
+#   echo 'create "My Project"
+#   add-phase "Phase 1 ➖ Planning"' | plan.sh batch PLAN.md
+#
+# Line mode (.txt or .md file):
+#   plan.sh batch --input commands.txt PLAN.md
+#   plan.sh batch --input commands.md PLAN.md
+#
+# JSON mode (stdin with --json flag):
+#   echo '[{"command":"create","args":["My Project"]}]' | plan.sh batch --json PLAN.md
+#
+# JSON mode (.json file, auto-detected):
+#   plan.sh batch --input commands.json PLAN.md
+#
+# Force JSON mode on non-.json file:
+#   plan.sh batch --input commands.txt --json PLAN.md
+#
+# Both modes produce identical output. All mutating commands are supported.
+# Lines starting with # are treated as comments (line mode only).
 ```

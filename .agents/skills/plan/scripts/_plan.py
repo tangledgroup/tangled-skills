@@ -20,6 +20,7 @@ import fcntl
 import hashlib
 import os
 import re
+import shlex
 import sys
 import tempfile
 import time
@@ -438,10 +439,16 @@ def parse_phase_arg(arg: str) -> int:
 def parse_task_arg(arg: str) -> tuple[int, int]:
     """Extract (phase_num, task_num) from a task argument.
 
-    Accepts: 'Task 2.4', 'Task 2.4 ➖ Description...'
+    Accepts: 'Task 2.4', 'Task 2.4 ➖ Description...',
+             'Phase 3 - Task 3.1' (cross-phase reference).
     Returns: (phase_num, task_num).
     """
     id_part = arg.split(" ➖ ", 1)[0].strip()
+    # Cross-phase: "Phase X - Task X.Y"
+    m = re.match(r"Phase\s+(\d+)\s*-\s*Task\s+(\d+)\.(\d+)", id_part)
+    if m:
+        return int(m.group(1)), int(m.group(3))
+    # Simple: "Task X.Y"
     m = re.match(r"Task\s+(\d+)\.(\d+)", id_part)
     if not m:
         print(f"Error: invalid task ref: {arg!r}", file=sys.stderr)
@@ -957,6 +964,267 @@ def _resolve_dep_ref(dep_ref: str, current_phase: int) -> tuple[int | None, int 
     if m:
         return int(m.group(1)), int(m.group(2))
     return None, None
+
+
+# ---------------------------------------------------------------------------
+# Commands — batch (chain multiple ops under one lock)
+# ---------------------------------------------------------------------------
+
+# Maps a batch command name to the positional attribute names expected by cmd_*. 
+# These match the argparse subparser definitions in build_parser().
+_BATCH_CMD_ATTRS: dict[str, list[str]] = {
+    "create": ["title"],
+    "add-phase": ["phase_title"],
+    "add-task": ["phase_ref", "task_title"],
+    "remove-phase": ["phase_ref"],
+    "remove-task": ["phase_ref", "task_ref"],
+    "set-plan-title": ["title"],
+    "set-plan-depends-on": ["deps_raw"],
+    "set-plan-created": ["value"],
+    "set-plan-updated": ["value"],
+    "set-plan-current-phase": ["phase_ref"],
+    "set-plan-current-task": ["task_ref"],
+    "set-plan-status": ["status"],
+    "set-phase-status": ["phase_ref", "status"],
+    "set-task-status": ["task_ref", "status"],
+    "update-phase": ["phase_title"],
+    "update-task": ["phase_ref", "task_title"],
+    "add-task-dependency": ["phase_ref", "task_ref", "dep_task_ref"],
+    "remove-task-dependency": ["phase_ref", "task_ref", "dep_task_ref"],
+    "set-all-statuses": ["status"],
+    "sort": [],
+}
+
+
+def _parse_batch_line(line: str) -> tuple[str, list[str]] | None:
+    """Parse a batch input line into (command_name, [args...]).
+
+    Uses shlex for proper shell-style quoting support.
+    """
+    line = line.strip()
+    if not line or line.startswith("#"):
+        return None
+    try:
+        tokens = shlex.split(line)
+    except ValueError as e:
+        print(f"Error: cannot parse line: {e}", file=sys.stderr)
+        sys.exit(1)
+    if not tokens:
+        return None
+    cmd_name = tokens[0]
+    if cmd_name not in _BATCH_CMD_ATTRS:
+        print(f"Error: unrecognized command: {cmd_name!r}", file=sys.stderr)
+        sys.exit(1)
+    return cmd_name, tokens[1:]
+
+
+def _parse_batch_json(raw: str) -> list[tuple[str, list[str]]]:
+    """Parse a JSON array of command objects into [(cmd_name, [args...])].
+
+    Expected format:
+      [
+        {"command": "create", "args": ["My Project"]},
+        {"command": "add-phase", "args": ["Phase 1 ➖ Planning"]},
+        ...
+      ]
+    """
+    try:
+        data = _json_mod.loads(raw)
+    except _json_mod.JSONDecodeError as e:
+        print(f"Error: invalid JSON: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    if not isinstance(data, list):
+        print("Error: JSON input must be an array of command objects", file=sys.stderr)
+        sys.exit(1)
+
+    operations = []
+    for idx, obj in enumerate(data):
+        if not isinstance(obj, dict):
+            print(f"Error: item {idx} is not an object", file=sys.stderr)
+            sys.exit(1)
+        cmd_name = obj.get("command")
+        if not cmd_name:
+            print(f"Error: item {idx} missing 'command' key", file=sys.stderr)
+            sys.exit(1)
+        if cmd_name not in _BATCH_CMD_ATTRS:
+            print(f"Error: unrecognized command: {cmd_name!r}", file=sys.stderr)
+            sys.exit(1)
+        args = obj.get("args", [])
+        if not isinstance(args, list):
+            print(f"Error: 'args' for item {idx} must be an array", file=sys.stderr)
+            sys.exit(1)
+        # Ensure all args are strings
+        str_args = [str(a) for a in args]
+        operations.append((cmd_name, str_args))
+    return operations
+
+
+def _make_namespace(cmd_name: str, args: list[str], path: str) -> argparse.Namespace:
+    """Build an argparse.Namespace from batch-parsed command + positional args."""
+    d = {"path": path}
+    attr_names = _BATCH_CMD_ATTRS.get(cmd_name, [])
+    for i, name in enumerate(attr_names):
+        val = args[i] if i < len(args) else ""
+        if name == "value" and val == "":
+            val = "__NOW__"
+        if name == "deps_raw":
+            d["deps"] = [x.strip() for x in val.split(",") if x.strip()] if val != "NONE" else []
+        else:
+            d[name] = val
+    return argparse.Namespace(**d)
+
+
+def cmd_batch(args: argparse.Namespace) -> None:
+    """Execute multiple plan operations on the same PLAN.md under one lock.
+
+    Reads commands from stdin or a file (--input FILE). Two input modes:
+
+    1. Line mode: one command per line, shell-style quoting:
+        create "My Project"
+        add-phase "Phase 1 ➖ Planning"
+        add-task "Phase 1" "Task 1.1 ➖ Define scope"
+
+    2. JSON mode: array of objects with {"command": ..., "args": [...]}:
+        [{"command": "create", "args": ["My Project"]}, ...]
+
+    Mode detection:
+      - --json flag forces JSON mode
+      - File extension: .json → JSON mode, .txt/.md → line mode
+      - Stdin without --json: line mode (default)
+
+    All operations share a single exclusive lock and atomic write at the end.
+    """
+    path = args.path
+    input_file = getattr(args, "input", None)
+    json_flag = getattr(args, "json", False)
+
+    # Read raw content from file or stdin
+    if input_file:
+        p = Path(input_file)
+        if not p.exists():
+            print(f"Error: input file {input_file} does not exist", file=sys.stderr)
+            sys.exit(1)
+        raw = p.read_text(encoding="utf-8").strip()
+    else:
+        raw = sys.stdin.read().strip()
+
+    if not raw:
+        src = input_file or "stdin"
+        print(f"Error: no commands provided in {src}", file=sys.stderr)
+        sys.exit(1)
+
+    # Determine mode: --json flag wins, then auto-detect from file extension
+    json_mode = json_flag
+    if not json_flag and input_file:
+        suffix = Path(input_file).suffix.lower()
+        if suffix == ".json":
+            json_mode = True
+        elif suffix in (".txt", ".md"):
+            json_mode = False
+
+    # Parse input — JSON mode or line mode
+    if json_mode:
+        operations = _parse_batch_json(raw)
+    else:
+        operations = []
+        for line in raw.splitlines():
+            result = _parse_batch_line(line)
+            if result is None:
+                continue
+            operations.append(result)
+
+    if not operations:
+        print("Error: no valid commands found", file=sys.stderr)
+        sys.exit(1)
+
+    # Hold exclusive lock for the entire batch
+    fd = _acquire_exclusive_lock(path)
+    try:
+        # Clean orphans
+        _cleanup_orphans(path)
+
+        # If file doesn't exist, create empty content (create cmd will handle it)
+        if Path(path).exists():
+            raw = read_plan_raw(path)
+            if not _verify_checksum(raw):
+                print(
+                    f"Warning: checksum mismatch in {path} — file may be corrupted",
+                    file=sys.stderr,
+                )
+            content = _strip_checksum(raw)
+        else:
+            content = ""
+
+        # Apply each operation sequentially
+        for cmd_name, args in operations:
+            ns = _make_namespace(cmd_name, args, path)
+
+            if cmd_name == "create":
+                # create is special — it writes directly without _safe_edit
+                now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                deps_str = "NONE"
+                content = f"""# {STATUS_TODO} Plan ➖ {ns.title}
+- Depends On: {deps_str}
+- Created: {now}
+- Updated: {now}
+- Current Phase: NONE
+- Current Task: NONE
+"""
+                print(f"Created {path}")
+                continue
+
+            # For all other commands, call the transform directly
+            handler = COMMAND_MAP.get(cmd_name)
+            if handler is None:
+                print(f"Error: unknown command {cmd_name!r}", file=sys.stderr)
+                sys.exit(1)
+
+            # Wrap handler to apply its transform in-place instead of via _safe_edit.
+            # Each cmd_* function calls _safe_edit(path, transform_fn) internally.
+            # Some also pre-read via read_plan() / read_plan_raw().
+            # We intercept all three so they operate on in-memory content.
+            original_safe_edit = globals()["_safe_edit"]
+            original_read_plan = globals()["read_plan"]
+            original_read_plan_raw = globals()["read_plan_raw"]
+
+            def _inline_edit(_p: str, transform_fn) -> str:
+                nonlocal content
+                content = transform_fn(content)
+                return content
+
+            def _inline_read_plan(_p: str) -> str:
+                return content
+
+            def _inline_read_plan_raw(_p: str) -> str:
+                # Return content with a dummy checksum so _verify_checksum passes
+                return _add_checksum(content)
+
+            globals()["_safe_edit"] = _inline_edit
+            globals()["read_plan"] = _inline_read_plan
+            globals()["read_plan_raw"] = _inline_read_plan_raw
+            try:
+                handler(ns)
+            except SystemExit:
+                raise
+            finally:
+                globals()["_safe_edit"] = original_safe_edit
+                globals()["read_plan"] = original_read_plan
+                globals()["read_plan_raw"] = original_read_plan_raw
+
+        # Touch updated timestamp after all operations
+        content = _touch_updated(path, content)
+        # Re-derive statuses
+        content = validate_status_set(content)
+
+        # Atomic write
+        final_content = _add_checksum(content)
+        write_plan_atomic(path, final_content)
+
+    finally:
+        _release_lock(fd, path)
+
+    print(f"Batch complete: {len(operations)} operations applied to {path}")
 
 
 # ---------------------------------------------------------------------------
@@ -2442,6 +2710,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_create.add_argument("title", help="Plan title")
     p_create.add_argument("depends", nargs="*", default=[], help="Dependency PLAN.md paths")
 
+    # --- batch ---
+    p_batch = sub.add_parser("batch", help="Execute multiple operations under one lock (reads commands from stdin or --input FILE)")
+    p_batch.add_argument("path", help="Path to PLAN.md file")
+    p_batch.add_argument("--input", help="Read commands from a file instead of stdin (.txt/.md → line mode, .json → JSON mode)")
+    p_batch.add_argument("--json", action="store_true", help='Force JSON parse mode (default: auto-detect from file extension or stdin)')
+
     # --- get (header reads) ---
     _add_path(sub, "get-plan-title", help="Get plan title")
     _add_path(sub, "get-plan-depends-on", help="Get dependencies")
@@ -2550,6 +2824,7 @@ def build_parser() -> argparse.ArgumentParser:
 # ---------------------------------------------------------------------------
 
 COMMAND_MAP = {
+    "batch": cmd_batch,
     "create": cmd_create,
     "get-plan": cmd_get_plan,
     "get-plan-title": cmd_get_plan_title,
