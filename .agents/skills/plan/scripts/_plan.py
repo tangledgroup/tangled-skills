@@ -463,12 +463,16 @@ def parse_phase_add_arg(arg: str) -> tuple[int, str]:
     Otherwise treat entire arg as the title and return (0, title) for auto-numbering.
     Strips a leading '➖ ' from auto-numbered titles to avoid double delimiters.
     """
-    m = re.match(r"^Phase\s+\d+\s*➖\s+(.+)$", arg.strip())
+    stripped = arg.strip()
+    # Match 'Phase N ➖ Title...' — allow empty title after delimiter
+    m = re.match(r"^Phase\s+(\d+)\s*➖\s*(.*)$", stripped)
     if m:
-        # Has explicit phase number
-        num_m = re.match(r"Phase\s+(\d+)", arg.strip())
-        return int(num_m.group(1)), m.group(1).strip()
-    title = arg.strip()
+        phase_num = int(m.group(1))
+        title = m.group(2).strip()
+        # If title looks like a repeated Phase ref (e.g. "Phase 2 ➖" with no content),
+        # treat it as empty rather than the whole string
+        return phase_num, title
+    title = stripped
     # Strip leading delimiter if user included it for auto-numbered phase
     if title.startswith("➖ "):
         title = title[2:]
@@ -484,11 +488,15 @@ def parse_task_add_arg(arg: str) -> tuple[int, int, str]:
     Otherwise treat entire arg as the title and return (0, 0, title) for auto-numbering.
     Strips a leading '➖ ' from auto-numbered titles to avoid double delimiters.
     """
-    m = re.match(r"^Task\s+\d+\.\d+\s*➖\s+(.+)$", arg.strip())
+    stripped = arg.strip()
+    # Match 'Task X.Y ➖ Title...' — allow empty title after delimiter
+    m = re.match(r"^Task\s+(\d+)\.(\d+)\s*➖\s*(.*)$", stripped)
     if m:
-        num_m = re.match(r"Task\s+(\d+)\.(\d+)", arg.strip())
-        return int(num_m.group(1)), int(num_m.group(2)), m.group(1).strip()
-    title = arg.strip()
+        phase_num = int(m.group(1))
+        task_num = int(m.group(2))
+        title = m.group(3).strip()
+        return phase_num, task_num, title
+    title = stripped
     # Strip leading delimiter if user included it for auto-numbered task
     # Handle both "➖ Title" and " ➖ Title" forms
     if title.startswith("➖ "):
@@ -496,6 +504,31 @@ def parse_task_add_arg(arg: str) -> tuple[int, int, str]:
     elif title == "➖":
         title = ""
     return 0, 0, title
+
+
+# ---------------------------------------------------------------------------
+# Helpers — title validation
+# ---------------------------------------------------------------------------
+
+def validate_title(title: str, label: str = "title") -> str:
+    """Validate a title string. Returns stripped title or raises error.
+
+    Checks:
+      - Not empty after stripping
+      - Contains no newlines (would break line-based file format)
+      - Reasonable length (< 2048 chars)
+    """
+    title = title.strip()
+    if not title:
+        print(f"Error: {label} cannot be empty", file=sys.stderr)
+        sys.exit(1)
+    if "\n" in title or "\r" in title:
+        print(f"Error: {label} contains newlines — titles must be single-line", file=sys.stderr)
+        sys.exit(1)
+    if len(title) > 2048:
+        print(f"Error: {label} exceeds maximum length of 2048 characters ({len(title)} chars)", file=sys.stderr)
+        sys.exit(1)
+    return title
 
 
 # ---------------------------------------------------------------------------
@@ -1227,6 +1260,25 @@ def _fix_phase_numbering(content: str, phases, task_status_map: dict) -> str:
                     new_lines[idx] = f"- {field}: {prefix}{new_num}{suffix}"
                     changed = True
 
+    # Remove self-dependencies created by renumbering.
+    current_phase_idx = -1
+    for i, line in enumerate(new_lines):
+        p = parse_phase_heading(line)
+        if p:
+            current_phase_idx += 1
+            continue
+        t = parse_task_line(line)
+        if t and current_phase_idx >= 0:
+            my_phase = num_map_pairs[current_phase_idx][1] if current_phase_idx < len(num_map_pairs) else t[1]
+            my_task = t[2]
+            new_deps = [
+                d for d in t[4]
+                if not _is_self_dep(d, my_phase, my_task)
+            ]
+            if new_deps != t[4]:
+                new_lines[i] = format_task_line(t[0], my_phase, my_task, t[3], new_deps)
+                changed = True
+
     if changed:
         return "\n".join(new_lines)
     return content
@@ -1309,6 +1361,21 @@ def _fix_task_numbering(content: str, phase_num: int, task_status_map: dict) -> 
             if p_str == phase_num and t_str in num_map:
                 new_t = num_map[t_str]
                 new_lines[idx] = f"- Current Task: {prefix}{phase_num}.{new_t}{suffix}"
+                changed = True
+
+    # Remove self-dependencies created by renumbering.
+    # After renaming (e.g., Task 1.2 -> Task 1.1), a dep on "Task 1.1" may now
+    # point to the task itself. Detect and remove such self-refs.
+    for i, line in enumerate(new_lines):
+        t = parse_task_line(line)
+        if t:
+            my_phase, my_task = t[1], t[2]
+            new_deps = [
+                d for d in t[4]
+                if not _is_self_dep(d, my_phase, my_task)
+            ]
+            if new_deps != t[4]:
+                new_lines[i] = format_task_line(t[0], my_phase, my_task, t[3], new_deps)
                 changed = True
 
     if changed:
@@ -1509,6 +1576,14 @@ def _resolve_dep_ref(dep_ref: str, current_phase: int) -> tuple[int | None, int 
     return None, None
 
 
+def _is_self_dep(dep_ref: str, my_phase: int, my_task: int) -> bool:
+    """Check if a dependency reference points to the task itself."""
+    dp, dt = _resolve_dep_ref(dep_ref, my_phase)
+    if dp is None:
+        return False
+    return dp == my_phase and dt == my_task
+
+
 # ---------------------------------------------------------------------------
 # Commands — batch (chain multiple ops under one lock)
 # ---------------------------------------------------------------------------
@@ -1699,7 +1774,12 @@ def cmd_batch(args: argparse.Namespace) -> None:
         else:
             content = ""
 
-        # Apply each operation sequentially
+        # Apply each operation sequentially, capturing stdout to avoid
+        # confusing partial output on failure (buffered prints from earlier
+        # commands would flush even when a later command aborts the batch).
+        import io as _io
+        captured_stdout: list[str] = []
+
         for cmd_name, args in operations:
             ns = _make_namespace(cmd_name, args, path)
 
@@ -1714,7 +1794,7 @@ def cmd_batch(args: argparse.Namespace) -> None:
 - Current Phase: NONE
 - Current Task: NONE
 """
-                print(f"Created {path}")
+                captured_stdout.append(f"Created {path}")
                 continue
 
             # For all other commands, call the transform directly
@@ -1746,11 +1826,21 @@ def cmd_batch(args: argparse.Namespace) -> None:
             globals()["_safe_edit"] = _inline_edit
             globals()["read_plan"] = _inline_read_plan
             globals()["read_plan_raw"] = _inline_read_plan_raw
+
+            # Capture stdout during handler execution
+            old_stdout = sys.stdout
+            capture_buf = _io.StringIO()
+            sys.stdout = capture_buf
             try:
                 handler(ns)
+                captured = capture_buf.getvalue().strip()
+                if captured:
+                    captured_stdout.append(captured)
             except SystemExit:
+                sys.stdout = old_stdout
                 raise
             finally:
+                sys.stdout = old_stdout
                 globals()["_safe_edit"] = original_safe_edit
                 globals()["read_plan"] = original_read_plan
                 globals()["read_plan_raw"] = original_read_plan_raw
@@ -1767,6 +1857,9 @@ def cmd_batch(args: argparse.Namespace) -> None:
     finally:
         _release_lock(fd, path)
 
+    # Print captured output only after successful completion
+    for line in captured_stdout:
+        print(line)
     print(f"Batch complete: {len(operations)} operations applied to {path}")
 
 
@@ -1777,7 +1870,7 @@ def cmd_batch(args: argparse.Namespace) -> None:
 def cmd_create(args: argparse.Namespace) -> None:
     """Create a new PLAN.md with header."""
     path = args.path
-    title = args.title
+    title = validate_title(args.title, "plan title")
     depends = getattr(args, "depends", []) or []
 
     if Path(path).exists():
@@ -2221,7 +2314,8 @@ def cmd_add_phase(args: argparse.Namespace) -> None:
     description = getattr(args, "description", "") or ""
 
     # Resolve title before locking (pure computation from user input)
-    explicit_num, title = parse_phase_add_arg(phase_arg)
+    explicit_num, raw_title = parse_phase_add_arg(phase_arg)
+    title = validate_title(raw_title, "phase title")
 
     def _transform(content: str) -> str:
         lines = content.splitlines()
@@ -2275,6 +2369,8 @@ def cmd_update_phase(args: argparse.Namespace) -> None:
     target = parse_phase_arg(phase_title)
     # Extract the new description from after " ➖ " if present
     new_description = phase_title.split(" ➖ ", 1)[-1].strip() if " ➖ " in phase_title else None
+    if new_description is not None:
+        new_description = validate_title(new_description, "phase title")
 
     def _transform(content: str) -> str:
         lines = content.splitlines()
@@ -2288,7 +2384,7 @@ def cmd_update_phase(args: argparse.Namespace) -> None:
                 break
 
         if not found:
-            print(f"Error: {phase_ref} not found", file=sys.stderr)
+            print(f"Error: {phase_title} not found", file=sys.stderr)
             sys.exit(1)
 
         # Replace the phase heading line's title
@@ -2354,8 +2450,12 @@ def cmd_remove_phase(args: argparse.Namespace) -> None:
 # ---------------------------------------------------------------------------
 
 def cmd_add_task(args: argparse.Namespace) -> None:
-    """Add a new task to an existing phase, inserted in sorted numeric position."""
-    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
+    """Add a new task to an existing phase, inserted in sorted numeric position.
+
+    If the phase_ref includes a description ("Phase N ➖ Title") and the phase
+    doesn't exist, it is created first with that title.
+    """
+    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 ➖ Description..."
     task_arg = args.task_title  # e.g. "Task 2.4 ➖ Do thing ⚓ Task 2.1 , Task 2.2" or just "Do thing"
 
     target_phase = parse_phase_arg(phase_ref)
@@ -2363,6 +2463,7 @@ def cmd_add_task(args: argparse.Namespace) -> None:
 
     # Split raw_title into clean title and deps
     clean_title, deps = parse_task_deps(raw_title)
+    clean_title = validate_title(clean_title, "task title")
 
     if explicit_p > 0 and explicit_t > 0:
         task_phase = explicit_p
@@ -2380,11 +2481,33 @@ def cmd_add_task(args: argparse.Namespace) -> None:
                         max_task = t[2]
         task_num = max_task + 1
 
-    task_title = f"Task {task_phase}.{task_num} {clean_title}"
+    task_title_str = f"Task {task_phase}.{task_num} {clean_title}"
+
+    # Extract phase title from phase_ref if it includes a description
+    phase_title_from_ref = None
+    if " ➖ " in phase_ref:
+        phase_title_from_ref = phase_ref.split(" ➖ ", 1)[1].strip()
 
     def _transform(content: str) -> str:
         lines = content.splitlines()
         phases = extract_phases(content)
+
+        # Check if phase exists; if not and phase_ref has a title, create it
+        phase_exists = any(p[1] == target_phase for p in phases)
+        if not phase_exists:
+            if phase_title_from_ref:
+                # Create the phase inline
+                phase_heading = format_phase_heading(STATUS_TODO, target_phase, phase_title_from_ref)
+                insert_idx = _sorted_phase_insert_index(lines, target_phase)
+                # Strip trailing blanks before insertion
+                while insert_idx > 0 and lines[insert_idx - 1].strip() == "":
+                    insert_idx -= 1
+                new_phase_lines = ["", phase_heading, ""]
+                lines = lines[:insert_idx] + new_phase_lines + lines[insert_idx:]
+                phases = extract_phases("\n".join(lines))
+            else:
+                print(f"Error: Phase {target_phase} not found", file=sys.stderr)
+                sys.exit(1)
 
         # Re-resolve task_num inside transform (content may differ from pre-read)
         if explicit_p > 0 and explicit_t > 0:
@@ -2426,7 +2549,7 @@ def cmd_add_task(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-    print(f"Added {task_title} to {phase_ref} with status {STATUS_TODO}")
+    print(f"Added {task_title_str} to {phase_ref} with status {STATUS_TODO}")
 
 
 def cmd_update_task(args: argparse.Namespace) -> None:
@@ -2437,6 +2560,8 @@ def cmd_update_task(args: argparse.Namespace) -> None:
     target_phase, target_task = parse_task_arg(task_title)
     # Extract the new description from after " ➖ " if present
     new_description = task_title.split(" ➖ ", 1)[-1].strip() if " ➖ " in task_title else None
+    if new_description is not None:
+        new_description = validate_title(new_description, "task title")
 
     def _transform(content: str) -> str:
         lines = content.splitlines()

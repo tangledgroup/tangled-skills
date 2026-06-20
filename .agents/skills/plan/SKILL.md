@@ -118,6 +118,8 @@ Add tasks with `plan.sh add-task`. Each task has a unique ID in the format `Task
 
 Tasks are inserted in ascending numeric order within their phase. Use `plan.sh sort PLAN.md` to reorder if tasks become out of order.
 
+**Creating a phase inline:** When referencing a phase that doesn't exist yet, include its title using the `" ➖ "` delimiter (e.g., `"Phase 2 ➖ New Phase"`). The script creates the phase automatically. Without a title (just `"Phase 2"`), the command fails if the phase doesn't exist.
+
 Sub-bullets under a task are optional — they capture acceptance criteria, implementation notes, or context. They carry no status tracking and do not affect plan status derivation.
 
 ### Task Granularity
@@ -183,6 +185,8 @@ Commands accept ID-only (`"Phase 2"`) or full form (`"Phase 2 ➖ Desc..."`).
 
 For `add-phase` and `add-task`: if the argument starts with an explicit ID (`Phase N` or `Task X.Y`), that number is used; otherwise, the next sequential number is auto-assigned.
 
+**Title validation:** Titles cannot be empty, must not contain newlines, and are limited to 2048 characters. The script rejects invalid titles with a clear error message.
+
 ## Plan Completion
 
 Run `plan.sh check PLAN.md` before producing the completion report. The plan is complete only when the validator reports zero errors and all tasks are ☑.
@@ -208,7 +212,8 @@ There is no bulk command — call `add-task-dependency` for each individual edge
 - **Do not guess PLAN.md format** — if you are unsure of a command, read the Usage section below or run `plan.sh --help`. Smaller models are especially prone to hallucinating file content. Resist this impulse.
 - **Never remove-and-re-add phases or tasks** — use update commands (`update-phase`, `update-task`, `set-task-status`, `add-task-dependency`). Removing and re-adding loses numbering continuity, breaks dependency anchors (⚓), and resets statuses. Only remove when the item is genuinely no longer part of the plan.
 - **Updating a plan usually means changing statuses** — most "updates" are status transitions (`set-task-status`, `set-phase-status`). Title/description changes via `update-phase` / `update-task` are rare and should only happen when scope changes. Use sub-bullets for added details.
-- **Run `plan.sh check PLAN.md --fix` after any plan update** — validates checksum integrity, emoji derivation, numbering gaps, ordering, and dependency references. The `--fix` flag auto-repairs recoverable issues (wrong emojis, numbering gaps, out-of-order items). Non-fixable issues (dangling references, duplicate IDs) are reported and require manual resolution.
+- **Run `plan.sh check PLAN.md --fix` after any plan update** — validates checksum integrity, emoji derivation, numbering gaps, ordering, and dependency references. The `--fix` flag auto-repairs recoverable issues (wrong emojis, numbering gaps, out-of-order items). When tasks are renumbered, self-dependencies created by the rename are automatically removed.
+- **Titles must be non-empty and single-line** — empty titles, titles with newlines, or titles exceeding 2048 characters are rejected. This prevents file format corruption from multi-line entries.
 
 ## Dependencies
 
