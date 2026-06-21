@@ -27,9 +27,7 @@ Every subcommand outputs valid JSON to stdout with these fields:
 - Additional fields vary by command (e.g., `path`, `value`, `data`, `issues`)
 - On error, exit code is 1. On success or warning, exit code is 0.
 
-### Batch Mode — Preserve Mutations, Mark Errors
-
-In batch mode, if any step returns `"error"`, all remaining steps are marked as `"skipped"` and not executed. Successful mutations are preserved and written to PLAN.md. If the failed step is `set-task-status`, the task is automatically marked ❌ (Error) so the plan reflects what actually happened. This allows mixing mutating and read-only operations in the same batch.
+### Individual Mode
 
 ```bash
 #
@@ -151,54 +149,73 @@ plan.sh get-plan PLAN.md --list --json   # flat list, JSON (same as default)
 plan.sh get-plan PLAN.md --list --yaml   # flat list, YAML
 plan.sh get-plan PLAN.md --tree --json   # nested tree, JSON
 plan.sh get-plan PLAN.md --tree --yaml   # nested tree, YAML
-
-#
-# batch — chain multiple operations, supports multi-plan workflows
-# Reads commands from stdin or a file (--input FILE). Mode auto-detected from
-# file extension: .txt/.md → line mode, .json → JSON mode. Use --json to force.
-#
-# Multi-plan: each step can target a different PLAN.md.
-#   JSON mode: add "plan_path": "other/PLAN.md" to any step object.
-#   Line mode:  append @other/PLAN.md at end of the line.
-#   Default fallback is the path argument passed to `batch`.
-#
-# Line mode (stdin):
-#   echo 'create "My Project"
-#   add-phase "Phase 1" "Planning"
-#   add-task "Phase 1" "Task 1.1" "Define scope"' | plan.sh batch PLAN.md
-#
-# Line mode with @path override per step:
-#   echo 'create "Plan A" @plan_a.md
-#   create "Plan B" @plan_b.md
-#   set-task-status "Phase 1" "Task 1.1" ⚙️ @plan_a.md' | plan.sh batch PLAN.md
-#
-# Line mode (.txt or .md file):
-#   plan.sh batch --input commands.txt PLAN.md
-#   plan.sh batch --input commands.md PLAN.md
-#
-# JSON mode (stdin with --json flag):
-#   echo '[{"command":"create","args":["My Project"]},'
-#   '{"command":"add-phase","args":["Phase 1","Planning"]}]' | plan.sh batch --json PLAN.md
-#
-# JSON mode with plan_path per step:
-#   echo '[{"command":"create","args":["A"],"plan_path":"a.md"},'
-#   '{"command":"create","args":["B"],"plan_path":"b.md"}]' | plan.sh batch --json PLAN.md
-#
-# JSON mode (.json file, auto-detected):
-#   plan.sh batch --input commands.json PLAN.md
-#
-# Force JSON mode on non-.json file:
-#   plan.sh batch --input commands.txt --json PLAN.md
-#
-# All mutating and read-only commands are supported. Every result includes
-# a "path" field showing which PLAN.md the step operated on.
-# Lines starting with # are treated as comments (line mode only).
-#
-# Output is a JSON object with "status" and "results" array.
-# If any step fails ("error"), remaining steps are marked "skipped".
-# All mutated plans are written at the end with successful changes applied.
-# If the failed step is set-task-status, the task is marked ❌ (Error).
 ```
+
+### Batch Mode
+
+In batch mode, if any step returns `"error"`, all remaining steps are marked as `"skipped"` and not executed. Successful mutations are preserved and written to PLAN.md. If the failed step is `set-task-status`, the task is automatically marked ❌ (Error) so the plan reflects what actually happened. This allows mixing mutating and read-only operations in the same batch.
+
+Batch reads commands from stdin or a file (`--input FILE`). Mode is auto-detected from file extension: `.txt`/`.md` → line mode, `.json` → JSON mode. Use `--json` to force JSON mode.
+
+**Multi-plan support:** each step can target a different PLAN.md. In JSON mode, add `"plan_path": "other/PLAN.md"` to any step object. In line mode, append `@other/PLAN.md` at the end of the line. Default fallback is the path argument passed to `batch`.
+
+#### Line Mode (stdin)
+
+Pipe newline-separated commands via stdin. Lines starting with `#` are treated as comments.
+
+```bash
+echo 'create "My Project"
+add-phase "Phase 1" "Planning"
+add-task "Phase 1" "Task 1.1" "Define scope"' | plan.sh batch PLAN.md
+```
+
+#### Line Mode with @path Override
+
+Override the target plan per step by appending `@path` at the end of the line.
+
+```bash
+echo 'create "Plan A" @plan_a.md
+create "Plan B" @plan_b.md
+set-task-status "Phase 1" "Task 1.1" ⚙️ @plan_a.md' | plan.sh batch PLAN.md
+```
+
+#### Line Mode (file input)
+
+```bash
+# .txt or .md file — line mode auto-detected
+plan.sh batch --input commands.txt PLAN.md
+plan.sh batch --input commands.md PLAN.md
+```
+
+#### JSON Mode (stdin)
+
+Force JSON mode with `--json` flag.
+
+```bash
+echo '[{"command":"create","args":["My Project"]},
+{"command":"add-phase","args":["Phase 1","Planning"]}]' | plan.sh batch --json PLAN.md
+```
+
+#### JSON Mode with plan_path Per Step
+
+```bash
+echo '[{"command":"create","args":["A"],"plan_path":"a.md"},
+{"command":"create","args":["B"],"plan_path":"b.md"}]' | plan.sh batch --json PLAN.md
+```
+
+#### JSON Mode (file input)
+
+```bash
+# .json file — JSON mode auto-detected
+plan.sh batch --input commands.json PLAN.md
+
+# Force JSON mode on non-.json file
+plan.sh batch --input commands.txt --json PLAN.md
+```
+
+**Output:** a JSON object with `"status"` and `"results"` array. Every result includes a `"path"` field showing which PLAN.md the step operated on. If any step fails (`"error"`), remaining steps are marked `"skipped"`. All mutated plans are written at the end with successful changes applied. If the failed step is `set-task-status`, the task is marked ❌ (Error).
+
+All mutating and read-only commands are supported in batch mode.
 
 ## Gotchas
 
