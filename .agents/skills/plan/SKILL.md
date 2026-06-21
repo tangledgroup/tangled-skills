@@ -118,7 +118,7 @@ Add tasks with `plan.sh add-task`. Each task has a unique ID in the format `Task
 
 Tasks are inserted in ascending numeric order within their phase. Use `plan.sh sort PLAN.md` to reorder if tasks become out of order.
 
-**Creating a phase inline:** When referencing a phase that doesn't exist yet, include its title using the `" ➖ "` delimiter (e.g., `"Phase 2 ➖ New Phase"`). The script creates the phase automatically. Without a title (just `"Phase 2"`), the command fails if the phase doesn't exist.
+**Creating a phase inline:** When adding a task to a phase that doesn't exist yet, first create the phase with `add-phase`, then add the task. This avoids ambiguity and is clearer for smaller models.
 
 Sub-bullets under a task are optional — they capture acceptance criteria, implementation notes, or context. They carry no status tracking and do not affect plan status derivation.
 
@@ -133,12 +133,12 @@ Each task should be small enough to complete in one focused work session and lar
 
 ### Task Dependencies
 
-Dependencies are managed with `plan.sh add-task-dependency` and `plan.sh remove-task-dependency`. The `⚓` anchor means dependent tasks must reach ☑ before the current task can proceed.
+Dependencies are managed with `plan.sh add-task-dependency` and `plan.sh remove-task-dependency`. Dependent tasks must reach ☑ before the current task can proceed.
 
 For **phase-bound** dependencies (same phase), reference by task ID: `Task X.Y`.
 For **cross-phase** dependencies, use full form: `Phase X - Task X.Y`.
 
-`plan.sh` enforces dependency satisfaction: it will **reject** transitioning a task to ⚙️ if any ⚓ dependency is not ☑.
+`plan.sh` enforces dependency satisfaction: it will **reject** transitioning a task to ⚙️ if any dependency is not ☑.
 
 ## Phase Status Derivation
 
@@ -176,14 +176,14 @@ These are valid state transitions:
 
 ## Argument Convention
 
-The `" ➖ "` delimiter separates IDs from descriptions in command arguments:
+Phase and task commands accept ID and title as **separate arguments**, making them easier for smaller models to construct correctly:
 
-- Phase: `"Phase 2 ➖ Description"` — ID required, description optional
-- Task: `"Task 2.4 ➖ Description"` — ID required, description optional
+- Phase: `add-phase PLAN.md "Phase 2" "Description"` — ID required, title optional
+- Task: `add-task PLAN.md "Phase 2" "Task 2.4" "Description"` — task ID optional (auto-numbered if omitted), title required
 
-Commands accept ID-only (`"Phase 2"`) or full form (`"Phase 2 ➖ Desc..."`).
+For `add-phase` and `add-task`: if the ID argument starts with `Phase N` or `Task X.Y`, that number is used; otherwise, the next sequential number is auto-assigned. Omit the ID to auto-number.
 
-For `add-phase` and `add-task`: if the argument starts with an explicit ID (`Phase N` or `Task X.Y`), that number is used; otherwise, the next sequential number is auto-assigned.
+Dependencies are always added separately with `add-task-dependency`.
 
 **Title validation:** Titles cannot be empty, must not contain newlines, and are limited to 2048 characters. The script rejects invalid titles with a clear error message.
 
@@ -210,7 +210,7 @@ There is no bulk command — call `add-task-dependency` for each individual edge
 
 - **Never generate PLAN.md content with the LLM** — do not write, edit, or append to PLAN.md using text generation. Always use `plan.sh` commands. The script enforces status transitions, auto-derives emojis, checks dependency cycles, and maintains a SHA-256 checksum. Any direct edit will cause checksum failures and silent corruption.
 - **Do not guess PLAN.md format** — if you are unsure of a command, read the Usage section below or run `plan.sh --help`. Smaller models are especially prone to hallucinating file content. Resist this impulse.
-- **Never remove-and-re-add phases or tasks** — use update commands (`update-phase`, `update-task`, `set-task-status`, `add-task-dependency`). Removing and re-adding loses numbering continuity, breaks dependency anchors (⚓), and resets statuses. Only remove when the item is genuinely no longer part of the plan.
+- **Never remove-and-re-add phases or tasks** — use update commands (`update-phase`, `update-task`, `set-task-status`, `add-task-dependency`). Removing and re-adding loses numbering continuity, breaks dependencies, and resets statuses. Only remove when the item is genuinely no longer part of the plan.
 - **Updating a plan usually means changing statuses** — most "updates" are status transitions (`set-task-status`, `set-phase-status`). Title/description changes via `update-phase` / `update-task` are rare and should only happen when scope changes. Use sub-bullets for added details.
 - **Run `plan.sh check PLAN.md --fix` after any plan update** — validates checksum integrity, emoji derivation, numbering gaps, ordering, and dependency references. The `--fix` flag auto-repairs recoverable issues (wrong emojis, numbering gaps, out-of-order items). When tasks are renumbered, self-dependencies created by the rename are automatically removed.
 - **Titles must be non-empty and single-line** — empty titles, titles with newlines, or titles exceeding 2048 characters are rejected. This prevents file format corruption from multi-line entries.
@@ -270,46 +270,42 @@ plan.sh set-plan-status PLAN.md ⚙️ # manual override — `check --fix` re-de
 plan.sh set-phase-status PLAN.md "Phase 2" ⚙️ # manual override — `check --fix` re-derives from tasks
 plan.sh set-task-status PLAN.md "Task 2.3" ⚙️ # sets `[emoji-of-task]` for "Task 2.3"
 
-# 
-# add-phase
-# 
-plan.sh add-phase PLAN.md "Phase 2 ➖ Description of phase..." # sets phase status to ☐
+#
+# add-phase — ID and title as separate arguments
+#
+plan.sh add-phase PLAN.md "Phase 2" "Description of phase..." # explicit phase number + title
+plan.sh add-phase PLAN.md "Planning" # auto-numbered (no explicit ID)
 
 #
-# add-task
+# add-task — phase ref, task ID, and title as separate arguments
 #
-plan.sh add-task PLAN.md "Phase 2" "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase/plan status auto-derived
-plan.sh add-task PLAN.md "Phase 2" "Task 2.5 ➖ Depends on prior tasks ⚓ Task 2.1 , Task 2.3" # with dependencies
-# or
-plan.sh add-task PLAN.md "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # sets task status to ☐, phase/plan status auto-derived
+plan.sh add-task PLAN.md "Phase 2" "Task 2.4" "Description of task..." # explicit task number + title
+plan.sh add-task PLAN.md "Phase 2" "Do thing" # auto-numbered
+# to add a task to a new phase, create the phase first:
+#   plan.sh add-phase PLAN.md "Phase 2" "New Phase"
+#   plan.sh add-task PLAN.md "Phase 2" "Task 2.1" "First task"
 
 #
-# update-phase
+# update-phase — phase ref and optional new title
 #
-plan.sh update-phase PLAN.md "Phase 2 ➖ New description of phase..." # preserves phase emoji, re-derives plan status
+plan.sh update-phase PLAN.md "Phase 2" "New description of phase..." # change title
+plan.sh update-phase PLAN.md "Phase 2" # no-op (title unchanged)
 
 #
-# update-task
+# update-task — phase ref, task ref, and optional new title
 #
-plan.sh update-task PLAN.md "Phase 2" "Task 2.4 ➖ New description of task..." # preserves task emoji, re-derives phase/plan status
-# or
-plan.sh update-task PLAN.md "Phase 2 ➖ New description of phase..." "Task 2.4 ➖ New description of task..." # preserves task emoji, re-derives phase/plan status
+plan.sh update-task PLAN.md "Phase 2" "Task 2.4" "New description of task..." # change title
+plan.sh update-task PLAN.md "Phase 2" "Task 2.4" # no-op (title unchanged)
 
 #
 # remove-phase
 #
 plan.sh remove-phase PLAN.md "Phase 2" # re-derives plan status from remaining phases
-# or
-plan.sh remove-phase PLAN.md "Phase 2 ➖ Description of phase..." # re-derives plan status from remaining phases
 
 #
 # remove-task
 #
 plan.sh remove-task PLAN.md "Phase 2" "Task 2.4" # re-derives phase and plan status from remaining tasks
-# or
-plan.sh remove-task PLAN.md "Phase 2" "Task 2.4 ➖ Description of task..." # re-derives phase and plan status from remaining tasks
-# or
-plan.sh remove-task PLAN.md "Phase 2 ➖ Description of phase..." "Task 2.4 ➖ Description of task..." # re-derives phase and plan status from remaining tasks
 
 #
 # add-task-dependency
@@ -355,14 +351,16 @@ plan.sh get-plan PLAN.md --tree --yaml   # nested tree, YAML
 #
 # Line mode (stdin):
 #   echo 'create "My Project"
-#   add-phase "Phase 1 ➖ Planning"' | plan.sh batch PLAN.md
+#   add-phase "Phase 1" "Planning"
+#   add-task "Phase 1" "Task 1.1" "Define scope"' | plan.sh batch PLAN.md
 #
 # Line mode (.txt or .md file):
 #   plan.sh batch --input commands.txt PLAN.md
 #   plan.sh batch --input commands.md PLAN.md
 #
 # JSON mode (stdin with --json flag):
-#   echo '[{"command":"create","args":["My Project"]}]' | plan.sh batch --json PLAN.md
+#   echo '[{"command":"create","args":["My Project"]},'
+#   '{"command":"add-phase","args":["Phase 1","Planning"]}]' | plan.sh batch --json PLAN.md
 #
 # JSON mode (.json file, auto-detected):
 #   plan.sh batch --input commands.json PLAN.md

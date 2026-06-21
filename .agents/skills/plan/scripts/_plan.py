@@ -1592,8 +1592,8 @@ def _is_self_dep(dep_ref: str, my_phase: int, my_task: int) -> bool:
 # These match the argparse subparser definitions in build_parser().
 _BATCH_CMD_ATTRS: dict[str, list[str]] = {
     "create": ["title"],
-    "add-phase": ["phase_title"],
-    "add-task": ["phase_ref", "task_title"],
+    "add-phase": ["phase_ref", "phase_title"],
+    "add-task": ["phase_ref", "task_ref", "task_title"],
     "remove-phase": ["phase_ref"],
     "remove-task": ["phase_ref", "task_ref"],
     "set-plan-title": ["title"],
@@ -1605,8 +1605,8 @@ _BATCH_CMD_ATTRS: dict[str, list[str]] = {
     "set-plan-status": ["status"],
     "set-phase-status": ["phase_ref", "status"],
     "set-task-status": ["task_ref", "status"],
-    "update-phase": ["phase_title"],
-    "update-task": ["phase_ref", "task_title"],
+    "update-phase": ["phase_ref", "phase_title"],
+    "update-task": ["phase_ref", "task_ref", "task_title"],
     "add-task-dependency": ["phase_ref", "task_ref", "dep_task_ref"],
     "remove-task-dependency": ["phase_ref", "task_ref", "dep_task_ref"],
     "set-all-statuses": ["status"],
@@ -1642,7 +1642,8 @@ def _parse_batch_json(raw: str) -> list[tuple[str, list[str]]]:
     Expected format:
       [
         {"command": "create", "args": ["My Project"]},
-        {"command": "add-phase", "args": ["Phase 1 ➖ Planning"]},
+        {"command": "add-phase", "args": ["Phase 1", "Planning"]},
+        {"command": "add-task", "args": ["Phase 1", "Task 1.1", "Define scope"]},
         ...
       ]
     """
@@ -2321,11 +2322,26 @@ def cmd_set_task_status(args: argparse.Namespace) -> None:
 # ---------------------------------------------------------------------------
 
 def cmd_add_phase(args: argparse.Namespace) -> None:
-    """Add a new phase, inserted in sorted numeric position."""
-    phase_arg = args.phase_title  # e.g. "Phase 2 ➖ Description..." or just "Description..."
+    """Add a new phase, inserted in sorted numeric position.
 
-    # Resolve title before locking (pure computation from user input)
-    explicit_num, raw_title = parse_phase_add_arg(phase_arg)
+    Accepts two forms:
+      1. Separate args: add-phase PLAN.md "Phase 2" "Planning & Requirements"
+      2. Legacy combined: add-phase PLAN.md "Phase 2 ➖ Planning & Requirements"
+         (when phase_title is None, phase_ref carries the full combined string)
+    """
+    phase_ref = args.phase_ref
+    phase_title_arg = args.phase_title
+
+    # Determine explicit_num and title from arguments
+    # Empty string (from batch mode) treated as None → legacy form
+    if phase_title_arg:
+        # New form: separate ID + title
+        explicit_num, _ = parse_phase_add_arg(phase_ref)
+        raw_title = phase_title_arg
+    else:
+        # Legacy form: combined string in phase_ref (e.g. "Phase 2 ➖ Desc")
+        explicit_num, raw_title = parse_phase_add_arg(phase_ref)
+
     title = validate_title(raw_title, "phase title")
 
     def _transform(content: str) -> str:
@@ -2373,13 +2389,27 @@ def cmd_add_phase(args: argparse.Namespace) -> None:
 
 
 def cmd_update_phase(args: argparse.Namespace) -> None:
-    """Update phase description/title."""
-    phase_title = args.phase_title  # e.g. "Phase 2 ➖ New description"
-    target = parse_phase_arg(phase_title)
-    # Extract the new description from after " ➖ " if present
-    new_description = phase_title.split(" ➖ ", 1)[-1].strip() if " ➖ " in phase_title else None
-    if new_description is not None:
-        new_description = validate_title(new_description, "phase title")
+    """Update phase description/title.
+
+    Accepts two forms:
+      1. Separate args: update-phase PLAN.md "Phase 2" "New description"
+      2. Legacy combined: update-phase PLAN.md "Phase 2 ➖ New description"
+         (when phase_title is None, phase_ref carries the full combined string)
+    """
+    phase_ref = args.phase_ref
+    phase_title_arg = args.phase_title
+
+    # Empty string (from batch mode) treated as None → legacy form
+    if phase_title_arg:
+        # New form: separate ID + title
+        target = parse_phase_arg(phase_ref)
+        new_description = validate_title(phase_title_arg, "phase title")
+    else:
+        # Legacy form: combined string in phase_ref (e.g. "Phase 2 ➖ New desc")
+        target = parse_phase_arg(phase_ref)
+        new_description = phase_ref.split(" ➖ ", 1)[-1].strip() if " ➖ " in phase_ref else None
+        if new_description is not None:
+            new_description = validate_title(new_description, "phase title")
 
     def _transform(content: str) -> str:
         lines = content.splitlines()
@@ -2463,16 +2493,33 @@ def cmd_add_task(args: argparse.Namespace) -> None:
 
     If the phase_ref includes a description ("Phase N ➖ Title") and the phase
     doesn't exist, it is created first with that title.
+
+    Accepts two forms:
+      1. Separate args: add-task PLAN.md "Phase 2" "Task 2.4" "Do thing"
+         or: add-task PLAN.md "Phase 2" "Do thing"  (auto-number task)
+      2. Legacy combined: add-task PLAN.md "Phase 2" "Task 2.4 ➖ Do thing"
+         (when task_title is None, task_ref carries the full combined string)
     """
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 ➖ Description..."
-    task_arg = args.task_title  # e.g. "Task 2.4 ➖ Do thing ⚓ Task 2.1 , Task 2.2" or just "Do thing"
+    task_ref_arg = args.task_ref
+    task_title_arg = args.task_title
 
     target_phase = parse_phase_arg(phase_ref)
-    explicit_p, explicit_t, raw_title = parse_task_add_arg(task_arg)
 
-    # Split raw_title into clean title and deps
-    clean_title, deps = parse_task_deps(raw_title)
-    clean_title = validate_title(clean_title, "task title")
+    # Empty string (from batch mode) treated as None → legacy form
+    if task_title_arg:
+        # New form: separate ID + title
+        explicit_p, explicit_t, _ = parse_task_add_arg(task_ref_arg)
+        raw_title = task_title_arg
+        # Strip any ⚓ anchor suffix — deps must be added via add-task-dependency
+        clean_title, _ = parse_task_deps(raw_title)
+        clean_title = validate_title(clean_title, "task title")
+        deps = []
+    else:
+        # Legacy form: combined string in task_ref (e.g. "Task 2.4 ➖ Do thing")
+        explicit_p, explicit_t, raw_title = parse_task_add_arg(task_ref_arg)
+        clean_title, deps = parse_task_deps(raw_title)
+        clean_title = validate_title(clean_title, "task title")
 
     if explicit_p > 0 and explicit_t > 0:
         task_phase = explicit_p
@@ -2562,15 +2609,28 @@ def cmd_add_task(args: argparse.Namespace) -> None:
 
 
 def cmd_update_task(args: argparse.Namespace) -> None:
-    """Update task description (preserves existing dependencies)."""
-    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
-    task_title = args.task_title  # e.g. "Task 2.4 ➖ New description"
+    """Update task description (preserves existing dependencies).
 
-    target_phase, target_task = parse_task_arg(task_title)
-    # Extract the new description from after " ➖ " if present
-    new_description = task_title.split(" ➖ ", 1)[-1].strip() if " ➖ " in task_title else None
-    if new_description is not None:
-        new_description = validate_title(new_description, "task title")
+    Accepts two forms:
+      1. Separate args: update-task PLAN.md "Phase 2" "Task 2.4" "New description"
+      2. Legacy combined: update-task PLAN.md "Phase 2" "Task 2.4 ➖ New description"
+         (when task_title is None, task_ref carries the full combined string)
+    """
+    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
+    task_ref_arg = args.task_ref
+    task_title_arg = args.task_title
+
+    # Empty string (from batch mode) treated as None → legacy form
+    if task_title_arg:
+        # New form: separate ID + title
+        target_phase, target_task = parse_task_arg(task_ref_arg)
+        new_description = validate_title(task_title_arg, "task title")
+    else:
+        # Legacy form: combined string in task_ref (e.g. "Task 2.4 ➖ New desc")
+        target_phase, target_task = parse_task_arg(task_ref_arg)
+        new_description = task_ref_arg.split(" ➖ ", 1)[-1].strip() if " ➖ " in task_ref_arg else None
+        if new_description is not None:
+            new_description = validate_title(new_description, "task title")
 
     def _transform(content: str) -> str:
         lines = content.splitlines()
@@ -3478,11 +3538,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     # --- phase CRUD ---
     p_add_phase = _add_path(sub, "add-phase", help="Add a new phase")
-    p_add_phase.add_argument("phase_title", help='Phase title, e.g. "Phase 2 ➖ Description" or just "Description"')
+    p_add_phase.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2" or just "Planning"')
+    p_add_phase.add_argument("phase_title", nargs="?", default=None, help='Phase title (optional, auto-derived from phase_ref if omitted)')
 
     p_upd_phase = _add_path(sub, "update-phase", help="Update phase title/description")
-    p_upd_phase.add_argument("phase_title", help='Phase ref with optional new description, e.g. "Phase 2 ➖ New description"')
-
+    p_upd_phase.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
+    p_upd_phase.add_argument("phase_title", nargs="?", default=None, help='New phase title (optional)')
 
     p_rm_phase = _add_path(sub, "remove-phase", help="Remove a phase and its tasks")
     p_rm_phase.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
@@ -3490,11 +3551,13 @@ def build_parser() -> argparse.ArgumentParser:
     # --- task CRUD ---
     p_add_task = _add_path(sub, "add-task", help="Add a new task")
     p_add_task.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
-    p_add_task.add_argument("task_title", help="Task title (e.g. 'Task 2.4 Do thing' or just 'Do thing')")
+    p_add_task.add_argument("task_ref", help='Task reference, e.g. "Task 2.4" or just "Do thing"')
+    p_add_task.add_argument("task_title", nargs="?", default=None, help='Task title (optional, auto-derived from task_ref if omitted)')
 
     p_upd_task = _add_path(sub, "update-task", help="Update task description")
     p_upd_task.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
-    p_upd_task.add_argument("task_title", help='Task ref with optional new description, e.g. "Task 2.4 ➖ New description"')
+    p_upd_task.add_argument("task_ref", help='Task reference, e.g. "Task 2.4"')
+    p_upd_task.add_argument("task_title", nargs="?", default=None, help='New task title (optional)')
 
 
     p_rm_task = _add_path(sub, "remove-task", help="Remove a task")
