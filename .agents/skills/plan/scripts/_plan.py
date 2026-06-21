@@ -20,6 +20,7 @@ import fcntl
 import hashlib
 import os
 import re
+import shlex
 import sys
 import tempfile
 import time
@@ -438,10 +439,16 @@ def parse_phase_arg(arg: str) -> int:
 def parse_task_arg(arg: str) -> tuple[int, int]:
     """Extract (phase_num, task_num) from a task argument.
 
-    Accepts: 'Task 2.4', 'Task 2.4 ➖ Description...'
+    Accepts: 'Task 2.4', 'Task 2.4 ➖ Description...',
+             'Phase 3 - Task 3.1' (cross-phase reference).
     Returns: (phase_num, task_num).
     """
     id_part = arg.split(" ➖ ", 1)[0].strip()
+    # Cross-phase: "Phase X - Task X.Y"
+    m = re.match(r"Phase\s+(\d+)\s*-\s*Task\s+(\d+)\.(\d+)", id_part)
+    if m:
+        return int(m.group(1)), int(m.group(3))
+    # Simple: "Task X.Y"
     m = re.match(r"Task\s+(\d+)\.(\d+)", id_part)
     if not m:
         print(f"Error: invalid task ref: {arg!r}", file=sys.stderr)
@@ -454,13 +461,24 @@ def parse_phase_add_arg(arg: str) -> tuple[int, str]:
 
     If arg matches 'Phase N ➖ Title...', use explicit N.
     Otherwise treat entire arg as the title and return (0, title) for auto-numbering.
+    Strips a leading '➖ ' from auto-numbered titles to avoid double delimiters.
     """
-    m = re.match(r"^Phase\s+\d+\s*➖\s+(.+)$", arg.strip())
+    stripped = arg.strip()
+    # Match 'Phase N ➖ Title...' — allow empty title after delimiter
+    m = re.match(r"^Phase\s+(\d+)\s*➖\s*(.*)$", stripped)
     if m:
-        # Has explicit phase number
-        num_m = re.match(r"Phase\s+(\d+)", arg.strip())
-        return int(num_m.group(1)), m.group(1).strip()
-    return 0, arg.strip()
+        phase_num = int(m.group(1))
+        title = m.group(2).strip()
+        # If title looks like a repeated Phase ref (e.g. "Phase 2 ➖" with no content),
+        # treat it as empty rather than the whole string
+        return phase_num, title
+    title = stripped
+    # Strip leading delimiter if user included it for auto-numbered phase
+    if title.startswith("➖ "):
+        title = title[2:]
+    elif title == "➖":
+        title = ""
+    return 0, title
 
 
 def parse_task_add_arg(arg: str) -> tuple[int, int, str]:
@@ -468,12 +486,49 @@ def parse_task_add_arg(arg: str) -> tuple[int, int, str]:
 
     If arg matches 'Task X.Y ➖ Title...', use explicit numbers.
     Otherwise treat entire arg as the title and return (0, 0, title) for auto-numbering.
+    Strips a leading '➖ ' from auto-numbered titles to avoid double delimiters.
     """
-    m = re.match(r"^Task\s+\d+\.\d+\s*➖\s+(.+)$", arg.strip())
+    stripped = arg.strip()
+    # Match 'Task X.Y ➖ Title...' — allow empty title after delimiter
+    m = re.match(r"^Task\s+(\d+)\.(\d+)\s*➖\s*(.*)$", stripped)
     if m:
-        num_m = re.match(r"Task\s+(\d+)\.(\d+)", arg.strip())
-        return int(num_m.group(1)), int(num_m.group(2)), m.group(1).strip()
-    return 0, 0, arg.strip()
+        phase_num = int(m.group(1))
+        task_num = int(m.group(2))
+        title = m.group(3).strip()
+        return phase_num, task_num, title
+    title = stripped
+    # Strip leading delimiter if user included it for auto-numbered task
+    # Handle both "➖ Title" and " ➖ Title" forms
+    if title.startswith("➖ "):
+        title = title[2:]
+    elif title == "➖":
+        title = ""
+    return 0, 0, title
+
+
+# ---------------------------------------------------------------------------
+# Helpers — title validation
+# ---------------------------------------------------------------------------
+
+def validate_title(title: str, label: str = "title") -> str:
+    """Validate a title string. Returns stripped title or raises error.
+
+    Checks:
+      - Not empty after stripping
+      - Contains no newlines (would break line-based file format)
+      - Reasonable length (< 2048 chars)
+    """
+    title = title.strip()
+    if not title:
+        print(f"Error: {label} cannot be empty", file=sys.stderr)
+        sys.exit(1)
+    if "\n" in title or "\r" in title:
+        print(f"Error: {label} contains newlines — titles must be single-line", file=sys.stderr)
+        sys.exit(1)
+    if len(title) > 2048:
+        print(f"Error: {label} exceeds maximum length of 2048 characters ({len(title)} chars)", file=sys.stderr)
+        sys.exit(1)
+    return title
 
 
 # ---------------------------------------------------------------------------
@@ -544,6 +599,9 @@ def parse_task_deps(raw_title: str) -> tuple[str, list[str]]:
       - "Do thing" → ("Do thing", [])
       - "Do thing ⚓ Task 2.1 , Task 2.2" → ("Do thing", ["Task 2.1", "Task 2.2"])
       - "Do thing ⚓ Phase 3 - Task 3.1" → ("Do thing", ["Phase 3 - Task 3.1"])
+
+    Only treats ⚓ as a dependency anchor if ALL refs after it are valid task
+    references. Otherwise the entire string is treated as a plain title.
     """
     m = _DEPS_ANCHOR_RE.match(raw_title.strip())
     if not m:
@@ -552,10 +610,12 @@ def parse_task_deps(raw_title: str) -> tuple[str, list[str]]:
     clean = m.group(1).strip()
     deps_str = m.group(2).strip()
     deps = [d.strip() for d in deps_str.split(",")]
-    # Validate each dep ref looks like a task reference
-    for d in deps:
-        if not _SINGLE_DEP_RE.fullmatch(d):
-            print(f"Warning: malformed dependency ref {d!r}", file=sys.stderr)
+
+    # Only accept as dependencies if ALL refs are valid task references.
+    # This avoids false positives when ⚓ appears in description text.
+    if not all(_SINGLE_DEP_RE.fullmatch(d) for d in deps):
+        return raw_title.strip(), []
+
     return clean, deps
 
 
@@ -671,7 +731,9 @@ def _sorted_phase_insert_index(lines: list[str], phase_num: int) -> int:
             last_phase_end = i
 
     if last_phase_end >= 0:
-        # Find end of last phase content (tasks + sub-bullets)
+        # Find end of last phase content (tasks + sub-bullets).
+        # Skip blank lines that are followed by tasks — the file format
+        # uses blank separators between headings and task lists.
         end = last_phase_end + 1
         while end < len(lines):
             if parse_phase_heading(lines[end]) is not None:
@@ -682,8 +744,15 @@ def _sorted_phase_insert_index(lines: list[str], phase_num: int) -> int:
                 while end < len(lines) and lines[end].startswith("  - "):
                     end += 1
             elif lines[end].strip() == "":
-                # Trailing blank — stop here
-                break
+                # Blank line — check if tasks follow after it.
+                # If yes, keep scanning; if no (checksum/EOF), stop.
+                peek = end + 1
+                while peek < len(lines) and lines[peek].strip() == "":
+                    peek += 1
+                if peek < len(lines) and parse_task_line(lines[peek]) is not None:
+                    end = peek  # continue scanning from the task
+                else:
+                    break  # truly trailing blank
             else:
                 end += 1
         return end
@@ -795,7 +864,15 @@ def _extract_phase_sections(content: str) -> list[tuple[int, list[str]]]:
 # ---------------------------------------------------------------------------
 
 def derive_phase_status(tasks: list[tuple[str, int, int, str]], warn: bool = False) -> str:
-    """Derive phase emoji from its tasks."""
+    """Derive phase emoji from its tasks.
+
+    Rules (matching SKILL.md):
+      - Done     — all tasks are ☑
+      - Doing    — at least one task is ⚙️
+      - Question — no task is ⚙️ or ☑, but at least one is ❓
+      - Error    — no task is ⚙️ or ☑, but at least one is ❌
+      - Todo     — fallback (e.g., all ☐, or mixed ☑+☐ with no other active status)
+    """
     if not tasks:
         if warn:
             print(f"Warning: Phase has zero tasks — it can never reach {STATUS_DONE}", file=sys.stderr)
@@ -807,15 +884,24 @@ def derive_phase_status(tasks: list[tuple[str, int, int, str]], warn: bool = Fal
         return STATUS_DONE
     if STATUS_DOING in emojis:
         return STATUS_DOING
-    if STATUS_QUESTION in emojis:
+    # Question/Error only when no task is ⚙️ or ☑
+    if STATUS_DONE not in emojis and STATUS_QUESTION in emojis:
         return STATUS_QUESTION
-    if STATUS_ERROR in emojis:
+    if STATUS_DONE not in emojis and STATUS_ERROR in emojis:
         return STATUS_ERROR
     return STATUS_TODO
 
 
 def derive_plan_status(phases: list[tuple[str, int, str, list]]) -> str:
-    """Derive plan emoji from all phases."""
+    """Derive plan emoji from all phases.
+
+    Rules (matching SKILL.md):
+      - Done     — all phases are ☑
+      - Doing    — at least one phase is ⚙️
+      - Question — no phase is ⚙️ or ☑, but at least one is ❓
+      - Error    — no phase is ⚙️ or ☑, but at least one is ❌
+      - Todo     — fallback
+    """
     if not phases:
         return STATUS_TODO
 
@@ -826,11 +912,537 @@ def derive_plan_status(phases: list[tuple[str, int, str, list]]) -> str:
         return STATUS_DONE
     if STATUS_DOING in phase_statuses:
         return STATUS_DOING
-    if STATUS_QUESTION in phase_statuses:
+    # Question/Error only when no phase is ⚙️ or ☑
+    if STATUS_DONE not in set(phase_statuses) and STATUS_QUESTION in phase_statuses:
         return STATUS_QUESTION
-    if STATUS_ERROR in phase_statuses:
+    if STATUS_DONE not in set(phase_statuses) and STATUS_ERROR in phase_statuses:
         return STATUS_ERROR
     return STATUS_TODO
+
+
+# ---------------------------------------------------------------------------
+# Check / Validate — consistency checker with optional --fix
+# ---------------------------------------------------------------------------
+
+
+def check_plan(plan_path: str, fix: bool = False) -> tuple[int, list[str]]:
+    """Check PLAN.md for consistency issues.
+
+    Two-pass approach:
+      Pass 1: Collect ALL issues (without modifying content)
+      Pass 2 (if fix=True): Apply all auto-fixable changes, write file
+
+    Returns (exit_code, messages) where exit_code is 0 if clean, 1 if issues found.
+    In fix mode, exit_code is 0 if all fixable issues were resolved.
+
+    Checks performed:
+      1. Checksum integrity
+      2. Plan emoji derivation (must match derived status from phases)
+      3. Phase emoji derivation (must match derived status from tasks)
+      4. Phase numbering — sequential 1,2,3… without gaps or duplicates
+      5. Task numbering — within each phase, sequential X.1,X.2,… without gaps/duplicates
+      6. Number ordering — phases and tasks appear in ascending numeric order
+      7. Dependency references — all ⚓ deps must reference existing tasks
+      8. Empty phases — phases with zero tasks (warning)
+      9. Duplicate task IDs — no two tasks share the same (phase, task) number
+    """
+    p = Path(plan_path)
+    if not p.exists():
+        print(f"Error: {plan_path} does not exist", file=sys.stderr)
+        sys.exit(1)
+
+    raw = p.read_text(encoding="utf-8")
+
+    # --- Check 1: Checksum integrity (always fix immediately) ---
+    checksum_ok = _verify_checksum(raw)
+    checksum_was_fixed = False
+    if not checksum_ok:
+        if fix:
+            body = _strip_checksum(raw)
+            fixed = _add_checksum(body)
+            write_plan_atomic(plan_path, fixed)
+            raw = fixed
+            checksum_ok = True
+            checksum_was_fixed = True
+
+    content = _strip_checksum(raw)
+    lines = content.splitlines()
+    phases = extract_phases(content)
+
+    # Build task lookup: (phase_num, task_num) -> emoji
+    task_status_map: dict[tuple[int, int], str] = {}
+    for _, phase_num, _, tasks in phases:
+        for t in tasks:
+            task_status_map[(t[1], t[2])] = t[0]
+
+    # ─── PASS 1: Collect all issues ───
+    issues: list[tuple[str, bool]] = []  # (message, is_fixable)
+    needs_sort = False
+    needs_emoji_fix = False
+    phase_num_map: dict[int, int] | None = None  # old_num -> new_num
+    task_num_maps: dict[int, dict[int, int]] = {}  # phase -> {old_task -> new_task}
+
+    # Checksum issue
+    if not checksum_ok:
+        issues.append(("checksum: FAILED — stored checksum does not match content (file may be corrupted)", False))
+
+    # --- Check 9: Duplicate task IDs ---
+    seen_task_ids: set[tuple[int, int]] = set()
+    for _, phase_num, _, tasks in phases:
+        for t in tasks:
+            key = (t[1], t[2])
+            if key in seen_task_ids:
+                issues.append((f"duplicate-task-id: Task {key[0]}.{key[1]} appears more than once", False))
+            seen_task_ids.add(key)
+
+    # --- Check 4: Phase numbering ---
+    phase_nums = [ph[1] for ph in phases]
+    expected_phase_nums = list(range(1, len(phases) + 1)) if phases else []
+    if phase_nums != expected_phase_nums:
+        msg = (f"phase-numbering: got {phase_nums}, expected {expected_phase_nums} "
+               f"(phases must be numbered 1..{len(phases)} sequentially)")
+        issues.append((msg, True))
+        phase_num_map = {}
+        for i, old_num in enumerate(phase_nums):
+            phase_num_map[old_num] = i + 1
+
+    # --- Check 5: Task numbering within each phase ---
+    for emoji, phase_num, title, tasks in phases:
+        task_nums = [t[2] for t in tasks]
+        expected_task_nums = list(range(1, len(tasks) + 1)) if tasks else []
+        if task_nums != expected_task_nums:
+            msg = (f"task-numbering: Phase {phase_num} tasks got {task_nums}, "
+                   f"expected {expected_task_nums}")
+            issues.append((msg, True))
+            tmap = {}
+            for i, old_t in enumerate(task_nums):
+                tmap[old_t] = i + 1
+            task_num_maps[phase_num] = tmap
+
+    # --- Check 6: Number ordering ---
+    if phase_nums != sorted(phase_nums):
+        msg = (f"phase-ordering: phases appear as {phase_nums}, "
+               f"expected {sorted(phase_nums)}")
+        issues.append((msg, True))
+        needs_sort = True
+
+    for emoji, phase_num, title, tasks in phases:
+        task_nums_in_order = [t[2] for t in tasks]
+        if task_nums_in_order != sorted(task_nums_in_order):
+            msg = (f"task-ordering: Phase {phase_num} tasks appear as {task_nums_in_order}, "
+                   f"expected {sorted(task_nums_in_order)}")
+            issues.append((msg, True))
+            needs_sort = True
+
+    # --- Check 7: Dangling dependency references ---
+    for _, phase_num, title, tasks in phases:
+        for t in tasks:
+            for dep_ref in t[4]:
+                dp, dt = _resolve_dep_ref(dep_ref, phase_num)
+                if dp is None or (dp, dt) not in task_status_map:
+                    msg = (f"dangling-dep: Task {t[1]}.{t[2]} depends on {dep_ref!r} "
+                           f"which does not exist")
+                    issues.append((msg, False))  # not fixable
+
+    # --- Check 8: Empty phases (warning) ---
+    for emoji, phase_num, title, tasks in phases:
+        if not tasks:
+            msg = f"empty-phase: Phase {phase_num} has zero tasks (can never reach {STATUS_DONE})"
+            issues.append((msg, False))  # warning, not error
+
+    # --- Check 2: Plan emoji derivation ---
+    plan_status_derived = derive_plan_status(phases)
+    current_plan_emoji = STATUS_TODO
+    for line in lines:
+        m = _TITLE_RE.match(line.strip())
+        if m:
+            current_plan_emoji = m.group(1) or STATUS_TODO
+            break
+    if current_plan_emoji != plan_status_derived:
+        msg = (f"plan-emoji: got {current_plan_emoji} ({_STATUS_LABEL.get(current_plan_emoji, 'unknown')}), "
+               f"expected {plan_status_derived} ({_STATUS_LABEL.get(plan_status_derived, 'derived')})")
+        issues.append((msg, True))
+        needs_emoji_fix = True
+
+    # --- Check 3: Phase emoji derivation ---
+    for emoji, phase_num, title, tasks in phases:
+        derived = derive_phase_status(tasks)
+        if emoji != derived:
+            msg = (f"phase-emoji: Phase {phase_num} got {emoji} ({_STATUS_LABEL.get(emoji, 'unknown')}), "
+                   f"expected {derived} ({_STATUS_LABEL.get(derived, 'derived')})")
+            issues.append((msg, True))
+            needs_emoji_fix = True
+
+    # ─── PASS 2: Apply fixes if requested ───
+    fixed_issues: list[str] = []
+    if checksum_was_fixed:
+        fixed_issues.append("checksum: FIXED — recomputed checksum")
+    if fix and any(is_fixable for _, is_fixable in issues):
+        working = content
+
+        # Fix phase numbering
+        if phase_num_map:
+            working = _fix_phase_numbering(working, phases, task_status_map)
+            fixed_issues.append(f"phase-numbering: FIXED — renumbered to {expected_phase_nums}")
+
+        # Fix task numbering per phase
+        for pn, tmap in task_num_maps.items():
+            working = _fix_task_numbering(working, pn, task_status_map)
+            phases = extract_phases(working)
+            task_status_map.clear()
+            for _, pnum, _, tasks in phases:
+                for t in tasks:
+                    task_status_map[(t[1], t[2])] = t[0]
+            expected_nums = list(range(1, len([t for _,p,_,ts in phases if p==pn for t in ts]) + 1))
+            fixed_issues.append(f"task-numbering: FIXED Phase {pn} — renumbered to {expected_nums}")
+
+        # Fix ordering (sort)
+        if needs_sort:
+            working = cmd_sort_inline(plan_path, working)
+            fixed_issues.append("ordering: FIXED — sorted phases and tasks")
+            phases = extract_phases(working)
+            task_status_map.clear()
+            for _, pnum, _, tasks in phases:
+                for t in tasks:
+                    task_status_map[(t[1], t[2])] = t[0]
+
+        # Fix emoji derivation
+        if needs_emoji_fix:
+            working = validate_status_set(working)
+            fixed_issues.append("emoji-derivation: FIXED — re-derived plan and phase statuses")
+
+        # Write fixed content atomically
+        final = _add_checksum(working)
+        write_plan_atomic(plan_path, final)
+
+    # ─── Build output messages ───
+    messages: list[str] = []
+    if not checksum_ok and fix:
+        messages.append("checksum: FIXED — recomputed checksum")
+
+    # Report original issues, replacing fixable ones with FIXED messages
+    non_fixable_count = 0
+    for msg, is_fixable in issues:
+        if is_fixable and fix:
+            continue  # replaced by fixed_issues below
+        if is_fixable and not fix:
+            messages.append(msg)
+            non_fixable_count += 1
+        elif not is_fixable:
+            # Warnings (empty-phase) don't count as errors
+            if "empty-phase" in msg:
+                messages.append(msg)
+            else:
+                messages.append(msg)
+                non_fixable_count += 1
+
+    if fix and fixed_issues:
+        for fi in fixed_issues:
+            messages.append(fi)
+
+    # Exit code:
+    #   non-fix mode: 1 if ANY error exists (except empty-phase warning)
+    #   fix mode: 0 if all fixable issues were resolved, 1 if unfixable remain
+    has_issues = any(
+        "empty-phase" not in msg
+        for msg, is_fixable in issues
+    )
+    has_unfixable_errors = any(
+        not is_fixable and "empty-phase" not in msg
+        for msg, is_fixable in issues
+    )
+    if fix:
+        exit_code = 1 if has_unfixable_errors else 0
+    else:
+        exit_code = 1 if has_issues else 0
+
+    return (exit_code, messages)
+
+
+def _fix_phase_numbering(content: str, phases, task_status_map: dict) -> str:
+    """Renumber phases sequentially (1, 2, 3, ...) and update all references.
+
+    Uses position-based mapping so duplicate phase numbers are handled correctly:
+    the Nth phase heading in file order always becomes Phase N.
+    """
+    lines = content.splitlines()
+
+    # Build position-based old_num -> new_num mapping.
+    # Each (old_num, new_num) pair corresponds to a phase in file order.
+    phase_nums = [p[1] for p in phases]
+    num_map_pairs: list[tuple[int, int]] = [(old, i + 1) for i, old in enumerate(phase_nums)]
+    # For non-duplicate numbers, build a quick dict lookup
+    unique_nums = set(phase_nums)
+    simple_map: dict[int, int] = {}
+    if len(unique_nums) == len(phase_nums):
+        for old, new in num_map_pairs:
+            simple_map[old] = new
+
+    changed = False
+    new_lines = list(lines)
+
+    # --- Update phase headings (position-based) ---
+    heading_idx = 0
+    for i, line in enumerate(new_lines):
+        p = parse_phase_heading(line)
+        if p:
+            old_num = p[1]
+            if heading_idx < len(num_map_pairs):
+                new_num = num_map_pairs[heading_idx][1]
+                if old_num != new_num:
+                    new_lines[i] = format_phase_heading(p[0], new_num, p[2])
+                    changed = True
+            heading_idx += 1
+
+    # --- Build context-aware phase mapping for tasks.
+    #    Walk lines tracking which phase section each task belongs to. ---
+    # For each task line, we need to know its *new* phase number based on
+    # which phase heading it falls under (by position, not by old number).
+    current_phase_idx = -1
+    for i, line in enumerate(new_lines):
+        p = parse_phase_heading(line)
+        if p:
+            current_phase_idx += 1
+    # Reset and do the actual update pass
+    current_phase_idx = -1
+    for i, line in enumerate(new_lines):
+        p = parse_phase_heading(line)
+        if p:
+            current_phase_idx += 1
+            continue
+        t = parse_task_line(line)
+        if t and current_phase_idx >= 0 and current_phase_idx < len(num_map_pairs):
+            old_phase = t[1]
+            new_phase = num_map_pairs[current_phase_idx][1]
+            if old_phase != new_phase:
+                new_lines[i] = format_task_line(t[0], new_phase, t[2], t[3], t[4])
+                changed = True
+
+    # --- Update dependency references in task lines (position-aware) ---
+    current_phase_idx = -1
+    for i, line in enumerate(new_lines):
+        p = parse_phase_heading(line)
+        if p:
+            current_phase_idx += 1
+            continue
+        t = parse_task_line(line)
+        if t and current_phase_idx >= 0:
+            my_new_phase = num_map_pairs[current_phase_idx][1] if current_phase_idx < len(num_map_pairs) else t[1]
+            new_deps = []
+            for dep_ref in t[4]:
+                dp, dt = _resolve_dep_ref(dep_ref, t[1])
+                if dp is not None:
+                    # Find new phase number for the dependency's phase
+                    new_dp = _find_new_phase_num(dp, num_map_pairs)
+                    if new_dp is not None:
+                        if new_dp == my_new_phase:
+                            new_deps.append(f"Task {new_dp}.{dt}")
+                        else:
+                            new_deps.append(f"Phase {new_dp} - Task {new_dp}.{dt}")
+                    else:
+                        new_deps.append(dep_ref)
+                else:
+                    new_deps.append(dep_ref)
+            if new_deps != t[4]:
+                new_lines[i] = format_task_line(t[0], my_new_phase, t[2], t[3], new_deps)
+                changed = True
+
+    # --- Update header fields referencing phases/tasks ---
+    for field in ("Current Phase", "Current Task"):
+        idx = _find_header_field_line(new_lines, field)
+        if idx >= 0:
+            val = new_lines[idx].split(":", 1)[1].strip()
+            pm = re.match(r"(.*)Phase\s+(\d+)(.*)", val)
+            if pm:
+                prefix, old_num_str, suffix = pm.group(1), int(pm.group(2)), pm.group(3)
+                new_num = _find_new_phase_num(old_num_str, num_map_pairs)
+                if new_num is not None and new_num != old_num_str:
+                    new_lines[idx] = f"- {field}: {prefix}{new_num}{suffix}"
+                    changed = True
+
+    # Remove self-dependencies created by renumbering.
+    current_phase_idx = -1
+    for i, line in enumerate(new_lines):
+        p = parse_phase_heading(line)
+        if p:
+            current_phase_idx += 1
+            continue
+        t = parse_task_line(line)
+        if t and current_phase_idx >= 0:
+            my_phase = num_map_pairs[current_phase_idx][1] if current_phase_idx < len(num_map_pairs) else t[1]
+            my_task = t[2]
+            new_deps = [
+                d for d in t[4]
+                if not _is_self_dep(d, my_phase, my_task)
+            ]
+            if new_deps != t[4]:
+                new_lines[i] = format_task_line(t[0], my_phase, my_task, t[3], new_deps)
+                changed = True
+
+    if changed:
+        return "\n".join(new_lines)
+    return content
+
+
+def _find_new_phase_num(old_num: int, num_map_pairs: list[tuple[int, int]]) -> int | None:
+    """Find the new phase number for a given old phase number.
+
+    If the old number appears only once, returns its unique mapping.
+    If it appears multiple times (duplicates), returns the first occurrence's
+    new number as a best-effort fallback — exact resolution requires context.
+    """
+    matches = [new for old, new in num_map_pairs if old == old_num]
+    if len(matches) == 1:
+        return matches[0]
+    if len(matches) > 1:
+        return matches[0]  # Best-effort: use first occurrence
+    return None
+
+
+def _fix_task_numbering(content: str, phase_num: int, task_status_map: dict) -> str:
+    """Renumber tasks within a specific phase sequentially (X.1, X.2, ...)."""
+    lines = content.splitlines()
+    phases = extract_phases(content)
+
+    # Find the phase
+    target_tasks = None
+    for _, pn, _, tasks in phases:
+        if pn == phase_num:
+            target_tasks = tasks
+            break
+    if target_tasks is None:
+        return content
+
+    # Build old_task_num -> new_task_num mapping
+    old_nums = [t[2] for t in target_tasks]
+    num_map: dict[int, int] = {}
+    for i, old_num in enumerate(old_nums):
+        num_map[old_num] = i + 1
+
+    changed = False
+    new_lines = list(lines)
+
+    # Update task lines in this phase
+    for i, line in enumerate(new_lines):
+        t = parse_task_line(line)
+        if t and t[1] == phase_num and t[2] in num_map:
+            old_task = t[2]
+            new_task = num_map[old_task]
+            if old_task != new_task:
+                new_lines[i] = format_task_line(t[0], phase_num, new_task, t[3], t[4])
+                changed = True
+
+    # Update dependency references pointing to tasks in this phase
+    for i, line in enumerate(new_lines):
+        t = parse_task_line(line)
+        if t:
+            new_deps = []
+            for dep_ref in t[4]:
+                dp, dt = _resolve_dep_ref(dep_ref, t[1])
+                if dp is not None and dp == phase_num and dt in num_map:
+                    new_dt = num_map[dt]
+                    if dp == t[1]:
+                        new_deps.append(f"Task {dp}.{new_dt}")
+                    else:
+                        new_deps.append(f"Phase {dp} - Task {dp}.{new_dt}")
+                else:
+                    new_deps.append(dep_ref)
+            if new_deps != t[4]:
+                new_lines[i] = format_task_line(t[0], t[1], t[2], t[3], new_deps)
+                changed = True
+
+    # Update header Current Task field if it references a task in this phase
+    idx = _find_header_field_line(new_lines, "Current Task")
+    if idx >= 0:
+        val = new_lines[idx].split(":", 1)[1].strip()
+        tm = re.match(r"(.*)Task\s+(\d+)\.(\d+)(.*)", val)
+        if tm:
+            prefix, p_str, t_str, suffix = tm.group(1), int(tm.group(2)), int(tm.group(3)), tm.group(4)
+            if p_str == phase_num and t_str in num_map:
+                new_t = num_map[t_str]
+                new_lines[idx] = f"- Current Task: {prefix}{phase_num}.{new_t}{suffix}"
+                changed = True
+
+    # Remove self-dependencies created by renumbering.
+    # After renaming (e.g., Task 1.2 -> Task 1.1), a dep on "Task 1.1" may now
+    # point to the task itself. Detect and remove such self-refs.
+    for i, line in enumerate(new_lines):
+        t = parse_task_line(line)
+        if t:
+            my_phase, my_task = t[1], t[2]
+            new_deps = [
+                d for d in t[4]
+                if not _is_self_dep(d, my_phase, my_task)
+            ]
+            if new_deps != t[4]:
+                new_lines[i] = format_task_line(t[0], my_phase, my_task, t[3], new_deps)
+                changed = True
+
+    if changed:
+        return "\n".join(new_lines)
+    return content
+
+
+def cmd_sort_inline(plan_path: str, content: str) -> str:
+    """Apply sort transformation in-place (used by check --fix)."""
+    # Reuse cmd_sort logic but operate on content string directly
+    lines = content.splitlines()
+
+    header_end = 0
+    for i, line in enumerate(lines):
+        if parse_phase_heading(line) is not None:
+            header_end = i
+            break
+    else:
+        return content
+
+    header_lines = lines[:header_end]
+    while header_lines and header_lines[-1].strip() == "":
+        header_lines.pop()
+    phase_block = lines[header_end:]
+
+    last_content_idx = -1
+    for i, line in enumerate(phase_block):
+        if parse_phase_heading(line) is not None:
+            last_content_idx = i
+        elif parse_task_line(line) is not None:
+            last_content_idx = i
+        elif line.startswith("  - "):
+            last_content_idx = i
+    actual_end = last_content_idx + 1
+    while actual_end < len(phase_block) and phase_block[actual_end].strip() == "":
+        actual_end += 1
+
+    sections: list[tuple[int, list[str]]] = []
+    i = 0
+    while i < actual_end:
+        p = parse_phase_heading(phase_block[i])
+        if p is None:
+            i += 1
+            continue
+        start = i
+        j = i + 1
+        while j < actual_end and parse_phase_heading(phase_block[j]) is None:
+            j += 1
+        section_lines = phase_block[start:j]
+        sorted_section = _sort_tasks_in_section(section_lines)
+        sections.append((p[1], sorted_section))
+        i = j
+
+    sections.sort(key=lambda s: s[0])
+    sorted_phase_lines = []
+    for idx, (_, section) in enumerate(sections):
+        sorted_phase_lines.append("")
+        sorted_phase_lines.extend(section)
+
+    new_lines = header_lines + sorted_phase_lines
+    result = "\n".join(new_lines) + "\n"
+    # Touch updated timestamp
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    rlines = result.splitlines()
+    rlines = _update_header_field(rlines, "Updated", now)
+    result = "\n".join(rlines)
+    return validate_status_set(result)
 
 
 # ---------------------------------------------------------------------------
@@ -852,8 +1464,10 @@ def check_dependency_cycle(plan_path: str, depends_on: list[str]) -> None:
     to plan_path.
     """
     base_resolved = str(Path(plan_path).resolve())
+    plan_dir = os.path.dirname(base_resolved)
     visited = set()
-    stack = [str(Path(d).resolve()) for d in depends_on]
+    # Resolve initial deps relative to the plan file's directory, not CWD
+    stack = [str(Path(plan_dir, d).resolve()) for d in depends_on]
 
     while stack:
         current_resolved = stack.pop()
@@ -874,7 +1488,10 @@ def check_dependency_cycle(plan_path: str, depends_on: list[str]) -> None:
             if deps_str and deps_str != "NONE":
                 deps = [d.strip() for d in deps_str.split(",")]
                 for d in deps:
-                    resolved_d = str(Path(d).resolve())
+                    # Resolve relative to the directory of the dependency file,
+                    # not the current working directory
+                    dep_dir = os.path.dirname(current_resolved)
+                    resolved_d = str(Path(dep_dir, d).resolve())
                     stack.append(resolved_d)
         except (FileNotFoundError, SystemExit, PermissionError):
             pass  # plan doesn't exist, skip
@@ -959,6 +1576,313 @@ def _resolve_dep_ref(dep_ref: str, current_phase: int) -> tuple[int | None, int 
     return None, None
 
 
+def _is_self_dep(dep_ref: str, my_phase: int, my_task: int) -> bool:
+    """Check if a dependency reference points to the task itself."""
+    dp, dt = _resolve_dep_ref(dep_ref, my_phase)
+    if dp is None:
+        return False
+    return dp == my_phase and dt == my_task
+
+
+# ---------------------------------------------------------------------------
+# Commands — batch (chain multiple ops under one lock)
+# ---------------------------------------------------------------------------
+
+# Maps a batch command name to the positional attribute names expected by cmd_*. 
+# These match the argparse subparser definitions in build_parser().
+_BATCH_CMD_ATTRS: dict[str, list[str]] = {
+    "create": ["title"],
+    "add-phase": ["phase_ref", "phase_title"],
+    "add-task": ["phase_ref", "task_ref", "task_title"],
+    "remove-phase": ["phase_ref"],
+    "remove-task": ["phase_ref", "task_ref"],
+    "set-plan-title": ["title"],
+    "set-plan-depends-on": ["deps_raw"],
+    "set-plan-created": ["value"],
+    "set-plan-updated": ["value"],
+    "set-plan-current-phase": ["phase_ref"],
+    "set-plan-current-task": ["task_ref"],
+    "set-plan-status": ["status"],
+    "set-phase-status": ["phase_ref", "status"],
+    "set-task-status": ["task_ref", "status"],
+    "update-phase": ["phase_ref", "phase_title"],
+    "update-task": ["phase_ref", "task_ref", "task_title"],
+    "add-task-dependency": ["phase_ref", "task_ref", "dep_task_ref"],
+    "remove-task-dependency": ["phase_ref", "task_ref", "dep_task_ref"],
+    "set-all-statuses": ["status"],
+    "sort": [],
+}
+
+
+def _parse_batch_line(line: str) -> tuple[str, list[str]] | None:
+    """Parse a batch input line into (command_name, [args...]).
+
+    Uses shlex for proper shell-style quoting support.
+    """
+    line = line.strip()
+    if not line or line.startswith("#"):
+        return None
+    try:
+        tokens = shlex.split(line)
+    except ValueError as e:
+        print(f"Error: cannot parse line: {e}", file=sys.stderr)
+        sys.exit(1)
+    if not tokens:
+        return None
+    cmd_name = tokens[0]
+    if cmd_name not in _BATCH_CMD_ATTRS:
+        print(f"Error: unrecognized command: {cmd_name!r}", file=sys.stderr)
+        sys.exit(1)
+    return cmd_name, tokens[1:]
+
+
+def _parse_batch_json(raw: str) -> list[tuple[str, list[str]]]:
+    """Parse a JSON array of command objects into [(cmd_name, [args...])].
+
+    Expected format:
+      [
+        {"command": "create", "args": ["My Project"]},
+        {"command": "add-phase", "args": ["Phase 1", "Planning"]},
+        {"command": "add-task", "args": ["Phase 1", "Task 1.1", "Define scope"]},
+        ...
+      ]
+    """
+    try:
+        data = _json_mod.loads(raw)
+    except _json_mod.JSONDecodeError as e:
+        print(f"Error: invalid JSON: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    if not isinstance(data, list):
+        print("Error: JSON input must be an array of command objects", file=sys.stderr)
+        sys.exit(1)
+
+    operations = []
+    for idx, obj in enumerate(data):
+        if not isinstance(obj, dict):
+            print(f"Error: item {idx} is not an object", file=sys.stderr)
+            sys.exit(1)
+        cmd_name = obj.get("command")
+        if not cmd_name:
+            print(f"Error: item {idx} missing 'command' key", file=sys.stderr)
+            sys.exit(1)
+        if cmd_name not in _BATCH_CMD_ATTRS:
+            print(f"Error: unrecognized command: {cmd_name!r}", file=sys.stderr)
+            sys.exit(1)
+        args = obj.get("args", [])
+        if not isinstance(args, list):
+            print(f"Error: 'args' for item {idx} must be an array", file=sys.stderr)
+            sys.exit(1)
+        # Ensure all args are strings
+        str_args = [str(a) for a in args]
+        operations.append((cmd_name, str_args))
+    return operations
+
+
+def _make_namespace(cmd_name: str, args: list[str], path: str) -> argparse.Namespace:
+    """Build an argparse.Namespace from batch-parsed command + positional args."""
+    d = {"path": path}
+    attr_names = _BATCH_CMD_ATTRS.get(cmd_name, [])
+    # Optional title fields: None when not provided (matches argparse nargs="?" default)
+    _OPTIONAL_TITLE_FIELDS = {"phase_title", "task_title"}
+    for i, name in enumerate(attr_names):
+        if i < len(args):
+            val = args[i]
+        elif name in _OPTIONAL_TITLE_FIELDS:
+            val = None  # Missing optional title → None (legacy form)
+        else:
+            val = ""
+        if name == "value" and val == "":
+            val = "__NOW__"
+        if name == "deps_raw":
+            d["deps"] = [x.strip() for x in val.split(",") if x.strip()] if val != "NONE" else []
+        else:
+            d[name] = val
+    return argparse.Namespace(**d)
+
+
+def cmd_batch(args: argparse.Namespace) -> None:
+    """Execute multiple plan operations on the same PLAN.md under one lock.
+
+    Reads commands from stdin or a file (--input FILE). Two input modes:
+
+    1. Line mode: one command per line, shell-style quoting:
+        create "My Project"
+        add-phase "Phase 1 ➖ Planning"
+        add-task "Phase 1" "Task 1.1 ➖ Define scope"
+
+    2. JSON mode: array of objects with {"command": ..., "args": [...]}:
+        [{"command": "create", "args": ["My Project"]}, ...]
+
+    Mode detection:
+      - --json flag forces JSON mode
+      - File extension: .json → JSON mode, .txt/.md → line mode
+      - Stdin without --json: line mode (default)
+
+    All operations share a single exclusive lock and atomic write at the end.
+    """
+    path = args.path
+    input_file = getattr(args, "input", None)
+    json_flag = getattr(args, "json", False)
+
+    # Read raw content from file or stdin
+    if input_file:
+        p = Path(input_file)
+        if not p.exists():
+            print(f"Error: input file {input_file} does not exist", file=sys.stderr)
+            sys.exit(1)
+        raw = p.read_text(encoding="utf-8").strip()
+    else:
+        raw = sys.stdin.read().strip()
+
+    if not raw:
+        src = input_file or "stdin"
+        print(f"Error: no commands provided in {src}", file=sys.stderr)
+        sys.exit(1)
+
+    # Determine mode: --json flag wins, then auto-detect from file extension
+    json_mode = json_flag
+    if not json_flag and input_file:
+        suffix = Path(input_file).suffix.lower()
+        if suffix == ".json":
+            json_mode = True
+        elif suffix in (".txt", ".md"):
+            json_mode = False
+
+    # Parse input — JSON mode or line mode
+    if json_mode:
+        operations = _parse_batch_json(raw)
+    else:
+        operations = []
+        for line in raw.splitlines():
+            result = _parse_batch_line(line)
+            if result is None:
+                continue
+            operations.append(result)
+
+    if not operations:
+        print("Error: no valid commands found", file=sys.stderr)
+        sys.exit(1)
+
+    # If file doesn't exist, first command MUST be 'create'.
+    # This prevents malformed files (mutations on empty content) and
+    # silent data loss when create is not first.
+    if not Path(path).exists():
+        first_cmd = operations[0][0]
+        if first_cmd != "create":
+            print(
+                f"Error: file {path} does not exist — first batch command must be 'create'",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+
+    # Hold exclusive lock for the entire batch
+    fd = _acquire_exclusive_lock(path)
+    try:
+        # Clean orphans
+        _cleanup_orphans(path)
+
+        # If file doesn't exist, create empty content (create cmd will handle it)
+        if Path(path).exists():
+            raw = read_plan_raw(path)
+            if not _verify_checksum(raw):
+                print(
+                    f"Warning: checksum mismatch in {path} — file may be corrupted",
+                    file=sys.stderr,
+                )
+            content = _strip_checksum(raw)
+        else:
+            content = ""
+
+        # Apply each operation sequentially, capturing stdout to avoid
+        # confusing partial output on failure (buffered prints from earlier
+        # commands would flush even when a later command aborts the batch).
+        import io as _io
+        captured_stdout: list[str] = []
+
+        for cmd_name, args in operations:
+            ns = _make_namespace(cmd_name, args, path)
+
+            if cmd_name == "create":
+                # create is special — it writes directly without _safe_edit
+                now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                deps_str = "NONE"
+                content = f"""# {STATUS_TODO} Plan ➖ {ns.title}
+- Depends On: {deps_str}
+- Created: {now}
+- Updated: {now}
+- Current Phase: NONE
+- Current Task: NONE
+"""
+                captured_stdout.append(f"Created {path}")
+                continue
+
+            # For all other commands, call the transform directly
+            handler = COMMAND_MAP.get(cmd_name)
+            if handler is None:
+                print(f"Error: unknown command {cmd_name!r}", file=sys.stderr)
+                sys.exit(1)
+
+            # Wrap handler to apply its transform in-place instead of via _safe_edit.
+            # Each cmd_* function calls _safe_edit(path, transform_fn) internally.
+            # Some also pre-read via read_plan() / read_plan_raw().
+            # We intercept all three so they operate on in-memory content.
+            original_safe_edit = globals()["_safe_edit"]
+            original_read_plan = globals()["read_plan"]
+            original_read_plan_raw = globals()["read_plan_raw"]
+
+            def _inline_edit(_p: str, transform_fn) -> str:
+                nonlocal content
+                content = transform_fn(content)
+                return content
+
+            def _inline_read_plan(_p: str) -> str:
+                return content
+
+            def _inline_read_plan_raw(_p: str) -> str:
+                # Return content with a dummy checksum so _verify_checksum passes
+                return _add_checksum(content)
+
+            globals()["_safe_edit"] = _inline_edit
+            globals()["read_plan"] = _inline_read_plan
+            globals()["read_plan_raw"] = _inline_read_plan_raw
+
+            # Capture stdout during handler execution
+            old_stdout = sys.stdout
+            capture_buf = _io.StringIO()
+            sys.stdout = capture_buf
+            try:
+                handler(ns)
+                captured = capture_buf.getvalue().strip()
+                if captured:
+                    captured_stdout.append(captured)
+            except SystemExit:
+                sys.stdout = old_stdout
+                raise
+            finally:
+                sys.stdout = old_stdout
+                globals()["_safe_edit"] = original_safe_edit
+                globals()["read_plan"] = original_read_plan
+                globals()["read_plan_raw"] = original_read_plan_raw
+
+        # Touch updated timestamp after all operations
+        content = _touch_updated(path, content)
+        # Re-derive statuses
+        content = validate_status_set(content)
+
+        # Atomic write
+        final_content = _add_checksum(content)
+        write_plan_atomic(path, final_content)
+
+    finally:
+        _release_lock(fd, path)
+
+    # Print captured output only after successful completion
+    for line in captured_stdout:
+        print(line)
+    print(f"Batch complete: {len(operations)} operations applied to {path}")
+
+
 # ---------------------------------------------------------------------------
 # Commands — create
 # ---------------------------------------------------------------------------
@@ -966,7 +1890,7 @@ def _resolve_dep_ref(dep_ref: str, current_phase: int) -> tuple[int | None, int 
 def cmd_create(args: argparse.Namespace) -> None:
     """Create a new PLAN.md with header."""
     path = args.path
-    title = args.title
+    title = validate_title(args.title, "plan title")
     depends = getattr(args, "depends", []) or []
 
     if Path(path).exists():
@@ -1405,12 +2329,27 @@ def cmd_set_task_status(args: argparse.Namespace) -> None:
 # ---------------------------------------------------------------------------
 
 def cmd_add_phase(args: argparse.Namespace) -> None:
-    """Add a new phase, inserted in sorted numeric position."""
-    phase_arg = args.phase_title  # e.g. "Phase 2 ➖ Description..." or just "Description..."
-    description = getattr(args, "description", "") or ""
+    """Add a new phase, inserted in sorted numeric position.
 
-    # Resolve title before locking (pure computation from user input)
-    explicit_num, title = parse_phase_add_arg(phase_arg)
+    Accepts two forms:
+      1. Separate args: add-phase PLAN.md "Phase 2" "Planning & Requirements"
+      2. Legacy combined: add-phase PLAN.md "Phase 2 ➖ Planning & Requirements"
+         (when phase_title is None, phase_ref carries the full combined string)
+    """
+    phase_ref = args.phase_ref
+    phase_title_arg = args.phase_title
+
+    # Determine explicit_num and title from arguments
+    # None (missing arg) → legacy form; empty string → new form (rejected by validate_title)
+    if phase_title_arg is not None:
+        # New form: separate ID + title
+        explicit_num = parse_phase_arg(phase_ref) if "Phase" in phase_ref else 0
+        raw_title = phase_title_arg
+    else:
+        # Legacy form: combined string in phase_ref (e.g. "Phase 2 ➖ Desc")
+        explicit_num, raw_title = parse_phase_add_arg(phase_ref)
+
+    title = validate_title(raw_title, "phase title")
 
     def _transform(content: str) -> str:
         lines = content.splitlines()
@@ -1422,14 +2361,12 @@ def cmd_add_phase(args: argparse.Namespace) -> None:
         else:
             phase_num = len(phases) + 1
 
-        # Build new phase section (leading blank + heading + optional description + trailing blank)
+        # Build new phase section (leading blank + heading + trailing blank)
         new_phase_lines = [
             "",
             format_phase_heading(STATUS_TODO, phase_num, title),
+            "",
         ]
-        if description:
-            new_phase_lines.append(description)
-        new_phase_lines.append("")
 
         # Find insertion point, collapse adjacent blank lines into one separator
         insert_idx = _sorted_phase_insert_index(lines, phase_num)
@@ -1459,11 +2396,27 @@ def cmd_add_phase(args: argparse.Namespace) -> None:
 
 
 def cmd_update_phase(args: argparse.Namespace) -> None:
-    """Update phase description/title."""
-    phase_title = args.phase_title  # e.g. "Phase 2 ➖ New description"
-    target = parse_phase_arg(phase_title)
-    # Extract the new description from after " ➖ " if present
-    new_description = phase_title.split(" ➖ ", 1)[-1].strip() if " ➖ " in phase_title else None
+    """Update phase description/title.
+
+    Accepts two forms:
+      1. Separate args: update-phase PLAN.md "Phase 2" "New description"
+      2. Legacy combined: update-phase PLAN.md "Phase 2 ➖ New description"
+         (when phase_title is None, phase_ref carries the full combined string)
+    """
+    phase_ref = args.phase_ref
+    phase_title_arg = args.phase_title
+
+    # Empty string (from batch mode) treated as None → legacy form
+    if phase_title_arg:
+        # New form: separate ID + title
+        target = parse_phase_arg(phase_ref)
+        new_description = validate_title(phase_title_arg, "phase title")
+    else:
+        # Legacy form: combined string in phase_ref (e.g. "Phase 2 ➖ New desc")
+        target = parse_phase_arg(phase_ref)
+        new_description = phase_ref.split(" ➖ ", 1)[-1].strip() if " ➖ " in phase_ref else None
+        if new_description is not None:
+            new_description = validate_title(new_description, "phase title")
 
     def _transform(content: str) -> str:
         lines = content.splitlines()
@@ -1477,7 +2430,7 @@ def cmd_update_phase(args: argparse.Namespace) -> None:
                 break
 
         if not found:
-            print(f"Error: {phase_ref} not found", file=sys.stderr)
+            print(f"Error: {phase_title} not found", file=sys.stderr)
             sys.exit(1)
 
         # Replace the phase heading line's title
@@ -1543,15 +2496,37 @@ def cmd_remove_phase(args: argparse.Namespace) -> None:
 # ---------------------------------------------------------------------------
 
 def cmd_add_task(args: argparse.Namespace) -> None:
-    """Add a new task to an existing phase, inserted in sorted numeric position."""
-    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
-    task_arg = args.task_title  # e.g. "Task 2.4 ➖ Do thing ⚓ Task 2.1 , Task 2.2" or just "Do thing"
+    """Add a new task to an existing phase, inserted in sorted numeric position.
+
+    If the phase_ref includes a description ("Phase N ➖ Title") and the phase
+    doesn't exist, it is created first with that title.
+
+    Accepts two forms:
+      1. Separate args: add-task PLAN.md "Phase 2" "Task 2.4" "Do thing"
+         or: add-task PLAN.md "Phase 2" "Do thing"  (auto-number task)
+      2. Legacy combined: add-task PLAN.md "Phase 2" "Task 2.4 ➖ Do thing"
+         (when task_title is None, task_ref carries the full combined string)
+    """
+    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 ➖ Description..."
+    task_ref_arg = args.task_ref
+    task_title_arg = args.task_title
 
     target_phase = parse_phase_arg(phase_ref)
-    explicit_p, explicit_t, raw_title = parse_task_add_arg(task_arg)
 
-    # Split raw_title into clean title and deps
-    clean_title, deps = parse_task_deps(raw_title)
+    # None (missing arg) → legacy form; empty string → new form (rejected by validate_title)
+    if task_title_arg is not None:
+        # New form: separate ID + title
+        explicit_p, explicit_t = parse_task_arg(task_ref_arg) if "Task" in task_ref_arg else (0, 0)
+        raw_title = task_title_arg
+        # Strip any ⚓ anchor suffix — deps must be added via add-task-dependency
+        clean_title, _ = parse_task_deps(raw_title)
+        clean_title = validate_title(clean_title, "task title")
+        deps = []
+    else:
+        # Legacy form: combined string in task_ref (e.g. "Task 2.4 ➖ Do thing")
+        explicit_p, explicit_t, raw_title = parse_task_add_arg(task_ref_arg)
+        clean_title, deps = parse_task_deps(raw_title)
+        clean_title = validate_title(clean_title, "task title")
 
     if explicit_p > 0 and explicit_t > 0:
         task_phase = explicit_p
@@ -1569,11 +2544,33 @@ def cmd_add_task(args: argparse.Namespace) -> None:
                         max_task = t[2]
         task_num = max_task + 1
 
-    task_title = f"Task {task_phase}.{task_num} {clean_title}"
+    task_title_str = f"Task {task_phase}.{task_num} {clean_title}"
+
+    # Extract phase title from phase_ref if it includes a description
+    phase_title_from_ref = None
+    if " ➖ " in phase_ref:
+        phase_title_from_ref = phase_ref.split(" ➖ ", 1)[1].strip()
 
     def _transform(content: str) -> str:
         lines = content.splitlines()
         phases = extract_phases(content)
+
+        # Check if phase exists; if not and phase_ref has a title, create it
+        phase_exists = any(p[1] == target_phase for p in phases)
+        if not phase_exists:
+            if phase_title_from_ref:
+                # Create the phase inline
+                phase_heading = format_phase_heading(STATUS_TODO, target_phase, phase_title_from_ref)
+                insert_idx = _sorted_phase_insert_index(lines, target_phase)
+                # Strip trailing blanks before insertion
+                while insert_idx > 0 and lines[insert_idx - 1].strip() == "":
+                    insert_idx -= 1
+                new_phase_lines = ["", phase_heading, ""]
+                lines = lines[:insert_idx] + new_phase_lines + lines[insert_idx:]
+                phases = extract_phases("\n".join(lines))
+            else:
+                print(f"Error: Phase {target_phase} not found", file=sys.stderr)
+                sys.exit(1)
 
         # Re-resolve task_num inside transform (content may differ from pre-read)
         if explicit_p > 0 and explicit_t > 0:
@@ -1588,6 +2585,17 @@ def cmd_add_task(args: argparse.Namespace) -> None:
                         if t[2] > max_task:
                             max_task = t[2]
             tn = max_task + 1
+
+        # Check for duplicate task ID before inserting
+        for emoji, num, t_title, tasks in phases:
+            if num == target_phase:
+                for t in tasks:
+                    if t[2] == tn:
+                        print(
+                            f"Error: Task {target_phase}.{tn} already exists in Phase {target_phase}",
+                            file=sys.stderr,
+                        )
+                        sys.exit(1)
 
         # Insert at sorted position within the phase
         insert_idx, err = _sorted_task_insert_index(lines, target_phase, tn)
@@ -1604,17 +2612,32 @@ def cmd_add_task(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-    print(f"Added {task_title} to {phase_ref} with status {STATUS_TODO}")
+    print(f"Added {task_title_str} to {phase_ref} with status {STATUS_TODO}")
 
 
 def cmd_update_task(args: argparse.Namespace) -> None:
-    """Update task description (preserves existing dependencies)."""
-    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
-    task_title = args.task_title  # e.g. "Task 2.4 ➖ New description"
+    """Update task description (preserves existing dependencies).
 
-    target_phase, target_task = parse_task_arg(task_title)
-    # Extract the new description from after " ➖ " if present
-    new_description = task_title.split(" ➖ ", 1)[-1].strip() if " ➖ " in task_title else None
+    Accepts two forms:
+      1. Separate args: update-task PLAN.md "Phase 2" "Task 2.4" "New description"
+      2. Legacy combined: update-task PLAN.md "Phase 2" "Task 2.4 ➖ New description"
+         (when task_title is None, task_ref carries the full combined string)
+    """
+    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
+    task_ref_arg = args.task_ref
+    task_title_arg = args.task_title
+
+    # Empty string (from batch mode) treated as None → legacy form
+    if task_title_arg:
+        # New form: separate ID + title
+        target_phase, target_task = parse_task_arg(task_ref_arg)
+        new_description = validate_title(task_title_arg, "task title")
+    else:
+        # Legacy form: combined string in task_ref (e.g. "Task 2.4 ➖ New desc")
+        target_phase, target_task = parse_task_arg(task_ref_arg)
+        new_description = task_ref_arg.split(" ➖ ", 1)[-1].strip() if " ➖ " in task_ref_arg else None
+        if new_description is not None:
+            new_description = validate_title(new_description, "task title")
 
     def _transform(content: str) -> str:
         lines = content.splitlines()
@@ -1920,6 +2943,27 @@ def cmd_remove_task_dependency(args: argparse.Namespace) -> None:
 # ---------------------------------------------------------------------------
 # Commands — sort
 # ---------------------------------------------------------------------------
+
+def cmd_check(args: argparse.Namespace) -> None:
+    """Check PLAN.md for consistency issues.
+
+    Validates structure, status derivation, numbering, and dependencies.
+    With --fix, auto-fixes recoverable issues (emoji derivation, numbering, ordering).
+    """
+    fix = getattr(args, "fix", False)
+    exit_code, messages = check_plan(args.path, fix=fix)
+
+    if not messages:
+        print(f"OK: {args.path} is consistent")
+    else:
+        for msg in messages:
+            print(msg)
+
+    if exit_code == 0:
+        print(f"OK: {args.path} passed all checks")
+
+    sys.exit(exit_code)
+
 
 def cmd_sort(args: argparse.Namespace) -> None:
     """Sort phases by number and tasks within each phase by number."""
@@ -2442,6 +3486,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_create.add_argument("title", help="Plan title")
     p_create.add_argument("depends", nargs="*", default=[], help="Dependency PLAN.md paths")
 
+    # --- batch ---
+    p_batch = sub.add_parser("batch", help="Execute multiple operations under one lock (reads commands from stdin or --input FILE)")
+    p_batch.add_argument("path", help="Path to PLAN.md file")
+    p_batch.add_argument("--input", help="Read commands from a file instead of stdin (.txt/.md → line mode, .json → JSON mode)")
+    p_batch.add_argument("--json", action="store_true", help='Force JSON parse mode (default: auto-detect from file extension or stdin)')
+
     # --- get (header reads) ---
     _add_path(sub, "get-plan-title", help="Get plan title")
     _add_path(sub, "get-plan-depends-on", help="Get dependencies")
@@ -2495,12 +3545,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     # --- phase CRUD ---
     p_add_phase = _add_path(sub, "add-phase", help="Add a new phase")
-    p_add_phase.add_argument("phase_title", help="Phase title")
-    p_add_phase.add_argument("description", nargs="?", default="", help="Optional description")
+    p_add_phase.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2" or just "Planning"')
+    p_add_phase.add_argument("phase_title", nargs="?", default=None, help='Phase title (optional, auto-derived from phase_ref if omitted)')
 
     p_upd_phase = _add_path(sub, "update-phase", help="Update phase title/description")
-    p_upd_phase.add_argument("phase_title", help='Phase ref with optional new description, e.g. "Phase 2 ➖ New description"')
-
+    p_upd_phase.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
+    p_upd_phase.add_argument("phase_title", nargs="?", default=None, help='New phase title (optional)')
 
     p_rm_phase = _add_path(sub, "remove-phase", help="Remove a phase and its tasks")
     p_rm_phase.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
@@ -2508,11 +3558,13 @@ def build_parser() -> argparse.ArgumentParser:
     # --- task CRUD ---
     p_add_task = _add_path(sub, "add-task", help="Add a new task")
     p_add_task.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
-    p_add_task.add_argument("task_title", help="Task title (e.g. 'Task 2.4 Do thing' or just 'Do thing')")
+    p_add_task.add_argument("task_ref", help='Task reference, e.g. "Task 2.4" or just "Do thing"')
+    p_add_task.add_argument("task_title", nargs="?", default=None, help='Task title (optional, auto-derived from task_ref if omitted)')
 
     p_upd_task = _add_path(sub, "update-task", help="Update task description")
     p_upd_task.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
-    p_upd_task.add_argument("task_title", help='Task ref with optional new description, e.g. "Task 2.4 ➖ New description"')
+    p_upd_task.add_argument("task_ref", help='Task reference, e.g. "Task 2.4"')
+    p_upd_task.add_argument("task_title", nargs="?", default=None, help='New task title (optional)')
 
 
     p_rm_task = _add_path(sub, "remove-task", help="Remove a task")
@@ -2542,6 +3594,10 @@ def build_parser() -> argparse.ArgumentParser:
     # --- sort ---
     _add_path(sub, "sort", help="Sort phases and tasks by number")
 
+    # --- check ---
+    p_check = _add_path(sub, "check", help="Check PLAN.md consistency (with optional --fix)")
+    p_check.add_argument("--fix", action="store_true", help="Auto-fix recoverable issues")
+
     return parser
 
 
@@ -2550,6 +3606,7 @@ def build_parser() -> argparse.ArgumentParser:
 # ---------------------------------------------------------------------------
 
 COMMAND_MAP = {
+    "batch": cmd_batch,
     "create": cmd_create,
     "get-plan": cmd_get_plan,
     "get-plan-title": cmd_get_plan_title,
@@ -2580,6 +3637,7 @@ COMMAND_MAP = {
     "add-task-dependency": cmd_add_task_dependency,
     "remove-task-dependency": cmd_remove_task_dependency,
     "sort": cmd_sort,
+    "check": cmd_check,
 }
 
 
