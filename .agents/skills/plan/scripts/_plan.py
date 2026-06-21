@@ -527,6 +527,53 @@ def _check_plan_cycles(plan):
     dfs(plan["path"], plan["depends_on"])
 
 
+def _check_batch_plan_cycles(start_path, new_deps, plan_cache):
+    """Check for cycles in the plan dependency graph (batch mode, multi-plan aware).
+    Uses plan_cache to resolve depends_on for plans already loaded.
+    Returns True if a cycle is detected."""
+    visited = set()
+    rec_stack = set()
+
+    def get_depends_on(p_abs):
+        """Get depends_on for a plan, loading from cache or disk."""
+        if p_abs in plan_cache:
+            return plan_cache[p_abs]["depends_on"]
+        if os.path.exists(p_abs):
+            loaded = parse_plan(p_abs)
+            plan_cache[p_abs] = loaded
+            return loaded["depends_on"]
+        return "NONE"
+
+    def dfs(p_abs):
+        if p_abs in rec_stack:
+            return True
+        if p_abs in visited:
+            return False
+        visited.add(p_abs)
+        rec_stack.add(p_abs)
+        deps = get_depends_on(p_abs)
+        if deps != "NONE":
+            for dep in [d.strip() for d in deps.split(",")]:
+                dep_abs = os.path.abspath(dep)
+                if dfs(dep_abs):
+                    return True
+        rec_stack.discard(p_abs)
+        return False
+
+    # Temporarily add proposed deps to check
+    start_abs = os.path.abspath(start_path)
+    if new_deps:
+        for dep in new_deps:
+            dep_abs = os.path.abspath(dep)
+            visited.clear()
+            rec_stack.clear()
+            # Start DFS from the dependency target, see if we reach back to start
+            rec_stack.add(start_abs)
+            if dfs(dep_abs):
+                return True
+    return False
+
+
 def cmd_set_plan_created(args):
     plan = parse_plan(args.path)
     val = args.value
@@ -1241,6 +1288,8 @@ def cmd_batch(args):
                 # If failed step is set-task-status, mark task as ❌
                 if cmd == "set-task-status":
                     _mark_task_error_batch(cmd_args, step_path, plan_cache)
+                    # Ensure the plan is written even if set-task-status was the only mutation
+                    dirty_plans.add(os.path.abspath(step_path))
             elif is_mutation:
                 abs_p = os.path.abspath(step_path)
                 dirty_plans.add(abs_p)
@@ -1431,6 +1480,10 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
                     if os.path.abspath(dep_path) == abs_path:
                         return {**result_base, "status": "error", "command": cmd,
                                 "message": "Cannot depend on itself"}
+                # Transitive cycle detection
+                if _check_batch_plan_cycles(abs_path, deps, plan_cache):
+                    return {**result_base, "status": "error", "command": cmd,
+                            "message": f"Dependency cycle detected involving {path}"}
                 plan["depends_on"] = ", ".join(deps)
             plan["updated"] = now_iso()
             return {**result_base, "status": "success", "command": cmd,
@@ -1438,7 +1491,7 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
 
         if cmd == "set-plan-created":
             val = args[0] if args else "__NOW__"
-            if val == "__NOW__":
+            if val == "__NOW__" or val == "--now":
                 val = now_iso()
             plan["created"] = val
             plan["updated"] = now_iso()
@@ -1447,7 +1500,7 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
 
         if cmd == "set-plan-updated":
             val = args[0] if args else "__NOW__"
-            if val == "__NOW__":
+            if val == "__NOW__" or val == "--now":
                 val = now_iso()
             plan["updated"] = val
             return {**result_base, "status": "success", "command": cmd,
@@ -1504,7 +1557,7 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
                 return {**result_base, "status": "error", "command": cmd,
                         "message": f"Invalid transition: {old} -> {emoji}"}
             plan["emoji"] = emoji
-            rederive_all(plan)
+            # Do NOT rederive — this is a manual override preserved until check --fix
             plan["updated"] = now_iso()
             return {**result_base, "status": "success", "command": cmd,
                     "message": f"Plan -> {emoji}", "_mutation": True}
@@ -1526,7 +1579,7 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
                 return {**result_base, "status": "error", "command": cmd,
                         "message": f"Invalid transition: {old} -> {emoji}"}
             phase["emoji"] = emoji
-            rederive_all(plan)
+            # Do NOT rederive — this is a manual override preserved until check --fix
             plan["updated"] = now_iso()
             return {**result_base, "status": "success", "command": cmd,
                     "message": f"Phase {phase['id']} -> {emoji}", "_mutation": True}
@@ -1769,6 +1822,10 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
 
         if cmd == "check":
             issues = []
+            # Checksum verification
+            ok, msg = verify_checksum(plan)
+            if not ok:
+                issues.append(("error", f"Checksum: {msg}"))
             # Emoji derivation
             for phase in plan["phases"]:
                 expected = derive_phase_emoji(phase["tasks"])
@@ -1794,6 +1851,13 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
                     for dep in task["dependencies"]:
                         if _resolve_dep_task(plan, task, dep) is None:
                             issues.append(("warning", f"Dangling dependency '{dep}' on {task['id']}"))
+            # Ordering
+            for phase in plan["phases"]:
+                for i in range(1, len(phase["tasks"])):
+                    _, a = parse_task_id(phase["tasks"][i - 1]["id"])
+                    _, b = parse_task_id(phase["tasks"][i]["id"])
+                    if a and b and a > b:
+                        issues.append(("warning", f"Tasks out of order in {phase['id']}: {phase['tasks'][i-1]['id']} before {phase['tasks'][i]['id']}"))
             # Empty phases
             for phase in plan["phases"]:
                 if not phase["tasks"]:
