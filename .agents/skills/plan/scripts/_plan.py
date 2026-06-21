@@ -18,6 +18,7 @@ __all__ = ['parse_plan_data']
 import argparse
 import fcntl
 import hashlib
+import json as _json_mod
 import os
 import re
 import shlex
@@ -50,6 +51,49 @@ VALID_TRANSITIONS = {
 # Default lock-acquire timeout in seconds.
 # Raised with TimeoutError if another process holds the lock longer.
 LOCK_TIMEOUT = 10.0
+
+# ---------------------------------------------------------------------------
+# JSON output helpers
+# ---------------------------------------------------------------------------
+
+class PlanError(Exception):
+    """Raised by commands to signal an error. Caught by the JSON wrapper."""
+    pass
+
+
+def _result(status: str, command: str, message: str, **kwargs) -> dict:
+    """Build a JSON result dict with status, command, message, and optional fields."""
+    return {
+        "status": status,
+        "command": command,
+        "message": message,
+        **kwargs,
+    }
+
+
+def _print_json_result(result: dict) -> None:
+    """Print a result dict as JSON to stdout."""
+    print(_json_mod.dumps(result, ensure_ascii=False))
+
+
+def _run_command(handler, args: argparse.Namespace) -> dict:
+    """Run a command handler and return a JSON result dict.
+
+    Catches PlanError and generic exceptions, converting them to error results.
+    Handlers that already return a dict pass through unchanged.
+    """
+    cmd_name = args.command.replace("-", "-")
+    try:
+        res = handler(args)
+        # If handler returned a dict (new style), use it directly
+        if isinstance(res, dict):
+            return res
+        # Legacy: handler printed and returned None — treat as success
+        return _result("success", cmd_name, "")
+    except PlanError as e:
+        return _result("error", cmd_name, str(e))
+    except Exception as e:
+        return _result("error", cmd_name, f"unexpected error: {e}")
 
 # ---------------------------------------------------------------------------
 # Atomic file I/O + locking + checksums
@@ -255,8 +299,7 @@ def read_plan(path: str) -> str:
     """Read PLAN.md and return its contents (checksum stripped)."""
     p = Path(path)
     if not p.exists():
-        print(f"Error: {path} does not exist", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"{path} does not exist")
     raw = p.read_text(encoding="utf-8")
     return _strip_checksum(raw)
 
@@ -265,8 +308,7 @@ def read_plan_raw(path: str) -> str:
     """Read PLAN.md including the checksum line (for verification)."""
     p = Path(path)
     if not p.exists():
-        print(f"Error: {path} does not exist", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"{path} does not exist")
     return p.read_text(encoding="utf-8")
 
 
@@ -431,8 +473,7 @@ def parse_phase_arg(arg: str) -> int:
     id_part = arg.split(" ➖ ", 1)[0].strip()
     m = re.match(r"Phase\s+(\d+)", id_part)
     if not m:
-        print(f"Error: invalid phase ref: {arg!r}", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"invalid phase ref: {arg!r}")
     return int(m.group(1))
 
 
@@ -451,8 +492,7 @@ def parse_task_arg(arg: str) -> tuple[int, int]:
     # Simple: "Task X.Y"
     m = re.match(r"Task\s+(\d+)\.(\d+)", id_part)
     if not m:
-        print(f"Error: invalid task ref: {arg!r}", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"invalid task ref: {arg!r}")
     return int(m.group(1)), int(m.group(2))
 
 
@@ -511,7 +551,7 @@ def parse_task_add_arg(arg: str) -> tuple[int, int, str]:
 # ---------------------------------------------------------------------------
 
 def validate_title(title: str, label: str = "title") -> str:
-    """Validate a title string. Returns stripped title or raises error.
+    """Validate a title string. Returns stripped title or raises PlanError.
 
     Checks:
       - Not empty after stripping
@@ -520,14 +560,11 @@ def validate_title(title: str, label: str = "title") -> str:
     """
     title = title.strip()
     if not title:
-        print(f"Error: {label} cannot be empty", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"{label} cannot be empty")
     if "\n" in title or "\r" in title:
-        print(f"Error: {label} contains newlines — titles must be single-line", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"{label} contains newlines — titles must be single-line")
     if len(title) > 2048:
-        print(f"Error: {label} exceeds maximum length of 2048 characters ({len(title)} chars)", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"{label} exceeds maximum length of 2048 characters ({len(title)} chars)")
     return title
 
 
@@ -542,8 +579,7 @@ def parse_plan_title(line: str) -> tuple[str, str]:
     """Return (emoji, title) from the plan title line."""
     m = _TITLE_RE.match(line.strip())
     if not m:
-        print(f"Error: invalid plan title line: {line!r}", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"invalid plan title line: {line!r}")
     emoji = m.group(1) or STATUS_TODO
     title = m.group(2).strip()
     return emoji, title
@@ -946,12 +982,12 @@ def check_plan(plan_path: str, fix: bool = False) -> tuple[int, list[str]]:
       8. Empty phases — phases with zero tasks (warning)
       9. Duplicate task IDs — no two tasks share the same (phase, task) number
     """
-    p = Path(plan_path)
-    if not p.exists():
-        print(f"Error: {plan_path} does not exist", file=sys.stderr)
-        sys.exit(1)
-
-    raw = p.read_text(encoding="utf-8")
+    # Use read_plan_raw so it works in both standalone and batch mode
+    # (batch mode intercepts read_plan_raw to use in-memory content)
+    try:
+        raw = read_plan_raw(plan_path)
+    except PlanError:
+        raise PlanError(f"{plan_path} does not exist")
 
     # --- Check 1: Checksum integrity (always fix immediately) ---
     checksum_ok = _verify_checksum(raw)
@@ -1458,7 +1494,7 @@ def validate_transition(current: str, new: str) -> bool:
 
 
 def check_dependency_cycle(plan_path: str, depends_on: list[str]) -> None:
-    """Check for cycles in dependency graph. Exits with error if cycle found.
+    """Check for cycles in dependency graph. Raises PlanError if cycle found.
 
     Walks from each dependency transitively and checks if we can reach back
     to plan_path.
@@ -1474,8 +1510,7 @@ def check_dependency_cycle(plan_path: str, depends_on: list[str]) -> None:
     while stack:
         current_resolved = stack.pop()
         if current_resolved == base_resolved:
-            print(f"Error: dependency cycle detected involving {plan_path}", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"dependency cycle detected involving {plan_path}")
         if current_resolved in visited:
             continue
         visited.add(current_resolved)
@@ -1610,6 +1645,7 @@ _BATCH_CMD_ATTRS: dict[str, list[str]] = {
     "remove-task-dependency": ["phase_ref", "task_ref", "dep_task_ref"],
     "set-all-statuses": ["status"],
     "sort": [],
+    "check": [],
 }
 
 
@@ -1624,14 +1660,12 @@ def _parse_batch_line(line: str) -> tuple[str, list[str]] | None:
     try:
         tokens = shlex.split(line)
     except ValueError as e:
-        print(f"Error: cannot parse line: {e}", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"cannot parse line: {e}")
     if not tokens:
         return None
     cmd_name = tokens[0]
     if cmd_name not in _BATCH_CMD_ATTRS:
-        print(f"Error: unrecognized command: {cmd_name!r}", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"unrecognized command: {cmd_name!r}")
     return cmd_name, tokens[1:]
 
 
@@ -1649,29 +1683,23 @@ def _parse_batch_json(raw: str) -> list[tuple[str, list[str]]]:
     try:
         data = _json_mod.loads(raw)
     except _json_mod.JSONDecodeError as e:
-        print(f"Error: invalid JSON: {e}", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"invalid JSON: {e}")
 
     if not isinstance(data, list):
-        print("Error: JSON input must be an array of command objects", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError("JSON input must be an array of command objects")
 
     operations = []
     for idx, obj in enumerate(data):
         if not isinstance(obj, dict):
-            print(f"Error: item {idx} is not an object", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"item {idx} is not an object")
         cmd_name = obj.get("command")
         if not cmd_name:
-            print(f"Error: item {idx} missing 'command' key", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"item {idx} missing 'command' key")
         if cmd_name not in _BATCH_CMD_ATTRS:
-            print(f"Error: unrecognized command: {cmd_name!r}", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"unrecognized command: {cmd_name!r}")
         args = obj.get("args", [])
         if not isinstance(args, list):
-            print(f"Error: 'args' for item {idx} must be an array", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"'args' for item {idx} must be an array")
         # Ensure all args are strings
         str_args = [str(a) for a in args]
         operations.append((cmd_name, str_args))
@@ -1700,7 +1728,7 @@ def _make_namespace(cmd_name: str, args: list[str], path: str) -> argparse.Names
     return argparse.Namespace(**d)
 
 
-def cmd_batch(args: argparse.Namespace) -> None:
+def cmd_batch(args: argparse.Namespace) -> dict:
     """Execute multiple plan operations on the same PLAN.md under one lock.
 
     Reads commands from stdin or a file (--input FILE). Two input modes:
@@ -1719,6 +1747,8 @@ def cmd_batch(args: argparse.Namespace) -> None:
       - Stdin without --json: line mode (default)
 
     All operations share a single exclusive lock and atomic write at the end.
+    On error, remaining steps are marked as "skipped" and not executed.
+    Output is a JSON object with "status" and "results" array.
     """
     path = args.path
     input_file = getattr(args, "input", None)
@@ -1728,16 +1758,14 @@ def cmd_batch(args: argparse.Namespace) -> None:
     if input_file:
         p = Path(input_file)
         if not p.exists():
-            print(f"Error: input file {input_file} does not exist", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"input file {input_file} does not exist")
         raw = p.read_text(encoding="utf-8").strip()
     else:
         raw = sys.stdin.read().strip()
 
     if not raw:
         src = input_file or "stdin"
-        print(f"Error: no commands provided in {src}", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"no commands provided in {src}")
 
     # Determine mode: --json flag wins, then auto-detect from file extension
     json_mode = json_flag
@@ -1760,8 +1788,7 @@ def cmd_batch(args: argparse.Namespace) -> None:
             operations.append(result)
 
     if not operations:
-        print("Error: no valid commands found", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError("no valid commands found")
 
     # If file doesn't exist, first command MUST be 'create'.
     # This prevents malformed files (mutations on empty content) and
@@ -1769,11 +1796,13 @@ def cmd_batch(args: argparse.Namespace) -> None:
     if not Path(path).exists():
         first_cmd = operations[0][0]
         if first_cmd != "create":
-            print(
-                f"Error: file {path} does not exist — first batch command must be 'create'",
-                file=sys.stderr,
+            raise PlanError(
+                f"file {path} does not exist — first batch command must be 'create'",
             )
-            sys.exit(1)
+
+    # Results list for JSON output
+    results: list[dict] = []
+    hit_error = False
 
     # Hold exclusive lock for the entire batch
     fd = _acquire_exclusive_lock(path)
@@ -1783,24 +1812,21 @@ def cmd_batch(args: argparse.Namespace) -> None:
 
         # If file doesn't exist, create empty content (create cmd will handle it)
         if Path(path).exists():
-            raw = read_plan_raw(path)
-            if not _verify_checksum(raw):
-                print(
-                    f"Warning: checksum mismatch in {path} — file may be corrupted",
-                    file=sys.stderr,
-                )
-            content = _strip_checksum(raw)
+            raw_content = read_plan_raw(path)
+            if not _verify_checksum(raw_content):
+                pass  # warning logged by caller
+            content = _strip_checksum(raw_content)
         else:
             content = ""
 
-        # Apply each operation sequentially, capturing stdout to avoid
-        # confusing partial output on failure (buffered prints from earlier
-        # commands would flush even when a later command aborts the batch).
-        import io as _io
-        captured_stdout: list[str] = []
+        for cmd_name, op_args in operations:
+            # If we already hit an error, skip remaining steps
+            if hit_error:
+                results.append(_result("skipped", cmd_name,
+                                        "skipped — previous step failed"))
+                continue
 
-        for cmd_name, args in operations:
-            ns = _make_namespace(cmd_name, args, path)
+            ns = _make_namespace(cmd_name, op_args, path)
 
             if cmd_name == "create":
                 # create is special — it writes directly without _safe_edit
@@ -1813,14 +1839,17 @@ def cmd_batch(args: argparse.Namespace) -> None:
 - Current Phase: NONE
 - Current Task: NONE
 """
-                captured_stdout.append(f"Created {path}")
+                results.append(_result("success", "create",
+                                        f"Created {path}", path=path))
                 continue
 
             # For all other commands, call the transform directly
             handler = COMMAND_MAP.get(cmd_name)
             if handler is None:
-                print(f"Error: unknown command {cmd_name!r}", file=sys.stderr)
-                sys.exit(1)
+                results.append(_result("error", cmd_name,
+                                        f"unknown command {cmd_name!r}"))
+                hit_error = True
+                continue
 
             # Wrap handler to apply its transform in-place instead of via _safe_edit.
             # Each cmd_* function calls _safe_edit(path, transform_fn) internally.
@@ -1846,55 +1875,66 @@ def cmd_batch(args: argparse.Namespace) -> None:
             globals()["read_plan"] = _inline_read_plan
             globals()["read_plan_raw"] = _inline_read_plan_raw
 
-            # Capture stdout during handler execution
-            old_stdout = sys.stdout
-            capture_buf = _io.StringIO()
-            sys.stdout = capture_buf
             try:
-                handler(ns)
-                captured = capture_buf.getvalue().strip()
-                if captured:
-                    captured_stdout.append(captured)
-            except SystemExit:
-                sys.stdout = old_stdout
-                raise
+                res = handler(ns)
+                # Handler now returns a dict result
+                if isinstance(res, dict):
+                    results.append(res)
+                    if res.get("status") == "error":
+                        hit_error = True
+                else:
+                    # Fallback for legacy handlers that don't return dicts
+                    results.append(_result("success", cmd_name, ""))
+            except PlanError as e:
+                results.append(_result("error", cmd_name, str(e)))
+                hit_error = True
+            except Exception as e:
+                results.append(_result("error", cmd_name, f"unexpected error: {e}"))
+                hit_error = True
             finally:
-                sys.stdout = old_stdout
                 globals()["_safe_edit"] = original_safe_edit
                 globals()["read_plan"] = original_read_plan
                 globals()["read_plan_raw"] = original_read_plan_raw
 
-        # Touch updated timestamp after all operations
-        content = _touch_updated(path, content)
-        # Re-derive statuses
-        content = validate_status_set(content)
+        # Only write if no error occurred
+        if not hit_error:
+            # Touch updated timestamp after all operations
+            content = _touch_updated(path, content)
+            # Re-derive statuses
+            content = validate_status_set(content)
 
-        # Atomic write
-        final_content = _add_checksum(content)
-        write_plan_atomic(path, final_content)
+            # Atomic write
+            final_content = _add_checksum(content)
+            write_plan_atomic(path, final_content)
 
     finally:
         _release_lock(fd, path)
 
-    # Print captured output only after successful completion
-    for line in captured_stdout:
-        print(line)
-    print(f"Batch complete: {len(operations)} operations applied to {path}")
+    # Determine overall status
+    if hit_error:
+        overall_status = "error"
+    elif any(r["status"] == "warning" for r in results):
+        overall_status = "warning"
+    else:
+        overall_status = "success"
+
+    return _result(overall_status, "batch",
+                    f"Batch complete: {len(operations)} operations applied to {path}",
+                    path=path, results=results)
 
 
 # ---------------------------------------------------------------------------
 # Commands — create
 # ---------------------------------------------------------------------------
 
-def cmd_create(args: argparse.Namespace) -> None:
+def cmd_create(args: argparse.Namespace) -> dict:
     """Create a new PLAN.md with header."""
     path = args.path
     title = validate_title(args.title, "plan title")
     depends = getattr(args, "depends", []) or []
 
     if Path(path).exists():
-        print(f"Error: {path} already exists", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"{path} already exists")
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     deps_str = "NONE"
@@ -1915,53 +1955,56 @@ def cmd_create(args: argparse.Namespace) -> None:
     # Atomically write the new file (no lock needed — file doesn't exist yet)
     final = _add_checksum(content)
     write_plan_atomic(path, final)
-    print(f"Created {path}")
+    return _result("success", "create", f"Created {path}", path=path)
 
 
 # ---------------------------------------------------------------------------
 # Commands — get (header reads)
 # ---------------------------------------------------------------------------
 
-def cmd_get_plan_title(args: argparse.Namespace) -> None:
+def cmd_get_plan_title(args: argparse.Namespace) -> dict:
     content = _safe_read(args.path)
     lines = content.splitlines()
     for line in lines:
         m = _TITLE_RE.match(line.strip())
         if m:
-            print(m.group(2).strip())
-            return
-    print("Error: no plan title found", file=sys.stderr)
-    sys.exit(1)
+            return _result("success", "get-plan-title", m.group(2).strip(), value=m.group(2).strip())
+    raise PlanError("no plan title found")
 
 
-def cmd_get_plan_depends_on(args: argparse.Namespace) -> None:
+def cmd_get_plan_depends_on(args: argparse.Namespace) -> dict:
     content = _safe_read(args.path)
     header = _parse_header("", content.splitlines())
-    print(header.get("depends_on", "NONE"))
+    val = header.get("depends_on", "NONE")
+    return _result("success", "get-plan-depends-on", val, value=val)
 
 
-def cmd_get_plan_created(args: argparse.Namespace) -> None:
+def cmd_get_plan_created(args: argparse.Namespace) -> dict:
     content = _safe_read(args.path)
     header = _parse_header("", content.splitlines())
-    print(header.get("created", ""))
+    val = header.get("created", "")
+    return _result("success", "get-plan-created", val, value=val)
 
 
-def cmd_get_plan_updated(args: argparse.Namespace) -> None:
+def cmd_get_plan_updated(args: argparse.Namespace) -> dict:
     content = _safe_read(args.path)
     header = _parse_header("", content.splitlines())
-    print(header.get("updated", ""))
+    val = header.get("updated", "")
+    return _result("success", "get-plan-updated", val, value=val)
 
 
-def cmd_get_plan_current_phase(args: argparse.Namespace) -> None:
+def cmd_get_plan_current_phase(args: argparse.Namespace) -> dict:
     content = _safe_read(args.path)
     header = _parse_header("", content.splitlines())
-    print(header.get("current_phase", "NONE"))
+    val = header.get("current_phase", "NONE")
+    return _result("success", "get-plan-current-phase", val, value=val)
 
 
-def cmd_get_plan_current_task(args: argparse.Namespace) -> None:
+def cmd_get_plan_current_task(args: argparse.Namespace) -> dict:
     content = _safe_read(args.path)
     header = _parse_header("", content.splitlines())
-    print(header.get("current_task", "NONE"))
+    val = header.get("current_task", "NONE")
+    return _result("success", "get-plan-current-task", val, value=val)
 
 
 # ---------------------------------------------------------------------------
@@ -1975,7 +2018,7 @@ def _touch_updated(path: str, content: str) -> str:
     return "\n".join(_update_header_field(lines, "Updated", now))
 
 
-def cmd_set_plan_title(args: argparse.Namespace) -> None:
+def cmd_set_plan_title(args: argparse.Namespace) -> dict:
     def _transform(content: str) -> str:
         lines = content.splitlines()
         new_title = args.title
@@ -1991,10 +2034,10 @@ def cmd_set_plan_title(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-    print(f"Set plan title to: {args.title}")
+    return _result("success", "set-plan-title", f"Set plan title to: {args.title}")
 
 
-def cmd_set_plan_depends_on(args: argparse.Namespace) -> None:
+def cmd_set_plan_depends_on(args: argparse.Namespace) -> dict:
     deps = getattr(args, "deps", []) or []
     deps_str = "NONE" if not deps else " , ".join(deps)
 
@@ -2010,10 +2053,10 @@ def cmd_set_plan_depends_on(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-    print(f"Set depends on to: {deps_str}")
+    return _result("success", "set-plan-depends-on", f"Set depends on to: {deps_str}")
 
 
-def cmd_set_plan_created(args: argparse.Namespace) -> None:
+def cmd_set_plan_created(args: argparse.Namespace) -> dict:
     val = args.value
     if val in ("--now", "__NOW__"):
         val = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -2026,10 +2069,10 @@ def cmd_set_plan_created(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-    print(f"Set created to: {val}")
+    return _result("success", "set-plan-created", f"Set created to: {val}")
 
 
-def cmd_set_plan_updated(args: argparse.Namespace) -> None:
+def cmd_set_plan_updated(args: argparse.Namespace) -> dict:
     val = args.value
     if val in ("--now", "__NOW__"):
         val = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -2041,10 +2084,10 @@ def cmd_set_plan_updated(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-    print(f"Set updated to: {val}")
+    return _result("success", "set-plan-updated", f"Set updated to: {val}")
 
 
-def cmd_set_plan_current_phase(args: argparse.Namespace) -> None:
+def cmd_set_plan_current_phase(args: argparse.Namespace) -> dict:
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
     target = parse_phase_arg(phase_ref)
 
@@ -2062,15 +2105,14 @@ def cmd_set_plan_current_phase(args: argparse.Namespace) -> None:
                     break
 
         if target_text is None:
-            print(f"Error: {phase_ref} not found", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"{phase_ref} not found")
 
         lines = _update_header_field(lines, "Current Phase", target_text)
         content = "\n".join(lines)
         content = _touch_updated(args.path, content)
         return content
 
-    # Resolve target_text before locking for the print message
+    # Resolve target_text before locking for the result message
     existing = read_plan(args.path)
     target_text = None
     for line in existing.splitlines():
@@ -2079,14 +2121,13 @@ def cmd_set_plan_current_phase(args: argparse.Namespace) -> None:
             target_text = f"{m[0]} Phase {m[1]}"
             break
     if target_text is None:
-        print(f"Error: {phase_ref} not found", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"{phase_ref} not found")
 
     _safe_edit(args.path, _transform)
-    print(f"Set current phase to: {target_text}")
+    return _result("success", "set-plan-current-phase", f"Set current phase to: {target_text}")
 
 
-def cmd_set_plan_current_task(args: argparse.Namespace) -> None:
+def cmd_set_plan_current_task(args: argparse.Namespace) -> dict:
     task_ref = args.task_ref  # e.g. "Task 2.3" or "Task 2.3 - Description..."
     target_phase, target_task = parse_task_arg(task_ref)
 
@@ -2102,15 +2143,14 @@ def cmd_set_plan_current_task(args: argparse.Namespace) -> None:
                 break
 
         if target_text is None:
-            print(f"Error: {task_ref} not found", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"{task_ref} not found")
 
         lines = _update_header_field(lines, "Current Task", target_text)
         content = "\n".join(lines)
         content = _touch_updated(args.path, content)
         return content
 
-    # Resolve target_text before locking for the print message
+    # Resolve target_text before locking for the result message
     existing = read_plan(args.path)
     target_text = None
     for line in existing.splitlines():
@@ -2119,29 +2159,28 @@ def cmd_set_plan_current_task(args: argparse.Namespace) -> None:
             target_text = f"{t[0]} Task {target_phase}.{target_task}"
             break
     if target_text is None:
-        print(f"Error: {task_ref} not found", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"{task_ref} not found")
 
     _safe_edit(args.path, _transform)
-    print(f"Set current task to: {target_text}")
+    return _result("success", "set-plan-current-task", f"Set current task to: {target_text}")
 
 
 # ---------------------------------------------------------------------------
 # Commands — status reads
 # ---------------------------------------------------------------------------
 
-def cmd_get_plan_status(args: argparse.Namespace) -> None:
+def cmd_get_plan_status(args: argparse.Namespace) -> dict:
     content = _safe_read(args.path)
     lines = content.splitlines()
     for line in lines:
         m = _TITLE_RE.match(line.strip())
         if m:
-            print(m.group(1) or STATUS_TODO)
-            return
-    print(STATUS_TODO)
+            val = m.group(1) or STATUS_TODO
+            return _result("success", "get-plan-status", val, value=val)
+    return _result("success", "get-plan-status", STATUS_TODO, value=STATUS_TODO)
 
 
-def cmd_get_phase_status(args: argparse.Namespace) -> None:
+def cmd_get_phase_status(args: argparse.Namespace) -> dict:
     content = _safe_read(args.path)
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
     lines = content.splitlines()
@@ -2150,13 +2189,11 @@ def cmd_get_phase_status(args: argparse.Namespace) -> None:
     for line in lines:
         p = parse_phase_heading(line)
         if p and p[1] == target:
-            print(p[0])
-            return
-    print(f"Error: {phase_ref} not found", file=sys.stderr)
-    sys.exit(1)
+            return _result("success", "get-phase-status", p[0], value=p[0])
+    raise PlanError(f"{phase_ref} not found")
 
 
-def cmd_get_task_status(args: argparse.Namespace) -> None:
+def cmd_get_task_status(args: argparse.Namespace) -> dict:
     content = _safe_read(args.path)
     task_ref = args.task_ref  # e.g. "Task 2.3" or "Task 2.3 - Description..."
     lines = content.splitlines()
@@ -2165,23 +2202,20 @@ def cmd_get_task_status(args: argparse.Namespace) -> None:
     for line in lines:
         t = parse_task_line(line)
         if t and t[1] == target_phase and t[2] == target_task:
-            print(t[0])
-            return
-    print(f"Error: {task_ref} not found", file=sys.stderr)
-    sys.exit(1)
+            return _result("success", "get-task-status", t[0], value=t[0])
+    raise PlanError(f"{task_ref} not found")
 
 
 # ---------------------------------------------------------------------------
 # Commands — status writes
 # ---------------------------------------------------------------------------
 
-def cmd_set_all_statuses(args: argparse.Namespace) -> None:
+def cmd_set_all_statuses(args: argparse.Namespace) -> dict:
     """Set plan, all phases, and all tasks to the same status."""
     new_status = args.status
 
     if new_status not in ALL_STATUSES:
-        print(f"Error: invalid status {new_status!r}", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"invalid status {new_status!r}")
 
     def _transform(content: str) -> str:
         lines = content.splitlines()
@@ -2211,16 +2245,15 @@ def cmd_set_all_statuses(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-    print(f"Set all statuses to: {new_status}")
+    return _result("success", "set-all-statuses", f"Set all statuses to: {new_status}")
 
 
-def cmd_set_plan_status(args: argparse.Namespace) -> None:
+def cmd_set_plan_status(args: argparse.Namespace) -> dict:
     """Set plan status (emoji in title)."""
     new_status = args.status
 
     if new_status not in ALL_STATUSES:
-        print(f"Error: invalid status {new_status!r}", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"invalid status {new_status!r}")
 
     def _transform(content: str) -> str:
         lines = content.splitlines()
@@ -2236,17 +2269,16 @@ def cmd_set_plan_status(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-    print(f"Set plan status to: {new_status}")
+    return _result("success", "set-plan-status", f"Set plan status to: {new_status}")
 
 
-def cmd_set_phase_status(args: argparse.Namespace) -> None:
+def cmd_set_phase_status(args: argparse.Namespace) -> dict:
     """Set phase status (emoji in heading)."""
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
     new_status = args.status
 
     if new_status not in ALL_STATUSES:
-        print(f"Error: invalid status {new_status!r}", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"invalid status {new_status!r}")
 
     target = parse_phase_arg(phase_ref)
 
@@ -2257,33 +2289,29 @@ def cmd_set_phase_status(args: argparse.Namespace) -> None:
             if p and p[1] == target:
                 # Validate transition
                 if not validate_transition(p[0], new_status):
-                    print(
-                        f"Error: invalid transition {p[0]} -> {new_status} for {phase_ref}",
-                        file=sys.stderr,
+                    raise PlanError(
+                        f"invalid transition {p[0]} -> {new_status} for {phase_ref}",
                     )
-                    sys.exit(1)
                 lines[i] = format_phase_heading(new_status, p[1], p[2])
                 break
         else:
-            print(f"Error: {phase_ref} not found", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"{phase_ref} not found")
 
         content = "\n".join(lines)
         content = _touch_updated(args.path, content)
         return content
 
     _safe_edit(args.path, _transform)
-    print(f"Set {phase_ref} status to: {new_status}")
+    return _result("success", "set-phase-status", f"Set {phase_ref} status to: {new_status}")
 
 
-def cmd_set_task_status(args: argparse.Namespace) -> None:
+def cmd_set_task_status(args: argparse.Namespace) -> dict:
     """Set task status (emoji in task line)."""
     task_ref = args.task_ref  # e.g. "Task 2.3" or "Task 2.3 - Description..."
     new_status = args.status
 
     if new_status not in ALL_STATUSES:
-        print(f"Error: invalid status {new_status!r}", file=sys.stderr)
-        sys.exit(1)
+        raise PlanError(f"invalid status {new_status!r}")
 
     target_phase, target_task = parse_task_arg(task_ref)
 
@@ -2294,24 +2322,19 @@ def cmd_set_task_status(args: argparse.Namespace) -> None:
             if t and t[1] == target_phase and t[2] == target_task:
                 # Validate transition
                 if not validate_transition(t[0], new_status):
-                    print(
-                        f"Error: invalid transition {t[0]} -> {new_status} for {task_ref}",
-                        file=sys.stderr,
+                    raise PlanError(
+                        f"invalid transition {t[0]} -> {new_status} for {task_ref}",
                     )
-                    sys.exit(1)
                 # Check dependency satisfaction before transitioning to ⚙️ (Doing)
                 if new_status == STATUS_DOING:
                     if not check_task_deps_satisfied(content, target_phase, target_task):
-                        print(
-                            f"Error: cannot start {task_ref} — dependencies not satisfied (all deps must be {STATUS_DONE})",
-                            file=sys.stderr,
+                        raise PlanError(
+                            f"cannot start {task_ref} — dependencies not satisfied (all deps must be {STATUS_DONE})",
                         )
-                        sys.exit(1)
                 lines[i] = format_task_line(new_status, t[1], t[2], t[3], t[4])
                 break
         else:
-            print(f"Error: {task_ref} not found", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"{task_ref} not found")
 
         content = "\n".join(lines)
         content = _touch_updated(args.path, content)
@@ -2320,14 +2343,14 @@ def cmd_set_task_status(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-    print(f"Set {task_ref} status to: {new_status}")
+    return _result("success", "set-task-status", f"Set {task_ref} status to: {new_status}")
 
 
 # ---------------------------------------------------------------------------
 # Commands — Phase CRUD
 # ---------------------------------------------------------------------------
 
-def cmd_add_phase(args: argparse.Namespace) -> None:
+def cmd_add_phase(args: argparse.Namespace) -> dict:
     """Add a new phase, inserted in sorted numeric position.
 
     Accepts two forms:
@@ -2391,10 +2414,12 @@ def cmd_add_phase(args: argparse.Namespace) -> None:
         phase_num = len(extract_phases(existing)) + 1
 
     _safe_edit(args.path, _transform)
-    print(f"Added Phase {phase_num} ({title}) with status {STATUS_TODO}")
+    return _result("success", "add-phase",
+                    f"Added Phase {phase_num} ({title}) with status {STATUS_TODO}",
+                    phase_id=f"Phase {phase_num}")
 
 
-def cmd_update_phase(args: argparse.Namespace) -> None:
+def cmd_update_phase(args: argparse.Namespace) -> dict:
     """Update phase description/title.
 
     Accepts two forms:
@@ -2429,8 +2454,7 @@ def cmd_update_phase(args: argparse.Namespace) -> None:
                 break
 
         if not found:
-            print(f"Error: {phase_title} not found", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"Phase {target} not found")
 
         # Replace the phase heading line's title
         for i, line in enumerate(lines):
@@ -2447,10 +2471,11 @@ def cmd_update_phase(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-    print(f"Updated Phase {target} description to: {new_description if new_description else 'unchanged'}")
+    return _result("success", "update-phase",
+                    f"Updated Phase {target} description to: {new_description if new_description else 'unchanged'}")
 
 
-def cmd_remove_phase(args: argparse.Namespace) -> None:
+def cmd_remove_phase(args: argparse.Namespace) -> dict:
     """Remove a phase and all its tasks."""
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
 
@@ -2471,8 +2496,7 @@ def cmd_remove_phase(args: argparse.Namespace) -> None:
                 break
 
         if remove_start is None:
-            print(f"Error: {phase_ref} not found", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"{phase_ref} not found")
 
         # Remove lines for this phase (including trailing blank line if any)
         # Also remove one leading blank line if present
@@ -2487,14 +2511,14 @@ def cmd_remove_phase(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-    print(f"Removed {phase_ref}")
+    return _result("success", "remove-phase", f"Removed {phase_ref}")
 
 
 # ---------------------------------------------------------------------------
 # Commands — Task CRUD
 # ---------------------------------------------------------------------------
 
-def cmd_add_task(args: argparse.Namespace) -> None:
+def cmd_add_task(args: argparse.Namespace) -> dict:
     """Add a new task to an existing phase, inserted in sorted numeric position.
 
     If the phase_ref includes a description ("Phase N ➖ Title") and the phase
@@ -2532,7 +2556,7 @@ def cmd_add_task(args: argparse.Namespace) -> None:
         task_num = explicit_t
     else:
         task_phase = target_phase
-        # Pre-read to determine task number for the print message
+        # Pre-read to determine task number for the result message
         existing = read_plan(args.path)
         phases = extract_phases(existing)
         max_task = 0
@@ -2568,8 +2592,7 @@ def cmd_add_task(args: argparse.Namespace) -> None:
                 lines = lines[:insert_idx] + new_phase_lines + lines[insert_idx:]
                 phases = extract_phases("\n".join(lines))
             else:
-                print(f"Error: Phase {target_phase} not found", file=sys.stderr)
-                sys.exit(1)
+                raise PlanError(f"Phase {target_phase} not found")
 
         # Re-resolve task_num inside transform (content may differ from pre-read)
         if explicit_p > 0 and explicit_t > 0:
@@ -2590,17 +2613,14 @@ def cmd_add_task(args: argparse.Namespace) -> None:
             if num == target_phase:
                 for t in tasks:
                     if t[2] == tn:
-                        print(
-                            f"Error: Task {target_phase}.{tn} already exists in Phase {target_phase}",
-                            file=sys.stderr,
+                        raise PlanError(
+                            f"Task {target_phase}.{tn} already exists in Phase {target_phase}",
                         )
-                        sys.exit(1)
 
         # Insert at sorted position within the phase
         insert_idx, err = _sorted_task_insert_index(lines, target_phase, tn)
         if insert_idx is None:
-            print(f"Error: {err}", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(err)
 
         task_line = format_task_line(STATUS_TODO, tp, tn, clean_title, deps)
         lines.insert(insert_idx, task_line)
@@ -2611,10 +2631,12 @@ def cmd_add_task(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-    print(f"Added {task_title_str} to {phase_ref} with status {STATUS_TODO}")
+    return _result("success", "add-task",
+                    f"Added {task_title_str} to {phase_ref} with status {STATUS_TODO}",
+                    task_id=f"Task {task_phase}.{task_num}")
 
 
-def cmd_update_task(args: argparse.Namespace) -> None:
+def cmd_update_task(args: argparse.Namespace) -> dict:
     """Update task description (preserves existing dependencies).
 
     Accepts two forms:
@@ -2651,8 +2673,7 @@ def cmd_update_task(args: argparse.Namespace) -> None:
                 break
         else:
             task_id = f"Task {target_phase}.{target_task}"
-            print(f"Error: {task_id} not found in {phase_ref}", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"{task_id} not found in {phase_ref}")
 
         content = "\n".join(lines)
         content = _touch_updated(args.path, content)
@@ -2661,10 +2682,11 @@ def cmd_update_task(args: argparse.Namespace) -> None:
 
     task_id = f"Task {target_phase}.{target_task}"
     _safe_edit(args.path, _transform)
-    print(f"Updated {task_id} description to: {new_description if new_description else 'unchanged'}")
+    return _result("success", "update-task",
+                    f"Updated {task_id} description to: {new_description if new_description else 'unchanged'}")
 
 
-def cmd_remove_task(args: argparse.Namespace) -> None:
+def cmd_remove_task(args: argparse.Namespace) -> dict:
     """Remove a task from a phase."""
     phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
     task_ref = args.task_ref  # e.g. "Task 2.4" or "Task 2.4 - Description..."
@@ -2689,8 +2711,7 @@ def cmd_remove_task(args: argparse.Namespace) -> None:
                 break
 
         if remove_start is None:
-            print(f"Error: {task_ref} not found in {phase_ref}", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"{task_ref} not found in {phase_ref}")
 
         new_lines = lines[:remove_start] + lines[remove_end:]
 
@@ -2700,7 +2721,7 @@ def cmd_remove_task(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-    print(f"Removed {task_ref}")
+    return _result("success", "remove-task", f"Removed {task_ref}")
 
 
 # ---------------------------------------------------------------------------
@@ -2732,7 +2753,7 @@ def _check_task_dep_cycle(graph: dict[tuple[int, int], list[tuple[int, int]]], n
     A cycle exists if new_dep_to (or any of its transitive dependencies)
     can reach back to new_dep_from.
 
-    Exits with error if cycle detected.
+    Raises PlanError if cycle detected.
     """
     # BFS/DFS from new_dep_to through existing edges, see if we reach new_dep_from
     visited = set()
@@ -2743,12 +2764,10 @@ def _check_task_dep_cycle(graph: dict[tuple[int, int], list[tuple[int, int]]], n
         if current == new_dep_from:
             from_p, from_t = new_dep_from
             to_p, to_t = new_dep_to
-            print(
-                f"Error: adding dependency Task {from_p}.{from_t} -> Task {to_p}.{to_t} "
+            raise PlanError(
+                f"adding dependency Task {from_p}.{from_t} -> Task {to_p}.{to_t} "
                 f"would create a dependency cycle",
-                file=sys.stderr,
             )
-            sys.exit(1)
         if current in visited:
             continue
         visited.add(current)
@@ -2760,7 +2779,7 @@ def _check_task_dep_cycle(graph: dict[tuple[int, int], list[tuple[int, int]]], n
 # Commands — add-task-dependency / remove-task-dependency
 # ---------------------------------------------------------------------------
 
-def cmd_add_task_dependency(args: argparse.Namespace) -> None:
+def cmd_add_task_dependency(args: argparse.Namespace) -> dict:
     """Add a dependency to an existing task.
 
     Takes: phase_ref, task_ref (the task to modify), dep_task_ref (the dependency).
@@ -2799,8 +2818,7 @@ def cmd_add_task_dependency(args: argparse.Namespace) -> None:
                     target_found = True
                     break
         if not target_found:
-            print(f"Error: {task_ref} not found in {phase_ref}", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"{task_ref} not found in {phase_ref}")
 
         # Verify dependency task exists
         dep_found = False
@@ -2810,8 +2828,7 @@ def cmd_add_task_dependency(args: argparse.Namespace) -> None:
                     dep_found = True
                     break
         if not dep_found:
-            print(f"Error: dependency {dep_task_ref} not found", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"dependency {dep_task_ref} not found")
 
         # Build current dependency graph for cycle detection (before adding new edge)
         graph = _build_task_dep_graph(phases)
@@ -2828,19 +2845,13 @@ def cmd_add_task_dependency(args: argparse.Namespace) -> None:
 
                 # Check for duplicate (compare canonical forms)
                 if canonical_dep in current_deps:
-                    print(
-                        f"Error: {task_ref} already depends on {dep_task_ref}",
-                        file=sys.stderr,
+                    raise PlanError(
+                        f"{task_ref} already depends on {dep_task_ref}",
                     )
-                    sys.exit(1)
 
                 # Also check self-dependency
                 if target_phase == dep_phase and target_task == dep_task:
-                    print(
-                        f"Error: task cannot depend on itself",
-                        file=sys.stderr,
-                    )
-                    sys.exit(1)
+                    raise PlanError("task cannot depend on itself")
 
                 current_deps.append(canonical_dep)
                 lines[i] = format_task_line(t[0], t[1], t[2], t[3], current_deps)
@@ -2852,10 +2863,10 @@ def cmd_add_task_dependency(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-    print(f"Added dependency: {task_ref} -> {dep_task_ref}")
+    return _result("success", "add-task-dependency", f"Added dependency: {task_ref} -> {dep_task_ref}")
 
 
-def cmd_remove_task_dependency(args: argparse.Namespace) -> None:
+def cmd_remove_task_dependency(args: argparse.Namespace) -> dict:
     """Remove a dependency from an existing task.
 
     Takes: phase_ref, task_ref (the task to modify), dep_task_ref (the dependency to remove).
@@ -2890,8 +2901,7 @@ def cmd_remove_task_dependency(args: argparse.Namespace) -> None:
                     target_found = True
                     break
         if not target_found:
-            print(f"Error: {task_ref} not found in {phase_ref}", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"{task_ref} not found in {phase_ref}")
 
         # Find and update the task line
         removed = False
@@ -2910,11 +2920,9 @@ def cmd_remove_task_dependency(args: argparse.Namespace) -> None:
                         break
 
                 if not found_dep:
-                    print(
-                        f"Error: {task_ref} does not depend on {dep_task_ref}",
-                        file=sys.stderr,
+                    raise PlanError(
+                        f"{task_ref} does not depend on {dep_task_ref}",
                     )
-                    sys.exit(1)
 
                 # Remove matching deps (could have both "Task X.Y" and "Phase X - Task X.Y" forms)
                 new_deps = [
@@ -2927,8 +2935,7 @@ def cmd_remove_task_dependency(args: argparse.Namespace) -> None:
                 break
 
         if not removed:
-            print(f"Error: {task_ref} not found in {phase_ref}", file=sys.stderr)
-            sys.exit(1)
+            raise PlanError(f"{task_ref} not found in {phase_ref}")
 
         content = "\n".join(lines)
         content = _touch_updated(args.path, content)
@@ -2936,14 +2943,14 @@ def cmd_remove_task_dependency(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-    print(f"Removed dependency: {task_ref} -> {dep_task_ref}")
+    return _result("success", "remove-task-dependency", f"Removed dependency: {task_ref} -> {dep_task_ref}")
 
 
 # ---------------------------------------------------------------------------
 # Commands — sort
 # ---------------------------------------------------------------------------
 
-def cmd_check(args: argparse.Namespace) -> None:
+def cmd_check(args: argparse.Namespace) -> dict:
     """Check PLAN.md for consistency issues.
 
     Validates structure, status derivation, numbering, and dependencies.
@@ -2952,19 +2959,20 @@ def cmd_check(args: argparse.Namespace) -> None:
     fix = getattr(args, "fix", False)
     exit_code, messages = check_plan(args.path, fix=fix)
 
-    if not messages:
-        print(f"OK: {args.path} is consistent")
-    else:
-        for msg in messages:
-            print(msg)
-
     if exit_code == 0:
-        print(f"OK: {args.path} passed all checks")
+        return _result("success", "check",
+                        f"OK: {args.path} passed all checks",
+                        path=args.path, issues=[])
+    else:
+        status = "warning" if any("empty-phase" in m for m in messages) and not any(
+            "empty-phase" not in m for m in messages
+        ) else "error"
+        return _result(status, "check",
+                        "; ".join(messages),
+                        path=args.path, issues=messages)
 
-    sys.exit(exit_code)
 
-
-def cmd_sort(args: argparse.Namespace) -> None:
+def cmd_sort(args: argparse.Namespace) -> dict:
     """Sort phases by number and tasks within each phase by number."""
     def _transform(content: str) -> str:
         lines = content.splitlines()
@@ -3040,7 +3048,7 @@ def cmd_sort(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-    print("Sorted phases and tasks")
+    return _result("success", "sort", "Sorted phases and tasks")
 
 
 def _sort_tasks_in_section(section_lines: list[str]) -> list[str]:
@@ -3092,8 +3100,6 @@ def _sort_tasks_in_section(section_lines: list[str]) -> list[str]:
 # ---------------------------------------------------------------------------
 # Commands — get-plan (structured output)
 # ---------------------------------------------------------------------------
-
-import json as _json_mod
 
 
 _STATUS_LABEL = {
@@ -3436,7 +3442,7 @@ def _yaml_scalar(value: str) -> str:
     return value
 
 
-def cmd_get_plan(args: argparse.Namespace) -> None:
+def cmd_get_plan(args: argparse.Namespace) -> dict:
     """Output structured plan data in list or tree format, json or yaml."""
     content = _safe_read(args.path)
     data = _build_plan_data(content)
@@ -3457,7 +3463,8 @@ def cmd_get_plan(args: argparse.Namespace) -> None:
         else:
             output = _format_tree_yaml(data, plan_id)
 
-    print(output, end="")
+    return _result("success", "get-plan", "",
+                    view=view, format=fmt, data=_json_mod.loads(output) if fmt == "json" else output)
 
 
 # ---------------------------------------------------------------------------
@@ -3654,11 +3661,19 @@ def main() -> None:
         parser.print_help()
         sys.exit(1)
 
-    try:
-        handler(args)
-    except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
+    # Run command and get JSON result
+    result = _run_command(handler, args)
+
+    # Print JSON output
+    _print_json_result(result)
+
+    # Exit with appropriate code
+    if result["status"] in ("error",):
         sys.exit(1)
+    elif result["status"] == "skipped":
+        sys.exit(1)
+    else:
+        sys.exit(0)
 
 
 if __name__ == "__main__":

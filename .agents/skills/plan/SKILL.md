@@ -214,6 +214,8 @@ There is no bulk command — call `add-task-dependency` for each individual edge
 - **Updating a plan usually means changing statuses** — most "updates" are status transitions (`set-task-status`, `set-phase-status`). Title/description changes via `update-phase` / `update-task` are rare and should only happen when scope changes. Use sub-bullets for added details.
 - **Run `plan.sh check PLAN.md --fix` after any plan update** — validates checksum integrity, emoji derivation, numbering gaps, ordering, and dependency references. The `--fix` flag auto-repairs recoverable issues (wrong emojis, numbering gaps, out-of-order items). When tasks are renumbered, self-dependencies created by the rename are automatically removed.
 - **Titles must be non-empty and single-line** — empty titles, titles with newlines, or titles exceeding 2048 characters are rejected. This prevents file format corruption from multi-line entries.
+- **All subcommands output JSON** — parse the `status` field to determine success/error. Use `"success"`, `"warning"`, `"error"`, or `"skipped"` (in batch mode when a previous step failed).
+- **Batch mode rolls back on error** — if any step fails, the PLAN.md file is NOT written. Remaining steps are marked `"skipped"` and not executed. This allows safely mixing mutating and read-only operations.
 
 ## Dependencies
 
@@ -222,6 +224,20 @@ Scripts require: `python3` 3.10+ with only built-in modules, and no third-party 
 ## Usage
 
 Use `plan.sh` for every PLAN.md operation. Never edit PLAN.md directly — not even to fix a typo or add a comment. The script is the only valid way to interact with plan files.
+
+### JSON Output
+
+Every subcommand outputs valid JSON to stdout with these fields:
+- **`status`** — one of: `"success"`, `"warning"`, `"error"`, or `"skipped"`
+- **`command`** — the subcommand name (e.g., `"add-phase"`)
+- **`message`** — human-readable description
+- Additional fields vary by command (e.g., `path`, `value`, `data`, `issues`)
+
+On error, exit code is 1. On success or warning, exit code is 0.
+
+### Batch Mode — Skip on Error
+
+In batch mode, if any step returns `"error"`, all remaining steps are marked as `"skipped"` and not executed. This allows mixing mutating and read-only operations in the same batch. The overall batch status reflects the first error encountered.
 
 ```bash
 #
@@ -370,4 +386,8 @@ plan.sh get-plan PLAN.md --tree --yaml   # nested tree, YAML
 #
 # Both modes produce identical output. All mutating commands are supported.
 # Lines starting with # are treated as comments (line mode only).
+#
+# Output is a JSON object with "status" and "results" array.
+# If any step fails ("error"), remaining steps are marked "skipped".
+# On error, the PLAN.md file is NOT written (rollback).
 ```
