@@ -36,7 +36,7 @@ Five status emojis are used across plan, phase, and task levels:
 
 ⚙️ is always required before ☑ — you cannot skip directly to Done.
 
-**Derivation:** plan status derives from phases, phase status derives from tasks. `check --fix` restores auto-derived values after manual overrides. See [02-plan-structure](references/02-plan-structure.md) for derivation rules and error propagation details.
+**Derivation:** plan status derives from phases, phase status derives from tasks. `check --fix` restores auto-derived values after manual overrides.
 
 ## Usage
 
@@ -256,10 +256,3 @@ All mutating and read-only commands are supported in batch mode.
 - **Batch mode supports multi-plan workflows** — each step can target a different PLAN.md. In JSON mode use `"plan_path"` per step; in line mode append `@path` at end of the line. Each result includes a `"path"` field showing which plan was operated on.
 - **Error propagates up through the hierarchy** — a single task at ❌ causes its phase to derive as ❌, which can cause the entire plan to derive as ❌. To unblock the plan, resolve the error task (`❌ → ⚙️ → ☑`) or mark it as done if the error was a false alarm.
 - **Direct status overrides require valid transitions** — `set-plan-status` and `set-phase-status` follow transition rules. Tasks and phases cannot jump from ☐ to ❌ (must go through ⚙️ first: `☐ → ⚙️ → ❌`). Plan-level transitions additionally allow ❓ → ❌ (discovered a blocker during clarification). Use `check --fix` to restore auto-derived values.
-
-## References
-
-- [01-core-concepts](references/01-core-concepts.md) — Rules, file format, when to use
-- [02-plan-structure](references/02-plan-structure.md) — PLAN.md structure, status emojis, transitions, and derivation
-- [03-phases-and-tasks](references/03-phases-and-tasks.md) — Phase/task creation, granularity, task dependencies, argument convention
-- [04-dependencies](references/04-dependencies.md) — Inter-plan DAG dependencies and dependency management
