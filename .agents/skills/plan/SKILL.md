@@ -75,6 +75,7 @@ These are valid state transitions for `[emoji-of-plan]`:
 - ⚙️ → ❌ — critical error or blocker stops all progress across the plan
 - ⚙️ → ☑ — all phases and tasks completed successfully
 - ❓ → ⚙️ — question resolved, begin work
+- ❓ → ❌ — during clarification, a critical blocker was discovered that makes the plan unactionable (e.g., required infrastructure unavailable, budget cut, technology incompatible). Marking ❌ signals "cannot proceed until this blocker is resolved" without requiring ⚙️ first. Run `check --fix` to restore the derived value from actual task states.
 - ❌ → ⚙️ — error resolved, resume work
 - ❌ → ❓ — need clarification to proceed
 
@@ -94,7 +95,7 @@ The plan emoji is **derived from its phases**, not set independently:
 
 When a plan transitions to ☑, it means every single task in every single phase is ☑. The script auto-derives the plan emoji after every edit. Do not mark the plan as completed until this condition is met.
 
-**Manual override:** `set-plan-status` and `set-phase-status` allow temporary manual overrides (e.g. marking a plan as ❓ when scope is unclear). Overrides follow the same transition rules — you cannot jump directly to ❌ from ☐; must go through ⚙️ first (`☐ → ⚙️ → ❌`). Run `check --fix` to restore derived values from actual task/phase states.
+**Manual override:** `set-plan-status` and `set-phase-status` allow temporary manual overrides (e.g. marking a plan as ❓ when scope is unclear). Plan-level overrides additionally allow ❓ → ❌ (blocker discovered during clarification). Run `check --fix` to restore derived values from actual task/phase states.
 
 ## Plan Dependencies
 
@@ -216,12 +217,12 @@ There is no bulk command — call `add-task-dependency` for each individual edge
 - **Do not guess PLAN.md format** — if you are unsure of a command, read the Usage section below or run `plan.sh --help`. Smaller models are especially prone to hallucinating file content. Resist this impulse.
 - **Never remove-and-re-add phases or tasks** — use update commands (`update-phase`, `update-task`, `set-task-status`, `add-task-dependency`). Removing and re-adding loses numbering continuity, breaks dependencies, and resets statuses. Only remove when the item is genuinely no longer part of the plan.
 - **Updating a plan usually means changing statuses** — most "updates" are status transitions (`set-task-status`, `set-phase-status`). Title/description changes via `update-phase` / `update-task` are rare and should only happen when scope changes. Use sub-bullets for added details.
-- **Run `plan.sh check PLAN.md --fix` after any plan update** — validates checksum integrity, emoji derivation, numbering gaps, ordering, and dependency references. The `--fix` flag auto-repairs recoverable issues (wrong emojis, numbering gaps, out-of-order items). When tasks are renumbered, self-dependencies created by the rename are automatically removed.
+- **Run `plan.sh check PLAN.md --fix` after any plan update** — validates checksum integrity, emoji derivation, numbering gaps, ordering, and dependency references. The `--fix` flag auto-repairs recoverable issues (wrong emojis, numbering gaps, out-of-order items, dangling dependency references). When tasks are renumbered, self-dependencies created by the rename are automatically removed.
 - **Titles must be non-empty and single-line** — empty titles, titles with newlines, or titles exceeding 2048 characters are rejected. This prevents file format corruption from multi-line entries.
 - **All subcommands output JSON** — parse the `status` field to determine success/error. Use `"success"`, `"warning"`, `"error"`, or `"skipped"` (in batch mode when a previous step failed).
 - **Batch mode preserves successful mutations on error** — if any step fails, PLAN.md IS written with all successful changes applied up to that point. If the failed command is `set-task-status`, the task is marked ❌ (Error) so you can see what happened. Remaining steps are marked `"skipped"` and not executed.
 - **Error propagates up through the hierarchy** — a single task at ❌ causes its phase to derive as ❌, which can cause the entire plan to derive as ❌. To unblock the plan, resolve the error task (`❌ → ⚙️ → ☑`) or mark it as done if the error was a false alarm.
-- **Direct status overrides require valid transitions** — `set-plan-status` and `set-phase-status` follow the same transition rules as tasks. You cannot jump directly from ☐ to ❌; must go through ⚙️ first (`☐ → ⚙️ → ❌`). Use `check --fix` to restore auto-derived values.
+- **Direct status overrides require valid transitions** — `set-plan-status` and `set-phase-status` follow transition rules. Tasks and phases cannot jump from ☐ to ❌ (must go through ⚙️ first: `☐ → ⚙️ → ❌`). Plan-level transitions additionally allow ❓ → ❌ (discovered a blocker during clarification). Use `check --fix` to restore auto-derived values.
 
 ## Dependencies
 

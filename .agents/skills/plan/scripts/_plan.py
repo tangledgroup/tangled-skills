@@ -40,11 +40,22 @@ STATUS_DONE = "\u2611"          # ☑ Completed / Done
 
 ALL_STATUSES = {STATUS_TODO, STATUS_QUESTION, STATUS_DOING, STATUS_ERROR, STATUS_DONE}
 
-# Valid transitions: from_emoji -> set of allowed to_emojis
+# Valid transitions for tasks and phases: from_emoji -> set of allowed to_emojis
 VALID_TRANSITIONS = {
     STATUS_TODO:     {STATUS_DOING, STATUS_QUESTION},
     STATUS_DOING:    {STATUS_QUESTION, STATUS_ERROR, STATUS_DONE},
     STATUS_QUESTION: {STATUS_DOING},
+    STATUS_ERROR:    {STATUS_DOING, STATUS_QUESTION},
+}
+
+# Plan-level transitions: same as task/phase plus ❓→❌.
+# During scope clarification (❓), a critical blocker may be discovered
+# that makes the plan unactionable — marking it ❌ signals "cannot proceed
+# until this blocker is resolved" without requiring ⚙️ first.
+PLAN_TRANSITIONS = {
+    STATUS_TODO:     {STATUS_DOING, STATUS_QUESTION},
+    STATUS_DOING:    {STATUS_QUESTION, STATUS_ERROR, STATUS_DONE},
+    STATUS_QUESTION: {STATUS_DOING, STATUS_ERROR},
     STATUS_ERROR:    {STATUS_DOING, STATUS_QUESTION},
 }
 
@@ -1071,6 +1082,7 @@ def check_plan(plan_path: str, fix: bool = False) -> tuple[int, list[str]]:
             needs_sort = True
 
     # --- Check 7: Dangling dependency references ---
+    dangling_deps: list[tuple[int, int, str]] = []  # (phase_num, task_num, dep_ref)
     for _, phase_num, title, tasks in phases:
         for t in tasks:
             for dep_ref in t[4]:
@@ -1078,7 +1090,8 @@ def check_plan(plan_path: str, fix: bool = False) -> tuple[int, list[str]]:
                 if dp is None or (dp, dt) not in task_status_map:
                     msg = (f"dangling-dep: Task {t[1]}.{t[2]} depends on {dep_ref!r} "
                            f"which does not exist")
-                    issues.append((msg, False))  # not fixable
+                    issues.append((msg, True))  # fixable — remove dangling ref
+                    dangling_deps.append((t[1], t[2], dep_ref))
 
     # --- Check 8: Empty phases (warning) ---
     for emoji, phase_num, title, tasks in phases:
@@ -1141,6 +1154,12 @@ def check_plan(plan_path: str, fix: bool = False) -> tuple[int, list[str]]:
             for _, pnum, _, tasks in phases:
                 for t in tasks:
                     task_status_map[(t[1], t[2])] = t[0]
+
+                # Fix dangling dependencies
+        if dangling_deps:
+            for phase_num, task_num, dep_ref in dangling_deps:
+                working = _remove_task_dep(working, phase_num, task_num, dep_ref)
+            fixed_issues.append(f"dangling-dep: FIXED — removed {len(dangling_deps)} dangling reference(s)")
 
         # Fix emoji derivation
         if needs_emoji_fix:
@@ -1529,6 +1548,45 @@ def check_dependency_cycle(plan_path: str, depends_on: list[str]) -> None:
                     stack.append(resolved_d)
         except (FileNotFoundError, SystemExit, PermissionError):
             pass  # plan doesn't exist, skip
+
+
+def _remove_task_dep(content: str, phase_num: int, task_num: int, dep_ref: str) -> str:
+    """Remove a specific dependency reference from a task line.
+
+    Finds the task by (phase_num, task_num) and removes `dep_ref` from its
+    ⚓ dependency list. Uses existing parse/format helpers for correctness.
+    Returns updated content.
+    """
+    lines = content.splitlines()
+    in_phase = False
+    current_phase_num = 0
+
+    for i, line in enumerate(lines):
+        # Track which phase we're in
+        ph = parse_phase_heading(line)
+        if ph:
+            in_phase = True
+            current_phase_num = ph[1]
+            continue
+
+        # Look for the target task line
+        if not in_phase or current_phase_num != phase_num:
+            continue
+
+        parsed = parse_task_line(line)
+        if not parsed:
+            continue
+
+        emoji, t_phase, t_num, clean_title, deps = parsed
+        if t_phase != phase_num or t_num != task_num:
+            continue
+
+        # Found the task — remove the dependency
+        new_deps = [d for d in deps if d.strip() != dep_ref.strip()]
+        lines[i] = format_task_line(emoji, phase_num, task_num, clean_title, new_deps)
+        return "\n".join(lines)
+
+    return content  # task not found, return unchanged
 
 
 def validate_status_set(content: str) -> str:
@@ -2283,7 +2341,12 @@ def cmd_set_all_statuses(args: argparse.Namespace) -> dict:
 
 
 def cmd_set_plan_status(args: argparse.Namespace) -> dict:
-    """Set plan status (emoji in title)."""
+    """Set plan status (emoji in title).
+
+    Uses plan-specific transitions that allow ❓→❌:
+    during scope clarification a critical blocker may be discovered
+    that makes the plan unactionable.
+    """
     new_status = args.status
 
     if new_status not in ALL_STATUSES:
@@ -2291,10 +2354,20 @@ def cmd_set_plan_status(args: argparse.Namespace) -> dict:
 
     def _transform(content: str) -> str:
         lines = content.splitlines()
+        current_emoji = STATUS_TODO
         for i, line in enumerate(lines):
             m = _TITLE_RE.match(line.strip())
             if m:
+                current_emoji = m.group(1) or STATUS_TODO
                 title_text = m.group(2).strip()
+
+                # Validate plan-level transition
+                allowed = PLAN_TRANSITIONS.get(current_emoji, set())
+                if new_status != current_emoji and new_status not in allowed:
+                    raise PlanError(
+                        f"invalid transition {current_emoji} -> {new_status} for plan",
+                    )
+
                 lines[i] = format_plan_title(new_status, title_text)
                 break
 
