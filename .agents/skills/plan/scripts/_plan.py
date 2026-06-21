@@ -1,3614 +1,2267 @@
 #!/usr/bin/env python3
-"""plan.py — deterministic PLAN.md manager with atomic updates.
-
-All reads and writes of PLAN.md are done via this script.
-Uses only Python 3.10+ built-in modules.
-
-Concurrency model:
-  - All mutating commands use _safe_edit() which holds an exclusive
-    file lock (fcntl.flock) for the entire read-transform-write cycle.
-  - Read-only commands use a shared lock so they never see partial state.
-  - Writes are crash-safe: temp file + fsync + atomic rename on same
-    filesystem. Orphaned temp files from crashes are cleaned up.
-  - A SHA-256 checksum comment at the bottom of each PLAN.md allows
-    detecting corruption after any write.
-"""
-__all__ = ['parse_plan_data']
+"""plan.sh — Phase/task workflow manager for PLAN.md files."""
 
 import argparse
-import fcntl
 import hashlib
+import json
 import os
 import re
-import shlex
 import sys
-import tempfile
-import time
 from datetime import datetime, timezone
-from pathlib import Path
 
-# ---------------------------------------------------------------------------
+
 # Constants
-# ---------------------------------------------------------------------------
+EMOJI_TODO = "\u2610"               # ☐ todo
+EMOJI_QUESTION = "\u2753"           # ❓ question
+EMOJI_DOING = "\u2699\ufe0f"        # ⚙️ doing
+EMOJI_ERROR = "\u274c"              # ❌ error
+EMOJI_DONE = "\u2611"               # ☑ done
 
-STATUS_TODO = "\u2610"          # ☐ Not Started / To Do
-STATUS_QUESTION = "\u2753"      # ❓ Needs Clarification / Question
-STATUS_DOING = "\u2699\uFE0F"   # ⚙️ Active / Doing
-STATUS_ERROR = "\u274C"         # ❌ Blocked / Error
-STATUS_DONE = "\u2611"          # ☑ Completed / Done
-
-ALL_STATUSES = {STATUS_TODO, STATUS_QUESTION, STATUS_DOING, STATUS_ERROR, STATUS_DONE}
-
-# Valid transitions: from_emoji -> set of allowed to_emojis
-VALID_TRANSITIONS = {
-    STATUS_TODO:     {STATUS_DOING, STATUS_QUESTION},
-    STATUS_DOING:    {STATUS_QUESTION, STATUS_ERROR, STATUS_DONE},
-    STATUS_QUESTION: {STATUS_DOING},
-    STATUS_ERROR:    {STATUS_DOING, STATUS_QUESTION},
+ALL_EMOJI = {
+    EMOJI_TODO,
+    EMOJI_QUESTION,
+    EMOJI_DOING,
+    EMOJI_ERROR,
+    EMOJI_DONE,
 }
 
-# Default lock-acquire timeout in seconds.
-# Raised with TimeoutError if another process holds the lock longer.
-LOCK_TIMEOUT = 10.0
-
-# ---------------------------------------------------------------------------
-# Atomic file I/O + locking + checksums
-# ---------------------------------------------------------------------------
-
-def _lock_path(plan_path: str) -> str:
-    """Return the lock file path for a given PLAN.md."""
-    return plan_path + ".lock"
-
-
-def _acquire_exclusive_lock(plan_path: str, timeout: float = LOCK_TIMEOUT) -> int:
-    """Acquire an exclusive (write) advisory lock on the plan.
-
-    Returns the file descriptor holding the lock.
-    Caller must call _release_lock(fd, plan_path) when done.
-
-    The lock is held for the ENTIRE read-transform-write cycle so
-    concurrent editors serialize deterministically — no lost updates.
-    """
-    fd = os.open(_lock_path(plan_path), os.O_CREAT | os.O_RDWR)
-    # Write our PID so waiters can diagnose contention
-    os.write(fd, str(os.getpid()).encode())
-    os.lseek(fd, 0, os.SEEK_SET)
-
-    deadline = time.monotonic() + timeout
-    while True:
-        try:
-            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            return fd
-        except BlockingIOError:
-            if time.monotonic() > deadline:
-                os.lseek(fd, 0, os.SEEK_SET)
-                holder_pid = os.read(fd, 32).decode().strip()
-                os.close(fd)
-                raise TimeoutError(
-                    f"Lock on {plan_path} held by PID {holder_pid}, "
-                    f"timeout after {timeout}s"
-                )
-            time.sleep(0.05)
-
-
-def _acquire_shared_lock(plan_path: str) -> int:
-    """Acquire a shared (read) advisory lock on the plan.
-
-    Multiple readers coexist; blocks only when a writer holds LOCK_EX.
-    Returns the file descriptor holding the lock.
-    Caller must call _release_lock(fd, plan_path) when done.
-    """
-    fd = os.open(_lock_path(plan_path), os.O_CREAT | os.O_RDWR)
-    fcntl.flock(fd, fcntl.LOCK_SH)
-    return fd
-
-
-def _release_lock(fd: int, plan_path: str) -> None:
-    """Release an advisory lock, close its file descriptor, and remove the lock file.
-
-    The lock file is unlinked after the fd is closed. On Linux this is safe:
-    any other process holding a fd to the same inode (e.g. a reader that opened
-    the file before we deleted it) keeps its lock until it closes its own fd.
-    The inode is reclaimed automatically when the last fd closes.
-    """
-    fcntl.flock(fd, fcntl.LOCK_UN)
-    os.close(fd)
-    lock_file = _lock_path(plan_path)
-    try:
-        os.unlink(lock_file)
-    except FileNotFoundError:
-        pass  # another concurrent release already cleaned it up
-
-
-def write_plan_atomic(path: str, content: str) -> None:
-    """Write content to PLAN.md atomically.
-
-    1. Write to a temp file in the SAME directory (same filesystem).
-    2. fsync() to flush to disk — crash after this point is safe.
-    3. rename() temp → target — atomic on same filesystem.
-    4. Preserve original file permissions.
-
-    After a crash: PLAN.md is either the old version or the new one,
-    never partial. The orphaned .tmp is cleaned up next invocation.
-    """
-    p = Path(path)
-    dir_ = p.parent
-    content_bytes = content.encode("utf-8")
-
-    fd, tmp_path = tempfile.mkstemp(
-        dir=str(dir_), prefix=".plan.tmp.", suffix=".md"
-    )
-    closed = False
-    try:
-        written = os.write(fd, content_bytes)
-        if written != len(content_bytes):
-            raise IOError(
-                f"Short write: {written} != {len(content_bytes)} bytes"
-            )
-        os.fsync(fd)
-        os.close(fd)
-        closed = True
-
-        # Preserve permissions of original file if it exists
-        if p.exists():
-            st = p.stat()
-            os.chmod(tmp_path, st.st_mode)
-
-        os.rename(tmp_path, str(p))
-    except BaseException:
-        if not closed:
-            try:
-                os.close(fd)
-            except OSError:
-                pass
-        try:
-            os.unlink(tmp_path)
-        except FileNotFoundError:
-            pass
-        raise
-
-
-def _cleanup_orphans(plan_path: str) -> None:
-    """Remove stale .tmp files from crashed writes.
-
-    Must be called under exclusive lock so no live writer is racing.
-    """
-    dir_ = Path(plan_path).parent
-    for f in dir_.glob(".plan.tmp.*.md"):
-        try:
-            f.unlink()
-        except FileNotFoundError:
-            pass
-
-
-# ---------------------------------------------------------------------------
-# Checksums — content integrity verification
-# ---------------------------------------------------------------------------
-
-_CHECKSUM_RE = re.compile(r"^<!-- checksum: ([a-f0-9]{16}) -->$")
-
-
-def _compute_checksum(content: str) -> str:
-    """Compute a 16-char hex SHA-256 digest of content."""
-    return hashlib.sha256(content.encode("utf-8")).hexdigest()[:16]
-
-
-def _add_checksum(content: str) -> str:
-    """Strip any old checksum line, then append a fresh one.
-
-    The checksum covers everything in the file EXCEPT the checksum
-    comment itself, so reads can verify integrity without self-
-    reference issues.
-    """
-    lines = [
-        l for l in content.splitlines()
-        if not _CHECKSUM_RE.match(l.strip())
-    ]
-    # Rejoin preserving original line endings style (always \n)
-    body = "\n".join(lines)
-    if not body.endswith("\n"):
-        body += "\n"
-    checksum = _compute_checksum(body)
-    return body + f"<!-- checksum: {checksum} -->\n"
-
-
-def _strip_checksum(content: str) -> str:
-    """Remove the checksum comment line from content."""
-    return "\n".join(
-        l for l in content.splitlines()
-        if not _CHECKSUM_RE.match(l.strip())
-    )
-
-
-def _verify_checksum(content: str) -> bool:
-    """Verify the file's integrity against its stored checksum.
-
-    Returns True if checksum matches or file has no checksum yet
-    (pre-atomic era). Returns False on mismatch (corruption detected).
-    """
-    lines = content.splitlines()
-    stored = None
-    for line in reversed(lines):
-        m = _CHECKSUM_RE.match(line.strip())
-        if m:
-            stored = m.group(1)
-            break
-    if stored is None:
-        return True  # No checksum — assume valid (new file or legacy)
-
-    # Body is everything except the checksum line
-    body_lines = [
-        l for l in lines if not _CHECKSUM_RE.match(l.strip())
-    ]
-    body = "\n".join(body_lines)
-    if not body.endswith("\n"):
-        body += "\n"
-    computed = _compute_checksum(body)
-    return stored == computed
-
-
-# ---------------------------------------------------------------------------
-# Safe edit wrapper — lock → read → transform → write → unlock
-# ---------------------------------------------------------------------------
-
-def read_plan(path: str) -> str:
-    """Read PLAN.md and return its contents (checksum stripped)."""
-    p = Path(path)
-    if not p.exists():
-        print(f"Error: {path} does not exist", file=sys.stderr)
-        sys.exit(1)
-    raw = p.read_text(encoding="utf-8")
-    return _strip_checksum(raw)
-
-
-def read_plan_raw(path: str) -> str:
-    """Read PLAN.md including the checksum line (for verification)."""
-    p = Path(path)
-    if not p.exists():
-        print(f"Error: {path} does not exist", file=sys.stderr)
-        sys.exit(1)
-    return p.read_text(encoding="utf-8")
-
-
-def _safe_edit(plan_path: str, transform_fn) -> str:
-    """Exclusive lock → read → transform → atomic write → unlock.
-
-    The lock is held for the ENTIRE operation so concurrent editors
-    serialize deterministically. No lost updates possible.
-
-    Args:
-        plan_path: Path to the PLAN.md file.
-        transform_fn: Pure function(content: str) -> str that produces
-                      the new file content (without checksum).
-
-    Returns:
-        The final written content (with checksum appended).
-    """
-    fd = _acquire_exclusive_lock(plan_path)
-    try:
-        # 1. Clean orphaned temp files from any prior crash
-        _cleanup_orphans(plan_path)
-
-        # 2. Read fresh content under lock (no one else can modify)
-        raw = read_plan_raw(plan_path)
-
-        # 3. Verify integrity
-        if not _verify_checksum(raw):
-            print(
-                f"Warning: checksum mismatch in {plan_path} — "
-                "file may be corrupted",
-                file=sys.stderr,
-            )
-
-        content = _strip_checksum(raw)
-
-        # 4. Transform (pure function, no I/O)
-        new_content = transform_fn(content)
-
-        # 5. Append checksum and write atomically
-        final_content = _add_checksum(new_content)
-        write_plan_atomic(plan_path, final_content)
-
-        return final_content
-    finally:
-        _release_lock(fd, plan_path)
-
-
-def _safe_read(plan_path: str) -> str:
-    """Shared lock → read → unlock.
-
-    Readers don't block each other but block during writes, ensuring
-    they never see partial state.
-    """
-    fd = _acquire_shared_lock(plan_path)
-    try:
-        raw = read_plan_raw(plan_path)
-        if not _verify_checksum(raw):
-            print(
-                f"Warning: checksum mismatch in {plan_path} — "
-                "file may be corrupted",
-                file=sys.stderr,
-            )
-        return _strip_checksum(raw)
-    finally:
-        _release_lock(fd, plan_path)
-
-
-def write_plan(path: str, content: str) -> None:
-    """Write content to PLAN.md atomically via temp file.
-
-    Kept for backward compatibility / non-locked writes (e.g. cmd_create
-    which creates a new file that doesn't need locking).
-    """
-    write_plan_atomic(path, content)
-
-
-# ---------------------------------------------------------------------------
-# Helpers — header parsing
-# ---------------------------------------------------------------------------
-# The header is NOT YAML; it's markdown bullet fields.
-# We parse lines like:
-#   - Depends On: ...
-#   - Created: ...
-#   - Updated: ...
-#   - Current Phase: ...
-#   - Current Task: ...
-
-_HEADER_FIELDS = {
-    "depends_on": r"^- Depends On:(.+)$",
-    "created": r"^- Created:(.+)$",
-    "updated": r"^- Updated:(.+)$",
-    "current_phase": r"^- Current Phase:(.+)$",
-    "current_task": r"^- Current Task:(.+)$",
+VALID_TASK_TRANSITIONS = {
+    (EMOJI_TODO, EMOJI_DOING),
+    (EMOJI_TODO, EMOJI_QUESTION),
+    (EMOJI_DOING, EMOJI_QUESTION),
+    (EMOJI_DOING, EMOJI_ERROR),
+    (EMOJI_DOING, EMOJI_DONE),
+    (EMOJI_QUESTION, EMOJI_DOING),
+    (EMOJI_QUESTION, EMOJI_ERROR),
+    (EMOJI_ERROR, EMOJI_DOING),
+    (EMOJI_ERROR, EMOJI_QUESTION),
 }
 
+VALID_PLAN_TRANSITIONS = VALID_TASK_TRANSITIONS.copy()
 
-def _parse_header(title_line: str, body_lines: list[str]) -> dict:
-    """Return dict with header field values."""
-    header = {}
-    for key, pattern in _HEADER_FIELDS.items():
-        for line in body_lines:
-            m = re.match(pattern, line.strip())
-            if m:
-                header[key] = m.group(1).strip()
-                break
-        else:
-            header[key] = ""
-    return header
+SEPARATOR = "\u2796"  # ➖
+ANCHOR = "\u2693"     # ⚓
+
+# Regex-safe emoji pattern (⚙️ is two codepoints)
+_EMOJI_PAT = r'(?:[\u2610\u2753\u274c\u2611]|\u2699\ufe0f)'
 
 
-def _find_header_field_line(lines: list[str], field_name: str) -> int:
-    """Return index of line containing `- Field:` or -1."""
-    pattern = rf"^- {re.escape(field_name)}:"
-    for i, line in enumerate(lines):
-        if re.match(pattern, line.strip()):
-            return i
-    return -1
+# JSON Output Helpers
+
+def json_out(status, command, message, **extra):
+    """Print a JSON result and return it."""
+    obj = {"status": status, "command": command, "message": message}
+    obj.update(extra)
+    print(json.dumps(obj, ensure_ascii=False), flush=True)
+    return obj
 
 
-def _update_header_field(lines: list[str], field_name: str, value: str) -> list[str]:
-    """Update or append a header field line. Returns new lines."""
-    pattern = rf"^- {re.escape(field_name)}:"
-    idx = -1
-    for i, line in enumerate(lines):
-        if re.match(pattern, line.strip()):
-            idx = i
-            break
-    if idx >= 0:
-        lines[idx] = f"- {field_name}: {value}"
-    else:
-        # Insert after `- Current Task:` or before first phase heading
-        current_task_idx = _find_header_field_line(lines, "Current Task")
-        if current_task_idx >= 0:
-            lines.insert(current_task_idx + 1, f"- {field_name}: {value}")
-        else:
-            # Find first ## Phase line and insert before it
-            for i, line in enumerate(lines):
-                if re.match(r"^## ", line):
-                    lines.insert(i, f"- {field_name}: {value}")
-                    break
-            else:
-                lines.append(f"- {field_name}: {value}")
-    return lines
+def die(command, message):
+    json_out("error", command, message)
+    sys.exit(1)
 
 
-def _strip_header_comment(line: str) -> str:
-    """Remove inline comment from header template line."""
-    return re.sub(r"\s*<!--.*?-->\s*$", "", line).strip()
+class JsonArgumentParser(argparse.ArgumentParser):
+    """ArgumentParser that outputs JSON on error instead of raw text."""
 
-
-# ---------------------------------------------------------------------------
-# Helpers — argument parsing (phase_ref / task_ref with optional description)
-# ---------------------------------------------------------------------------
-
-def parse_phase_arg(arg: str) -> int:
-    """Extract phase number from a phase argument.
-
-    Accepts: 'Phase 2', 'Phase 2 ➖ Description...'
-    Returns: phase number (int).
-    """
-    # Split on first ' ➖ ' to strip optional description
-    id_part = arg.split(" ➖ ", 1)[0].strip()
-    m = re.match(r"Phase\s+(\d+)", id_part)
-    if not m:
-        print(f"Error: invalid phase ref: {arg!r}", file=sys.stderr)
+    def error(self, message):
+        # Try to determine which subparser triggered the error
+        prog = self.prog.replace("plan.sh ", "") if self.prog.startswith("plan.sh ") else self.prog
+        json_out("error", prog, message)
         sys.exit(1)
-    return int(m.group(1))
 
 
-def parse_task_arg(arg: str) -> tuple[int, int]:
-    """Extract (phase_num, task_num) from a task argument.
+# Checksum
 
-    Accepts: 'Task 2.4', 'Task 2.4 ➖ Description...',
-             'Phase 3 - Task 3.1' (cross-phase reference).
-    Returns: (phase_num, task_num).
-    """
-    id_part = arg.split(" ➖ ", 1)[0].strip()
-    # Cross-phase: "Phase X - Task X.Y"
-    m = re.match(r"Phase\s+(\d+)\s*-\s*Task\s+(\d+)\.(\d+)", id_part)
+def compute_checksum(content):
+    """SHA-256 of content, truncated to 16 hex chars."""
+    return hashlib.sha256(content.encode()).hexdigest()[:16]
+
+
+def strip_checksum(raw):
+    """Remove checksum line, return (content_without_checksum, checksum_value)."""
+    m = re.search(r'^<!--\s*checksum:\s*([0-9a-f]+)\s*-->\s*$', raw, re.M)
     if m:
-        return int(m.group(1)), int(m.group(3))
-    # Simple: "Task X.Y"
-    m = re.match(r"Task\s+(\d+)\.(\d+)", id_part)
+        before = raw[:m.start()]
+        after = raw[m.end():]
+        return (before.rstrip() + after.lstrip()).rstrip(), m.group(1)
+    return raw.rstrip(), None
+
+
+# Parsing
+
+def _try_parse_plan(path):
+    """Parse a PLAN.md file. Returns (plan_dict, None) on success or (None, error_message) on failure.
+    Does NOT call die() — suitable for batch mode where errors must not print extra JSON."""
+    if not os.path.exists(path):
+        return None, f"File not found: {path}"
+
+    with open(path, encoding="utf-8") as f:
+        raw = f.read()
+
+    content, stored_checksum = strip_checksum(raw)
+    lines = content.split("\n")
+
+    plan = {
+        "path": os.path.abspath(path),
+        "title": "",
+        "depends_on": "NONE",
+        "created": "",
+        "updated": "",
+        "current_phase": "NONE",
+        "current_task": "NONE",
+        "phases": [],
+        "raw_checksum": stored_checksum,
+    }
+
+    # Parse H1 title line
+    if not lines or not lines[0].startswith("# "):
+        return None, "Missing H1 title line"
+
+    h1 = lines[0]
+    m = re.match(r'#\s*(?:(' + _EMOJI_PAT + r')?\s*)Plan\s*' + re.escape(SEPARATOR) + r'\s*(.*)', h1)
     if not m:
-        print(f"Error: invalid task ref: {arg!r}", file=sys.stderr)
-        sys.exit(1)
-    return int(m.group(1)), int(m.group(2))
-
-
-def parse_phase_add_arg(arg: str) -> tuple[int, str]:
-    """Parse add-phase argument. Returns (phase_num, title).
-
-    If arg matches 'Phase N ➖ Title...', use explicit N.
-    Otherwise treat entire arg as the title and return (0, title) for auto-numbering.
-    Strips a leading '➖ ' from auto-numbered titles to avoid double delimiters.
-    """
-    stripped = arg.strip()
-    # Match 'Phase N ➖ Title...' — allow empty title after delimiter
-    m = re.match(r"^Phase\s+(\d+)\s*➖\s*(.*)$", stripped)
-    if m:
-        phase_num = int(m.group(1))
-        title = m.group(2).strip()
-        # If title looks like a repeated Phase ref (e.g. "Phase 2 ➖" with no content),
-        # treat it as empty rather than the whole string
-        return phase_num, title
-    title = stripped
-    # Strip leading delimiter if user included it for auto-numbered phase
-    if title.startswith("➖ "):
-        title = title[2:]
-    elif title == "➖":
-        title = ""
-    return 0, title
-
-
-def parse_task_add_arg(arg: str) -> tuple[int, int, str]:
-    """Parse add-task argument. Returns (phase_num, task_num, title).
-
-    If arg matches 'Task X.Y ➖ Title...', use explicit numbers.
-    Otherwise treat entire arg as the title and return (0, 0, title) for auto-numbering.
-    Strips a leading '➖ ' from auto-numbered titles to avoid double delimiters.
-    """
-    stripped = arg.strip()
-    # Match 'Task X.Y ➖ Title...' — allow empty title after delimiter
-    m = re.match(r"^Task\s+(\d+)\.(\d+)\s*➖\s*(.*)$", stripped)
-    if m:
-        phase_num = int(m.group(1))
-        task_num = int(m.group(2))
-        title = m.group(3).strip()
-        return phase_num, task_num, title
-    title = stripped
-    # Strip leading delimiter if user included it for auto-numbered task
-    # Handle both "➖ Title" and " ➖ Title" forms
-    if title.startswith("➖ "):
-        title = title[2:]
-    elif title == "➖":
-        title = ""
-    return 0, 0, title
-
-
-# ---------------------------------------------------------------------------
-# Helpers — title validation
-# ---------------------------------------------------------------------------
-
-def validate_title(title: str, label: str = "title") -> str:
-    """Validate a title string. Returns stripped title or raises error.
-
-    Checks:
-      - Not empty after stripping
-      - Contains no newlines (would break line-based file format)
-      - Reasonable length (< 2048 chars)
-    """
-    title = title.strip()
-    if not title:
-        print(f"Error: {label} cannot be empty", file=sys.stderr)
-        sys.exit(1)
-    if "\n" in title or "\r" in title:
-        print(f"Error: {label} contains newlines — titles must be single-line", file=sys.stderr)
-        sys.exit(1)
-    if len(title) > 2048:
-        print(f"Error: {label} exceeds maximum length of 2048 characters ({len(title)} chars)", file=sys.stderr)
-        sys.exit(1)
-    return title
-
-
-# ---------------------------------------------------------------------------
-# Helpers — plan title parsing
-# ---------------------------------------------------------------------------
-
-_TITLE_RE = re.compile(r"^#\s*(\u2610|\u2753|\u2699\uFE0F|\u274C|\u2611)?\s*Plan\s*➖\s*(.+)$")
-
-
-def parse_plan_title(line: str) -> tuple[str, str]:
-    """Return (emoji, title) from the plan title line."""
-    m = _TITLE_RE.match(line.strip())
-    if not m:
-        print(f"Error: invalid plan title line: {line!r}", file=sys.stderr)
-        sys.exit(1)
-    emoji = m.group(1) or STATUS_TODO
-    title = m.group(2).strip()
-    return emoji, title
-
-
-def format_plan_title(emoji: str, title: str) -> str:
-    """Format plan title line."""
-    return f"# {emoji} Plan ➖ {title}"
-
-
-# ---------------------------------------------------------------------------
-# Helpers — phase parsing
-# ---------------------------------------------------------------------------
-
-_PHASE_RE = re.compile(r"^##\s*(\u2610|\u2753|\u2699\uFE0F|\u274C|\u2611)?\s*Phase\s+(\d+)\s*➖\s*(.+)$")
-
-
-def parse_phase_heading(line: str) -> tuple[str, int, str] | None:
-    """Return (emoji, phase_number, title) or None."""
-    m = _PHASE_RE.match(line.strip())
-    if not m:
-        return None
-    emoji = m.group(1) or STATUS_TODO
-    num = int(m.group(2))
-    title = m.group(3).strip()
-    return emoji, num, title
-
-
-def format_phase_heading(emoji: str, num: int, title: str) -> str:
-    return f"## {emoji} Phase {num} ➖ {title}"
-
-
-# ---------------------------------------------------------------------------
-# Helpers — task parsing
-# ---------------------------------------------------------------------------
-
-_TASK_RE = re.compile(
-    r"^- (\u2610|\u2753|\u2699\uFE0F|\u274C|\u2611) Task (\d+)\.(\d+)\s*➖\s+(.+)$"
-)
-
-# Matches the ⚓ anchor dependency suffix at end of a task title.
-# e.g. "Do thing ⚓ Task 2.1 , Task 2.2" → clean="Do thing", deps="Task 2.1 , Task 2.2"
-_DEPS_ANCHOR_RE = re.compile(r"^(.+?)\s*⚓\s*(.+)$")
-
-# Matches a single dependency reference: "Task X.Y" or "Phase X - Task X.Y"
-_SINGLE_DEP_RE = re.compile(r"(?:Phase\s+\d+\s*-\s*)?Task\s+\d+\.\d+")
-
-
-def parse_task_deps(raw_title: str) -> tuple[str, list[str]]:
-    """Split a task title into (clean_title, [dependency_refs]).
-
-    Handles titles like:
-      - "Do thing" → ("Do thing", [])
-      - "Do thing ⚓ Task 2.1 , Task 2.2" → ("Do thing", ["Task 2.1", "Task 2.2"])
-      - "Do thing ⚓ Phase 3 - Task 3.1" → ("Do thing", ["Phase 3 - Task 3.1"])
-
-    Only treats ⚓ as a dependency anchor if ALL refs after it are valid task
-    references. Otherwise the entire string is treated as a plain title.
-    """
-    m = _DEPS_ANCHOR_RE.match(raw_title.strip())
-    if not m:
-        return raw_title.strip(), []
-
-    clean = m.group(1).strip()
-    deps_str = m.group(2).strip()
-    deps = [d.strip() for d in deps_str.split(",")]
-
-    # Only accept as dependencies if ALL refs are valid task references.
-    # This avoids false positives when ⚓ appears in description text.
-    if not all(_SINGLE_DEP_RE.fullmatch(d) for d in deps):
-        return raw_title.strip(), []
-
-    return clean, deps
-
-
-def format_task_deps(deps: list[str]) -> str:
-    """Format dependency refs as ' ⚓ Task A.B , Task C.D' or empty string."""
-    if not deps:
-        return ""
-    return " ⚓ " + " , ".join(deps)
-
-
-def parse_task_line(line: str) -> tuple[str, int, int, str, list[str]] | None:
-    """Return (emoji, phase_num, task_num, clean_title, [deps]) or None.
-
-    clean_title does NOT include the ⚓ anchor suffix.
-    deps is a list of dependency references (e.g. ["Task 2.1", "Phase 3 - Task 3.1"]).
-    """
-    m = _TASK_RE.match(line.strip())
-    if not m:
-        return None
-    emoji = m.group(1)
-    phase = int(m.group(2))
-    task = int(m.group(3))
-    raw_title = m.group(4).strip()
-    clean_title, deps = parse_task_deps(raw_title)
-    return emoji, phase, task, clean_title, deps
-
-
-def format_task_line(emoji: str, phase_num: int, task_num: int, title: str, deps: list[str] | None = None) -> str:
-    """Format a task line with optional ⚓ dependency anchor.
-
-    title should be the clean title (without ⚓ suffix).
-    deps is a list of dependency references.
-    """
-    suffix = format_task_deps(deps or [])
-    return f"- {emoji} Task {phase_num}.{task_num} ➖ {title}{suffix}"
-
-
-# ---------------------------------------------------------------------------
-# Helpers — structure extraction
-# ---------------------------------------------------------------------------
-
-def extract_phases(content: str) -> list[tuple[str, int, str, list[tuple[str, int, int, str, list[str]]]]]:
-    """Extract all phases with their tasks.
-
-    Returns list of (emoji, phase_num, title, [(emoji, phase, task, clean_title, [deps]), ...]).
-    """
-    lines = content.splitlines()
-    phases: list[tuple[str, int, str, list[tuple[str, int, int, str, list[str]]]]] = []
-    current_phase: tuple[str, int, str] | None = None
-    current_tasks: list[tuple[str, int, int, str, list[str]]] = []
-
-    for line in lines:
-        phase_match = parse_phase_heading(line)
-        if phase_match:
-            # Save previous phase
-            if current_phase is not None:
-                phases.append((current_phase[0], current_phase[1], current_phase[2], current_tasks))
-            current_phase = phase_match
-            current_tasks = []
-            continue
-
-        if current_phase is not None:
-            task_match = parse_task_line(line)
-            if task_match:
-                current_tasks.append(task_match)
-
-    # Save last phase
-    if current_phase is not None:
-        phases.append((current_phase[0], current_phase[1], current_phase[2], current_tasks))
-
-    return phases
-
-
-def extract_phases_lines(content: str) -> list[tuple[int, int]]:
-    """Return list of (start_line, end_line) for each phase section (0-indexed).
-
-    start_line = line with ## Phase heading
-    end_line = last line before next ## or EOF
-    """
-    lines = content.splitlines()
-    ranges: list[tuple[int, int]] = []
-    phase_starts: list[int] = []
-
-    for i, line in enumerate(lines):
-        if parse_phase_heading(line) is not None:
-            phase_starts.append(i)
-
-    for idx, start in enumerate(phase_starts):
-        end = phase_starts[idx + 1] - 1 if idx + 1 < len(phase_starts) else len(lines) - 1
-        ranges.append((start, end))
-
-    return ranges
-
-
-def _sorted_phase_insert_index(lines: list[str], phase_num: int) -> int:
-    """Find the line index where a new phase should be inserted to maintain numeric order.
-
-    Scans for existing ## Phase headings and returns the position just before
-    the first phase whose number is >= phase_num, or at the end of all phases
-    if no such phase exists.
-
-    The caller should prepend a blank separator line before the new phase heading.
-    """
-    for i, line in enumerate(lines):
-        p = parse_phase_heading(line)
-        if p is not None and p[1] >= phase_num:
-            return i
-
-    # No phase found with number >= phase_num — insert after last phase section
-    last_phase_end = -1
-    for i, line in enumerate(lines):
-        if parse_phase_heading(line) is not None:
-            last_phase_end = i
-
-    if last_phase_end >= 0:
-        # Find end of last phase content (tasks + sub-bullets).
-        # Skip blank lines that are followed by tasks — the file format
-        # uses blank separators between headings and task lists.
-        end = last_phase_end + 1
-        while end < len(lines):
-            if parse_phase_heading(lines[end]) is not None:
-                break
-            if parse_task_line(lines[end]) is not None:
-                # Skip task and its sub-bullets
-                end += 1
-                while end < len(lines) and lines[end].startswith("  - "):
-                    end += 1
-            elif lines[end].strip() == "":
-                # Blank line — check if tasks follow after it.
-                # If yes, keep scanning; if no (checksum/EOF), stop.
-                peek = end + 1
-                while peek < len(lines) and lines[peek].strip() == "":
-                    peek += 1
-                if peek < len(lines) and parse_task_line(lines[peek]) is not None:
-                    end = peek  # continue scanning from the task
-                else:
-                    break  # truly trailing blank
-            else:
-                end += 1
-        return end
-    else:
-        # No phases exist yet — insert after header fields
-        for i, line in enumerate(lines):
-            if line.startswith("## "):
-                return i
-        return len(lines)
-
-
-def _sorted_task_insert_index(lines: list[str], target_phase: int, task_num: int) -> tuple[int | None, str]:
-    """Find the line index where a new task should be inserted within its phase.
-
-    Returns (insert_index, error_message). insert_index is None on error.
-    Inserts in sorted position relative to existing task numbers in the phase.
-    Also accounts for sub-bullets under each task.
-    """
-    phase_heading_idx = None
-    for i, line in enumerate(lines):
-        p = parse_phase_heading(line)
-        if p and p[1] == target_phase:
-            phase_heading_idx = i
+        return None, f"Invalid H1 format: {h1}"
+    plan["emoji"] = m.group(1) or EMOJI_TODO
+    plan["title"] = m.group(2).strip()
+
+    # Parse header fields
+    i = 1
+    while i < len(lines):
+        line = lines[i]
+        hm = re.match(r'^-\s+(Depends On|Created|Updated|Current Phase|Current Task):\s*(.*)', line)
+        if not hm:
             break
-
-    if phase_heading_idx is None:
-        return None, f"Phase {target_phase} not found"
-
-    # Collect existing tasks in this phase with their line indices and sub-bullet spans
-    task_entries: list[tuple[int, int, int]] = []  # (task_num, task_line_idx, end_of_subbullets_idx)
-    j = phase_heading_idx + 1
-    while j < len(lines):
-        t = parse_task_line(lines[j])
-        if t and t[1] == target_phase:
-            end = j + 1
-            k = end
-            # Sub-bullets are indented (start with "  - "), not task lines ("- [emoji] Task")
-            while k < len(lines) and lines[k].startswith("  - "):
-                k += 1
-            task_entries.append((t[2], j, k))
-            j = k
-        elif parse_phase_heading(lines[j]) is not None:
-            break
-        else:
-            j += 1
-
-    # Find insertion point: first task with number >= task_num
-    for idx, (tnum, tline, tend) in enumerate(task_entries):
-        if tnum >= task_num:
-            return tline, ""
-
-    # Insert after last task's sub-bullets
-    if task_entries:
-        _, _, last_end = task_entries[-1]
-        return last_end, ""
-    else:
-        # No tasks yet — insert right after phase heading.
-        # Preserve any existing blank separator line.
-        insert_at = phase_heading_idx + 1
-        if insert_at < len(lines) and lines[insert_at].strip() == "":
-            insert_at += 1
-        # Add blank separator after heading if none exists
-        if insert_at == phase_heading_idx + 1:
-            lines.insert(insert_at, "")
-            insert_at += 1
-        return insert_at, ""
-
-
-def _extract_phase_sections(content: str) -> list[tuple[int, list[str]]]:
-    """Extract each phase section as (phase_num, lines).
-
-    Each section includes the ## heading line and all lines until the next
-    phase heading or EOF. Leading blank separator lines are included.
-    """
-    lines = content.splitlines()
-    sections: list[tuple[int, list[str]]] = []
-    i = 0
-    # Skip header (title + bullet fields) — find first ## Phase line
-    while i < len(lines) and parse_phase_heading(lines[i]) is None:
+        key, val = hm.group(1), hm.group(2).strip()
+        if key == "Depends On":
+            plan["depends_on"] = val
+        elif key == "Created":
+            plan["created"] = val
+        elif key == "Updated":
+            plan["updated"] = val
+        elif key == "Current Phase":
+            plan["current_phase"] = val
+        elif key == "Current Task":
+            plan["current_task"] = val
         i += 1
 
-    header_lines = lines[:i]
-
+    # Parse phases and tasks
+    current_phase = None
     while i < len(lines):
-        p = parse_phase_heading(lines[i])
-        if p is None:
+        line = lines[i]
+
+        pm = re.match(r'^##\s*(' + _EMOJI_PAT + r')?\s*(Phase\s+\d+)\s*' + re.escape(SEPARATOR) + r'\s*(.*)', line)
+        if pm:
+            phase_emoji = pm.group(1) or EMOJI_TODO
+            phase_id = pm.group(2)
+            phase_title = pm.group(3).strip()
+            current_phase = {
+                "emoji": phase_emoji,
+                "id": phase_id,
+                "title": phase_title,
+                "tasks": [],
+            }
+            plan["phases"].append(current_phase)
             i += 1
             continue
 
-        start = i
-        # Include leading blank line if present
-        if start > 0 and lines[start - 1].strip() == "" and start - 1 >= len(header_lines):
-            start -= 1
+        if current_phase and line.startswith("- "):
+            tm = re.match(
+                r'^-\s*(' + _EMOJI_PAT + r')?\s*(Task\s+\d+\.\d+)\s*'
+                + re.escape(SEPARATOR) + r'\s*(.+?)'
+                r'(?:\s+' + re.escape(ANCHOR) + r'\s+((?:Task|Phase).+))?\s*$',
+                line,
+            )
+            if tm:
+                task = {
+                    "emoji": tm.group(1) or EMOJI_TODO,
+                    "id": tm.group(2),
+                    "title": tm.group(3).strip(),
+                    "dependencies": [],
+                    "sub_bullets": [],
+                }
+                if tm.group(4):
+                    deps = [d.strip() for d in tm.group(4).split(",") if d.strip()]
+                    task["dependencies"] = deps
+                assert current_phase is not None  # guarded by `if current_phase` above
+                tasks_list = current_phase["tasks"]
+                tasks_list.append(task)  # ty: ignore[unresolved-attribute]
+                i += 1
 
-        # Find end of this phase section
-        j = i + 1
-        while j < len(lines) and parse_phase_heading(lines[j]) is None:
-            j += 1
+                while i < len(lines) and lines[i].startswith("  - "):
+                    task["sub_bullets"].append(lines[i][4:].strip())
+                    i += 1
+                continue
 
-        section_lines = lines[start:j]
-        sections.append((p[1], section_lines))
-        i = j
+        i += 1
 
-    return header_lines, sections
+    return plan, None
 
 
-# ---------------------------------------------------------------------------
-# Status derivation
-# ---------------------------------------------------------------------------
+def parse_plan(path):
+    """Parse a PLAN.md file into a dict structure."""
+    plan, err = _try_parse_plan(path)
+    if err:
+        die("parse", err)
+    return plan
 
-def derive_phase_status(tasks: list[tuple[str, int, int, str]], warn: bool = False) -> str:
-    """Derive phase emoji from its tasks.
 
-    Rules (matching SKILL.md):
-      - Done     — all tasks are ☑
-      - Doing    — at least one task is ⚙️
-      - Question — no task is ⚙️ or ☑, but at least one is ❓
-      - Error    — no task is ⚙️ or ☑, but at least one is ❌
-      - Todo     — fallback (e.g., all ☐, or mixed ☑+☐ with no other active status)
-    """
+# Writing
+
+def write_plan(plan):
+    """Write a PLAN.md file from the parsed dict."""
+    path = plan["path"]
+    lines = []
+
+    # H1
+    lines.append(f"# {plan['emoji']} Plan {SEPARATOR} {plan['title']}")
+
+    # Header fields
+    lines.append(f"- Depends On: {plan['depends_on']}")
+    lines.append(f"- Created: {plan['created']}")
+    lines.append(f"- Updated: {plan['updated']}")
+    lines.append(f"- Current Phase: {plan['current_phase']}")
+    lines.append(f"- Current Task: {plan['current_task']}")
+    lines.append("")
+
+    # Phases
+    for phase in plan["phases"]:
+        lines.append(f"## {phase['emoji']} {phase['id']} {SEPARATOR} {phase['title']}")
+        lines.append("")
+        for task in phase["tasks"]:
+            dep_str = ""
+            if task["dependencies"]:
+                dep_str = f" {ANCHOR} " + ", ".join(task["dependencies"])
+            lines.append(f"- {task['emoji']} {task['id']} {SEPARATOR} {task['title']}{dep_str}")
+            for sb in task["sub_bullets"]:
+                lines.append(f"  - {sb}")
+        lines.append("")
+
+    content = "\n".join(lines).rstrip("\n")
+    checksum = compute_checksum(content)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(content + f"\n<!-- checksum: {checksum} -->\n")
+
+
+# Status Derivation
+
+def derive_phase_emoji(tasks):
+    """Derive phase emoji from its tasks."""
     if not tasks:
-        if warn:
-            print(f"Warning: Phase has zero tasks — it can never reach {STATUS_DONE}", file=sys.stderr)
-        return STATUS_TODO
-
-    emojis = {t[0] for t in tasks}
-
-    if all(t[0] == STATUS_DONE for t in tasks):
-        return STATUS_DONE
-    if STATUS_DOING in emojis:
-        return STATUS_DOING
-    # Question/Error only when no task is ⚙️ or ☑
-    if STATUS_DONE not in emojis and STATUS_QUESTION in emojis:
-        return STATUS_QUESTION
-    if STATUS_DONE not in emojis and STATUS_ERROR in emojis:
-        return STATUS_ERROR
-    return STATUS_TODO
+        return EMOJI_TODO
+    emojis = [t["emoji"] for t in tasks]
+    if all(e == EMOJI_DONE for e in emojis):
+        return EMOJI_DONE
+    if EMOJI_DOING in emojis:
+        return EMOJI_DOING
+    if EMOJI_ERROR in emojis:
+        return EMOJI_ERROR
+    if EMOJI_QUESTION in emojis:
+        return EMOJI_QUESTION
+    return EMOJI_TODO
 
 
-def derive_plan_status(phases: list[tuple[str, int, str, list]]) -> str:
-    """Derive plan emoji from all phases.
-
-    Rules (matching SKILL.md):
-      - Done     — all phases are ☑
-      - Doing    — at least one phase is ⚙️
-      - Question — no phase is ⚙️ or ☑, but at least one is ❓
-      - Error    — no phase is ⚙️ or ☑, but at least one is ❌
-      - Todo     — fallback
-    """
+def derive_plan_emoji(phases):
+    """Derive plan emoji from its phases."""
     if not phases:
-        return STATUS_TODO
-
-    # Derive each phase status from its tasks
-    phase_statuses = [derive_phase_status(tasks) for _, _, _, tasks in phases]
-
-    if all(s == STATUS_DONE for s in phase_statuses):
-        return STATUS_DONE
-    if STATUS_DOING in phase_statuses:
-        return STATUS_DOING
-    # Question/Error only when no phase is ⚙️ or ☑
-    if STATUS_DONE not in set(phase_statuses) and STATUS_QUESTION in phase_statuses:
-        return STATUS_QUESTION
-    if STATUS_DONE not in set(phase_statuses) and STATUS_ERROR in phase_statuses:
-        return STATUS_ERROR
-    return STATUS_TODO
+        return EMOJI_TODO
+    emojis = [p["emoji"] for p in phases]
+    if all(e == EMOJI_DONE for e in emojis):
+        return EMOJI_DONE
+    if EMOJI_DOING in emojis:
+        return EMOJI_DOING
+    if EMOJI_ERROR in emojis:
+        return EMOJI_ERROR
+    if EMOJI_QUESTION in emojis:
+        return EMOJI_QUESTION
+    return EMOJI_TODO
 
 
-# ---------------------------------------------------------------------------
-# Check / Validate — consistency checker with optional --fix
-# ---------------------------------------------------------------------------
+def rederive_all(plan):
+    """Re-derive all emojis bottom-up."""
+    for phase in plan["phases"]:
+        phase["emoji"] = derive_phase_emoji(phase["tasks"])
+    plan["emoji"] = derive_plan_emoji(plan["phases"])
 
 
-def check_plan(plan_path: str, fix: bool = False) -> tuple[int, list[str]]:
-    """Check PLAN.md for consistency issues.
+# Helpers
 
-    Two-pass approach:
-      Pass 1: Collect ALL issues (without modifying content)
-      Pass 2 (if fix=True): Apply all auto-fixable changes, write file
-
-    Returns (exit_code, messages) where exit_code is 0 if clean, 1 if issues found.
-    In fix mode, exit_code is 0 if all fixable issues were resolved.
-
-    Checks performed:
-      1. Checksum integrity
-      2. Plan emoji derivation (must match derived status from phases)
-      3. Phase emoji derivation (must match derived status from tasks)
-      4. Phase numbering — sequential 1,2,3… without gaps or duplicates
-      5. Task numbering — within each phase, sequential X.1,X.2,… without gaps/duplicates
-      6. Number ordering — phases and tasks appear in ascending numeric order
-      7. Dependency references — all ⚓ deps must reference existing tasks
-      8. Empty phases — phases with zero tasks (warning)
-      9. Duplicate task IDs — no two tasks share the same (phase, task) number
-    """
-    p = Path(plan_path)
-    if not p.exists():
-        print(f"Error: {plan_path} does not exist", file=sys.stderr)
-        sys.exit(1)
-
-    raw = p.read_text(encoding="utf-8")
-
-    # --- Check 1: Checksum integrity (always fix immediately) ---
-    checksum_ok = _verify_checksum(raw)
-    checksum_was_fixed = False
-    if not checksum_ok:
-        if fix:
-            body = _strip_checksum(raw)
-            fixed = _add_checksum(body)
-            write_plan_atomic(plan_path, fixed)
-            raw = fixed
-            checksum_ok = True
-            checksum_was_fixed = True
-
-    content = _strip_checksum(raw)
-    lines = content.splitlines()
-    phases = extract_phases(content)
-
-    # Build task lookup: (phase_num, task_num) -> emoji
-    task_status_map: dict[tuple[int, int], str] = {}
-    for _, phase_num, _, tasks in phases:
-        for t in tasks:
-            task_status_map[(t[1], t[2])] = t[0]
-
-    # ─── PASS 1: Collect all issues ───
-    issues: list[tuple[str, bool]] = []  # (message, is_fixable)
-    needs_sort = False
-    needs_emoji_fix = False
-    phase_num_map: dict[int, int] | None = None  # old_num -> new_num
-    task_num_maps: dict[int, dict[int, int]] = {}  # phase -> {old_task -> new_task}
-
-    # Checksum issue
-    if not checksum_ok:
-        issues.append(("checksum: FAILED — stored checksum does not match content (file may be corrupted)", False))
-
-    # --- Check 9: Duplicate task IDs ---
-    seen_task_ids: set[tuple[int, int]] = set()
-    for _, phase_num, _, tasks in phases:
-        for t in tasks:
-            key = (t[1], t[2])
-            if key in seen_task_ids:
-                issues.append((f"duplicate-task-id: Task {key[0]}.{key[1]} appears more than once", False))
-            seen_task_ids.add(key)
-
-    # --- Check 4: Phase numbering ---
-    phase_nums = [ph[1] for ph in phases]
-    expected_phase_nums = list(range(1, len(phases) + 1)) if phases else []
-    if phase_nums != expected_phase_nums:
-        msg = (f"phase-numbering: got {phase_nums}, expected {expected_phase_nums} "
-               f"(phases must be numbered 1..{len(phases)} sequentially)")
-        issues.append((msg, True))
-        phase_num_map = {}
-        for i, old_num in enumerate(phase_nums):
-            phase_num_map[old_num] = i + 1
-
-    # --- Check 5: Task numbering within each phase ---
-    for emoji, phase_num, title, tasks in phases:
-        task_nums = [t[2] for t in tasks]
-        expected_task_nums = list(range(1, len(tasks) + 1)) if tasks else []
-        if task_nums != expected_task_nums:
-            msg = (f"task-numbering: Phase {phase_num} tasks got {task_nums}, "
-                   f"expected {expected_task_nums}")
-            issues.append((msg, True))
-            tmap = {}
-            for i, old_t in enumerate(task_nums):
-                tmap[old_t] = i + 1
-            task_num_maps[phase_num] = tmap
-
-    # --- Check 6: Number ordering ---
-    if phase_nums != sorted(phase_nums):
-        msg = (f"phase-ordering: phases appear as {phase_nums}, "
-               f"expected {sorted(phase_nums)}")
-        issues.append((msg, True))
-        needs_sort = True
-
-    for emoji, phase_num, title, tasks in phases:
-        task_nums_in_order = [t[2] for t in tasks]
-        if task_nums_in_order != sorted(task_nums_in_order):
-            msg = (f"task-ordering: Phase {phase_num} tasks appear as {task_nums_in_order}, "
-                   f"expected {sorted(task_nums_in_order)}")
-            issues.append((msg, True))
-            needs_sort = True
-
-    # --- Check 7: Dangling dependency references ---
-    for _, phase_num, title, tasks in phases:
-        for t in tasks:
-            for dep_ref in t[4]:
-                dp, dt = _resolve_dep_ref(dep_ref, phase_num)
-                if dp is None or (dp, dt) not in task_status_map:
-                    msg = (f"dangling-dep: Task {t[1]}.{t[2]} depends on {dep_ref!r} "
-                           f"which does not exist")
-                    issues.append((msg, False))  # not fixable
-
-    # --- Check 8: Empty phases (warning) ---
-    for emoji, phase_num, title, tasks in phases:
-        if not tasks:
-            msg = f"empty-phase: Phase {phase_num} has zero tasks (can never reach {STATUS_DONE})"
-            issues.append((msg, False))  # warning, not error
-
-    # --- Check 2: Plan emoji derivation ---
-    plan_status_derived = derive_plan_status(phases)
-    current_plan_emoji = STATUS_TODO
-    for line in lines:
-        m = _TITLE_RE.match(line.strip())
-        if m:
-            current_plan_emoji = m.group(1) or STATUS_TODO
-            break
-    if current_plan_emoji != plan_status_derived:
-        msg = (f"plan-emoji: got {current_plan_emoji} ({_STATUS_LABEL.get(current_plan_emoji, 'unknown')}), "
-               f"expected {plan_status_derived} ({_STATUS_LABEL.get(plan_status_derived, 'derived')})")
-        issues.append((msg, True))
-        needs_emoji_fix = True
-
-    # --- Check 3: Phase emoji derivation ---
-    for emoji, phase_num, title, tasks in phases:
-        derived = derive_phase_status(tasks)
-        if emoji != derived:
-            msg = (f"phase-emoji: Phase {phase_num} got {emoji} ({_STATUS_LABEL.get(emoji, 'unknown')}), "
-                   f"expected {derived} ({_STATUS_LABEL.get(derived, 'derived')})")
-            issues.append((msg, True))
-            needs_emoji_fix = True
-
-    # ─── PASS 2: Apply fixes if requested ───
-    fixed_issues: list[str] = []
-    if checksum_was_fixed:
-        fixed_issues.append("checksum: FIXED — recomputed checksum")
-    if fix and any(is_fixable for _, is_fixable in issues):
-        working = content
-
-        # Fix phase numbering
-        if phase_num_map:
-            working = _fix_phase_numbering(working, phases, task_status_map)
-            fixed_issues.append(f"phase-numbering: FIXED — renumbered to {expected_phase_nums}")
-
-        # Fix task numbering per phase
-        for pn, tmap in task_num_maps.items():
-            working = _fix_task_numbering(working, pn, task_status_map)
-            phases = extract_phases(working)
-            task_status_map.clear()
-            for _, pnum, _, tasks in phases:
-                for t in tasks:
-                    task_status_map[(t[1], t[2])] = t[0]
-            expected_nums = list(range(1, len([t for _,p,_,ts in phases if p==pn for t in ts]) + 1))
-            fixed_issues.append(f"task-numbering: FIXED Phase {pn} — renumbered to {expected_nums}")
-
-        # Fix ordering (sort)
-        if needs_sort:
-            working = cmd_sort_inline(plan_path, working)
-            fixed_issues.append("ordering: FIXED — sorted phases and tasks")
-            phases = extract_phases(working)
-            task_status_map.clear()
-            for _, pnum, _, tasks in phases:
-                for t in tasks:
-                    task_status_map[(t[1], t[2])] = t[0]
-
-        # Fix emoji derivation
-        if needs_emoji_fix:
-            working = validate_status_set(working)
-            fixed_issues.append("emoji-derivation: FIXED — re-derived plan and phase statuses")
-
-        # Write fixed content atomically
-        final = _add_checksum(working)
-        write_plan_atomic(plan_path, final)
-
-    # ─── Build output messages ───
-    messages: list[str] = []
-    if not checksum_ok and fix:
-        messages.append("checksum: FIXED — recomputed checksum")
-
-    # Report original issues, replacing fixable ones with FIXED messages
-    non_fixable_count = 0
-    for msg, is_fixable in issues:
-        if is_fixable and fix:
-            continue  # replaced by fixed_issues below
-        if is_fixable and not fix:
-            messages.append(msg)
-            non_fixable_count += 1
-        elif not is_fixable:
-            # Warnings (empty-phase) don't count as errors
-            if "empty-phase" in msg:
-                messages.append(msg)
-            else:
-                messages.append(msg)
-                non_fixable_count += 1
-
-    if fix and fixed_issues:
-        for fi in fixed_issues:
-            messages.append(fi)
-
-    # Exit code:
-    #   non-fix mode: 1 if ANY error exists (except empty-phase warning)
-    #   fix mode: 0 if all fixable issues were resolved, 1 if unfixable remain
-    has_issues = any(
-        "empty-phase" not in msg
-        for msg, is_fixable in issues
-    )
-    has_unfixable_errors = any(
-        not is_fixable and "empty-phase" not in msg
-        for msg, is_fixable in issues
-    )
-    if fix:
-        exit_code = 1 if has_unfixable_errors else 0
-    else:
-        exit_code = 1 if has_issues else 0
-
-    return (exit_code, messages)
-
-
-def _fix_phase_numbering(content: str, phases, task_status_map: dict) -> str:
-    """Renumber phases sequentially (1, 2, 3, ...) and update all references.
-
-    Uses position-based mapping so duplicate phase numbers are handled correctly:
-    the Nth phase heading in file order always becomes Phase N.
-    """
-    lines = content.splitlines()
-
-    # Build position-based old_num -> new_num mapping.
-    # Each (old_num, new_num) pair corresponds to a phase in file order.
-    phase_nums = [p[1] for p in phases]
-    num_map_pairs: list[tuple[int, int]] = [(old, i + 1) for i, old in enumerate(phase_nums)]
-    # For non-duplicate numbers, build a quick dict lookup
-    unique_nums = set(phase_nums)
-    simple_map: dict[int, int] = {}
-    if len(unique_nums) == len(phase_nums):
-        for old, new in num_map_pairs:
-            simple_map[old] = new
-
-    changed = False
-    new_lines = list(lines)
-
-    # --- Update phase headings (position-based) ---
-    heading_idx = 0
-    for i, line in enumerate(new_lines):
-        p = parse_phase_heading(line)
-        if p:
-            old_num = p[1]
-            if heading_idx < len(num_map_pairs):
-                new_num = num_map_pairs[heading_idx][1]
-                if old_num != new_num:
-                    new_lines[i] = format_phase_heading(p[0], new_num, p[2])
-                    changed = True
-            heading_idx += 1
-
-    # --- Build context-aware phase mapping for tasks.
-    #    Walk lines tracking which phase section each task belongs to. ---
-    # For each task line, we need to know its *new* phase number based on
-    # which phase heading it falls under (by position, not by old number).
-    current_phase_idx = -1
-    for i, line in enumerate(new_lines):
-        p = parse_phase_heading(line)
-        if p:
-            current_phase_idx += 1
-    # Reset and do the actual update pass
-    current_phase_idx = -1
-    for i, line in enumerate(new_lines):
-        p = parse_phase_heading(line)
-        if p:
-            current_phase_idx += 1
-            continue
-        t = parse_task_line(line)
-        if t and current_phase_idx >= 0 and current_phase_idx < len(num_map_pairs):
-            old_phase = t[1]
-            new_phase = num_map_pairs[current_phase_idx][1]
-            if old_phase != new_phase:
-                new_lines[i] = format_task_line(t[0], new_phase, t[2], t[3], t[4])
-                changed = True
-
-    # --- Update dependency references in task lines (position-aware) ---
-    current_phase_idx = -1
-    for i, line in enumerate(new_lines):
-        p = parse_phase_heading(line)
-        if p:
-            current_phase_idx += 1
-            continue
-        t = parse_task_line(line)
-        if t and current_phase_idx >= 0:
-            my_new_phase = num_map_pairs[current_phase_idx][1] if current_phase_idx < len(num_map_pairs) else t[1]
-            new_deps = []
-            for dep_ref in t[4]:
-                dp, dt = _resolve_dep_ref(dep_ref, t[1])
-                if dp is not None:
-                    # Find new phase number for the dependency's phase
-                    new_dp = _find_new_phase_num(dp, num_map_pairs)
-                    if new_dp is not None:
-                        if new_dp == my_new_phase:
-                            new_deps.append(f"Task {new_dp}.{dt}")
-                        else:
-                            new_deps.append(f"Phase {new_dp} - Task {new_dp}.{dt}")
-                    else:
-                        new_deps.append(dep_ref)
-                else:
-                    new_deps.append(dep_ref)
-            if new_deps != t[4]:
-                new_lines[i] = format_task_line(t[0], my_new_phase, t[2], t[3], new_deps)
-                changed = True
-
-    # --- Update header fields referencing phases/tasks ---
-    for field in ("Current Phase", "Current Task"):
-        idx = _find_header_field_line(new_lines, field)
-        if idx >= 0:
-            val = new_lines[idx].split(":", 1)[1].strip()
-            pm = re.match(r"(.*)Phase\s+(\d+)(.*)", val)
-            if pm:
-                prefix, old_num_str, suffix = pm.group(1), int(pm.group(2)), pm.group(3)
-                new_num = _find_new_phase_num(old_num_str, num_map_pairs)
-                if new_num is not None and new_num != old_num_str:
-                    new_lines[idx] = f"- {field}: {prefix}{new_num}{suffix}"
-                    changed = True
-
-    # Remove self-dependencies created by renumbering.
-    current_phase_idx = -1
-    for i, line in enumerate(new_lines):
-        p = parse_phase_heading(line)
-        if p:
-            current_phase_idx += 1
-            continue
-        t = parse_task_line(line)
-        if t and current_phase_idx >= 0:
-            my_phase = num_map_pairs[current_phase_idx][1] if current_phase_idx < len(num_map_pairs) else t[1]
-            my_task = t[2]
-            new_deps = [
-                d for d in t[4]
-                if not _is_self_dep(d, my_phase, my_task)
-            ]
-            if new_deps != t[4]:
-                new_lines[i] = format_task_line(t[0], my_phase, my_task, t[3], new_deps)
-                changed = True
-
-    if changed:
-        return "\n".join(new_lines)
-    return content
-
-
-def _find_new_phase_num(old_num: int, num_map_pairs: list[tuple[int, int]]) -> int | None:
-    """Find the new phase number for a given old phase number.
-
-    If the old number appears only once, returns its unique mapping.
-    If it appears multiple times (duplicates), returns the first occurrence's
-    new number as a best-effort fallback — exact resolution requires context.
-    """
-    matches = [new for old, new in num_map_pairs if old == old_num]
-    if len(matches) == 1:
-        return matches[0]
-    if len(matches) > 1:
-        return matches[0]  # Best-effort: use first occurrence
+def find_phase(plan, ref):
+    """Find a phase by ID or emoji+ID."""
+    for p in plan["phases"]:
+        if p["id"] == ref or f"{p['emoji']} {p['id']}" == ref.strip():
+            return p
     return None
 
 
-def _fix_task_numbering(content: str, phase_num: int, task_status_map: dict) -> str:
-    """Renumber tasks within a specific phase sequentially (X.1, X.2, ...)."""
-    lines = content.splitlines()
-    phases = extract_phases(content)
-
-    # Find the phase
-    target_tasks = None
-    for _, pn, _, tasks in phases:
-        if pn == phase_num:
-            target_tasks = tasks
-            break
-    if target_tasks is None:
-        return content
-
-    # Build old_task_num -> new_task_num mapping
-    old_nums = [t[2] for t in target_tasks]
-    num_map: dict[int, int] = {}
-    for i, old_num in enumerate(old_nums):
-        num_map[old_num] = i + 1
-
-    changed = False
-    new_lines = list(lines)
-
-    # Update task lines in this phase
-    for i, line in enumerate(new_lines):
-        t = parse_task_line(line)
-        if t and t[1] == phase_num and t[2] in num_map:
-            old_task = t[2]
-            new_task = num_map[old_task]
-            if old_task != new_task:
-                new_lines[i] = format_task_line(t[0], phase_num, new_task, t[3], t[4])
-                changed = True
-
-    # Update dependency references pointing to tasks in this phase
-    for i, line in enumerate(new_lines):
-        t = parse_task_line(line)
-        if t:
-            new_deps = []
-            for dep_ref in t[4]:
-                dp, dt = _resolve_dep_ref(dep_ref, t[1])
-                if dp is not None and dp == phase_num and dt in num_map:
-                    new_dt = num_map[dt]
-                    if dp == t[1]:
-                        new_deps.append(f"Task {dp}.{new_dt}")
-                    else:
-                        new_deps.append(f"Phase {dp} - Task {dp}.{new_dt}")
-                else:
-                    new_deps.append(dep_ref)
-            if new_deps != t[4]:
-                new_lines[i] = format_task_line(t[0], t[1], t[2], t[3], new_deps)
-                changed = True
-
-    # Update header Current Task field if it references a task in this phase
-    idx = _find_header_field_line(new_lines, "Current Task")
-    if idx >= 0:
-        val = new_lines[idx].split(":", 1)[1].strip()
-        tm = re.match(r"(.*)Task\s+(\d+)\.(\d+)(.*)", val)
-        if tm:
-            prefix, p_str, t_str, suffix = tm.group(1), int(tm.group(2)), int(tm.group(3)), tm.group(4)
-            if p_str == phase_num and t_str in num_map:
-                new_t = num_map[t_str]
-                new_lines[idx] = f"- Current Task: {prefix}{phase_num}.{new_t}{suffix}"
-                changed = True
-
-    # Remove self-dependencies created by renumbering.
-    # After renaming (e.g., Task 1.2 -> Task 1.1), a dep on "Task 1.1" may now
-    # point to the task itself. Detect and remove such self-refs.
-    for i, line in enumerate(new_lines):
-        t = parse_task_line(line)
-        if t:
-            my_phase, my_task = t[1], t[2]
-            new_deps = [
-                d for d in t[4]
-                if not _is_self_dep(d, my_phase, my_task)
-            ]
-            if new_deps != t[4]:
-                new_lines[i] = format_task_line(t[0], my_phase, my_task, t[3], new_deps)
-                changed = True
-
-    if changed:
-        return "\n".join(new_lines)
-    return content
+def find_task(plan, phase_ref, task_ref):
+    """Find a task within a phase."""
+    phase = find_phase(plan, phase_ref)
+    if not phase:
+        return None
+    for t in phase["tasks"]:
+        if t["id"] == task_ref or f"{t['emoji']} {t['id']}" == task_ref.strip():
+            return t
+    return None
 
 
-def cmd_sort_inline(plan_path: str, content: str) -> str:
-    """Apply sort transformation in-place (used by check --fix)."""
-    # Reuse cmd_sort logic but operate on content string directly
-    lines = content.splitlines()
-
-    header_end = 0
-    for i, line in enumerate(lines):
-        if parse_phase_heading(line) is not None:
-            header_end = i
-            break
-    else:
-        return content
-
-    header_lines = lines[:header_end]
-    while header_lines and header_lines[-1].strip() == "":
-        header_lines.pop()
-    phase_block = lines[header_end:]
-
-    last_content_idx = -1
-    for i, line in enumerate(phase_block):
-        if parse_phase_heading(line) is not None:
-            last_content_idx = i
-        elif parse_task_line(line) is not None:
-            last_content_idx = i
-        elif line.startswith("  - "):
-            last_content_idx = i
-    actual_end = last_content_idx + 1
-    while actual_end < len(phase_block) and phase_block[actual_end].strip() == "":
-        actual_end += 1
-
-    sections: list[tuple[int, list[str]]] = []
-    i = 0
-    while i < actual_end:
-        p = parse_phase_heading(phase_block[i])
-        if p is None:
-            i += 1
-            continue
-        start = i
-        j = i + 1
-        while j < actual_end and parse_phase_heading(phase_block[j]) is None:
-            j += 1
-        section_lines = phase_block[start:j]
-        sorted_section = _sort_tasks_in_section(section_lines)
-        sections.append((p[1], sorted_section))
-        i = j
-
-    sections.sort(key=lambda s: s[0])
-    sorted_phase_lines = []
-    for idx, (_, section) in enumerate(sections):
-        sorted_phase_lines.append("")
-        sorted_phase_lines.extend(section)
-
-    new_lines = header_lines + sorted_phase_lines
-    result = "\n".join(new_lines) + "\n"
-    # Touch updated timestamp
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    rlines = result.splitlines()
-    rlines = _update_header_field(rlines, "Updated", now)
-    result = "\n".join(rlines)
-    return validate_status_set(result)
-
-
-# ---------------------------------------------------------------------------
-# Validation
-# ---------------------------------------------------------------------------
-
-def validate_transition(current: str, new: str) -> bool:
-    """Check if transition is valid. Returns True if valid."""
-    if current == new:
-        return True
-    allowed = VALID_TRANSITIONS.get(current, set())
-    return new in allowed
-
-
-def check_dependency_cycle(plan_path: str, depends_on: list[str]) -> None:
-    """Check for cycles in dependency graph. Exits with error if cycle found.
-
-    Walks from each dependency transitively and checks if we can reach back
-    to plan_path.
-    """
-    base_resolved = str(Path(plan_path).resolve())
-    plan_dir = os.path.dirname(base_resolved)
-    visited = set()
-    # Resolve initial deps relative to the plan file's directory, not CWD
-    stack = [str(Path(plan_dir, d).resolve()) for d in depends_on]
-
-    while stack:
-        current_resolved = stack.pop()
-        if current_resolved == base_resolved:
-            print(f"Error: dependency cycle detected involving {plan_path}", file=sys.stderr)
-            sys.exit(1)
-        if current_resolved in visited:
-            continue
-        visited.add(current_resolved)
-
-        # Resolve the original path for reading
-        # We need to find a path that resolves to current_resolved
-        # Read from the resolved path directly
-        try:
-            dep_content = Path(current_resolved).read_text(encoding="utf-8")
-            dep_header = _parse_header("", dep_content.splitlines())
-            deps_str = dep_header.get("depends_on", "NONE").strip()
-            if deps_str and deps_str != "NONE":
-                deps = [d.strip() for d in deps_str.split(",")]
-                for d in deps:
-                    # Resolve relative to the directory of the dependency file,
-                    # not the current working directory
-                    dep_dir = os.path.dirname(current_resolved)
-                    resolved_d = str(Path(dep_dir, d).resolve())
-                    stack.append(resolved_d)
-        except (FileNotFoundError, SystemExit, PermissionError):
-            pass  # plan doesn't exist, skip
-
-
-def validate_status_set(content: str) -> str:
-    """Re-derive all phase and plan statuses from tasks. Returns updated content."""
-    lines = content.splitlines()
-    phases = extract_phases("\n".join(lines))
-
-    # Update phase headings with derived statuses
-    for emoji, num, title, tasks in phases:
-        derived = derive_phase_status(tasks)
-        old_heading = format_phase_heading(emoji, num, title)
-        new_heading = format_phase_heading(derived, num, title)
-        for i, line in enumerate(lines):
-            if line.strip() == old_heading:
-                lines[i] = new_heading
-                break
-
-    # Update plan title with derived status
-    plan_status = derive_plan_status(phases)
-    for i, line in enumerate(lines):
-        m = _TITLE_RE.match(line.strip())
+def next_phase_number(plan):
+    """Return the next available phase number."""
+    nums = []
+    for p in plan["phases"]:
+        m = re.match(r"Phase\s+(\d+)", p["id"])
         if m:
-            title_text = m.group(2).strip()
-            lines[i] = format_plan_title(plan_status, title_text)
-            break
-
-    return "\n".join(lines)
+            nums.append(int(m.group(1)))
+    return max(nums, default=0) + 1
 
 
-def check_task_deps_satisfied(content: str, task_phase: int, task_num: int) -> bool:
-    """Check if all dependencies of a task are in ☑ (Done) state.
-
-    Returns True if satisfied (no deps or all deps are ☑), False otherwise.
-    """
-    lines = content.splitlines()
-    phases = extract_phases("\n".join(lines))
-
-    # Build a lookup: (phase, task) -> emoji
-    task_status_map: dict[tuple[int, int], str] = {}
-    for _, phase_num, _, tasks in phases:
-        for t in tasks:
-            task_status_map[(t[1], t[2])] = t[0]
-
-    # Find the target task and its deps
-    for _, phase_num, _, tasks in phases:
-        for t in tasks:
-            if t[1] == task_phase and t[2] == task_num:
-                deps = t[4]  # list of dep refs like "Task 2.1" or "Phase 3 - Task 3.1"
-                if not deps:
-                    return True
-                for dep_ref in deps:
-                    dep_phase, dep_task = _resolve_dep_ref(dep_ref, task_phase)
-                    if dep_phase is None:
-                        continue  # malformed ref, skip
-                    dep_status = task_status_map.get((dep_phase, dep_task))
-                    if dep_status != STATUS_DONE:
-                        return False
-                return True
-
-    return True  # task not found, let caller handle error
+def next_task_number(phase):
+    """Return the next available task number within a phase."""
+    nums = []
+    for t in phase["tasks"]:
+        m = re.match(r"Task\s+\d+(\.)(\d+)", t["id"])
+        if m:
+            nums.append(int(m.group(2)))
+    return max(nums, default=0) + 1
 
 
-def _resolve_dep_ref(dep_ref: str, current_phase: int) -> tuple[int | None, int | None]:
-    """Resolve a dependency reference to (phase_num, task_num).
-
-    Handles:
-      - "Task X.Y" → (X, Y)
-      - "Phase X - Task X.Y" → (X, Y)
-    """
-    dep_ref = dep_ref.strip()
-    # Cross-phase: "Phase X - Task X.Y"
-    m = re.match(r"Phase\s+(\d+)\s*-\s*Task\s+(\d+)\.(\d+)", dep_ref)
-    if m:
-        return int(m.group(1)), int(m.group(3))
-    # Same-phase or explicit: "Task X.Y"
-    m = re.match(r"Task\s+(\d+)\.(\d+)", dep_ref)
+def parse_task_id(raw):
+    """Parse 'Task X.Y' into (phase_num, task_num)."""
+    m = re.match(r"Task\s+(\d+)\.(\d+)", raw)
     if m:
         return int(m.group(1)), int(m.group(2))
     return None, None
 
 
-def _is_self_dep(dep_ref: str, my_phase: int, my_task: int) -> bool:
-    """Check if a dependency reference points to the task itself."""
-    dp, dt = _resolve_dep_ref(dep_ref, my_phase)
-    if dp is None:
+def parse_phase_id(raw):
+    """Parse 'Phase N' into phase number."""
+    m = re.match(r"Phase\s+(\d+)", raw)
+    if m:
+        return int(m.group(1))
+    return None
+
+
+def now_iso():
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def validate_title(title):
+    if not title or not title.strip():
+        return False, "Title cannot be empty"
+    if "\n" in title:
+        return False, "Title must not contain newlines"
+    if len(title) > 2048:
+        return False, f"Title exceeds 2048 characters (got {len(title)})"
+    return True, ""
+
+
+def validate_emoji(emoji):
+    if emoji not in ALL_EMOJI:
         return False
-    return dp == my_phase and dt == my_task
-
-
-# ---------------------------------------------------------------------------
-# Commands — batch (chain multiple ops under one lock)
-# ---------------------------------------------------------------------------
-
-# Maps a batch command name to the positional attribute names expected by cmd_*. 
-# These match the argparse subparser definitions in build_parser().
-_BATCH_CMD_ATTRS: dict[str, list[str]] = {
-    "create": ["title"],
-    "add-phase": ["phase_ref", "phase_title"],
-    "add-task": ["phase_ref", "task_ref", "task_title"],
-    "remove-phase": ["phase_ref"],
-    "remove-task": ["phase_ref", "task_ref"],
-    "set-plan-title": ["title"],
-    "set-plan-depends-on": ["deps_raw"],
-    "set-plan-created": ["value"],
-    "set-plan-updated": ["value"],
-    "set-plan-current-phase": ["phase_ref"],
-    "set-plan-current-task": ["task_ref"],
-    "set-plan-status": ["status"],
-    "set-phase-status": ["phase_ref", "status"],
-    "set-task-status": ["task_ref", "status"],
-    "update-phase": ["phase_ref", "phase_title"],
-    "update-task": ["phase_ref", "task_ref", "task_title"],
-    "add-task-dependency": ["phase_ref", "task_ref", "dep_task_ref"],
-    "remove-task-dependency": ["phase_ref", "task_ref", "dep_task_ref"],
-    "set-all-statuses": ["status"],
-    "sort": [],
-}
-
-
-def _parse_batch_line(line: str) -> tuple[str, list[str]] | None:
-    """Parse a batch input line into (command_name, [args...]).
-
-    Uses shlex for proper shell-style quoting support.
-    """
-    line = line.strip()
-    if not line or line.startswith("#"):
-        return None
-    try:
-        tokens = shlex.split(line)
-    except ValueError as e:
-        print(f"Error: cannot parse line: {e}", file=sys.stderr)
-        sys.exit(1)
-    if not tokens:
-        return None
-    cmd_name = tokens[0]
-    if cmd_name not in _BATCH_CMD_ATTRS:
-        print(f"Error: unrecognized command: {cmd_name!r}", file=sys.stderr)
-        sys.exit(1)
-    return cmd_name, tokens[1:]
-
-
-def _parse_batch_json(raw: str) -> list[tuple[str, list[str]]]:
-    """Parse a JSON array of command objects into [(cmd_name, [args...])].
-
-    Expected format:
-      [
-        {"command": "create", "args": ["My Project"]},
-        {"command": "add-phase", "args": ["Phase 1", "Planning"]},
-        {"command": "add-task", "args": ["Phase 1", "Task 1.1", "Define scope"]},
-        ...
-      ]
-    """
-    try:
-        data = _json_mod.loads(raw)
-    except _json_mod.JSONDecodeError as e:
-        print(f"Error: invalid JSON: {e}", file=sys.stderr)
-        sys.exit(1)
-
-    if not isinstance(data, list):
-        print("Error: JSON input must be an array of command objects", file=sys.stderr)
-        sys.exit(1)
-
-    operations = []
-    for idx, obj in enumerate(data):
-        if not isinstance(obj, dict):
-            print(f"Error: item {idx} is not an object", file=sys.stderr)
-            sys.exit(1)
-        cmd_name = obj.get("command")
-        if not cmd_name:
-            print(f"Error: item {idx} missing 'command' key", file=sys.stderr)
-            sys.exit(1)
-        if cmd_name not in _BATCH_CMD_ATTRS:
-            print(f"Error: unrecognized command: {cmd_name!r}", file=sys.stderr)
-            sys.exit(1)
-        args = obj.get("args", [])
-        if not isinstance(args, list):
-            print(f"Error: 'args' for item {idx} must be an array", file=sys.stderr)
-            sys.exit(1)
-        # Ensure all args are strings
-        str_args = [str(a) for a in args]
-        operations.append((cmd_name, str_args))
-    return operations
-
-
-def _make_namespace(cmd_name: str, args: list[str], path: str) -> argparse.Namespace:
-    """Build an argparse.Namespace from batch-parsed command + positional args."""
-    d = {"path": path}
-    attr_names = _BATCH_CMD_ATTRS.get(cmd_name, [])
-    # Optional title fields: None when not provided (matches argparse nargs="?" default)
-    _OPTIONAL_TITLE_FIELDS = {"phase_title", "task_title"}
-    for i, name in enumerate(attr_names):
-        if i < len(args):
-            val = args[i]
-        elif name in _OPTIONAL_TITLE_FIELDS:
-            val = None  # Missing optional title → None (legacy form)
-        else:
-            val = ""
-        if name == "value" and val == "":
-            val = "__NOW__"
-        if name == "deps_raw":
-            d["deps"] = [x.strip() for x in val.split(",") if x.strip()] if val != "NONE" else []
-        else:
-            d[name] = val
-    return argparse.Namespace(**d)
-
-
-def cmd_batch(args: argparse.Namespace) -> None:
-    """Execute multiple plan operations on the same PLAN.md under one lock.
-
-    Reads commands from stdin or a file (--input FILE). Two input modes:
-
-    1. Line mode: one command per line, shell-style quoting:
-        create "My Project"
-        add-phase "Phase 1 ➖ Planning"
-        add-task "Phase 1" "Task 1.1 ➖ Define scope"
-
-    2. JSON mode: array of objects with {"command": ..., "args": [...]}:
-        [{"command": "create", "args": ["My Project"]}, ...]
-
-    Mode detection:
-      - --json flag forces JSON mode
-      - File extension: .json → JSON mode, .txt/.md → line mode
-      - Stdin without --json: line mode (default)
-
-    All operations share a single exclusive lock and atomic write at the end.
-    """
-    path = args.path
-    input_file = getattr(args, "input", None)
-    json_flag = getattr(args, "json", False)
-
-    # Read raw content from file or stdin
-    if input_file:
-        p = Path(input_file)
-        if not p.exists():
-            print(f"Error: input file {input_file} does not exist", file=sys.stderr)
-            sys.exit(1)
-        raw = p.read_text(encoding="utf-8").strip()
-    else:
-        raw = sys.stdin.read().strip()
-
-    if not raw:
-        src = input_file or "stdin"
-        print(f"Error: no commands provided in {src}", file=sys.stderr)
-        sys.exit(1)
-
-    # Determine mode: --json flag wins, then auto-detect from file extension
-    json_mode = json_flag
-    if not json_flag and input_file:
-        suffix = Path(input_file).suffix.lower()
-        if suffix == ".json":
-            json_mode = True
-        elif suffix in (".txt", ".md"):
-            json_mode = False
-
-    # Parse input — JSON mode or line mode
-    if json_mode:
-        operations = _parse_batch_json(raw)
-    else:
-        operations = []
-        for line in raw.splitlines():
-            result = _parse_batch_line(line)
-            if result is None:
-                continue
-            operations.append(result)
-
-    if not operations:
-        print("Error: no valid commands found", file=sys.stderr)
-        sys.exit(1)
-
-    # If file doesn't exist, first command MUST be 'create'.
-    # This prevents malformed files (mutations on empty content) and
-    # silent data loss when create is not first.
-    if not Path(path).exists():
-        first_cmd = operations[0][0]
-        if first_cmd != "create":
-            print(
-                f"Error: file {path} does not exist — first batch command must be 'create'",
-                file=sys.stderr,
-            )
-            sys.exit(1)
-
-    # Hold exclusive lock for the entire batch
-    fd = _acquire_exclusive_lock(path)
-    try:
-        # Clean orphans
-        _cleanup_orphans(path)
-
-        # If file doesn't exist, create empty content (create cmd will handle it)
-        if Path(path).exists():
-            raw = read_plan_raw(path)
-            if not _verify_checksum(raw):
-                print(
-                    f"Warning: checksum mismatch in {path} — file may be corrupted",
-                    file=sys.stderr,
-                )
-            content = _strip_checksum(raw)
-        else:
-            content = ""
-
-        # Apply each operation sequentially, capturing stdout to avoid
-        # confusing partial output on failure (buffered prints from earlier
-        # commands would flush even when a later command aborts the batch).
-        import io as _io
-        captured_stdout: list[str] = []
-
-        for cmd_name, args in operations:
-            ns = _make_namespace(cmd_name, args, path)
-
-            if cmd_name == "create":
-                # create is special — it writes directly without _safe_edit
-                now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-                deps_str = "NONE"
-                content = f"""# {STATUS_TODO} Plan ➖ {ns.title}
-- Depends On: {deps_str}
-- Created: {now}
-- Updated: {now}
-- Current Phase: NONE
-- Current Task: NONE
-"""
-                captured_stdout.append(f"Created {path}")
-                continue
-
-            # For all other commands, call the transform directly
-            handler = COMMAND_MAP.get(cmd_name)
-            if handler is None:
-                print(f"Error: unknown command {cmd_name!r}", file=sys.stderr)
-                sys.exit(1)
-
-            # Wrap handler to apply its transform in-place instead of via _safe_edit.
-            # Each cmd_* function calls _safe_edit(path, transform_fn) internally.
-            # Some also pre-read via read_plan() / read_plan_raw().
-            # We intercept all three so they operate on in-memory content.
-            original_safe_edit = globals()["_safe_edit"]
-            original_read_plan = globals()["read_plan"]
-            original_read_plan_raw = globals()["read_plan_raw"]
-
-            def _inline_edit(_p: str, transform_fn) -> str:
-                nonlocal content
-                content = transform_fn(content)
-                return content
-
-            def _inline_read_plan(_p: str) -> str:
-                return content
-
-            def _inline_read_plan_raw(_p: str) -> str:
-                # Return content with a dummy checksum so _verify_checksum passes
-                return _add_checksum(content)
-
-            globals()["_safe_edit"] = _inline_edit
-            globals()["read_plan"] = _inline_read_plan
-            globals()["read_plan_raw"] = _inline_read_plan_raw
-
-            # Capture stdout during handler execution
-            old_stdout = sys.stdout
-            capture_buf = _io.StringIO()
-            sys.stdout = capture_buf
-            try:
-                handler(ns)
-                captured = capture_buf.getvalue().strip()
-                if captured:
-                    captured_stdout.append(captured)
-            except SystemExit:
-                sys.stdout = old_stdout
-                raise
-            finally:
-                sys.stdout = old_stdout
-                globals()["_safe_edit"] = original_safe_edit
-                globals()["read_plan"] = original_read_plan
-                globals()["read_plan_raw"] = original_read_plan_raw
-
-        # Touch updated timestamp after all operations
-        content = _touch_updated(path, content)
-        # Re-derive statuses
-        content = validate_status_set(content)
-
-        # Atomic write
-        final_content = _add_checksum(content)
-        write_plan_atomic(path, final_content)
-
-    finally:
-        _release_lock(fd, path)
-
-    # Print captured output only after successful completion
-    for line in captured_stdout:
-        print(line)
-    print(f"Batch complete: {len(operations)} operations applied to {path}")
-
-
-# ---------------------------------------------------------------------------
-# Commands — create
-# ---------------------------------------------------------------------------
-
-def cmd_create(args: argparse.Namespace) -> None:
-    """Create a new PLAN.md with header."""
-    path = args.path
-    title = validate_title(args.title, "plan title")
-    depends = getattr(args, "depends", []) or []
-
-    if Path(path).exists():
-        print(f"Error: {path} already exists", file=sys.stderr)
-        sys.exit(1)
-
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    deps_str = "NONE"
-    if depends:
-        deps_str = " , ".join(depends)
-
-    content = f"""# {STATUS_TODO} Plan ➖ {title}
-- Depends On: {deps_str}
-- Created: {now}
-- Updated: {now}
-- Current Phase: NONE
-- Current Task: NONE
-"""
-    # Atomically write the new file (no lock needed — file doesn't exist yet)
-    final = _add_checksum(content)
-    write_plan_atomic(path, final)
-    print(f"Created {path}")
-
-    # Check for dependency cycles
-    if depends:
-        check_dependency_cycle(path, depends)
-
-
-# ---------------------------------------------------------------------------
-# Commands — get (header reads)
-# ---------------------------------------------------------------------------
-
-def cmd_get_plan_title(args: argparse.Namespace) -> None:
-    content = _safe_read(args.path)
-    lines = content.splitlines()
-    for line in lines:
-        m = _TITLE_RE.match(line.strip())
-        if m:
-            print(m.group(2).strip())
-            return
-    print("Error: no plan title found", file=sys.stderr)
-    sys.exit(1)
-
-
-def cmd_get_plan_depends_on(args: argparse.Namespace) -> None:
-    content = _safe_read(args.path)
-    header = _parse_header("", content.splitlines())
-    print(header.get("depends_on", "NONE"))
-
-
-def cmd_get_plan_created(args: argparse.Namespace) -> None:
-    content = _safe_read(args.path)
-    header = _parse_header("", content.splitlines())
-    print(header.get("created", ""))
-
-
-def cmd_get_plan_updated(args: argparse.Namespace) -> None:
-    content = _safe_read(args.path)
-    header = _parse_header("", content.splitlines())
-    print(header.get("updated", ""))
-
-
-def cmd_get_plan_current_phase(args: argparse.Namespace) -> None:
-    content = _safe_read(args.path)
-    header = _parse_header("", content.splitlines())
-    print(header.get("current_phase", "NONE"))
-
-
-def cmd_get_plan_current_task(args: argparse.Namespace) -> None:
-    content = _safe_read(args.path)
-    header = _parse_header("", content.splitlines())
-    print(header.get("current_task", "NONE"))
-
-
-# ---------------------------------------------------------------------------
-# Commands — set (header writes)
-# ---------------------------------------------------------------------------
-
-def _touch_updated(path: str, content: str) -> str:
-    """Update the Updated timestamp in content."""
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    lines = content.splitlines()
-    return "\n".join(_update_header_field(lines, "Updated", now))
-
-
-def cmd_set_plan_title(args: argparse.Namespace) -> None:
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-        new_title = args.title
-        for i, line in enumerate(lines):
-            m = _TITLE_RE.match(line.strip())
-            if m:
-                current_emoji = m.group(1) or STATUS_TODO
-                lines[i] = format_plan_title(current_emoji, new_title)
-                break
-        content = "\n".join(lines)
-        content = _touch_updated(args.path, content)
-        content = validate_status_set(content)
-        return content
-
-    _safe_edit(args.path, _transform)
-    print(f"Set plan title to: {args.title}")
-
-
-def cmd_set_plan_depends_on(args: argparse.Namespace) -> None:
-    deps = getattr(args, "deps", []) or []
-    deps_str = "NONE" if not deps else " , ".join(deps)
-
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-        lines = _update_header_field(lines, "Depends On", deps_str)
-        content = "\n".join(lines)
-        content = _touch_updated(args.path, content)
-        return content
-
-    _safe_edit(args.path, _transform)
-
-    # Check for cycles (after write is committed)
-    if deps:
-        check_dependency_cycle(args.path, deps)
-    print(f"Set depends on to: {deps_str}")
-
-
-def cmd_set_plan_created(args: argparse.Namespace) -> None:
-    val = args.value
-    if val in ("--now", "__NOW__"):
-        val = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-        lines = _update_header_field(lines, "Created", val)
-        content = "\n".join(lines)
-        content = _touch_updated(args.path, content)
-        return content
-
-    _safe_edit(args.path, _transform)
-    print(f"Set created to: {val}")
-
-
-def cmd_set_plan_updated(args: argparse.Namespace) -> None:
-    val = args.value
-    if val in ("--now", "__NOW__"):
-        val = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-        lines = _update_header_field(lines, "Updated", val)
-        content = "\n".join(lines)
-        return content
-
-    _safe_edit(args.path, _transform)
-    print(f"Set updated to: {val}")
-
-
-def cmd_set_plan_current_phase(args: argparse.Namespace) -> None:
-    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
-    target = parse_phase_arg(phase_ref)
-
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-
-        # Find the phase and copy its emoji + full heading
-        target_text = None
-        for line in lines:
-            m = parse_phase_heading(line)
-            if m:
-                emoji, num, title = m
-                if num == target:
-                    target_text = f"{emoji} Phase {num}"
-                    break
-
-        if target_text is None:
-            print(f"Error: {phase_ref} not found", file=sys.stderr)
-            sys.exit(1)
-
-        lines = _update_header_field(lines, "Current Phase", target_text)
-        content = "\n".join(lines)
-        content = _touch_updated(args.path, content)
-        return content
-
-    # Resolve target_text before locking for the print message
-    existing = read_plan(args.path)
-    target_text = None
-    for line in existing.splitlines():
-        m = parse_phase_heading(line)
-        if m and m[1] == target:
-            target_text = f"{m[0]} Phase {m[1]}"
-            break
-    if target_text is None:
-        print(f"Error: {phase_ref} not found", file=sys.stderr)
-        sys.exit(1)
-
-    _safe_edit(args.path, _transform)
-    print(f"Set current phase to: {target_text}")
-
-
-def cmd_set_plan_current_task(args: argparse.Namespace) -> None:
-    task_ref = args.task_ref  # e.g. "Task 2.3" or "Task 2.3 - Description..."
-    target_phase, target_task = parse_task_arg(task_ref)
-
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-
-        # Find the task and copy its emoji + full reference
-        target_text = None
-        for line in lines:
-            t = parse_task_line(line)
-            if t and t[1] == target_phase and t[2] == target_task:
-                target_text = f"{t[0]} Task {target_phase}.{target_task}"
-                break
-
-        if target_text is None:
-            print(f"Error: {task_ref} not found", file=sys.stderr)
-            sys.exit(1)
-
-        lines = _update_header_field(lines, "Current Task", target_text)
-        content = "\n".join(lines)
-        content = _touch_updated(args.path, content)
-        return content
-
-    # Resolve target_text before locking for the print message
-    existing = read_plan(args.path)
-    target_text = None
-    for line in existing.splitlines():
-        t = parse_task_line(line)
-        if t and t[1] == target_phase and t[2] == target_task:
-            target_text = f"{t[0]} Task {target_phase}.{target_task}"
-            break
-    if target_text is None:
-        print(f"Error: {task_ref} not found", file=sys.stderr)
-        sys.exit(1)
-
-    _safe_edit(args.path, _transform)
-    print(f"Set current task to: {target_text}")
-
-
-# ---------------------------------------------------------------------------
-# Commands — status reads
-# ---------------------------------------------------------------------------
-
-def cmd_get_plan_status(args: argparse.Namespace) -> None:
-    content = _safe_read(args.path)
-    lines = content.splitlines()
-    for line in lines:
-        m = _TITLE_RE.match(line.strip())
-        if m:
-            print(m.group(1) or STATUS_TODO)
-            return
-    print(STATUS_TODO)
-
-
-def cmd_get_phase_status(args: argparse.Namespace) -> None:
-    content = _safe_read(args.path)
-    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
-    lines = content.splitlines()
-    target = parse_phase_arg(phase_ref)
-
-    for line in lines:
-        p = parse_phase_heading(line)
-        if p and p[1] == target:
-            print(p[0])
-            return
-    print(f"Error: {phase_ref} not found", file=sys.stderr)
-    sys.exit(1)
-
-
-def cmd_get_task_status(args: argparse.Namespace) -> None:
-    content = _safe_read(args.path)
-    task_ref = args.task_ref  # e.g. "Task 2.3" or "Task 2.3 - Description..."
-    lines = content.splitlines()
-    target_phase, target_task = parse_task_arg(task_ref)
-
-    for line in lines:
-        t = parse_task_line(line)
-        if t and t[1] == target_phase and t[2] == target_task:
-            print(t[0])
-            return
-    print(f"Error: {task_ref} not found", file=sys.stderr)
-    sys.exit(1)
-
-
-# ---------------------------------------------------------------------------
-# Commands — status writes
-# ---------------------------------------------------------------------------
-
-def cmd_set_all_statuses(args: argparse.Namespace) -> None:
-    """Set plan, all phases, and all tasks to the same status."""
-    new_status = args.status
-
-    if new_status not in ALL_STATUSES:
-        print(f"Error: invalid status {new_status!r}", file=sys.stderr)
-        sys.exit(1)
-
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-
-        # Update plan title
-        for i, line in enumerate(lines):
-            m = _TITLE_RE.match(line.strip())
-            if m:
-                title_text = m.group(2).strip()
-                lines[i] = format_plan_title(new_status, title_text)
-                break
-
-        # Update all phase headings
-        for i, line in enumerate(lines):
-            p = parse_phase_heading(line)
-            if p:
-                lines[i] = format_phase_heading(new_status, p[1], p[2])
-
-        # Update all tasks
-        for i, line in enumerate(lines):
-            t = parse_task_line(line)
-            if t:
-                lines[i] = format_task_line(new_status, t[1], t[2], t[3], t[4])
-
-        content = "\n".join(lines)
-        content = _touch_updated(args.path, content)
-        return content
-
-    _safe_edit(args.path, _transform)
-    print(f"Set all statuses to: {new_status}")
-
-
-def cmd_set_plan_status(args: argparse.Namespace) -> None:
-    """Set plan status (emoji in title)."""
-    new_status = args.status
-
-    if new_status not in ALL_STATUSES:
-        print(f"Error: invalid status {new_status!r}", file=sys.stderr)
-        sys.exit(1)
-
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-        for i, line in enumerate(lines):
-            m = _TITLE_RE.match(line.strip())
-            if m:
-                title_text = m.group(2).strip()
-                lines[i] = format_plan_title(new_status, title_text)
-                break
-
-        content = "\n".join(lines)
-        content = _touch_updated(args.path, content)
-        return content
-
-    _safe_edit(args.path, _transform)
-    print(f"Set plan status to: {new_status}")
-
-
-def cmd_set_phase_status(args: argparse.Namespace) -> None:
-    """Set phase status (emoji in heading)."""
-    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
-    new_status = args.status
-
-    if new_status not in ALL_STATUSES:
-        print(f"Error: invalid status {new_status!r}", file=sys.stderr)
-        sys.exit(1)
-
-    target = parse_phase_arg(phase_ref)
-
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-        for i, line in enumerate(lines):
-            p = parse_phase_heading(line)
-            if p and p[1] == target:
-                # Validate transition
-                if not validate_transition(p[0], new_status):
-                    print(
-                        f"Error: invalid transition {p[0]} -> {new_status} for {phase_ref}",
-                        file=sys.stderr,
-                    )
-                    sys.exit(1)
-                lines[i] = format_phase_heading(new_status, p[1], p[2])
-                break
-        else:
-            print(f"Error: {phase_ref} not found", file=sys.stderr)
-            sys.exit(1)
-
-        content = "\n".join(lines)
-        content = _touch_updated(args.path, content)
-        return content
-
-    _safe_edit(args.path, _transform)
-    print(f"Set {phase_ref} status to: {new_status}")
-
-
-def cmd_set_task_status(args: argparse.Namespace) -> None:
-    """Set task status (emoji in task line)."""
-    task_ref = args.task_ref  # e.g. "Task 2.3" or "Task 2.3 - Description..."
-    new_status = args.status
-
-    if new_status not in ALL_STATUSES:
-        print(f"Error: invalid status {new_status!r}", file=sys.stderr)
-        sys.exit(1)
-
-    target_phase, target_task = parse_task_arg(task_ref)
-
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-        for i, line in enumerate(lines):
-            t = parse_task_line(line)
-            if t and t[1] == target_phase and t[2] == target_task:
-                # Validate transition
-                if not validate_transition(t[0], new_status):
-                    print(
-                        f"Error: invalid transition {t[0]} -> {new_status} for {task_ref}",
-                        file=sys.stderr,
-                    )
-                    sys.exit(1)
-                # Check dependency satisfaction before transitioning to ⚙️ (Doing)
-                if new_status == STATUS_DOING:
-                    if not check_task_deps_satisfied(content, target_phase, target_task):
-                        print(
-                            f"Error: cannot start {task_ref} — dependencies not satisfied (all deps must be {STATUS_DONE})",
-                            file=sys.stderr,
-                        )
-                        sys.exit(1)
-                lines[i] = format_task_line(new_status, t[1], t[2], t[3], t[4])
-                break
-        else:
-            print(f"Error: {task_ref} not found", file=sys.stderr)
-            sys.exit(1)
-
-        content = "\n".join(lines)
-        content = _touch_updated(args.path, content)
-        # Re-derive phase and plan statuses
-        content = validate_status_set(content)
-        return content
-
-    _safe_edit(args.path, _transform)
-    print(f"Set {task_ref} status to: {new_status}")
-
-
-# ---------------------------------------------------------------------------
-# Commands — Phase CRUD
-# ---------------------------------------------------------------------------
-
-def cmd_add_phase(args: argparse.Namespace) -> None:
-    """Add a new phase, inserted in sorted numeric position.
-
-    Accepts two forms:
-      1. Separate args: add-phase PLAN.md "Phase 2" "Planning & Requirements"
-      2. Legacy combined: add-phase PLAN.md "Phase 2 ➖ Planning & Requirements"
-         (when phase_title is None, phase_ref carries the full combined string)
-    """
-    phase_ref = args.phase_ref
-    phase_title_arg = args.phase_title
-
-    # Determine explicit_num and title from arguments
-    # None (missing arg) → legacy form; empty string → new form (rejected by validate_title)
-    if phase_title_arg is not None:
-        # New form: separate ID + title
-        explicit_num = parse_phase_arg(phase_ref) if "Phase" in phase_ref else 0
-        raw_title = phase_title_arg
-    else:
-        # Legacy form: combined string in phase_ref (e.g. "Phase 2 ➖ Desc")
-        explicit_num, raw_title = parse_phase_add_arg(phase_ref)
-
-    title = validate_title(raw_title, "phase title")
-
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-        phases = extract_phases(content)
-
-        nonlocal explicit_num
-        if explicit_num > 0:
-            phase_num = explicit_num
-        else:
-            phase_num = len(phases) + 1
-
-        # Build new phase section (leading blank + heading + trailing blank)
-        new_phase_lines = [
-            "",
-            format_phase_heading(STATUS_TODO, phase_num, title),
-            "",
-        ]
-
-        # Find insertion point, collapse adjacent blank lines into one separator
-        insert_idx = _sorted_phase_insert_index(lines, phase_num)
-        # Strip trailing blanks before insertion (replaced by our leading blank)
-        while insert_idx > 0 and lines[insert_idx - 1].strip() == "":
-            insert_idx -= 1
-        # Strip leading blanks from what follows (replaced by our trailing blank)
-        end_idx = insert_idx
-        while end_idx < len(lines) and lines[end_idx].strip() == "":
-            end_idx += 1
-        lines = lines[:insert_idx] + new_phase_lines + lines[end_idx:]
-
-        content = "\n".join(lines) + "\n"
-        content = _touch_updated(args.path, content)
-        return content
-
-    # For explicit numbers, we know phase_num ahead of time.
-    # For auto-numbering, read current phase count to report accurately.
-    if explicit_num > 0:
-        phase_num = explicit_num
-    else:
-        existing = read_plan(args.path)
-        phase_num = len(extract_phases(existing)) + 1
-
-    _safe_edit(args.path, _transform)
-    print(f"Added Phase {phase_num} ({title}) with status {STATUS_TODO}")
-
-
-def cmd_update_phase(args: argparse.Namespace) -> None:
-    """Update phase description/title.
-
-    Accepts two forms:
-      1. Separate args: update-phase PLAN.md "Phase 2" "New description"
-      2. Legacy combined: update-phase PLAN.md "Phase 2 ➖ New description"
-         (when phase_title is None, phase_ref carries the full combined string)
-    """
-    phase_ref = args.phase_ref
-    phase_title_arg = args.phase_title
-
-    # Empty string (from batch mode) treated as None → legacy form
-    if phase_title_arg:
-        # New form: separate ID + title
-        target = parse_phase_arg(phase_ref)
-        new_description = validate_title(phase_title_arg, "phase title")
-    else:
-        # Legacy form: combined string in phase_ref (e.g. "Phase 2 ➖ New desc")
-        target = parse_phase_arg(phase_ref)
-        new_description = phase_ref.split(" ➖ ", 1)[-1].strip() if " ➖ " in phase_ref else None
-        if new_description is not None:
-            new_description = validate_title(new_description, "phase title")
-
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-
-        # Verify phase exists
-        found = False
-        for line in lines:
-            p = parse_phase_heading(line)
-            if p and p[1] == target:
-                found = True
-                break
-
-        if not found:
-            print(f"Error: {phase_title} not found", file=sys.stderr)
-            sys.exit(1)
-
-        # Replace the phase heading line's title
-        for i, line in enumerate(lines):
-            p = parse_phase_heading(line)
-            if p and p[1] == target:
-                current_emoji = p[0]
-                title_to_use = new_description if new_description else p[2]
-                lines[i] = format_phase_heading(current_emoji, target, title_to_use)
-                break
-
-        content = "\n".join(lines)
-        content = _touch_updated(args.path, content)
-        content = validate_status_set(content)
-        return content
-
-    _safe_edit(args.path, _transform)
-    print(f"Updated Phase {target} description to: {new_description if new_description else 'unchanged'}")
-
-
-def cmd_remove_phase(args: argparse.Namespace) -> None:
-    """Remove a phase and all its tasks."""
-    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
-
-    target = parse_phase_arg(phase_ref)
-
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-        phase_ranges = extract_phases_lines("\n".join(lines))
-
-        # Find the phase range to remove
-        remove_start = None
-        remove_end = None
-        for start, end in phase_ranges:
-            p = parse_phase_heading(lines[start])
-            if p and p[1] == target:
-                remove_start = start
-                remove_end = end + 1  # exclusive
-                break
-
-        if remove_start is None:
-            print(f"Error: {phase_ref} not found", file=sys.stderr)
-            sys.exit(1)
-
-        # Remove lines for this phase (including trailing blank line if any)
-        # Also remove one leading blank line if present
-        if remove_start > 0 and lines[remove_start - 1].strip() == "":
-            remove_start -= 1
-
-        new_lines = lines[:remove_start] + lines[remove_end:]
-
-        content = "\n".join(new_lines)
-        content = _touch_updated(args.path, content)
-        content = validate_status_set(content)
-        return content
-
-    _safe_edit(args.path, _transform)
-    print(f"Removed {phase_ref}")
-
-
-# ---------------------------------------------------------------------------
-# Commands — Task CRUD
-# ---------------------------------------------------------------------------
-
-def cmd_add_task(args: argparse.Namespace) -> None:
-    """Add a new task to an existing phase, inserted in sorted numeric position.
-
-    If the phase_ref includes a description ("Phase N ➖ Title") and the phase
-    doesn't exist, it is created first with that title.
-
-    Accepts two forms:
-      1. Separate args: add-task PLAN.md "Phase 2" "Task 2.4" "Do thing"
-         or: add-task PLAN.md "Phase 2" "Do thing"  (auto-number task)
-      2. Legacy combined: add-task PLAN.md "Phase 2" "Task 2.4 ➖ Do thing"
-         (when task_title is None, task_ref carries the full combined string)
-    """
-    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 ➖ Description..."
-    task_ref_arg = args.task_ref
-    task_title_arg = args.task_title
-
-    target_phase = parse_phase_arg(phase_ref)
-
-    # None (missing arg) → legacy form; empty string → new form (rejected by validate_title)
-    if task_title_arg is not None:
-        # New form: separate ID + title
-        explicit_p, explicit_t = parse_task_arg(task_ref_arg) if "Task" in task_ref_arg else (0, 0)
-        raw_title = task_title_arg
-        # Strip any ⚓ anchor suffix — deps must be added via add-task-dependency
-        clean_title, _ = parse_task_deps(raw_title)
-        clean_title = validate_title(clean_title, "task title")
-        deps = []
-    else:
-        # Legacy form: combined string in task_ref (e.g. "Task 2.4 ➖ Do thing")
-        explicit_p, explicit_t, raw_title = parse_task_add_arg(task_ref_arg)
-        clean_title, deps = parse_task_deps(raw_title)
-        clean_title = validate_title(clean_title, "task title")
-
-    if explicit_p > 0 and explicit_t > 0:
-        task_phase = explicit_p
-        task_num = explicit_t
-    else:
-        task_phase = target_phase
-        # Pre-read to determine task number for the print message
-        existing = read_plan(args.path)
-        phases = extract_phases(existing)
-        max_task = 0
-        for emoji, num, t_title, tasks in phases:
-            if num == target_phase:
-                for t in tasks:
-                    if t[2] > max_task:
-                        max_task = t[2]
-        task_num = max_task + 1
-
-    task_title_str = f"Task {task_phase}.{task_num} {clean_title}"
-
-    # Extract phase title from phase_ref if it includes a description
-    phase_title_from_ref = None
-    if " ➖ " in phase_ref:
-        phase_title_from_ref = phase_ref.split(" ➖ ", 1)[1].strip()
-
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-        phases = extract_phases(content)
-
-        # Check if phase exists; if not and phase_ref has a title, create it
-        phase_exists = any(p[1] == target_phase for p in phases)
-        if not phase_exists:
-            if phase_title_from_ref:
-                # Create the phase inline
-                phase_heading = format_phase_heading(STATUS_TODO, target_phase, phase_title_from_ref)
-                insert_idx = _sorted_phase_insert_index(lines, target_phase)
-                # Strip trailing blanks before insertion
-                while insert_idx > 0 and lines[insert_idx - 1].strip() == "":
-                    insert_idx -= 1
-                new_phase_lines = ["", phase_heading, ""]
-                lines = lines[:insert_idx] + new_phase_lines + lines[insert_idx:]
-                phases = extract_phases("\n".join(lines))
-            else:
-                print(f"Error: Phase {target_phase} not found", file=sys.stderr)
-                sys.exit(1)
-
-        # Re-resolve task_num inside transform (content may differ from pre-read)
-        if explicit_p > 0 and explicit_t > 0:
-            tp = explicit_p
-            tn = explicit_t
-        else:
-            tp = target_phase
-            max_task = 0
-            for emoji, num, t_title, tasks in phases:
-                if num == target_phase:
-                    for t in tasks:
-                        if t[2] > max_task:
-                            max_task = t[2]
-            tn = max_task + 1
-
-        # Check for duplicate task ID before inserting
-        for emoji, num, t_title, tasks in phases:
-            if num == target_phase:
-                for t in tasks:
-                    if t[2] == tn:
-                        print(
-                            f"Error: Task {target_phase}.{tn} already exists in Phase {target_phase}",
-                            file=sys.stderr,
-                        )
-                        sys.exit(1)
-
-        # Insert at sorted position within the phase
-        insert_idx, err = _sorted_task_insert_index(lines, target_phase, tn)
-        if insert_idx is None:
-            print(f"Error: {err}", file=sys.stderr)
-            sys.exit(1)
-
-        task_line = format_task_line(STATUS_TODO, tp, tn, clean_title, deps)
-        lines.insert(insert_idx, task_line)
-
-        content = "\n".join(lines)
-        content = _touch_updated(args.path, content)
-        content = validate_status_set(content)
-        return content
-
-    _safe_edit(args.path, _transform)
-    print(f"Added {task_title_str} to {phase_ref} with status {STATUS_TODO}")
-
-
-def cmd_update_task(args: argparse.Namespace) -> None:
-    """Update task description (preserves existing dependencies).
-
-    Accepts two forms:
-      1. Separate args: update-task PLAN.md "Phase 2" "Task 2.4" "New description"
-      2. Legacy combined: update-task PLAN.md "Phase 2" "Task 2.4 ➖ New description"
-         (when task_title is None, task_ref carries the full combined string)
-    """
-    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
-    task_ref_arg = args.task_ref
-    task_title_arg = args.task_title
-
-    # Empty string (from batch mode) treated as None → legacy form
-    if task_title_arg:
-        # New form: separate ID + title
-        target_phase, target_task = parse_task_arg(task_ref_arg)
-        new_description = validate_title(task_title_arg, "task title")
-    else:
-        # Legacy form: combined string in task_ref (e.g. "Task 2.4 ➖ New desc")
-        target_phase, target_task = parse_task_arg(task_ref_arg)
-        new_description = task_ref_arg.split(" ➖ ", 1)[-1].strip() if " ➖ " in task_ref_arg else None
-        if new_description is not None:
-            new_description = validate_title(new_description, "task title")
-
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-        for i, line in enumerate(lines):
-            t = parse_task_line(line)
-            if t and t[1] == target_phase and t[2] == target_task:
-                # Build new task line with updated title, preserving deps
-                current_emoji = t[0]
-                existing_deps = t[4]
-                title_to_use = new_description if new_description else t[3]
-                lines[i] = format_task_line(current_emoji, target_phase, target_task, title_to_use, existing_deps)
-                break
-        else:
-            task_id = f"Task {target_phase}.{target_task}"
-            print(f"Error: {task_id} not found in {phase_ref}", file=sys.stderr)
-            sys.exit(1)
-
-        content = "\n".join(lines)
-        content = _touch_updated(args.path, content)
-        content = validate_status_set(content)
-        return content
-
-    task_id = f"Task {target_phase}.{target_task}"
-    _safe_edit(args.path, _transform)
-    print(f"Updated {task_id} description to: {new_description if new_description else 'unchanged'}")
-
-
-def cmd_remove_task(args: argparse.Namespace) -> None:
-    """Remove a task from a phase."""
-    phase_ref = args.phase_ref  # e.g. "Phase 2" or "Phase 2 - Description..."
-    task_ref = args.task_ref  # e.g. "Task 2.4" or "Task 2.4 - Description..."
-
-    target_phase, target_task = parse_task_arg(task_ref)
-
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-        remove_start = None
-        remove_end = None
-
-        for i, line in enumerate(lines):
-            t = parse_task_line(line)
-            if t and t[1] == target_phase and t[2] == target_task:
-                remove_start = i
-                # Skip sub-bullets
-                remove_end = i + 1
-                j = i + 1
-                while j < len(lines) and lines[j].startswith("  - "):
-                    remove_end = j + 1
-                    j += 1
-                break
-
-        if remove_start is None:
-            print(f"Error: {task_ref} not found in {phase_ref}", file=sys.stderr)
-            sys.exit(1)
-
-        new_lines = lines[:remove_start] + lines[remove_end:]
-
-        content = "\n".join(new_lines)
-        content = _touch_updated(args.path, content)
-        content = validate_status_set(content)
-        return content
-
-    _safe_edit(args.path, _transform)
-    print(f"Removed {task_ref}")
-
-
-# ---------------------------------------------------------------------------
-# Helpers — task dependency cycle detection
-# ---------------------------------------------------------------------------
-
-def _build_task_dep_graph(phases) -> dict[tuple[int, int], list[tuple[int, int]]]:
-    """Build a task dependency graph from extracted phases.
-
-    Returns dict mapping (phase, task) -> [(dep_phase, dep_task), ...].
-    """
-    graph: dict[tuple[int, int], list[tuple[int, int]]] = {}
-    for _, phase_num, _, tasks in phases:
-        for t in tasks:
-            # t = (emoji, phase, task, clean_title, deps)
-            key = (t[1], t[2])
-            dep_targets = []
-            for dep_ref in t[4]:
-                dp, dt = _resolve_dep_ref(dep_ref, t[1])
-                if dp is not None:
-                    dep_targets.append((dp, dt))
-            graph[key] = dep_targets
-    return graph
-
-
-def _check_task_dep_cycle(graph: dict[tuple[int, int], list[tuple[int, int]]], new_dep_from: tuple[int, int], new_dep_to: tuple[int, int]) -> None:
-    """Check if adding an edge from new_dep_from -> new_dep_to would create a cycle.
-
-    A cycle exists if new_dep_to (or any of its transitive dependencies)
-    can reach back to new_dep_from.
-
-    Exits with error if cycle detected.
-    """
-    # BFS/DFS from new_dep_to through existing edges, see if we reach new_dep_from
+    return True
+
+
+# Dependency Cycle Detection
+
+def resolve_task_ref(plan, ref):
+    """Resolve a dependency reference to (phase_id, task_id)."""
+    # Cross-phase: "Phase X - Task X.Y"
+    m = re.match(r"Phase\s+\d+\s*-\s*Task\s+\d+\.\d+", ref)
+    if m:
+        return ref
+    # Phase-bound: "Task X.Y"
+    if re.match(r"Task\s+\d+\.\d+", ref):
+        return ref
+    return None
+
+
+def detect_cycle(plan, phase_id, task_id, new_dep):
+    """Check if adding new_dep would create a cycle. Returns True if cycle found."""
+    # Build adjacency: task -> set of tasks it depends on
+    adj = {}
+    for p in plan["phases"]:
+        for t in p["tasks"]:
+            key = f"{p['id']} - {t['id']}"
+            # Normalize deps to full form
+            normalized = set()
+            for d in t["dependencies"]:
+                nd = _normalize_dep(d, p["id"])
+                normalized.add(nd)
+            adj[key] = normalized
+
+    # Add proposed edge (normalized)
+    src = f"{phase_id} - {task_id}"
+    norm_dep = _normalize_dep(new_dep, phase_id)
+    adj.setdefault(src, set()).add(norm_dep)
+
+    # DFS cycle detection
     visited = set()
-    stack = [new_dep_to]
+    in_stack = set()
 
-    while stack:
-        current = stack.pop()
-        if current == new_dep_from:
-            from_p, from_t = new_dep_from
-            to_p, to_t = new_dep_to
-            print(
-                f"Error: adding dependency Task {from_p}.{from_t} -> Task {to_p}.{to_t} "
-                f"would create a dependency cycle",
-                file=sys.stderr,
-            )
-            sys.exit(1)
-        if current in visited:
+    def dfs(node):
+        if node in in_stack:
+            return True
+        if node in visited:
+            return False
+        visited.add(node)
+        in_stack.add(node)
+        for dep in adj.get(node, set()):
+            if dfs(dep):
+                return True
+        in_stack.discard(node)
+        return False
+
+    for node in adj:
+        visited.clear()
+        in_stack.clear()
+        if dfs(node):
+            return True
+    return False
+
+
+# Checksum Validation
+
+def verify_checksum(plan):
+    """Verify stored checksum matches computed one."""
+    if not plan["raw_checksum"]:
+        return False, "No checksum found"
+    # Re-read file to compute
+    with open(plan["path"], encoding="utf-8") as f:
+        raw = f.read()
+    content, stored = strip_checksum(raw)
+    computed = compute_checksum(content)
+    if computed != stored:
+        return False, f"Checksum mismatch: expected {computed}, stored {stored}"
+    return True, "OK"
+
+
+# Subcommands
+
+def cmd_create(args):
+    path = args.path
+    if os.path.exists(path):
+        die("create", f"File already exists: {path}")
+
+    title = args.title
+    ok, msg = validate_title(title)
+    if not ok:
+        die("create", msg)
+
+    deps = "NONE"
+    if args.depends_on:
+        deps = ", ".join(args.depends_on)
+
+    plan = {
+        "path": os.path.abspath(path),
+        "emoji": EMOJI_TODO,
+        "title": title,
+        "depends_on": deps,
+        "created": now_iso(),
+        "updated": now_iso(),
+        "current_phase": "NONE",
+        "current_task": "NONE",
+        "phases": [],
+        "raw_checksum": None,
+    }
+    write_plan(plan)
+    json_out("success", "create", f"Created plan: {title}", path=path)
+
+
+def cmd_get_plan_title(args):
+    plan = parse_plan(args.path)
+    json_out("success", "get-plan-title", plan["title"], value=plan["title"], path=plan["path"])
+
+
+def cmd_get_plan_depends_on(args):
+    plan = parse_plan(args.path)
+    json_out("success", "get-plan-depends-on", plan["depends_on"], value=plan["depends_on"], path=plan["path"])
+
+
+def cmd_get_plan_created(args):
+    plan = parse_plan(args.path)
+    json_out("success", "get-plan-created", plan["created"], value=plan["created"], path=plan["path"])
+
+
+def cmd_get_plan_updated(args):
+    plan = parse_plan(args.path)
+    json_out("success", "get-plan-updated", plan["updated"], value=plan["updated"], path=plan["path"])
+
+
+def cmd_get_plan_current_phase(args):
+    plan = parse_plan(args.path)
+    json_out("success", "get-plan-current-phase", plan["current_phase"], value=plan["current_phase"], path=plan["path"])
+
+
+def cmd_get_plan_current_task(args):
+    plan = parse_plan(args.path)
+    json_out("success", "get-plan-current-task", plan["current_task"], value=plan["current_task"], path=plan["path"])
+
+
+def cmd_set_plan_title(args):
+    plan = parse_plan(args.path)
+    ok, msg = validate_title(args.title)
+    if not ok:
+        die("set-plan-title", msg)
+    plan["title"] = args.title
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "set-plan-title", f"Title set to: {args.title}", value=args.title, path=plan["path"])
+
+
+def cmd_set_plan_depends_on(args):
+    plan = parse_plan(args.path)
+    if args.depends_on == ["NONE"]:
+        plan["depends_on"] = "NONE"
+    else:
+        plan["depends_on"] = ", ".join(args.depends_on)
+        # Resolve dep paths relative to the plan file's directory
+        plan_dir = os.path.dirname(plan["path"])
+        resolved_deps = []
+        for dep_path in args.depends_on:
+            abs_dep = os.path.abspath(os.path.join(plan_dir, dep_path))
+            if abs_dep == plan["path"]:
+                die("set-plan-depends-on", "Cannot depend on itself")
+            resolved_deps.append(abs_dep)
+        # Check transitive cycles with resolved paths
+        _check_plan_cycles(plan, resolved_deps)
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "set-plan-depends-on", f"Dependencies set to: {plan['depends_on']}", value=plan["depends_on"], path=plan["path"])
+
+
+def _check_plan_cycles(plan, resolved_deps=None):
+    """Check for cycles in the plan dependency graph.
+    resolved_deps: optional list of already-resolved absolute paths for the current plan's deps."""
+    visited = set()
+    rec_stack = set()
+
+    def resolve_dep_path(dep_str, base_dir):
+        """Resolve a dependency path relative to base_dir."""
+        return os.path.abspath(os.path.join(base_dir, dep_str.strip()))
+
+    def dfs(p_abs, deps_str):
+        if p_abs in rec_stack:
+            die("set-plan-depends-on", f"Dependency cycle detected involving {p_abs}")
+        if p_abs in visited:
+            return
+        visited.add(p_abs)
+        rec_stack.add(p_abs)
+        if deps_str != "NONE":
+            base_dir = os.path.dirname(p_abs)
+            for dep in [d.strip() for d in deps_str.split(",")]:
+                dep_abs = resolve_dep_path(dep, base_dir)
+                if os.path.exists(dep_abs):
+                    dep_plan = parse_plan(dep_abs)
+                    dfs(dep_abs, dep_plan["depends_on"])
+        rec_stack.discard(p_abs)
+
+    start_abs = plan["path"]
+    # If resolved_deps provided, use them directly for the first level
+    if resolved_deps:
+        for dep_abs in resolved_deps:
+            visited.clear()
+            rec_stack.clear()
+            rec_stack.add(start_abs)
+            if dep_abs in rec_stack:
+                die("set-plan-depends-on", f"Dependency cycle detected involving {start_abs}")
+            if os.path.exists(dep_abs):
+                dep_plan = parse_plan(dep_abs)
+                dfs(dep_abs, dep_plan["depends_on"])
+    else:
+        dfs(start_abs, plan["depends_on"])
+
+
+def _check_batch_plan_cycles(start_path, new_deps, plan_cache, default_dir=None):
+    """Check for cycles in the plan dependency graph (batch mode, multi-plan aware).
+    Uses plan_cache to resolve depends_on for plans already loaded.
+    default_dir: directory to resolve relative paths against (defaults to CWD).
+    Returns True if a cycle is detected."""
+    if default_dir is None:
+        default_dir = os.getcwd()
+
+    def resolve_dep_path(dep_str, base_dir):
+        """Resolve a dependency path relative to base_dir."""
+        return os.path.abspath(os.path.join(base_dir, dep_str.strip()))
+
+    visited = set()
+    rec_stack = set()
+
+    def get_depends_on(p_abs):
+        """Get depends_on for a plan, loading from cache or disk."""
+        if p_abs in plan_cache:
+            return plan_cache[p_abs]["depends_on"]
+        if os.path.exists(p_abs):
+            loaded = parse_plan(p_abs)
+            plan_cache[p_abs] = loaded
+            return loaded["depends_on"]
+        return "NONE"
+
+    def dfs(p_abs):
+        if p_abs in rec_stack:
+            return True
+        if p_abs in visited:
+            return False
+        visited.add(p_abs)
+        rec_stack.add(p_abs)
+        deps = get_depends_on(p_abs)
+        if deps != "NONE":
+            base_dir = os.path.dirname(p_abs)
+            for dep in [d.strip() for d in deps.split(",")]:
+                dep_abs = resolve_dep_path(dep, base_dir)
+                if dfs(dep_abs):
+                    return True
+        rec_stack.discard(p_abs)
+        return False
+
+    # Temporarily add proposed deps to check
+    start_abs = os.path.abspath(os.path.join(default_dir, start_path))
+    if new_deps:
+        for dep in new_deps:
+            dep_abs = os.path.abspath(os.path.join(default_dir, dep))
+            visited.clear()
+            rec_stack.clear()
+            # Start DFS from the dependency target, see if we reach back to start
+            rec_stack.add(start_abs)
+            if dfs(dep_abs):
+                return True
+    return False
+
+
+def cmd_set_plan_created(args):
+    plan = parse_plan(args.path)
+    val = args.value
+    if val == "--now":
+        val = now_iso()
+    plan["created"] = val
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "set-plan-created", f"Created set to: {val}", value=val, path=plan["path"])
+
+
+def cmd_set_plan_updated(args):
+    plan = parse_plan(args.path)
+    val = args.value
+    if val == "--now":
+        val = now_iso()
+    plan["updated"] = val
+    write_plan(plan)
+    json_out("success", "set-plan-updated", f"Updated set to: {val}", value=val, path=plan["path"])
+
+
+def cmd_set_plan_current_phase(args):
+    plan = parse_plan(args.path)
+    phase = find_phase(plan, args.phase_id)
+    if not phase:
+        die("set-plan-current-phase", f"Phase not found: {args.phase_id}")
+    plan["current_phase"] = f"{phase['emoji']} {phase['id']}"
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "set-plan-current-phase", f"Current phase set to: {plan['current_phase']}", value=plan["current_phase"], path=plan["path"])
+
+
+def cmd_set_plan_current_task(args):
+    plan = parse_plan(args.path)
+    task = find_task(plan, args.phase_id, args.task_id)
+    if not task:
+        die("set-plan-current-task", f"Task not found: {args.phase_id} / {args.task_id}")
+    plan["current_task"] = f"{task['emoji']} {task['id']}"
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "set-plan-current-task", f"Current task set to: {plan['current_task']}", value=plan["current_task"], path=plan["path"])
+
+
+# Status reads
+
+def cmd_get_plan_status(args):
+    plan = parse_plan(args.path)
+    json_out("success", "get-plan-status", plan["emoji"], value=plan["emoji"], path=plan["path"])
+
+
+def cmd_get_phase_status(args):
+    plan = parse_plan(args.path)
+    phase = find_phase(plan, args.phase_id)
+    if not phase:
+        die("get-phase-status", f"Phase not found: {args.phase_id}")
+    json_out("success", "get-phase-status", phase["emoji"], value=phase["emoji"], path=plan["path"], phase=phase["id"])
+
+
+def cmd_get_task_status(args):
+    plan = parse_plan(args.path)
+    task = find_task(plan, args.phase_id, args.task_id)
+    if not task:
+        die("get-task-status", f"Task not found: {args.phase_id} / {args.task_id}")
+    json_out("success", "get-task-status", task["emoji"], value=task["emoji"], path=plan["path"], phase=args.phase_id, task=task["id"])
+
+
+# Status writes
+
+def cmd_set_all_statuses(args):
+    plan = parse_plan(args.path)
+    emoji = args.emoji
+    if not validate_emoji(emoji):
+        die("set-all-statuses", f"Invalid emoji: {emoji}")
+    plan["emoji"] = emoji
+    for phase in plan["phases"]:
+        phase["emoji"] = emoji
+        for task in phase["tasks"]:
+            task["emoji"] = emoji
+    plan["current_phase"] = "NONE"
+    plan["current_task"] = "NONE"
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "set-all-statuses", f"All statuses set to {emoji}", value=emoji, path=plan["path"])
+
+
+def cmd_set_plan_status(args):
+    plan = parse_plan(args.path)
+    new = args.emoji
+    if not validate_emoji(new):
+        die("set-plan-status", f"Invalid emoji: {new}")
+    old = plan["emoji"]
+    if old != new and (old, new) not in VALID_PLAN_TRANSITIONS:
+        die("set-plan-status", f"Invalid transition: {old} -> {new}")
+    plan["emoji"] = new
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "set-plan-status", f"Plan status set to {new}", value=new, path=plan["path"])
+
+
+def cmd_set_phase_status(args):
+    plan = parse_plan(args.path)
+    phase = find_phase(plan, args.phase_id)
+    if not phase:
+        die("set-phase-status", f"Phase not found: {args.phase_id}")
+    new = args.emoji
+    if not validate_emoji(new):
+        die("set-phase-status", f"Invalid emoji: {new}")
+    old = phase["emoji"]
+    if old != new and (old, new) not in VALID_TASK_TRANSITIONS:
+        die("set-phase-status", f"Invalid transition: {old} -> {new}")
+    phase["emoji"] = new
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "set-phase-status", f"Phase {phase['id']} status set to {new}", value=new, path=plan["path"], phase=phase["id"])
+
+
+def cmd_set_task_status(args):
+    plan = parse_plan(args.path)
+    task = find_task(plan, args.phase_id, args.task_id)
+    if not task:
+        die("set-task-status", f"Task not found: {args.phase_id} / {args.task_id}")
+
+    new = args.emoji
+    if not validate_emoji(new):
+        die("set-task-status", f"Invalid emoji: {new}")
+    old = task["emoji"]
+    if old != new and (old, new) not in VALID_TASK_TRANSITIONS:
+        die("set-task-status", f"Invalid transition: {old} -> {new}")
+
+    # Check dependencies are satisfied before moving to ⚙️
+    if new == EMOJI_DOING:
+        unsatisfied = []
+        for dep in task["dependencies"]:
+            dep_task = _resolve_dep_task(plan, task, dep)
+            if dep_task and dep_task["emoji"] != EMOJI_DONE:
+                unsatisfied.append(dep)
+        if unsatisfied:
+            die("set-task-status", f"Unmet dependencies: {', '.join(unsatisfied)}")
+
+    task["emoji"] = new
+
+    # Re-derive first so emojis are current
+    rederive_all(plan)
+
+    # Update current tracking (after rederive so phase emoji is fresh)
+    if new == EMOJI_DOING:
+        phase = find_phase(plan, args.phase_id)
+        plan["current_phase"] = f"{phase['emoji']} {phase['id']}" if phase else args.phase_id
+        plan["current_task"] = f"{new} {task['id']}"
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "set-task-status", f"Task {task['id']} status set to {new}", value=new, path=plan["path"], phase=args.phase_id, task=task["id"])
+
+
+def _normalize_dep(dep_ref, source_phase_id):
+    """Normalize a dependency ref to 'Phase X - Task X.Y' form."""
+    # Already cross-phase
+    if re.match(r"Phase\s+\d+\s*-\s*Task\s+\d+\.\d+", dep_ref):
+        return dep_ref
+    # Phase-bound: resolve within source phase
+    if re.match(r"Task\s+\d+\.\d+", dep_ref):
+        return f"{source_phase_id} - {dep_ref}"
+    return dep_ref
+
+
+def _resolve_dep_task(plan, source_task, dep_ref):
+    """Resolve a dependency reference to the actual task dict."""
+    # Cross-phase: "Phase X - Task X.Y"
+    m = re.match(r"(Phase\s+\d+)\s*-\s*(Task\s+\d+\.\d+)", dep_ref)
+    if m:
+        return find_task(plan, m.group(1), m.group(2))
+    # Phase-bound: "Task X.Y" — resolve within source task's phase
+    if re.match(r"Task\s+\d+\.\d+", dep_ref):
+        src_phase_num, _ = parse_task_id(source_task["id"])
+        for p in plan["phases"]:
+            pnum = parse_phase_id(p["id"])
+            if pnum == src_phase_num:
+                return find_task(plan, p["id"], dep_ref)
+    return None
+
+
+# Phase CRUD
+
+def cmd_add_phase(args):
+    plan = parse_plan(args.path)
+    rest = args.rest  # list of remaining args
+    phase_id = None
+    title = ""
+
+    if len(rest) == 1:
+        candidate = rest[0]
+        pnum = parse_phase_id(candidate)
+        if pnum is not None:
+            phase_id = candidate
+            title = candidate  # fallback title = ID
+        else:
+            title = candidate
+    elif len(rest) >= 2:
+        candidate = rest[0]
+        pnum = parse_phase_id(candidate)
+        if pnum is not None:
+            phase_id = candidate
+            title = " ".join(rest[1:])
+        else:
+            title = " ".join(rest)
+
+    if not phase_id:
+        phase_id = f"Phase {next_phase_number(plan)}"
+    if not title:
+        title = phase_id
+
+    ok, msg = validate_title(title)
+    if not ok:
+        die("add-phase", msg)
+
+    # Check for duplicate
+    for p in plan["phases"]:
+        if p["id"] == phase_id:
+            die("add-phase", f"Phase already exists: {phase_id}")
+
+    phase = {
+        "emoji": EMOJI_TODO,
+        "id": phase_id,
+        "title": title,
+        "tasks": [],
+    }
+    plan["phases"].append(phase)
+    rederive_all(plan)
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "add-phase", f"Added {phase_id}: {title}", path=plan["path"], phase=phase_id, title=title)
+
+
+def cmd_update_phase(args):
+    plan = parse_plan(args.path)
+    phase = find_phase(plan, args.phase_id)
+    if not phase:
+        die("update-phase", f"Phase not found: {args.phase_id}")
+    if args.title:
+        ok, msg = validate_title(args.title)
+        if not ok:
+            die("update-phase", msg)
+        phase["title"] = args.title
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "update-phase", f"Updated {phase['id']}", path=plan["path"], phase=phase["id"], title=phase["title"])
+
+
+def cmd_remove_phase(args):
+    plan = parse_plan(args.path)
+    phase = find_phase(plan, args.phase_id)
+    if not phase:
+        die("remove-phase", f"Phase not found: {args.phase_id}")
+
+    # Remove cross-phase dependencies pointing to this phase's tasks
+    for p in plan["phases"]:
+        if p["id"] == phase["id"]:
             continue
-        visited.add(current)
-        for dep_target in graph.get(current, []):
-            stack.append(dep_target)
+        for t in p["tasks"]:
+            t["dependencies"] = [
+                d for d in t["dependencies"]
+                if not re.match(rf"{re.escape(phase['id'])}\s*-\s*", d)
+            ]
+
+    plan["phases"].remove(phase)
+
+    # Clear current tracking if it pointed to removed phase/task
+    # Strip emoji prefix before comparison (e.g., "⚙️ Phase 1" → check for "Phase 1")
+    cp = plan["current_phase"]
+    if phase["id"] in cp:
+        plan["current_phase"] = "NONE"
+    for t in phase["tasks"]:
+        ct = plan["current_task"]
+        if t["id"] in ct:
+            plan["current_task"] = "NONE"
+
+    rederive_all(plan)
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "remove-phase", f"Removed {phase['id']}", path=plan["path"], phase=phase["id"])
 
 
-# ---------------------------------------------------------------------------
-# Commands — add-task-dependency / remove-task-dependency
-# ---------------------------------------------------------------------------
+# Task CRUD
 
-def cmd_add_task_dependency(args: argparse.Namespace) -> None:
-    """Add a dependency to an existing task.
+def cmd_add_task(args):
+    plan = parse_plan(args.path)
+    phase = find_phase(plan, args.phase_id)
+    if not phase:
+        die("add-task", f"Phase not found: {args.phase_id}")
 
-    Takes: phase_ref, task_ref (the task to modify), dep_task_ref (the dependency).
-    Appends dep_task_ref to the ⚓ anchor of task_ref.
+    rest = args.rest  # list of remaining args
+    task_id = None
+    title = ""
 
-    State logic: if the target task's status is ☐ after modification, plan and
-    phase statuses remain derived as ☐ (via validate_status_set). Otherwise,
-    validate_status_set derives the correct status from actual task states.
-    """
-    phase_ref = args.phase_ref
-    task_ref = args.task_ref
-    dep_task_ref = args.dep_task_ref
-
-    target_phase, target_task = parse_task_arg(task_ref)
-
-    # Validate that dep_task_ref is a valid task reference
-    dep_phase, dep_task = parse_task_arg(dep_task_ref)
-
-    # Build the canonical dep ref string for comparison
-    # If dep is in same phase as target, use "Task X.Y" form
-    # If different phase, use "Phase X - Task X.Y" form
-    if dep_phase == target_phase:
-        canonical_dep = f"Task {dep_phase}.{dep_task}"
+    if len(rest) == 1:
+        # Just title, auto-number
+        title = rest[0]
+    elif len(rest) >= 2:
+        candidate = rest[0]
+        pn, tn = parse_task_id(candidate)
+        if pn is not None:
+            # Explicit Task X.Y format
+            task_id = candidate
+            title = " ".join(rest[1:])
+        else:
+            # Not a task ID, treat first arg as title (ignore extras)
+            title = rest[0]
     else:
-        canonical_dep = f"Phase {dep_phase} - Task {dep_phase}.{dep_task}"
+        die("add-task", "Missing title")
 
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-        phases = extract_phases(content)
+    ok, msg = validate_title(title)
+    if not ok:
+        die("add-task", msg)
 
-        # Verify target task exists
-        target_found = False
-        for _, phase_num, _, tasks in phases:
-            for t in tasks:
-                if t[1] == target_phase and t[2] == target_task:
-                    target_found = True
-                    break
-        if not target_found:
-            print(f"Error: {task_ref} not found in {phase_ref}", file=sys.stderr)
-            sys.exit(1)
+    if not task_id:
+        phase_num = parse_phase_id(phase["id"])
+        task_num = next_task_number(phase)
+        task_id = f"Task {phase_num}.{task_num}"
 
-        # Verify dependency task exists
-        dep_found = False
-        for _, phase_num, _, tasks in phases:
-            for t in tasks:
-                if t[1] == dep_phase and t[2] == dep_task:
-                    dep_found = True
-                    break
-        if not dep_found:
-            print(f"Error: dependency {dep_task_ref} not found", file=sys.stderr)
-            sys.exit(1)
+    # Check for duplicate
+    for t in phase["tasks"]:
+        if t["id"] == task_id:
+            die("add-task", f"Task already exists: {task_id}")
 
-        # Build current dependency graph for cycle detection (before adding new edge)
-        graph = _build_task_dep_graph(phases)
-
-        # Check for cycles: adding edge from (target_phase, target_task) -> (dep_phase, dep_task)
-        # means target depends on dep. A cycle exists if dep (or its transitive deps) can reach target.
-        _check_task_dep_cycle(graph, (target_phase, target_task), (dep_phase, dep_task))
-
-        # Now update the task line
-        for i, line in enumerate(lines):
-            t = parse_task_line(line)
-            if t and t[1] == target_phase and t[2] == target_task:
-                current_deps = list(t[4])  # existing deps
-
-                # Check for duplicate (compare canonical forms)
-                if canonical_dep in current_deps:
-                    print(
-                        f"Error: {task_ref} already depends on {dep_task_ref}",
-                        file=sys.stderr,
-                    )
-                    sys.exit(1)
-
-                # Also check self-dependency
-                if target_phase == dep_phase and target_task == dep_task:
-                    print(
-                        f"Error: task cannot depend on itself",
-                        file=sys.stderr,
-                    )
-                    sys.exit(1)
-
-                current_deps.append(canonical_dep)
-                lines[i] = format_task_line(t[0], t[1], t[2], t[3], current_deps)
-                break
-
-        content = "\n".join(lines)
-        content = _touch_updated(args.path, content)
-        content = validate_status_set(content)
-        return content
-
-    _safe_edit(args.path, _transform)
-    print(f"Added dependency: {task_ref} -> {dep_task_ref}")
+    task = {
+        "emoji": EMOJI_TODO,
+        "id": task_id,
+        "title": title.strip(),
+        "dependencies": [],
+        "sub_bullets": [],
+    }
+    phase["tasks"].append(task)
+    rederive_all(plan)
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "add-task", f"Added {task_id}: {title.strip()}", path=plan["path"], phase=args.phase_id, task=task_id, title=title.strip())
 
 
-def cmd_remove_task_dependency(args: argparse.Namespace) -> None:
-    """Remove a dependency from an existing task.
+def cmd_update_task(args):
+    plan = parse_plan(args.path)
+    task = find_task(plan, args.phase_id, args.task_id)
+    if not task:
+        die("update-task", f"Task not found: {args.phase_id} / {args.task_id}")
+    if args.title:
+        ok, msg = validate_title(args.title)
+        if not ok:
+            die("update-task", msg)
+        task["title"] = args.title
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "update-task", f"Updated {task['id']}", path=plan["path"], phase=args.phase_id, task=task["id"], title=task["title"])
 
-    Takes: phase_ref, task_ref (the task to modify), dep_task_ref (the dependency to remove).
-    Removes dep_task_ref from the ⚓ anchor of task_ref.
 
-    State logic: if the target task's status is ☐ after modification, plan and
-    phase statuses remain derived as ☐ (via validate_status_set). Otherwise,
-    validate_status_set derives the correct status from actual task states.
-    """
-    phase_ref = args.phase_ref
-    task_ref = args.task_ref
-    dep_task_ref = args.dep_task_ref
+def cmd_remove_task(args):
+    plan = parse_plan(args.path)
+    phase = find_phase(plan, args.phase_id)
+    if not phase:
+        die("remove-task", f"Phase not found: {args.phase_id}")
 
-    target_phase, target_task = parse_task_arg(task_ref)
-    dep_phase, dep_task = parse_task_arg(dep_task_ref)
+    task = None
+    for t in phase["tasks"]:
+        if t["id"] == args.task_id or f"{t['emoji']} {t['id']}" == args.task_id.strip():
+            task = t
+            break
+    if not task:
+        die("remove-task", f"Task not found: {args.phase_id} / {args.task_id}")
 
-    # Build the canonical dep ref string for comparison
-    if dep_phase == target_phase:
-        canonical_dep = f"Task {dep_phase}.{dep_task}"
-    else:
-        canonical_dep = f"Phase {dep_phase} - Task {dep_phase}.{dep_task}"
+    assert task is not None  # guaranteed by check above
 
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
+    # Remove dependencies pointing to this task
+    for p in plan["phases"]:
+        for t in p["tasks"]:
+            t["dependencies"] = [d for d in t["dependencies"] if d != task["id"] and d != f"{phase['id']} - {task['id']}"]
 
-        # Verify target task exists
-        phases = extract_phases(content)
-        target_found = False
-        for _, phase_num, _, tasks in phases:
-            for t in tasks:
-                if t[1] == target_phase and t[2] == target_task:
-                    target_found = True
-                    break
-        if not target_found:
-            print(f"Error: {task_ref} not found in {phase_ref}", file=sys.stderr)
-            sys.exit(1)
+    phase["tasks"].remove(task)
 
-        # Find and update the task line
-        removed = False
-        for i, line in enumerate(lines):
-            t = parse_task_line(line)
-            if t and t[1] == target_phase and t[2] == target_task:
-                current_deps = list(t[4])
+    # Clear current tracking
+    if plan["current_task"].startswith(task["id"]):
+        plan["current_task"] = "NONE"
 
-                # Check if dependency actually exists
-                # Compare against canonical form and also raw forms (in case of format mismatch)
-                found_dep = False
-                for raw_dep in current_deps:
-                    rd_phase, rd_task = _resolve_dep_ref(raw_dep, target_phase)
-                    if rd_phase == dep_phase and rd_task == dep_task:
-                        found_dep = True
-                        break
+    rederive_all(plan)
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "remove-task", f"Removed {task['id']}", path=plan["path"], phase=args.phase_id, task=task["id"])
 
-                if not found_dep:
-                    print(
-                        f"Error: {task_ref} does not depend on {dep_task_ref}",
-                        file=sys.stderr,
-                    )
-                    sys.exit(1)
 
-                # Remove matching deps (could have both "Task X.Y" and "Phase X - Task X.Y" forms)
-                new_deps = [
-                    d for d in current_deps
-                    if _resolve_dep_ref(d, target_phase) != (dep_phase, dep_task)
+# Task Dependencies
+
+def cmd_add_task_dependency(args):
+    plan = parse_plan(args.path)
+    task = find_task(plan, args.phase_id, args.task_id)
+    if not task:
+        die("add-task-dependency", f"Task not found: {args.phase_id} / {args.task_id}")
+
+    dep = args.dependency
+    if dep in task["dependencies"]:
+        json_out("warning", "add-task-dependency", f"Dependency already exists: {dep}", path=plan["path"])
+        return
+
+    # Cycle detection
+    if detect_cycle(plan, args.phase_id, args.task_id, dep):
+        die("add-task-dependency", f"Adding dependency '{dep}' would create a cycle")
+
+    task["dependencies"].append(dep)
+    rederive_all(plan)
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "add-task-dependency", f"Added dependency '{dep}' to {task['id']}", path=plan["path"], phase=args.phase_id, task=task["id"], dependency=dep)
+
+
+def cmd_remove_task_dependency(args):
+    plan = parse_plan(args.path)
+    task = find_task(plan, args.phase_id, args.task_id)
+    if not task:
+        die("remove-task-dependency", f"Task not found: {args.phase_id} / {args.task_id}")
+
+    dep = args.dependency
+    if dep not in task["dependencies"]:
+        die("remove-task-dependency", f"Dependency not found: {dep}")
+
+    task["dependencies"].remove(dep)
+    rederive_all(plan)
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "remove-task-dependency", f"Removed dependency '{dep}' from {task['id']}", path=plan["path"], phase=args.phase_id, task=task["id"])
+
+
+# Sort
+
+def cmd_sort(args):
+    plan = parse_plan(args.path)
+
+    # Sort phases by number
+    plan["phases"].sort(key=lambda p: parse_phase_id(p["id"]) or 0)
+    for phase in plan["phases"]:
+        phase["tasks"].sort(key=lambda t: parse_task_id(t["id"])[1] or 0)
+
+    rederive_all(plan)
+    plan["updated"] = now_iso()
+    write_plan(plan)
+    json_out("success", "sort", "Phases and tasks sorted", path=plan["path"])
+
+
+# Check
+
+def _check_plan(plan):
+    """Run all checks on a parsed plan dict. Returns list of (severity, message) tuples."""
+    issues = []
+
+    # 1. Checksum
+    ok, msg = verify_checksum(plan)
+    if not ok:
+        issues.append(("error", f"Checksum: {msg}"))
+
+    # 2. Emoji derivation
+    for phase in plan["phases"]:
+        expected = derive_phase_emoji(phase["tasks"])
+        if phase["emoji"] != expected:
+            issues.append(("warning", f"Phase {phase['id']} emoji mismatch: has {phase['emoji']}, derived {expected}"))
+    expected_plan = derive_plan_emoji(plan["phases"])
+    if plan["emoji"] != expected_plan:
+        issues.append(("warning", f"Plan emoji mismatch: has {plan['emoji']}, derived {expected_plan}"))
+
+    # 3. Numbering gaps/duplicates
+    phase_nums = []
+    for p in plan["phases"]:
+        n = parse_phase_id(p["id"])
+        if n:
+            phase_nums.append(n)
+    for i, n in enumerate(phase_nums):
+        if n != i + 1:
+            issues.append(("warning", f"Phase numbering gap: expected Phase {i+1}, found {p['id']}"))
+
+    for phase in plan["phases"]:
+        pnum = parse_phase_id(phase["id"])
+        task_nums = []
+        for t in phase["tasks"]:
+            _, tn = parse_task_id(t["id"])
+            if tn:
+                task_nums.append(tn)
+        for i, n in enumerate(task_nums):
+            if n != i + 1:
+                issues.append(("warning", f"Task numbering gap in {phase['id']}: expected Task {pnum}.{i+1}, found {t['id']}"))
+
+    # 4. Ordering
+    for phase in plan["phases"]:
+        for i in range(1, len(phase["tasks"])):
+            _, a = parse_task_id(phase["tasks"][i - 1]["id"])
+            _, b = parse_task_id(phase["tasks"][i]["id"])
+            if a and b and a > b:
+                issues.append(("warning", f"Tasks out of order in {phase['id']}: {phase['tasks'][i-1]['id']} before {phase['tasks'][i]['id']}"))
+
+    # 5. Dangling deps
+    for phase in plan["phases"]:
+        for task in phase["tasks"]:
+            for dep in task["dependencies"]:
+                resolved = _resolve_dep_task(plan, task, dep)
+                if not resolved:
+                    issues.append(("warning", f"Dangling dependency '{dep}' on {task['id']}"))
+
+    # 6. Empty phases
+    for phase in plan["phases"]:
+        if not phase["tasks"]:
+            issues.append(("warning", f"Empty phase: {phase['id']} (no tasks)"))
+
+    return issues
+
+
+def cmd_check(args):
+    plan = parse_plan(args.path)
+    issues = _check_plan(plan)
+
+    # Auto-fix
+    if args.fix:
+        # Fix 1: Emoji derivation
+        for phase in plan["phases"]:
+            phase["emoji"] = derive_phase_emoji(phase["tasks"])
+        plan["emoji"] = derive_plan_emoji(plan["phases"])
+
+        # Fix 2: Renumber phases sequentially
+        for i, phase in enumerate(plan["phases"]):
+            old_id = phase["id"]
+            new_id = f"Phase {i + 1}"
+            if old_id != new_id:
+                phase["id"] = new_id
+                # Update cross-phase dependency references
+                for p in plan["phases"]:
+                    for t in p["tasks"]:
+                        t["dependencies"] = [
+                            d.replace(old_id, new_id) for d in t["dependencies"]
+                        ]
+
+        # Fix 3: Renumber tasks within each phase sequentially
+        for phase in plan["phases"]:
+            pnum = parse_phase_id(phase["id"])
+            phase["tasks"].sort(key=lambda t: parse_task_id(t["id"])[1] or 0)
+            for i, task in enumerate(phase["tasks"]):
+                old_id = task["id"]
+                new_id = f"Task {pnum}.{i + 1}"
+                if old_id != new_id:
+                    task["id"] = new_id
+                    # Update dependency references across all tasks
+                    for p in plan["phases"]:
+                        for t in p["tasks"]:
+                            t["dependencies"] = [
+                                d.replace(old_id, new_id) for d in t["dependencies"]
+                            ]
+                    # Remove self-dependencies created by rename
+                    task["dependencies"] = [
+                        d for d in task["dependencies"]
+                        if d != new_id and d != f"{phase['id']} - {new_id}"
+                    ]
+
+        # Fix 4: Remove dangling dependencies
+        for phase in plan["phases"]:
+            for task in phase["tasks"]:
+                task["dependencies"] = [
+                    d for d in task["dependencies"]
+                    if _resolve_dep_task(plan, task, d) is not None
                 ]
 
-                lines[i] = format_task_line(t[0], t[1], t[2], t[3], new_deps)
-                removed = True
-                break
+        plan["updated"] = now_iso()
+        write_plan(plan)
 
-        if not removed:
-            print(f"Error: {task_ref} not found in {phase_ref}", file=sys.stderr)
-            sys.exit(1)
-
-        content = "\n".join(lines)
-        content = _touch_updated(args.path, content)
-        content = validate_status_set(content)
-        return content
-
-    _safe_edit(args.path, _transform)
-    print(f"Removed dependency: {task_ref} -> {dep_task_ref}")
-
-
-# ---------------------------------------------------------------------------
-# Commands — sort
-# ---------------------------------------------------------------------------
-
-def cmd_check(args: argparse.Namespace) -> None:
-    """Check PLAN.md for consistency issues.
-
-    Validates structure, status derivation, numbering, and dependencies.
-    With --fix, auto-fixes recoverable issues (emoji derivation, numbering, ordering).
-    """
-    fix = getattr(args, "fix", False)
-    exit_code, messages = check_plan(args.path, fix=fix)
-
-    if not messages:
-        print(f"OK: {args.path} is consistent")
-    else:
-        for msg in messages:
-            print(msg)
-
-    if exit_code == 0:
-        print(f"OK: {args.path} passed all checks")
-
-    sys.exit(exit_code)
-
-
-def cmd_sort(args: argparse.Namespace) -> None:
-    """Sort phases by number and tasks within each phase by number."""
-    def _transform(content: str) -> str:
-        lines = content.splitlines()
-
-        # Find header end (first ## Phase line)
-        header_end = 0
-        for i, line in enumerate(lines):
-            if parse_phase_heading(line) is not None:
-                header_end = i
-                break
+    # After fixing, re-check to determine post-fix status
+    if args.fix and issues:
+        # Re-parse the written file to get post-fix state
+        plan_fixed = parse_plan(args.path)
+        remaining_issues = _check_plan(plan_fixed)
+        if not remaining_issues:
+            status = "success"
+            msg = f"Fixed {len(issues)} issue(s)"
+            issues_out = issues
         else:
-            # No phases found — nothing to sort
-            content = "\n".join(lines)
-            content = _touch_updated(args.path, content)
-            return content
-
-        header_lines = lines[:header_end]
-        # Strip trailing blank lines from header (separator added during reconstruction)
-        while header_lines and header_lines[-1].strip() == "":
-            header_lines.pop()
-        phase_block = lines[header_end:]
-
-        # Find the last line that belongs to any phase section.
-        # A line is phase content if it's a phase heading, a task line,
-        # or an indented sub-bullet (starts with "  - ").
-        last_content_idx = -1
-        for i, line in enumerate(phase_block):
-            if parse_phase_heading(line) is not None:
-                last_content_idx = i
-            elif parse_task_line(line) is not None:
-                last_content_idx = i
-            elif line.startswith("  - "):
-                last_content_idx = i
-        # Include trailing blank lines up to the next non-content line
-        actual_end = last_content_idx + 1
-        while actual_end < len(phase_block) and phase_block[actual_end].strip() == "":
-            actual_end += 1
-
-        # Extract phase sections from the trimmed block
-        sections: list[tuple[int, list[str]]] = []
-        i = 0
-        while i < actual_end:
-            p = parse_phase_heading(phase_block[i])
-            if p is None:
-                i += 1
-                continue
-
-            start = i
-
-            # Find end of this section (next phase heading or actual_end)
-            j = i + 1
-            while j < actual_end and parse_phase_heading(phase_block[j]) is None:
-                j += 1
-
-            # Sort tasks within this section by task number
-            section_lines = phase_block[start:j]
-            sorted_section = _sort_tasks_in_section(section_lines)
-            sections.append((p[1], sorted_section))
-            i = j
-
-        # Sort phases by number and reconstruct
-        sections.sort(key=lambda s: s[0])
-        sorted_phase_lines = []
-        for idx, (_, section) in enumerate(sections):
-            # Blank separator before each phase heading (always)
-            sorted_phase_lines.append("")
-            sorted_phase_lines.extend(section)
-
-        new_lines = header_lines + sorted_phase_lines
-        content = "\n".join(new_lines) + "\n"
-        content = _touch_updated(args.path, content)
-        content = validate_status_set(content)
-        return content
-
-    _safe_edit(args.path, _transform)
-    print("Sorted phases and tasks")
-
-
-def _sort_tasks_in_section(section_lines: list[str]) -> list[str]:
-    """Sort tasks within a phase section by task number, preserving sub-bullets."""
-    if not section_lines:
-        return section_lines
-
-    # Find the phase heading line
-    heading_idx = None
-    for i, line in enumerate(section_lines):
-        if parse_phase_heading(line) is not None:
-            heading_idx = i
-            break
-
-    if heading_idx is None:
-        return section_lines
-
-    heading = [section_lines[heading_idx]]
-    rest = section_lines[heading_idx + 1:]
-
-    # Collect task blocks (task line + sub-bullets)
-    task_blocks: list[tuple[int, list[str]]] = []
-    i = 0
-    while i < len(rest):
-        t = parse_task_line(rest[i])
-        if t is not None:
-            block = [rest[i]]
-            j = i + 1
-            while j < len(rest) and rest[j].startswith("  - "):
-                block.append(rest[j])
-                j += 1
-            task_blocks.append((t[2], block))
-            i = j
-        else:
-            # Skip blank lines and other non-task content (formatting artifacts)
-            i += 1
-
-    # Sort task blocks by task number
-    task_blocks.sort(key=lambda b: b[0])
-
-    # Reconstruct: heading + blank separator + sorted tasks
-    result = list(heading)
-    result.append("")
-    for _, block in task_blocks:
-        result.extend(block)
-    return result
-
-
-# ---------------------------------------------------------------------------
-# Commands — get-plan (structured output)
-# ---------------------------------------------------------------------------
-
-import json as _json_mod
-
-
-_STATUS_LABEL = {
-    STATUS_TODO: "todo",
-    STATUS_QUESTION: "question",
-    STATUS_DOING: "doing",
-    STATUS_ERROR: "error",
-    STATUS_DONE: "done",
-}
-
-
-def parse_plan_data(
-    plan_path: str | None = None,
-    content: str | None = None,
-    view: str = "list",
-) -> list[dict] | dict:
-    """Extract structured plan data from PLAN.md as native Python objects.
-
-    Accepts either a file path (*plan_path*) or raw markdown text (*content*),
-    but not both.  Returns parsed plan data as plain Python dicts — no
-    serialisation to JSON/YAML strings.
-
-    Args:
-        plan_path: Path to a PLAN.md file on disk.  Read with shared lock
-            and checksum verification when provided.
-        content: Raw PLAN.md markdown text.  Used directly when provided.
-        view: Output shape — ``"list"`` for a flat array of plan/phase/task
-            items (default), or ``"tree"`` for a nested hierarchy.
-
-    Returns:
-        A ``list[dict]`` when *view* is ``"list"``, or a ``dict`` with a
-        top-level ``"plan"`` key when *view* is ``"tree"``.
-
-    Raises:
-        ValueError: If neither or both *plan_path* and *content* are given,
-            or if *view* is not ``"list"`` or ``"tree"``.
-
-    Examples::
-
-        # From a file
-        data = parse_plan_data(plan_path="PLAN.md")
-
-        # From raw text
-        data = parse_plan_data(content=raw_text, view="tree")
-    """
-    if plan_path is None and content is None:
-        raise ValueError("Either plan_path or content must be provided")
-    if plan_path is not None and content is not None:
-        raise ValueError("Provide either plan_path or content, not both")
-
-    if view not in ("list", "tree"):
-        raise ValueError(f"view must be 'list' or 'tree', got '{view}'")
-
-    # Resolve raw content
-    if plan_path is not None:
-        content = _safe_read(plan_path)
-    plan_id = plan_path or "PLAN.md"
-
-    data = _build_plan_data(content)
-
-    if view == "list":
-        return _to_list_data(data, plan_id)
+            # Some issues remain (e.g., checksum errors that can't be auto-fixed)
+            status = "error" if any(i[0] == "error" for i in remaining_issues) else "warning"
+            msg = f"Fixed some issues; {len(remaining_issues)} remaining"
+            issues_out = remaining_issues
     else:
-        return _to_tree_data(data, plan_id)
+        status = "success" if not issues else ("error" if any(i[0] == "error" for i in issues) else "warning")
+        msg = f"{len(issues)} issue(s) found" if issues else "No issues found"
+        issues_out = issues
+
+    json_out(status, "check", msg,
+         path=plan["path"], issues=issues_out, fixed=args.fix)
+
+    if status == "error":
+        sys.exit(1)
 
 
-def _build_plan_data(content: str) -> dict:
-    """Extract structured plan data from PLAN.md content.
+# Get Plan (structured output)
 
-    Returns a dict with plan header, phases, and tasks.
-    """
-    lines = content.splitlines()
+def cmd_get_plan(args):
+    plan = parse_plan(args.path)
+    mode = getattr(args, "mode", "list")
+    fmt = getattr(args, "format", "json")
 
-    # Parse plan title
-    plan_emoji = STATUS_TODO
-    plan_title = ""
-    for line in lines:
-        m = _TITLE_RE.match(line.strip())
-        if m:
-            plan_emoji = m.group(1) or STATUS_TODO
-            plan_title = m.group(2).strip()
-            break
+    data = _build_plan_data(plan, mode)
 
-    # Parse header fields
-    header = _parse_header("", lines)
-
-    # Parse phases and tasks
-    phases_data = []
-    for emoji, num, title, tasks in extract_phases(content):
-        task_data = []
-        for t in tasks:
-            # t = (emoji, phase, task, clean_title, deps)
-            task_data.append({
-                "id": f"Task {t[1]}.{t[2]}",
-                "status": _STATUS_LABEL.get(t[0], t[0]),
-                "title": t[3],
-                "depends_on": t[4],
-            })
-        phases_data.append({
-            "id": f"Phase {num}",
-            "status": _STATUS_LABEL.get(emoji, emoji),
-            "title": title,
-            "tasks": task_data,
-        })
-
-    return {
-        "title": plan_title,
-        "status": _STATUS_LABEL.get(plan_emoji, plan_emoji),
-        "depends_on": [d.strip() for d in header.get("depends_on", "").split(",") if d.strip() and d.strip() != "NONE"],
-        "created": header.get("created", ""),
-        "updated": header.get("updated", ""),
-        "current_phase": header.get("current_phase", "NONE"),
-        "current_task": header.get("current_task", "NONE"),
-        "phases": phases_data,
+    # Wrap in standard JSON output format (status/command/message + data payload)
+    out = {
+        "status": "success",
+        "command": "get-plan",
+        "message": f"Plan: {plan['title']}",
+        "path": plan["path"],
+        "data": data,
     }
-
-
-def _to_list_data(data: dict, plan_id: str) -> list[dict]:
-    """Convert _build_plan_data dict to a flat list of native Python dicts.
-
-    Same structure as --list output but returns Python objects instead of
-    serialised JSON/YAML strings.
-    """
-    items = [{
-        "type": "plan",
-        "id": plan_id,
-        "title": data["title"],
-        "status": data["status"],
-        "created": data["created"],
-        "updated": data["updated"],
-        "depends_on": list(data["depends_on"]),
-    }]
-    for phase in data["phases"]:
-        items.append({
-            "type": "phase",
-            "id": phase["id"],
-            "title": phase["title"],
-            "status": phase["status"],
-        })
-        for task in phase["tasks"]:
-            items.append({
-                "type": "task",
-                "phase": phase["id"],
-                "id": task["id"],
-                "title": task["title"],
-                "status": task["status"],
-                "depends_on": list(task["depends_on"]),
-            })
-    return items
-
-
-def _to_tree_data(data: dict, plan_id: str) -> dict:
-    """Convert _build_plan_data dict to a nested tree of native Python dicts.
-
-    Same structure as --tree output but returns Python objects instead of
-    serialised JSON/YAML strings.
-    """
-    phases = []
-    for phase in data["phases"]:
-        tasks = [{
-            "id": task["id"],
-            "status": task["status"],
-            "title": task["title"],
-            "depends_on": list(task["depends_on"]),
-        } for task in phase["tasks"]]
-        phases.append({
-            "id": phase["id"],
-            "status": phase["status"],
-            "title": phase["title"],
-            "tasks": tasks,
-        })
-    return {
-        "plan": {
-            "id": plan_id,
-            "title": data["title"],
-            "status": data["status"],
-            "depends_on": list(data["depends_on"]),
-            "created": data["created"],
-            "updated": data["updated"],
-            "phases": phases,
-        },
-    }
-
-
-def _format_list_json(data: dict, plan_id: str) -> str:
-    """Flat list format as JSON — plan, phases, and tasks in a single array."""
-    items = [{
-        "type": "plan",
-        "id": plan_id,
-        "title": data["title"],
-        "status": data["status"],
-        "created": data["created"],
-        "updated": data["updated"],
-        "depends_on": data["depends_on"],
-    }]
-    for phase in data["phases"]:
-        items.append({
-            "type": "phase",
-            "id": phase["id"],
-            "title": phase["title"],
-            "status": phase["status"],
-        })
-        for task in phase["tasks"]:
-            items.append({
-                "type": "task",
-                "phase": phase["id"],
-                "id": task["id"],
-                "title": task["title"],
-                "status": task["status"],
-                "depends_on": task["depends_on"],
-            })
-    return _json_mod.dumps(items, indent=2, ensure_ascii=False)
-
-
-def _format_list_yaml(data: dict, plan_id: str) -> str:
-    """Flat list format as YAML — plan, phases, and tasks in a single sequence."""
-    lines = []
-    lines.append("- type: plan")
-    lines.append(f"  id: {plan_id}")
-    lines.append(f"  title: {_yaml_scalar(data['title'])}")
-    lines.append(f"  status: {data['status']}")
-    lines.append(f"  created: {data['created']}")
-    lines.append(f"  updated: {data['updated']}")
-    depends = data["depends_on"]
-    if depends:
-        lines.append("  depends_on:")
-        for d in depends:
-            lines.append(f"    - {d}")
+    if fmt == "yaml":
+        print(_to_yaml(out), flush=True)
     else:
-        lines.append("  depends_on: []")
-    for phase in data["phases"]:
-        lines.append("- type: phase")
-        lines.append(f"  id: {phase['id']}")
-        lines.append(f"  title: {phase['title']}")
-        lines.append(f"  status: {phase['status']}")
-        for task in phase["tasks"]:
-            lines.append("- type: task")
-            lines.append(f"  phase: {phase['id']}")
-            lines.append(f"  id: {task['id']}")
-            lines.append(f"  title: {_yaml_scalar(task['title'])}")
-            lines.append(f"  status: {task['status']}")
-            deps = task["depends_on"]
-            if deps:
-                lines.append("  depends_on:")
-                for dep in deps:
-                    lines.append(f"    - {dep}")
-            else:
-                lines.append("  depends_on: []")
-    return "\n".join(lines) + "\n"
+        print(json.dumps(out, ensure_ascii=False, indent=2), flush=True)
 
 
-def _format_tree_json(data: dict, plan_id: str) -> str:
-    """Tree format as JSON — nested phases with tasks."""
-    tree = {
-        "plan": {
-            "id": plan_id,
-            "title": data["title"],
-            "status": data["status"],
-            "depends_on": data["depends_on"],
-            "created": data["created"],
-            "updated": data["updated"],
-            "phases": [],
-        },
-    }
-    for phase in data["phases"]:
-        phase_node = {
-            "id": phase["id"],
-            "status": phase["status"],
-            "title": phase["title"],
-            "tasks": [],
+def _build_plan_data(plan, mode="list"):
+    """Build structured plan data dict for get-plan output."""
+    if mode == "tree":
+        return {
+            "title": plan["title"],
+            "emoji": plan["emoji"],
+            "depends_on": plan["depends_on"],
+            "created": plan["created"],
+            "updated": plan["updated"],
+            "current_phase": plan["current_phase"],
+            "current_task": plan["current_task"],
+            "phases": [
+                {
+                    "id": p["id"],
+                    "emoji": p["emoji"],
+                    "title": p["title"],
+                    "tasks": [
+                        {
+                            "id": t["id"],
+                            "emoji": t["emoji"],
+                            "title": t["title"],
+                            "dependencies": t["dependencies"],
+                            "sub_bullets": t["sub_bullets"],
+                        }
+                        for t in p["tasks"]
+                    ],
+                }
+                for p in plan["phases"]
+            ],
         }
-        for task in phase["tasks"]:
-            phase_node["tasks"].append({
-                "id": task["id"],
-                "status": task["status"],
-                "title": task["title"],
-                "depends_on": task["depends_on"],
+    else:
+        data = {
+            "title": plan["title"],
+            "emoji": plan["emoji"],
+            "depends_on": plan["depends_on"],
+            "created": plan["created"],
+            "updated": plan["updated"],
+            "current_phase": plan["current_phase"],
+            "current_task": plan["current_task"],
+            "items": [],
+        }
+        for p in plan["phases"]:
+            data["items"].append({
+                "type": "phase",
+                "id": p["id"],
+                "emoji": p["emoji"],
+                "title": p["title"],
             })
-        tree["plan"]["phases"].append(phase_node)
-    return _json_mod.dumps(tree, indent=2, ensure_ascii=False)
+            for t in p["tasks"]:
+                data["items"].append({
+                    "type": "task",
+                    "phase_id": p["id"],
+                    "id": t["id"],
+                    "emoji": t["emoji"],
+                    "title": t["title"],
+                    "dependencies": t["dependencies"],
+                })
+        return data
 
 
-def _format_tree_yaml(data: dict, plan_id: str) -> str:
-    """Tree format as YAML — nested phases with tasks."""
+def _to_yaml(obj, indent=0):
+    """Simple YAML serializer for nested dicts/lists."""
     lines = []
-    lines.append("plan:")
-    lines.append(f"  id: {plan_id}")
-    lines.append(f"  title: {_yaml_scalar(data['title'])}")
-    lines.append(f"  status: {data['status']}")
-    depends = data["depends_on"]
-    if depends:
-        lines.append("  depends_on:")
-        for d in depends:
-            lines.append(f"    - {d}")
+    prefix = "  " * indent
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if isinstance(v, list) and not v:
+                lines.append(f"{prefix}{k}: []")
+            elif isinstance(v, (dict, list)):
+                lines.append(f"{prefix}{k}:")
+                lines.append(_to_yaml(v, indent + 1))
+            elif isinstance(v, str):
+                lines.append(f"{prefix}{k}: {v}")
+            else:
+                lines.append(f"{prefix}{k}: {json.dumps(v)}")
+    elif isinstance(obj, list):
+        for item in obj:
+            if isinstance(item, dict):
+                first = True
+                for k, v in item.items():
+                    if first:
+                        if isinstance(v, list) and not v:
+                            lines.append(f"{prefix}- {k}: []")
+                        elif isinstance(v, (dict, list)):
+                            lines.append(f"{prefix}- {k}:")
+                            lines.append(_to_yaml(v, indent + 2))
+                        else:
+                            lines.append(f"{prefix}- {k}: {v if isinstance(v, str) else json.dumps(v)}")
+                        first = False
+                    else:
+                        if isinstance(v, list) and not v:
+                            lines.append(f"{prefix}  {k}: []")
+                        elif isinstance(v, (dict, list)):
+                            lines.append(f"{prefix}  {k}:")
+                            lines.append(_to_yaml(v, indent + 2))
+                        else:
+                            lines.append(f"{prefix}  {k}: {v if isinstance(v, str) else json.dumps(v)}")
+            else:
+                lines.append(f"{prefix}- {item if isinstance(item, str) else json.dumps(item)}")
+    return "\n".join(lines)
+
+
+# Batch Mode
+# Multi-plan aware: each step can target a different PLAN.md.
+# JSON mode: {"command": "...", "args": [...], "plan_path": "..."}
+# Line mode:  command arg1 arg2 ... [@path]   — trailing @path overrides default
+
+def cmd_batch(args):
+    default_path = args.path
+    force_json = getattr(args, "json_mode", False)
+    input_file = getattr(args, "input", None)
+
+    # Read commands
+    if input_file:
+        with open(input_file, encoding="utf-8") as f:
+            raw = f.read()
+        if not force_json and input_file.endswith(".json"):
+            force_json = True
     else:
-        lines.append("  depends_on: []")
-    lines.append(f"  created: {data['created']}")
-    lines.append(f"  updated: {data['updated']}")
-    lines.append("  phases:")
-    for phase in data["phases"]:
-        lines.append(f"    - id: {phase['id']}")
-        lines.append(f"      status: {phase['status']}")
-        lines.append(f"      title: {phase['title']}")
-        if phase["tasks"]:
-            lines.append("      tasks:")
-            for task in phase["tasks"]:
-                lines.append(f"        - id: {task['id']}")
-                lines.append(f"          status: {task['status']}")
-                lines.append(f"          title: {_yaml_scalar(task['title'])}")
-                deps = task["depends_on"]
-                if deps:
-                    lines.append("          depends_on:")
-                    for dep in deps:
-                        lines.append(f"            - {dep}")
-                else:
-                    lines.append("          depends_on: []")
+        raw = sys.stdin.read()
+
+    # Determine mode: auto-detect from content, with --json flag for file override.
+    raw_stripped = raw.strip()
+    looks_like_json = raw_stripped.startswith("[")
+    # --json flag overrides file extension auto-detect, but only if content looks like JSON
+    use_json = looks_like_json or (force_json and input_file and not input_file.endswith(".json"))
+
+    if use_json:
+        steps = _parse_json_batch(raw)
+    else:
+        steps = _parse_line_batch(raw)
+
+    # plan_cache: abs_path -> plan dict (in-memory, dirty if mutated)
+    plan_cache = {}
+    # Set of abs_paths that have mutations pending write
+    dirty_plans = set()
+
+    # Resolve default path to absolute and get its directory for relative @path resolution
+    default_abs = os.path.abspath(default_path)
+    default_dir = os.path.dirname(default_abs)
+
+    # Commands that are read-only (don't mutate the plan file)
+    # Note: "check" is NOT read-only — errors indicate plan integrity issues
+    # that should halt subsequent mutations. check --fix is a mutation.
+    READ_ONLY_CMDS = {
+        "get-plan-title", "get-plan-depends-on", "get-plan-created",
+        "get-plan-updated", "get-plan-current-phase", "get-plan-current-task",
+        "get-plan-status", "get-phase-status", "get-task-status",
+        "get-plan",
+    }
+
+    results = []
+    has_mutation_error = False  # Only mutation errors stop the batch
+
+    for step in steps:
+        if has_mutation_error:
+            results.append({
+                "status": "skipped",
+                "command": step.get("command", "?"),
+                "message": "Skipped due to previous mutation error",
+            })
+            continue
+
+        cmd = step["command"]
+        cmd_args = step.get("args", [])
+        raw_step_path = step.get("plan_path") or default_path
+        # Resolve relative @path against default plan's directory
+        if step.get("plan_path"):
+            step_path = os.path.abspath(os.path.join(default_dir, raw_step_path))
         else:
-            lines.append("      tasks: []")
-    return "\n".join(lines) + "\n"
+            step_path = raw_step_path
+
+        try:
+            result = _execute_batch_step(cmd, cmd_args, step_path, plan_cache, dirty_plans, default_dir)
+            is_mutation = result.pop("_mutation", False)
+            results.append(result)
+            if result["status"] == "error":
+                # Only mutation errors stop the batch; read-only errors are reported but don't halt
+                if cmd not in READ_ONLY_CMDS:
+                    has_mutation_error = True
+                    # If failed step is set-task-status, mark task as ❌
+                    if cmd == "set-task-status":
+                        _mark_task_error_batch(cmd_args, step_path, plan_cache)
+                        dirty_plans.add(os.path.abspath(step_path))
+            elif is_mutation:
+                abs_p = os.path.abspath(step_path)
+                dirty_plans.add(abs_p)
+        except SystemExit:
+            if cmd not in READ_ONLY_CMDS:
+                has_mutation_error = True
+            results.append({
+                "status": "error",
+                "command": cmd,
+                "message": f"Command {cmd} failed",
+            })
+
+    # Write all dirty plans
+    for abs_p in dirty_plans:
+        if abs_p in plan_cache:
+            write_plan(plan_cache[abs_p])
+
+    overall = "success" if not has_mutation_error else "error"
+    out = {"status": overall, "command": "batch", "results": results, "path": default_path}
+    print(json.dumps(out, ensure_ascii=False), flush=True)
+    if has_mutation_error:
+        sys.exit(1)
 
 
-def _yaml_scalar(value: str) -> str:
-    """Quote a YAML scalar if it needs quoting."""
-    if not value:
-        return '""'
-    # Quote if contains special chars or looks like a number/bool
-    needs_quote = False
-    if any(c in value for c in ':{}[]&*?|->!%@`,#'):
-        needs_quote = True
-    if value.lower() in ('true', 'false', 'null', 'yes', 'no'):
-        needs_quote = True
+def _parse_line_batch(raw):
+    """Parse line-mode batch input. Trailing @path overrides default plan."""
+    steps = []
+    for line in raw.split("\n"):
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = shlex_split(line)
+        if not parts:
+            continue
+        cmd = parts[0]
+        rest = parts[1:]
+        # Check for trailing @path override
+        plan_path = None
+        if rest and rest[-1].startswith("@"):
+            plan_path = rest[-1][1:]  # strip @
+            rest = rest[:-1]
+        steps.append({"command": cmd, "args": rest, "plan_path": plan_path})
+    return steps
+
+
+def _parse_json_batch(raw):
+    """Parse JSON-mode batch input. Optional 'plan_path' per step."""
     try:
-        float(value)
-        needs_quote = True
-    except ValueError:
-        pass
-    if needs_quote or '"' in value or '\n' in value:
-        escaped = value.replace('\\', '\\\\').replace('"', '\\"')
-        return f'"{escaped}"'
-    return value
+        data = json.loads(raw)
+    except json.JSONDecodeError as e:
+        die("batch", f"Invalid JSON input: {e}")
+    if not isinstance(data, list):
+        die("batch", "JSON input must be an array of step objects")
+    steps = []
+    for item in data:
+        cmd = item.get("command", "")
+        args = item.get("args", [])
+        pp = item.get("plan_path", None)
+        steps.append({"command": cmd, "args": args, "plan_path": pp})
+    return steps
 
 
-def cmd_get_plan(args: argparse.Namespace) -> None:
-    """Output structured plan data in list or tree format, json or yaml."""
-    content = _safe_read(args.path)
-    data = _build_plan_data(content)
-    plan_id = args.path
-
-    view = "tree" if args.tree else "list"
-    fmt = "yaml" if args.yaml else "json"
-
-    if view == "list":
-        if fmt == "json":
-            output = _format_list_json(data, plan_id)
+def shlex_split(line):
+    """Simple quoted-string aware splitter."""
+    parts = []
+    current = []
+    in_quote = False
+    quote_char = None
+    i = 0
+    while i < len(line):
+        c = line[i]
+        if in_quote:
+            if c == quote_char:
+                in_quote = False
+            else:
+                current.append(c)
+        elif c in ('"', "'"):
+            in_quote = True
+            quote_char = c
+        elif c == " ":
+            if current:
+                parts.append("".join(current))
+                current = []
         else:
-            output = _format_list_yaml(data, plan_id)
-    else:
-        # tree
-        if fmt == "json":
-            output = _format_tree_json(data, plan_id)
-        else:
-            output = _format_tree_yaml(data, plan_id)
-
-    print(output, end="")
+            current.append(c)
+        i += 1
+    if current:
+        parts.append("".join(current))
+    return parts
 
 
-# ---------------------------------------------------------------------------
-# CLI — Argument Parser
-# ---------------------------------------------------------------------------
+def _get_plan(path, plan_cache, batch_mode=False):
+    """Get or load a plan from cache.
+    In batch_mode, returns (plan, error_msg) tuple instead of calling die()."""
+    abs_p = os.path.abspath(path)
+    if abs_p not in plan_cache:
+        plan, err = _try_parse_plan(path)
+        if err:
+            if batch_mode:
+                return None, err
+            die("parse", err)
+        plan_cache[abs_p] = plan
+    if batch_mode:
+        return plan_cache[abs_p], None
+    return plan_cache[abs_p]
 
-def _add_path(sub, name: str, **kwargs) -> argparse.ArgumentParser:
-    """Add a subparser with a positional 'path' argument prepended."""
-    p = sub.add_parser(name, **kwargs)
-    p.add_argument("path", help="Path to PLAN.md file")
-    return p
+
+def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans, default_dir=None):
+    """Execute a single batch step with multi-plan support.
+    default_dir: directory for resolving relative plan dependency paths."""
+    abs_path = os.path.abspath(path)
+    result_base = {"path": abs_path}
+
+    try:
+        # create: doesn't need existing plan
+        if cmd == "create":
+            title = args[0] if args else ""
+            ok, msg = validate_title(title)
+            if not ok:
+                return {**result_base, "status": "error", "command": cmd, "message": msg}
+            deps = "NONE"
+            if len(args) > 1:
+                deps = ", ".join(args[1:])
+            plan_obj = {
+                "path": abs_path,
+                "emoji": EMOJI_TODO,
+                "title": title,
+                "depends_on": deps,
+                "created": now_iso(),
+                "updated": now_iso(),
+                "current_phase": "NONE",
+                "current_task": "NONE",
+                "phases": [],
+                "raw_checksum": None,
+            }
+            plan_cache[abs_path] = plan_obj
+            write_plan(plan_obj)
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Created plan: {title}", "_mutation": True}
+
+        # All other commands need an existing plan
+        plan, err = _get_plan(path, plan_cache, batch_mode=True)
+        if err:
+            return {**result_base, "status": "error", "command": cmd, "message": err}
+
+        # Header reads (read-only, no mutation)
+        if cmd == "get-plan-title":
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": plan["title"], "value": plan["title"]}
+        if cmd == "get-plan-depends-on":
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": plan["depends_on"], "value": plan["depends_on"]}
+        if cmd == "get-plan-created":
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": plan["created"], "value": plan["created"]}
+        if cmd == "get-plan-updated":
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": plan["updated"], "value": plan["updated"]}
+        if cmd == "get-plan-current-phase":
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": plan["current_phase"], "value": plan["current_phase"]}
+        if cmd == "get-plan-current-task":
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": plan["current_task"], "value": plan["current_task"]}
+
+        # Status reads (read-only)
+        if cmd == "get-plan-status":
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": plan["emoji"], "value": plan["emoji"]}
+        if cmd == "get-phase-status":
+            phase = find_phase(plan, args[0]) if args else None
+            if not phase:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Phase not found: {args[0] if args else '?'}"}
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": phase["emoji"], "value": phase["emoji"], "phase": phase["id"]}
+        if cmd == "get-task-status":
+            if len(args) < 2:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id or task_id"}
+            task = find_task(plan, args[0], args[1])
+            if not task:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Task not found: {args[0]} / {args[1]}"}
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": task["emoji"], "value": task["emoji"],
+                    "phase": args[0], "task": task["id"]}
+
+        # Header writes
+        if cmd == "set-plan-title":
+            new_title = args[0] if args else ""
+            ok, msg = validate_title(new_title)
+            if not ok:
+                return {**result_base, "status": "error", "command": cmd, "message": msg}
+            plan["title"] = new_title
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Title set to: {new_title}", "_mutation": True}
+
+        if cmd == "set-plan-depends-on":
+            deps = args if args else ["NONE"]
+            if deps == ["NONE"]:
+                plan["depends_on"] = "NONE"
+            else:
+                # Self-reference check (resolve relative to default_dir)
+                for dep_path in deps:
+                    resolved = os.path.abspath(os.path.join(default_dir or os.getcwd(), dep_path))
+                    if resolved == abs_path:
+                        return {**result_base, "status": "error", "command": cmd,
+                                "message": "Cannot depend on itself"}
+                # Transitive cycle detection
+                if _check_batch_plan_cycles(abs_path, deps, plan_cache, default_dir):
+                    return {**result_base, "status": "error", "command": cmd,
+                            "message": f"Dependency cycle detected involving {path}"}
+                plan["depends_on"] = ", ".join(deps)
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Dependencies set to: {plan['depends_on']}", "_mutation": True}
+
+        if cmd == "set-plan-created":
+            val = args[0] if args else "__NOW__"
+            if val == "__NOW__" or val == "--now":
+                val = now_iso()
+            plan["created"] = val
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Created set to: {val}", "_mutation": True}
+
+        if cmd == "set-plan-updated":
+            val = args[0] if args else "__NOW__"
+            if val == "__NOW__" or val == "--now":
+                val = now_iso()
+            plan["updated"] = val
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Updated set to: {val}", "_mutation": True}
+
+        if cmd == "set-plan-current-phase":
+            if not args:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id"}
+            phase = find_phase(plan, args[0])
+            if not phase:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Phase not found: {args[0]}"}
+            plan["current_phase"] = f"{phase['emoji']} {phase['id']}"
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Current phase set to: {plan['current_phase']}", "_mutation": True}
+
+        if cmd == "set-plan-current-task":
+            if len(args) < 2:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id or task_id"}
+            task = find_task(plan, args[0], args[1])
+            if not task:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Task not found: {args[0]} / {args[1]}"}
+            plan["current_task"] = f"{task['emoji']} {task['id']}"
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Current task set to: {plan['current_task']}", "_mutation": True}
+
+        # Status writes
+        if cmd == "set-all-statuses":
+            emoji = args[0] if args else EMOJI_TODO
+            if emoji not in ALL_EMOJI:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Invalid emoji: {emoji}"}
+            plan["emoji"] = emoji
+            for phase in plan["phases"]:
+                phase["emoji"] = emoji
+                for task in phase["tasks"]:
+                    task["emoji"] = emoji
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"All statuses set to {emoji}", "_mutation": True}
+
+        if cmd == "set-plan-status":
+            emoji = args[0] if args else EMOJI_DOING
+            if emoji not in ALL_EMOJI:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Invalid emoji: {emoji}"}
+            old = plan["emoji"]
+            if old != emoji and (old, emoji) not in VALID_PLAN_TRANSITIONS:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Invalid transition: {old} -> {emoji}"}
+            plan["emoji"] = emoji
+            # Do NOT rederive — this is a manual override preserved until check --fix
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Plan -> {emoji}", "_mutation": True}
+
+        if cmd == "set-phase-status":
+            if not args:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id"}
+            phase = find_phase(plan, args[0])
+            if not phase:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Phase not found: {args[0]}"}
+            emoji = args[1] if len(args) > 1 else EMOJI_DOING
+            if emoji not in ALL_EMOJI:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Invalid emoji: {emoji}"}
+            old = phase["emoji"]
+            if old != emoji and (old, emoji) not in VALID_TASK_TRANSITIONS:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Invalid transition: {old} -> {emoji}"}
+            phase["emoji"] = emoji
+            # Do NOT rederive — this is a manual override preserved until check --fix
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Phase {phase['id']} -> {emoji}", "_mutation": True}
+
+        if cmd == "set-task-status":
+            if len(args) < 2:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id or task_id"}
+            task = find_task(plan, args[0], args[1])
+            if not task:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Task not found: {args[0]} / {args[1]}"}
+            emoji = args[2] if len(args) > 2 else EMOJI_DOING
+            if emoji not in ALL_EMOJI:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Invalid emoji: {emoji}"}
+            old = task["emoji"]
+            if old != emoji and (old, emoji) not in VALID_TASK_TRANSITIONS:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Invalid transition: {old} -> {emoji}"}
+            # Check dependencies before ⚙️
+            if emoji == EMOJI_DOING:
+                unsatisfied = []
+                for dep in task["dependencies"]:
+                    dep_task = _resolve_dep_task(plan, task, dep)
+                    if dep_task and dep_task["emoji"] != EMOJI_DONE:
+                        unsatisfied.append(dep)
+                if unsatisfied:
+                    return {**result_base, "status": "error", "command": cmd,
+                            "message": f"Unmet dependencies: {', '.join(unsatisfied)}"}
+            task["emoji"] = emoji
+            rederive_all(plan)
+            # Update current tracking after rederive
+            if emoji == EMOJI_DOING:
+                phase = find_phase(plan, args[0])
+                plan["current_phase"] = f"{phase['emoji']} {phase['id']}" if phase else args[0]
+                plan["current_task"] = f"{emoji} {task['id']}"
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Task {task['id']} -> {emoji}", "_mutation": True}
+
+        # Phase CRUD
+        if cmd == "add-phase":
+            phase_id = args[0] if args else ""
+            title = args[1] if len(args) > 1 else ""
+            pnum = parse_phase_id(phase_id)
+            if pnum is None:
+                title = phase_id
+                phase_id = f"Phase {next_phase_number(plan)}"
+            elif not title:
+                title = phase_id
+            ok, msg = validate_title(title)
+            if not ok:
+                return {**result_base, "status": "error", "command": cmd, "message": msg}
+            for p in plan["phases"]:
+                if p["id"] == phase_id:
+                    return {**result_base, "status": "error", "command": cmd,
+                            "message": f"Phase already exists: {phase_id}"}
+            plan["phases"].append({
+                "emoji": EMOJI_TODO, "id": phase_id, "title": title, "tasks": []
+            })
+            rederive_all(plan)
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Added {phase_id}: {title}", "_mutation": True}
+
+        if cmd == "update-phase":
+            phase = find_phase(plan, args[0]) if args else None
+            if not phase:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Phase not found: {args[0] if args else '?'}"}
+            if len(args) > 1:
+                ok, msg = validate_title(args[1])
+                if not ok:
+                    return {**result_base, "status": "error", "command": cmd, "message": msg}
+                phase["title"] = args[1]
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Updated {phase['id']}", "_mutation": True}
+
+        if cmd == "remove-phase":
+            phase = find_phase(plan, args[0]) if args else None
+            if not phase:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Phase not found: {args[0] if args else '?'}"}
+            # Remove cross-phase deps pointing to this phase's tasks
+            for p in plan["phases"]:
+                if p["id"] == phase["id"]:
+                    continue
+                for t in p["tasks"]:
+                    t["dependencies"] = [
+                        d for d in t["dependencies"]
+                        if not re.match(rf"{re.escape(phase['id'])}\s*-\s*", d)
+                    ]
+            plan["phases"].remove(phase)
+            if plan["current_phase"].startswith(phase["id"]):
+                plan["current_phase"] = "NONE"
+            for t in phase["tasks"]:
+                if plan["current_task"].startswith(t["id"]):
+                    plan["current_task"] = "NONE"
+            rederive_all(plan)
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Removed {phase['id']}", "_mutation": True}
+
+        # Task CRUD
+        if cmd == "add-task":
+            if not args:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id"}
+            phase = find_phase(plan, args[0])
+            if not phase:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Phase not found: {args[0]}"}
+            task_id = args[1] if len(args) > 1 else None
+            title = args[2] if len(args) > 2 else ""
+            if task_id:
+                tn = parse_task_id(task_id)
+                if tn[0] is None:
+                    # Not a valid Task X.Y format — treat as title, ignore extras
+                    title = task_id
+                    task_id = None
+            if not task_id:
+                pn = parse_phase_id(phase["id"])
+                tn = next_task_number(phase)
+                task_id = f"Task {pn}.{tn}"
+            ok, msg = validate_title(title)
+            if not ok:
+                return {**result_base, "status": "error", "command": cmd, "message": msg}
+            for t in phase["tasks"]:
+                if t["id"] == task_id:
+                    return {**result_base, "status": "error", "command": cmd,
+                            "message": f"Task already exists: {task_id}"}
+            phase["tasks"].append({
+                "emoji": EMOJI_TODO, "id": task_id, "title": title.strip(),
+                "dependencies": [], "sub_bullets": []
+            })
+            rederive_all(plan)
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Added {task_id}: {title.strip()}", "_mutation": True}
+
+        if cmd == "update-task":
+            if len(args) < 2:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id or task_id"}
+            task = find_task(plan, args[0], args[1])
+            if not task:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Task not found: {args[0]} / {args[1]}"}
+            if len(args) > 2:
+                ok, msg = validate_title(args[2])
+                if not ok:
+                    return {**result_base, "status": "error", "command": cmd, "message": msg}
+                task["title"] = args[2]
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Updated {task['id']}", "_mutation": True}
+
+        if cmd == "remove-task":
+            if len(args) < 2:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id or task_id"}
+            phase = find_phase(plan, args[0])
+            if not phase:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Phase not found: {args[0]}"}
+            task = None
+            for t in phase["tasks"]:
+                if t["id"] == args[1]:
+                    task = t
+                    break
+            if not task:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Task not found: {args[0]} / {args[1]}"}
+            # Remove deps pointing to this task
+            for p in plan["phases"]:
+                for t in p["tasks"]:
+                    t["dependencies"] = [
+                        d for d in t["dependencies"]
+                        if d != task["id"] and d != f"{phase['id']} - {task['id']}"
+                    ]
+            phase["tasks"].remove(task)
+            # Clear current tracking (strip emoji prefix for comparison)
+            ct = plan["current_task"]
+            if task["id"] in ct:
+                plan["current_task"] = "NONE"
+            rederive_all(plan)
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Removed {task['id']}", "_mutation": True}
+
+        # Task Dependencies
+        if cmd == "add-task-dependency":
+            if len(args) < 3:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id, task_id, or dependency"}
+            task = find_task(plan, args[0], args[1])
+            if not task:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Task not found: {args[0]} / {args[1]}"}
+            dep = args[2]
+            if dep in task["dependencies"]:
+                return {**result_base, "status": "warning", "command": cmd,
+                        "message": f"Dependency already exists: {dep}"}
+            # Cycle detection
+            if detect_cycle(plan, args[0], args[1], dep):
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Adding dependency '{dep}' would create a cycle"}
+            task["dependencies"].append(dep)
+            rederive_all(plan)
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Added dependency '{dep}' to {task['id']}", "_mutation": True}
+
+        if cmd == "remove-task-dependency":
+            if len(args) < 3:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id, task_id, or dependency"}
+            task = find_task(plan, args[0], args[1])
+            if not task:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Task not found: {args[0]} / {args[1]}"}
+            dep = args[2]
+            if dep not in task["dependencies"]:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Dependency not found: {dep}"}
+            task["dependencies"].remove(dep)
+            rederive_all(plan)
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Removed dependency '{dep}' from {task['id']}", "_mutation": True}
+
+        # Utility commands
+        if cmd == "sort":
+            plan["phases"].sort(key=lambda p: parse_phase_id(p["id"]) or 0)
+            for phase in plan["phases"]:
+                phase["tasks"].sort(key=lambda t: parse_task_id(t["id"])[1] or 0)
+            rederive_all(plan)
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": "Phases and tasks sorted", "_mutation": True}
+
+        if cmd == "check":
+            do_fix = "--fix" in args
+            issues = _check_plan(plan)
+
+            if do_fix:
+                # Fix 1: Emoji derivation
+                for phase in plan["phases"]:
+                    phase["emoji"] = derive_phase_emoji(phase["tasks"])
+                plan["emoji"] = derive_plan_emoji(plan["phases"])
+
+                # Fix 2: Renumber phases sequentially
+                for i, phase in enumerate(plan["phases"]):
+                    old_id = phase["id"]
+                    new_id = f"Phase {i + 1}"
+                    if old_id != new_id:
+                        phase["id"] = new_id
+                        for p in plan["phases"]:
+                            for t in p["tasks"]:
+                                t["dependencies"] = [
+                                    d.replace(old_id, new_id) for d in t["dependencies"]
+                                ]
+
+                # Fix 3: Renumber tasks within each phase sequentially
+                for phase in plan["phases"]:
+                    pnum = parse_phase_id(phase["id"])
+                    phase["tasks"].sort(key=lambda t: parse_task_id(t["id"])[1] or 0)
+                    for i, task in enumerate(phase["tasks"]):
+                        old_id = task["id"]
+                        new_id = f"Task {pnum}.{i + 1}"
+                        if old_id != new_id:
+                            task["id"] = new_id
+                            for p in plan["phases"]:
+                                for t in p["tasks"]:
+                                    t["dependencies"] = [
+                                        d.replace(old_id, new_id) for d in t["dependencies"]
+                                    ]
+                            task["dependencies"] = [
+                                d for d in task["dependencies"]
+                                if d != new_id and d != f"{phase['id']} - {new_id}"
+                            ]
+
+                # Fix 4: Remove dangling dependencies
+                for phase in plan["phases"]:
+                    for task in phase["tasks"]:
+                        task["dependencies"] = [
+                            d for d in task["dependencies"]
+                            if _resolve_dep_task(plan, task, d) is not None
+                        ]
+
+                plan["updated"] = now_iso()
+                dirty_plans.add(abs_path)
+
+                # Re-check after fix
+                remaining = _check_plan(plan)
+                if not remaining:
+                    status = "success"
+                    msg = f"Fixed {len(issues)} issue(s)"
+                    issues_out = issues
+                else:
+                    status = "error" if any(i[0] == "error" for i in remaining) else "warning"
+                    msg = f"Fixed some issues; {len(remaining)} remaining"
+                    issues_out = remaining
+            else:
+                status = "success" if not issues else ("error" if any(i[0] == "error" for i in issues) else "warning")
+                msg = f"{len(issues)} issue(s) found" if issues else "No issues found"
+                issues_out = issues
+
+            return {**result_base, "status": status, "command": cmd,
+                    "message": msg, "issues": issues_out, "fixed": do_fix}
+
+        # get-plan (structured output, read-only)
+        if cmd == "get-plan":
+            mode = args[0] if args else "list"
+            data = _build_plan_data(plan, mode)
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Plan: {plan['title']}", "data": data}
+
+        # Unknown command
+        return {**result_base, "status": "error", "command": cmd,
+                "message": f"Unknown command: {cmd}"}
+
+    except Exception as e:
+        return {**result_base, "status": "error", "command": cmd, "message": str(e)}
 
 
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        prog="plan.py",
-        description="Deterministic PLAN.md manager — all reads/writes via script.",
+def _mark_task_error_batch(args, path, plan_cache):
+    """If set-task-status failed, mark the task as ❌."""
+    if len(args) < 2:
+        return
+    plan, err = _get_plan(path, plan_cache, batch_mode=True)
+    if err:
+        return
+    task = find_task(plan, args[0], args[1])
+    if task and task["emoji"] != EMOJI_ERROR:
+        task["emoji"] = EMOJI_ERROR
+        rederive_all(plan)
+
+
+# CLI Parser
+
+def build_parser():
+    parser = JsonArgumentParser(
+        prog="plan.sh",
+        description="Phase/task workflow manager for PLAN.md files",
     )
+    subs = parser.add_subparsers(dest="command")
 
-    sub = parser.add_subparsers(dest="command", required=True)
+    # create
+    p = subs.add_parser("create", help="Create a new PLAN.md")
+    p.add_argument("path")
+    p.add_argument("title")
+    p.add_argument("depends_on", nargs="*", default=[])
 
-    # --- create ---
-    p_create = sub.add_parser("create", help="Create a new PLAN.md")
-    p_create.add_argument("path", help="Path to PLAN.md file")
-    p_create.add_argument("title", help="Plan title")
-    p_create.add_argument("depends", nargs="*", default=[], help="Dependency PLAN.md paths")
+    # get-plan-title
+    p = subs.add_parser("get-plan-title", help="Get plan title")
+    p.add_argument("path")
 
-    # --- batch ---
-    p_batch = sub.add_parser("batch", help="Execute multiple operations under one lock (reads commands from stdin or --input FILE)")
-    p_batch.add_argument("path", help="Path to PLAN.md file")
-    p_batch.add_argument("--input", help="Read commands from a file instead of stdin (.txt/.md → line mode, .json → JSON mode)")
-    p_batch.add_argument("--json", action="store_true", help='Force JSON parse mode (default: auto-detect from file extension or stdin)')
+    # get-plan-depends-on
+    p = subs.add_parser("get-plan-depends-on", help="Get plan dependencies")
+    p.add_argument("path")
 
-    # --- get (header reads) ---
-    _add_path(sub, "get-plan-title", help="Get plan title")
-    _add_path(sub, "get-plan-depends-on", help="Get dependencies")
-    _add_path(sub, "get-plan-created", help="Get created timestamp")
-    _add_path(sub, "get-plan-updated", help="Get updated timestamp")
-    _add_path(sub, "get-plan-current-phase", help="Get current phase")
-    _add_path(sub, "get-plan-current-task", help="Get current task")
+    # get-plan-created
+    p = subs.add_parser("get-plan-created", help="Get plan creation time")
+    p.add_argument("path")
 
-    # --- set (header writes) ---
-    p_set_title = _add_path(sub, "set-plan-title", help="Set plan title")
-    p_set_title.add_argument("title", help="New plan title")
+    # get-plan-updated
+    p = subs.add_parser("get-plan-updated", help="Get plan update time")
+    p.add_argument("path")
 
-    p_set_deps = _add_path(sub, "set-plan-depends-on", help="Set dependencies")
-    p_set_deps.add_argument("deps", nargs="*", default=[], help="Dependency PLAN.md paths or NONE")
+    # get-plan-current-phase
+    p = subs.add_parser("get-plan-current-phase", help="Get current phase")
+    p.add_argument("path")
 
-    p_set_created = _add_path(sub, "set-plan-created", help="Set created timestamp")
-    p_set_created.add_argument("value", nargs="?", default="--now", help="ISO 8601 timestamp or --now (default: --now)")
+    # get-plan-current-task
+    p = subs.add_parser("get-plan-current-task", help="Get current task")
+    p.add_argument("path")
 
-    p_set_updated = _add_path(sub, "set-plan-updated", help="Set updated timestamp")
-    p_set_updated.add_argument("value", nargs="?", default="--now", help="ISO 8601 timestamp or --now (default: --now)")
+    # set-plan-title
+    p = subs.add_parser("set-plan-title", help="Set plan title")
+    p.add_argument("path")
+    p.add_argument("title")
 
-    p_set_cp = _add_path(sub, "set-plan-current-phase", help="Set current phase")
-    p_set_cp.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
+    # set-plan-depends-on
+    p = subs.add_parser("set-plan-depends-on", help="Set plan dependencies")
+    p.add_argument("path")
+    p.add_argument("depends_on", nargs="+")
 
-    p_set_ct = _add_path(sub, "set-plan-current-task", help="Set current task")
-    p_set_ct.add_argument("task_ref", help='Task reference, e.g. "Task 2.3"')
+    # set-plan-created
+    p = subs.add_parser("set-plan-created", help="Set plan creation time")
+    p.add_argument("path")
+    p.add_argument("value", nargs="?", default="--now")
 
-    # --- status reads ---
-    _add_path(sub, "get-plan-status", help="Get plan status emoji")
+    # set-plan-updated
+    p = subs.add_parser("set-plan-updated", help="Set plan update time")
+    p.add_argument("path")
+    p.add_argument("value", nargs="?", default="--now")
 
-    p_gps = _add_path(sub, "get-phase-status", help="Get phase status emoji")
-    p_gps.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
+    # set-plan-current-phase
+    p = subs.add_parser("set-plan-current-phase", help="Set current phase")
+    p.add_argument("path")
+    p.add_argument("phase_id")
 
-    p_gts = _add_path(sub, "get-task-status", help="Get task status emoji")
-    p_gts.add_argument("task_ref", help='Task reference, e.g. "Task 2.3"')
+    # set-plan-current-task
+    p = subs.add_parser("set-plan-current-task", help="Set current task")
+    p.add_argument("path")
+    p.add_argument("phase_id")
+    p.add_argument("task_id")
 
-    # --- status writes ---
-    p_sas = _add_path(sub, "set-all-statuses", help="Set all statuses to same value")
-    p_sas.add_argument("status", help="Status emoji")
+    # get-plan-status
+    p = subs.add_parser("get-plan-status", help="Get plan status emoji")
+    p.add_argument("path")
 
-    p_sps = _add_path(sub, "set-plan-status", help="Set plan status")
-    p_sps.add_argument("status", help="Status emoji")
+    # get-phase-status
+    p = subs.add_parser("get-phase-status", help="Get phase status emoji")
+    p.add_argument("path")
+    p.add_argument("phase_id")
 
-    p_sphs = _add_path(sub, "set-phase-status", help="Set phase status")
-    p_sphs.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
-    p_sphs.add_argument("status", help="Status emoji")
+    # get-task-status
+    p = subs.add_parser("get-task-status", help="Get task status emoji")
+    p.add_argument("path")
+    p.add_argument("phase_id")
+    p.add_argument("task_id")
 
-    p_sts = _add_path(sub, "set-task-status", help="Set task status")
-    p_sts.add_argument("task_ref", help='Task reference, e.g. "Task 2.3"')
-    p_sts.add_argument("status", help="Status emoji")
+    # set-all-statuses
+    p = subs.add_parser("set-all-statuses", help="Set all statuses to same emoji")
+    p.add_argument("path")
+    p.add_argument("emoji")
 
-    # --- phase CRUD ---
-    p_add_phase = _add_path(sub, "add-phase", help="Add a new phase")
-    p_add_phase.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2" or just "Planning"')
-    p_add_phase.add_argument("phase_title", nargs="?", default=None, help='Phase title (optional, auto-derived from phase_ref if omitted)')
+    # set-plan-status
+    p = subs.add_parser("set-plan-status", help="Set plan status emoji")
+    p.add_argument("path")
+    p.add_argument("emoji")
 
-    p_upd_phase = _add_path(sub, "update-phase", help="Update phase title/description")
-    p_upd_phase.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
-    p_upd_phase.add_argument("phase_title", nargs="?", default=None, help='New phase title (optional)')
+    # set-phase-status
+    p = subs.add_parser("set-phase-status", help="Set phase status emoji")
+    p.add_argument("path")
+    p.add_argument("phase_id")
+    p.add_argument("emoji")
 
-    p_rm_phase = _add_path(sub, "remove-phase", help="Remove a phase and its tasks")
-    p_rm_phase.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
+    # set-task-status
+    p = subs.add_parser("set-task-status", help="Set task status emoji")
+    p.add_argument("path")
+    p.add_argument("phase_id")
+    p.add_argument("task_id")
+    p.add_argument("emoji")
 
-    # --- task CRUD ---
-    p_add_task = _add_path(sub, "add-task", help="Add a new task")
-    p_add_task.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
-    p_add_task.add_argument("task_ref", help='Task reference, e.g. "Task 2.4" or just "Do thing"')
-    p_add_task.add_argument("task_title", nargs="?", default=None, help='Task title (optional, auto-derived from task_ref if omitted)')
+    # add-phase
+    p = subs.add_parser("add-phase", help="Add a phase")
+    p.add_argument("path")
+    p.add_argument("rest", nargs="+")
 
-    p_upd_task = _add_path(sub, "update-task", help="Update task description")
-    p_upd_task.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
-    p_upd_task.add_argument("task_ref", help='Task reference, e.g. "Task 2.4"')
-    p_upd_task.add_argument("task_title", nargs="?", default=None, help='New task title (optional)')
+    # add-task
+    p = subs.add_parser("add-task", help="Add a task")
+    p.add_argument("path")
+    p.add_argument("phase_id")
+    p.add_argument("rest", nargs="*")
 
+    # update-phase
+    p = subs.add_parser("update-phase", help="Update phase title")
+    p.add_argument("path")
+    p.add_argument("phase_id")
+    p.add_argument("title", nargs="?", default=None)
 
-    p_rm_task = _add_path(sub, "remove-task", help="Remove a task")
-    p_rm_task.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
-    p_rm_task.add_argument("task_ref", help='Task reference, e.g. "Task 2.4"')
+    # update-task
+    p = subs.add_parser("update-task", help="Update task title")
+    p.add_argument("path")
+    p.add_argument("phase_id")
+    p.add_argument("task_id")
+    p.add_argument("title", nargs="?", default=None)
 
-    # --- get-plan (structured output) ---
-    p_get_plan = _add_path(sub, "get-plan", help="Get structured plan data")
-    view_group = p_get_plan.add_mutually_exclusive_group()
-    view_group.add_argument("--list", action="store_true", help="Flat list view (default)")
-    view_group.add_argument("--tree", action="store_true", help="Tree (nested) view")
-    fmt_group = p_get_plan.add_mutually_exclusive_group()
-    fmt_group.add_argument("--json", action="store_true", help="JSON output (default)")
-    fmt_group.add_argument("--yaml", action="store_true", help="YAML output")
+    # remove-phase
+    p = subs.add_parser("remove-phase", help="Remove a phase")
+    p.add_argument("path")
+    p.add_argument("phase_id")
 
-    # --- task dependency management ---
-    p_add_dep = _add_path(sub, "add-task-dependency", help="Add a dependency to a task")
-    p_add_dep.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
-    p_add_dep.add_argument("task_ref", help='Task reference, e.g. "Task 2.4"')
-    p_add_dep.add_argument("dep_task_ref", help='Dependency task reference, e.g. "Task 2.1"')
+    # remove-task
+    p = subs.add_parser("remove-task", help="Remove a task")
+    p.add_argument("path")
+    p.add_argument("phase_id")
+    p.add_argument("task_id")
 
-    p_rm_dep = _add_path(sub, "remove-task-dependency", help="Remove a dependency from a task")
-    p_rm_dep.add_argument("phase_ref", help='Phase reference, e.g. "Phase 2"')
-    p_rm_dep.add_argument("task_ref", help='Task reference, e.g. "Task 2.4"')
-    p_rm_dep.add_argument("dep_task_ref", help='Dependency task reference, e.g. "Task 2.1"')
+    # add-task-dependency
+    p = subs.add_parser("add-task-dependency", help="Add task dependency")
+    p.add_argument("path")
+    p.add_argument("phase_id")
+    p.add_argument("task_id")
+    p.add_argument("dependency")
 
-    # --- sort ---
-    _add_path(sub, "sort", help="Sort phases and tasks by number")
+    # remove-task-dependency
+    p = subs.add_parser("remove-task-dependency", help="Remove task dependency")
+    p.add_argument("path")
+    p.add_argument("phase_id")
+    p.add_argument("task_id")
+    p.add_argument("dependency")
 
-    # --- check ---
-    p_check = _add_path(sub, "check", help="Check PLAN.md consistency (with optional --fix)")
-    p_check.add_argument("--fix", action="store_true", help="Auto-fix recoverable issues")
+    # sort
+    p = subs.add_parser("sort", help="Sort phases and tasks")
+    p.add_argument("path")
+
+    # check
+    p = subs.add_parser("check", help="Validate PLAN.md")
+    p.add_argument("path")
+    p.add_argument("--fix", action="store_true")
+
+    # get-plan
+    p = subs.add_parser("get-plan", help="Structured plan output")
+    p.add_argument("path")
+    p.add_argument("--list", dest="mode", action="store_const", const="list", default="list")
+    p.add_argument("--tree", dest="mode", action="store_const", const="tree")
+    p.add_argument("--json", dest="format", action="store_const", const="json", default="json")
+    p.add_argument("--yaml", dest="format", action="store_const", const="yaml")
+
+    # batch
+    p = subs.add_parser("batch", help="Batch mode")
+    p.add_argument("path")
+    p.add_argument("--input", default=None)
+    p.add_argument("--json", dest="json_mode", action="store_true")
 
     return parser
 
 
-# ---------------------------------------------------------------------------
 # Dispatch
-# ---------------------------------------------------------------------------
 
 COMMAND_MAP = {
-    "batch": cmd_batch,
     "create": cmd_create,
-    "get-plan": cmd_get_plan,
     "get-plan-title": cmd_get_plan_title,
     "get-plan-depends-on": cmd_get_plan_depends_on,
     "get-plan-created": cmd_get_plan_created,
@@ -3629,37 +2282,48 @@ COMMAND_MAP = {
     "set-phase-status": cmd_set_phase_status,
     "set-task-status": cmd_set_task_status,
     "add-phase": cmd_add_phase,
-    "update-phase": cmd_update_phase,
-    "remove-phase": cmd_remove_phase,
     "add-task": cmd_add_task,
+    "update-phase": cmd_update_phase,
     "update-task": cmd_update_task,
+    "remove-phase": cmd_remove_phase,
     "remove-task": cmd_remove_task,
     "add-task-dependency": cmd_add_task_dependency,
     "remove-task-dependency": cmd_remove_task_dependency,
     "sort": cmd_sort,
     "check": cmd_check,
+    "get-plan": cmd_get_plan,
+    "batch": cmd_batch,
 }
 
 
-def _preprocess_args(argv: list[str]) -> list[str]:
-    """Replace --now with a safe token before argparse sees it."""
-    return ["__NOW__" if a == "--now" else a for a in argv]
+def main():
+    # Normalize --now so argparse doesn't treat it as a flag
+    argv = sys.argv[1:]
+    normalized = []
+    for i, a in enumerate(argv):
+        if a == "--now":
+            # Replace with a non-flag sentinel
+            normalized.append("__NOW__")
+        else:
+            normalized.append(a)
 
-
-def main() -> None:
     parser = build_parser()
-    args = parser.parse_args(_preprocess_args(sys.argv[1:]))
+    args = parser.parse_args(normalized)
+
+    if not args.command:
+        parser.print_help()
+        sys.exit(0)
+
+    # Convert sentinel back
+    if hasattr(args, "value") and args.value == "__NOW__":
+        args.value = "--now"
 
     handler = COMMAND_MAP.get(args.command)
-    if handler is None:
-        parser.print_help()
-        sys.exit(1)
+    if not handler:
+        die(args.command, f"Unknown command: {args.command}")
 
-    try:
-        handler(args)
-    except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
-        sys.exit(1)
+    assert handler is not None  # guaranteed by check above
+    handler(args)
 
 
 if __name__ == "__main__":

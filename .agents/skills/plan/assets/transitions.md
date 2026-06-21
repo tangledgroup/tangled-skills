@@ -16,6 +16,7 @@ stateDiagram-v2
     doing --> error
     doing --> done
     question --> doing
+    question --> error
     error --> doing
     error --> question
 
