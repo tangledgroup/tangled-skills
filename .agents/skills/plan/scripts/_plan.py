@@ -65,7 +65,6 @@ class JsonArgumentParser(argparse.ArgumentParser):
     """ArgumentParser that outputs JSON on error instead of raw text."""
 
     def error(self, message):
-        cmd = getattr(self._subparsers._group_actions[0], 'dest', None) if hasattr(self, '_subparsers') else None
         # Try to determine which subparser triggered the error
         prog = self.prog.replace("plan.sh ", "") if self.prog.startswith("plan.sh ") else self.prog
         json_out("error", prog, message)
@@ -184,7 +183,9 @@ def _try_parse_plan(path):
                 if tm.group(4):
                     deps = [d.strip() for d in tm.group(4).split(",") if d.strip()]
                     task["dependencies"] = deps
-                current_phase["tasks"].append(task)
+                assert current_phase is not None  # guarded by `if current_phase` above
+                tasks_list = current_phase["tasks"]
+                tasks_list.append(task)  # ty: ignore[unresolved-attribute]
                 i += 1
 
                 while i < len(lines) and lines[i].startswith("  - "):
@@ -993,6 +994,8 @@ def cmd_remove_task(args):
     if not task:
         die("remove-task", f"Task not found: {args.phase_id} / {args.task_id}")
 
+    assert task is not None  # guaranteed by check above
+
     # Remove dependencies pointing to this task
     for p in plan["phases"]:
         for t in p["tasks"]:
@@ -1207,8 +1210,11 @@ def cmd_check(args):
         msg = f"{len(issues)} issue(s) found" if issues else "No issues found"
         issues_out = issues
 
-    json_out(status, "check", msg,
+        json_out(status, "check", msg,
              path=plan["path"], issues=issues_out, fixed=args.fix)
+
+    if status == "error":
+        sys.exit(1)
 
 
 # Get Plan (structured output)
@@ -1370,11 +1376,13 @@ def cmd_batch(args):
     default_dir = os.path.dirname(default_abs)
 
     # Commands that are read-only (don't mutate the plan file)
+    # Note: "check" is NOT read-only — errors indicate plan integrity issues
+    # that should halt subsequent mutations. check --fix is a mutation.
     READ_ONLY_CMDS = {
         "get-plan-title", "get-plan-depends-on", "get-plan-created",
         "get-plan-updated", "get-plan-current-phase", "get-plan-current-task",
         "get-plan-status", "get-phase-status", "get-task-status",
-        "check", "get-plan",
+        "get-plan",
     }
 
     results = []
@@ -2035,7 +2043,6 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans, default_dir=No
         # get-plan (structured output, read-only)
         if cmd == "get-plan":
             mode = args[0] if args else "list"
-            fmt = args[1] if len(args) > 1 else "json"
             data = _build_plan_data(plan, mode)
             return {**result_base, "status": "success", "command": cmd,
                     "message": f"Plan: {plan['title']}", "data": data}
@@ -2286,7 +2293,6 @@ def main():
     # Normalize --now so argparse doesn't treat it as a flag
     argv = sys.argv[1:]
     normalized = []
-    skip_next = False
     for i, a in enumerate(argv):
         if a == "--now":
             # Replace with a non-flag sentinel
@@ -2309,6 +2315,7 @@ def main():
     if not handler:
         die(args.command, f"Unknown command: {args.command}")
 
+    assert handler is not None  # guaranteed by check above
     handler(args)
 
 
