@@ -1728,6 +1728,29 @@ def _make_namespace(cmd_name: str, args: list[str], path: str) -> argparse.Names
     return argparse.Namespace(**d)
 
 
+def _mark_failed_task_error(content: str, ns: argparse.Namespace) -> str:
+    """Mark a task as ❌ (Error) when set-task-status fails in batch mode.
+
+    Returns modified content so PLAN.md reflects what actually happened.
+    Only sets to ERROR if the current status allows it (always valid from ☐, ⚙️, ❓).
+    """
+    task_ref = getattr(ns, "task_ref", None)
+    if not task_ref:
+        return content
+
+    target_phase, target_task = parse_task_arg(task_ref)
+    lines = content.splitlines()
+    for i, line in enumerate(lines):
+        t = parse_task_line(line)
+        if t and t[1] == target_phase and t[2] == target_task:
+            current_status = t[0]
+            # ERROR is reachable from TODO, DOING, QUESTION — never from DONE
+            if current_status != STATUS_DONE:
+                lines[i] = format_task_line(STATUS_ERROR, t[1], t[2], t[3], t[4])
+            break
+    return "\n".join(lines)
+
+
 def cmd_batch(args: argparse.Namespace) -> dict:
     """Execute multiple plan operations on the same PLAN.md under one lock.
 
@@ -1881,12 +1904,19 @@ def cmd_batch(args: argparse.Namespace) -> dict:
                 if isinstance(res, dict):
                     results.append(res)
                     if res.get("status") == "error":
+                        # If set-task-status failed, mark the task as ❌ (Error)
+                        # so PLAN.md reflects what actually happened
+                        if cmd_name == "set-task-status" and not hit_error:
+                            content = _mark_failed_task_error(content, ns)
                         hit_error = True
                 else:
                     # Fallback for legacy handlers that don't return dicts
                     results.append(_result("success", cmd_name, ""))
             except PlanError as e:
                 results.append(_result("error", cmd_name, str(e)))
+                # If set-task-status failed, mark the task as ❌ (Error)
+                if cmd_name == "set-task-status" and not hit_error:
+                    content = _mark_failed_task_error(content, ns)
                 hit_error = True
             except Exception as e:
                 results.append(_result("error", cmd_name, f"unexpected error: {e}"))
@@ -1896,31 +1926,35 @@ def cmd_batch(args: argparse.Namespace) -> dict:
                 globals()["read_plan"] = original_read_plan
                 globals()["read_plan_raw"] = original_read_plan_raw
 
-        # Only write if no error occurred
-        if not hit_error:
-            # Touch updated timestamp after all operations
-            content = _touch_updated(path, content)
-            # Re-derive statuses
-            content = validate_status_set(content)
+        # Always write PLAN.md — successful mutations are preserved.
+        # On error, the failed task is marked ❌ and remaining steps skipped.
+        content = _touch_updated(path, content)
+        content = validate_status_set(content)
 
-            # Atomic write
-            final_content = _add_checksum(content)
-            write_plan_atomic(path, final_content)
+        # Atomic write
+        final_content = _add_checksum(content)
+        write_plan_atomic(path, final_content)
 
     finally:
         _release_lock(fd, path)
 
-    # Determine overall status
+    # Determine overall status and count results
+    success_count = sum(1 for r in results if r["status"] == "success")
+    error_count = sum(1 for r in results if r["status"] == "error")
+    skipped_count = sum(1 for r in results if r["status"] == "skipped")
+
     if hit_error:
         overall_status = "error"
+        msg = (f"Batch applied {success_count}/{len(operations)} operations to {path} "
+                f"({error_count} error(s), {skipped_count} skipped)")
     elif any(r["status"] == "warning" for r in results):
         overall_status = "warning"
+        msg = f"Batch complete: {len(operations)} operations applied to {path}"
     else:
         overall_status = "success"
+        msg = f"Batch complete: {len(operations)} operations applied to {path}"
 
-    return _result(overall_status, "batch",
-                    f"Batch complete: {len(operations)} operations applied to {path}",
-                    path=path, results=results)
+    return _result(overall_status, "batch", msg, path=path, results=results)
 
 
 # ---------------------------------------------------------------------------
@@ -2959,17 +2993,26 @@ def cmd_check(args: argparse.Namespace) -> dict:
     fix = getattr(args, "fix", False)
     exit_code, messages = check_plan(args.path, fix=fix)
 
+    # Separate warnings from errors
+    warnings = [m for m in messages if "empty-phase" in m]
+    errors = [m for m in messages if "empty-phase" not in m]
+
     if exit_code == 0:
+        # No errors — but still report warnings if any
+        if warnings:
+            return _result("warning", "check",
+                            f"OK: {args.path} passed all checks (with warnings)",
+                            path=args.path, issues=warnings)
         return _result("success", "check",
                         f"OK: {args.path} passed all checks",
                         path=args.path, issues=[])
     else:
-        status = "warning" if any("empty-phase" in m for m in messages) and not any(
-            "empty-phase" not in m for m in messages
-        ) else "error"
+        # Has errors — include warnings too
+        all_issues = errors + warnings
+        status = "warning" if not errors and warnings else "error"
         return _result(status, "check",
-                        "; ".join(messages),
-                        path=args.path, issues=messages)
+                        "; ".join(all_issues),
+                        path=args.path, issues=all_issues)
 
 
 def cmd_sort(args: argparse.Namespace) -> dict:

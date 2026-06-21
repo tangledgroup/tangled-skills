@@ -94,6 +94,8 @@ The plan emoji is **derived from its phases**, not set independently:
 
 When a plan transitions to ☑, it means every single task in every single phase is ☑. The script auto-derives the plan emoji after every edit. Do not mark the plan as completed until this condition is met.
 
+**Manual override:** `set-plan-status` and `set-phase-status` allow temporary manual overrides (e.g. marking a plan as ❓ when scope is unclear). Overrides follow the same transition rules — you cannot jump directly to ❌ from ☐; must go through ⚙️ first (`☐ → ⚙️ → ❌`). Run `check --fix` to restore derived values from actual task/phase states.
+
 ## Plan Dependencies
 
 Multiple `PLAN.md` files can exist in different locations, forming a directed acyclic graph (DAG) via the `Depends On` header field. Manage dependencies with `plan.sh set-plan-depends-on`.
@@ -151,6 +153,8 @@ A phase emoji is **derived from its tasks**, not set independently:
 - ☐ **Todo** — fallback (all tasks are ☐, or mixed ☑+☐ with no active status)
 
 The script auto-derives phase and plan emojis after every mutation. You can temporarily override with `set-plan-status` or `set-phase-status`, but `check --fix` will restore derived values.
+
+**Error propagation:** When a task reaches ❌ (Error), its phase derives to ❌, and the plan derives to ❌ if no other phase is ⚙️ or ☑. Error cascades up: Task ❌ → Phase ❌ → Plan ❌. This means a single failed task can block the entire plan status from reaching ☑.
 
 ## Phase and Task Statuses
 
@@ -215,7 +219,9 @@ There is no bulk command — call `add-task-dependency` for each individual edge
 - **Run `plan.sh check PLAN.md --fix` after any plan update** — validates checksum integrity, emoji derivation, numbering gaps, ordering, and dependency references. The `--fix` flag auto-repairs recoverable issues (wrong emojis, numbering gaps, out-of-order items). When tasks are renumbered, self-dependencies created by the rename are automatically removed.
 - **Titles must be non-empty and single-line** — empty titles, titles with newlines, or titles exceeding 2048 characters are rejected. This prevents file format corruption from multi-line entries.
 - **All subcommands output JSON** — parse the `status` field to determine success/error. Use `"success"`, `"warning"`, `"error"`, or `"skipped"` (in batch mode when a previous step failed).
-- **Batch mode rolls back on error** — if any step fails, the PLAN.md file is NOT written. Remaining steps are marked `"skipped"` and not executed. This allows safely mixing mutating and read-only operations.
+- **Batch mode preserves successful mutations on error** — if any step fails, PLAN.md IS written with all successful changes applied up to that point. If the failed command is `set-task-status`, the task is marked ❌ (Error) so you can see what happened. Remaining steps are marked `"skipped"` and not executed.
+- **Error propagates up through the hierarchy** — a single task at ❌ causes its phase to derive as ❌, which can cause the entire plan to derive as ❌. To unblock the plan, resolve the error task (`❌ → ⚙️ → ☑`) or mark it as done if the error was a false alarm.
+- **Direct status overrides require valid transitions** — `set-plan-status` and `set-phase-status` follow the same transition rules as tasks. You cannot jump directly from ☐ to ❌; must go through ⚙️ first (`☐ → ⚙️ → ❌`). Use `check --fix` to restore auto-derived values.
 
 ## Dependencies
 
@@ -235,9 +241,9 @@ Every subcommand outputs valid JSON to stdout with these fields:
 
 On error, exit code is 1. On success or warning, exit code is 0.
 
-### Batch Mode — Skip on Error
+### Batch Mode — Preserve Mutations, Mark Errors
 
-In batch mode, if any step returns `"error"`, all remaining steps are marked as `"skipped"` and not executed. This allows mixing mutating and read-only operations in the same batch. The overall batch status reflects the first error encountered.
+In batch mode, if any step returns `"error"`, all remaining steps are marked as `"skipped"` and not executed. Successful mutations are preserved and written to PLAN.md. If the failed step is `set-task-status`, the task is automatically marked ❌ (Error) so the plan reflects what actually happened. This allows mixing mutating and read-only operations in the same batch.
 
 ```bash
 #
@@ -389,5 +395,6 @@ plan.sh get-plan PLAN.md --tree --yaml   # nested tree, YAML
 #
 # Output is a JSON object with "status" and "results" array.
 # If any step fails ("error"), remaining steps are marked "skipped".
-# On error, the PLAN.md file is NOT written (rollback).
+# PLAN.md IS written with all successful mutations applied.
+# If the failed step is set-task-status, the task is marked ❌ (Error).
 ```
