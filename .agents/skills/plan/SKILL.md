@@ -28,7 +28,8 @@ Five status emojis are used across plan, phase, and task levels:
 - `☐ → ⚙️` — start working · `☐ → ❓` — need clarification first
 - `⚙️ → ☑` — completed · `⚙️ → ❓` — unexpected question arose
 - `⚙️ → ❌` — error blocked progress
-- `❓ → ⚙️` — resolved, resume · `❓ → ❌` — blocker discovered (bypasses ⚙️)
+- `❓ → ⚙️` — resolved, resume
+- `❓ → ❌` — blocker discovered (bypasses ⚙️)
 - `❌ → ⚙️` — retry · `❌ → ❓` — need help
 
 ⚙️ is always required before ☑ — you cannot skip directly to Done.
