@@ -355,14 +355,24 @@ plan.sh get-plan PLAN.md --tree --json   # nested tree, JSON
 plan.sh get-plan PLAN.md --tree --yaml   # nested tree, YAML
 
 #
-# batch — chain multiple operations under a single lock
+# batch — chain multiple operations, supports multi-plan workflows
 # Reads commands from stdin or a file (--input FILE). Mode auto-detected from
 # file extension: .txt/.md → line mode, .json → JSON mode. Use --json to force.
+#
+# Multi-plan: each step can target a different PLAN.md.
+#   JSON mode: add "plan_path": "other/PLAN.md" to any step object.
+#   Line mode:  append @other/PLAN.md at end of the line.
+#   Default fallback is the path argument passed to `batch`.
 #
 # Line mode (stdin):
 #   echo 'create "My Project"
 #   add-phase "Phase 1" "Planning"
 #   add-task "Phase 1" "Task 1.1" "Define scope"' | plan.sh batch PLAN.md
+#
+# Line mode with @path override per step:
+#   echo 'create "Plan A" @plan_a.md
+#   create "Plan B" @plan_b.md
+#   set-task-status "Phase 1" "Task 1.1" ⚙️ @plan_a.md' | plan.sh batch PLAN.md
 #
 # Line mode (.txt or .md file):
 #   plan.sh batch --input commands.txt PLAN.md
@@ -372,18 +382,23 @@ plan.sh get-plan PLAN.md --tree --yaml   # nested tree, YAML
 #   echo '[{"command":"create","args":["My Project"]},'
 #   '{"command":"add-phase","args":["Phase 1","Planning"]}]' | plan.sh batch --json PLAN.md
 #
+# JSON mode with plan_path per step:
+#   echo '[{"command":"create","args":["A"],"plan_path":"a.md"},'
+#   '{"command":"create","args":["B"],"plan_path":"b.md"}]' | plan.sh batch --json PLAN.md
+#
 # JSON mode (.json file, auto-detected):
 #   plan.sh batch --input commands.json PLAN.md
 #
 # Force JSON mode on non-.json file:
 #   plan.sh batch --input commands.txt --json PLAN.md
 #
-# Both modes produce identical output. All mutating commands are supported.
+# All mutating and read-only commands are supported. Every result includes
+# a "path" field showing which PLAN.md the step operated on.
 # Lines starting with # are treated as comments (line mode only).
 #
 # Output is a JSON object with "status" and "results" array.
 # If any step fails ("error"), remaining steps are marked "skipped".
-# PLAN.md IS written with all successful mutations applied.
+# All mutated plans are written at the end with successful changes applied.
 # If the failed step is set-task-status, the task is marked ❌ (Error).
 ```
 
@@ -396,6 +411,7 @@ plan.sh get-plan PLAN.md --tree --yaml   # nested tree, YAML
 - **Run `plan.sh check PLAN.md --fix` after any plan update** — validates checksum integrity, emoji derivation, numbering gaps, ordering, and dependency references. The `--fix` flag auto-repairs recoverable issues (wrong emojis, numbering gaps, out-of-order items, dangling dependency references). When tasks are renumbered, self-dependencies created by the rename are automatically removed.
 - **Titles must be non-empty and single-line** — empty titles, titles with newlines, or titles exceeding 2048 characters are rejected. This prevents file format corruption from multi-line entries.
 - **All subcommands output JSON** — parse the `status` field to determine success/error. Use `"success"`, `"warning"`, `"error"`, or `"skipped"` (in batch mode when a previous step failed).
-- **Batch mode preserves successful mutations on error** — if any step fails, PLAN.md IS written with all successful changes applied up to that point. If the failed command is `set-task-status`, the task is marked ❌ (Error) so you can see what happened. Remaining steps are marked `"skipped"` and not executed.
+- **Batch mode preserves successful mutations on error** — if any step fails, all affected PLAN.md files are written with successful changes applied up to that point. If the failed command is `set-task-status`, the task is marked ❌ (Error) so you can see what happened. Remaining steps are marked `"skipped"` and not executed.
+- **Batch mode supports multi-plan workflows** — each step can target a different PLAN.md. In JSON mode use `"plan_path"` per step; in line mode append `@path` at end of the line. Each result includes a `"path"` field showing which plan was operated on.
 - **Error propagates up through the hierarchy** — a single task at ❌ causes its phase to derive as ❌, which can cause the entire plan to derive as ❌. To unblock the plan, resolve the error task (`❌ → ⚙️ → ☑`) or mark it as done if the error was a false alarm.
 - **Direct status overrides require valid transitions** — `set-plan-status` and `set-phase-status` follow transition rules. Tasks and phases cannot jump from ☐ to ❌ (must go through ⚙️ first: `☐ → ⚙️ → ❌`). Plan-level transitions additionally allow ❓ → ❌ (discovered a blocker during clarification). Use `check --fix` to restore auto-derived values.

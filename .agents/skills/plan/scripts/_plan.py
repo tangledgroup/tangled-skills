@@ -31,17 +31,7 @@ VALID_TASK_TRANSITIONS = {
     (EMOJI_ERROR, EMOJI_QUESTION),
 }
 
-VALID_PLAN_TRANSITIONS = VALID_TASK_TRANSITIONS | {
-    (EMOJI_TODO, EMOJI_DOING),
-    (EMOJI_TODO, EMOJI_QUESTION),
-    (EMOJI_DOING, EMOJI_QUESTION),
-    (EMOJI_DOING, EMOJI_ERROR),
-    (EMOJI_DOING, EMOJI_DONE),
-    (EMOJI_QUESTION, EMOJI_DOING),
-    (EMOJI_QUESTION, EMOJI_ERROR),
-    (EMOJI_ERROR, EMOJI_DOING),
-    (EMOJI_ERROR, EMOJI_QUESTION),
-}
+VALID_PLAN_TRANSITIONS = VALID_TASK_TRANSITIONS.copy()
 
 SEPARATOR = "\u2796"  # ➖
 ANCHOR = "\u2693"     # ⚓
@@ -676,14 +666,14 @@ def cmd_set_task_status(args):
 
     task["emoji"] = new
 
-    # Update current tracking
+    # Re-derive first so emojis are current
+    rederive_all(plan)
+
+    # Update current tracking (after rederive so phase emoji is fresh)
     if new == EMOJI_DOING:
         phase = find_phase(plan, args.phase_id)
         plan["current_phase"] = f"{phase['emoji']} {phase['id']}" if phase else args.phase_id
         plan["current_task"] = f"{new} {task['id']}"
-
-    # Re-derive
-    rederive_all(plan)
     plan["updated"] = now_iso()
     write_plan(plan)
     json_out("success", "set-task-status", f"Task {task['id']} status set to {new}", value=new, path=plan["path"], phase=args.phase_id, task=task["id"])
@@ -1037,9 +1027,53 @@ def cmd_check(args):
 
     # Auto-fix
     if args.fix:
+        # Fix 1: Emoji derivation
         for phase in plan["phases"]:
             phase["emoji"] = derive_phase_emoji(phase["tasks"])
         plan["emoji"] = derive_plan_emoji(plan["phases"])
+
+        # Fix 2: Renumber phases sequentially
+        for i, phase in enumerate(plan["phases"]):
+            old_id = phase["id"]
+            new_id = f"Phase {i + 1}"
+            if old_id != new_id:
+                phase["id"] = new_id
+                # Update cross-phase dependency references
+                for p in plan["phases"]:
+                    for t in p["tasks"]:
+                        t["dependencies"] = [
+                            d.replace(old_id, new_id) for d in t["dependencies"]
+                        ]
+
+        # Fix 3: Renumber tasks within each phase sequentially
+        for phase in plan["phases"]:
+            pnum = parse_phase_id(phase["id"])
+            phase["tasks"].sort(key=lambda t: parse_task_id(t["id"])[1] or 0)
+            for i, task in enumerate(phase["tasks"]):
+                old_id = task["id"]
+                new_id = f"Task {pnum}.{i + 1}"
+                if old_id != new_id:
+                    task["id"] = new_id
+                    # Update dependency references across all tasks
+                    for p in plan["phases"]:
+                        for t in p["tasks"]:
+                            t["dependencies"] = [
+                                d.replace(old_id, new_id) for d in t["dependencies"]
+                            ]
+                    # Remove self-dependencies created by rename
+                    task["dependencies"] = [
+                        d for d in task["dependencies"]
+                        if d != new_id and d != f"{phase['id']} - {new_id}"
+                    ]
+
+        # Fix 4: Remove dangling dependencies
+        for phase in plan["phases"]:
+            for task in phase["tasks"]:
+                task["dependencies"] = [
+                    d for d in task["dependencies"]
+                    if _resolve_dep_task(plan, task, d) is not None
+                ]
+
         plan["updated"] = now_iso()
         write_plan(plan)
 
@@ -1154,9 +1188,12 @@ def _to_yaml(obj, indent=0):
 
 
 # ── Batch Mode ──────────────────────────────────────────────────────────────
+# Multi-plan aware: each step can target a different PLAN.md.
+# JSON mode: {"command": "...", "args": [...], "plan_path": "..."}
+# Line mode:  command arg1 arg2 ... [@path]   — trailing @path overrides default
 
 def cmd_batch(args):
-    path = args.path
+    default_path = args.path
     use_json = getattr(args, "json_mode", False)
     input_file = getattr(args, "input", None)
 
@@ -1174,10 +1211,13 @@ def cmd_batch(args):
     else:
         steps = _parse_line_batch(raw)
 
+    # plan_cache: abs_path -> plan dict (in-memory, dirty if mutated)
+    plan_cache = {}
+    # Set of abs_paths that have mutations pending write
+    dirty_plans = set()
+
     results = []
     has_error = False
-    plan_holder = [None]  # mutable container so _execute_batch_step can update it
-    mutations = []  # collect all successful mutations
 
     for step in steps:
         if has_error:
@@ -1190,23 +1230,20 @@ def cmd_batch(args):
 
         cmd = step["command"]
         cmd_args = step.get("args", [])
-        effective_path = path
+        step_path = step.get("plan_path") or default_path
 
         try:
-            result = _execute_batch_step(cmd, cmd_args, effective_path, plan_holder)
-            # Update plan reference if create returned a new plan
-            new_plan = result.pop("__plan", None)
-            if new_plan:
-                plan_holder[0] = new_plan
+            result = _execute_batch_step(cmd, cmd_args, step_path, plan_cache, dirty_plans)
             is_mutation = result.pop("_mutation", False)
             results.append(result)
             if result["status"] == "error":
                 has_error = True
                 # If failed step is set-task-status, mark task as ❌
-                if cmd == "set-task-status" and plan_holder[0]:
-                    _mark_task_error(plan_holder[0], cmd_args, effective_path)
+                if cmd == "set-task-status":
+                    _mark_task_error_batch(cmd_args, step_path, plan_cache)
             elif is_mutation:
-                mutations.append(True)
+                abs_p = os.path.abspath(step_path)
+                dirty_plans.add(abs_p)
         except SystemExit:
             has_error = True
             results.append({
@@ -1215,37 +1252,46 @@ def cmd_batch(args):
                 "message": f"Command {cmd} failed",
             })
 
-    # Write plan if we have mutations and plan exists
-    if mutations and plan_holder[0]:
-        write_plan(plan_holder[0])
+    # Write all dirty plans
+    for abs_p in dirty_plans:
+        if abs_p in plan_cache:
+            write_plan(plan_cache[abs_p])
 
     overall = "success" if not has_error else "error"
-    out = {"status": overall, "command": "batch", "results": results, "path": effective_path}
+    out = {"status": overall, "command": "batch", "results": results, "path": default_path}
     print(json.dumps(out, ensure_ascii=False), flush=True)
 
 
 def _parse_line_batch(raw):
-    """Parse line-mode batch input."""
+    """Parse line-mode batch input. Trailing @path overrides default plan."""
     steps = []
     for line in raw.split("\n"):
         line = line.strip()
         if not line or line.startswith("#"):
             continue
         parts = shlex_split(line)
+        if not parts:
+            continue
         cmd = parts[0]
-        args = parts[1:]
-        steps.append({"command": cmd, "args": args})
+        rest = parts[1:]
+        # Check for trailing @path override
+        plan_path = None
+        if rest and rest[-1].startswith("@"):
+            plan_path = rest[-1][1:]  # strip @
+            rest = rest[:-1]
+        steps.append({"command": cmd, "args": rest, "plan_path": plan_path})
     return steps
 
 
 def _parse_json_batch(raw):
-    """Parse JSON-mode batch input."""
+    """Parse JSON-mode batch input. Optional 'plan_path' per step."""
     data = json.loads(raw)
     steps = []
     for item in data:
         cmd = item.get("command", "")
         args = item.get("args", [])
-        steps.append({"command": cmd, "args": args})
+        pp = item.get("plan_path", None)
+        steps.append({"command": cmd, "args": args, "plan_path": pp})
     return steps
 
 
@@ -1278,17 +1324,31 @@ def shlex_split(line):
     return parts
 
 
-def _execute_batch_step(cmd, args, path, plan_holder):
-    """Execute a single batch step, reusing the parsed plan if available."""
+def _get_plan(path, plan_cache):
+    """Get or load a plan from cache."""
+    abs_p = os.path.abspath(path)
+    if abs_p not in plan_cache:
+        plan_cache[abs_p] = parse_plan(path)
+    return plan_cache[abs_p]
+
+
+def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
+    """Execute a single batch step with multi-plan support."""
+    abs_path = os.path.abspath(path)
+    result_base = {"path": abs_path}
+
     try:
-        # create is special — doesn't need existing plan
+        # ── create: doesn't need existing plan ─────────────────────────
         if cmd == "create":
             title = args[0] if args else ""
+            ok, msg = validate_title(title)
+            if not ok:
+                return {**result_base, "status": "error", "command": cmd, "message": msg}
             deps = "NONE"
             if len(args) > 1:
                 deps = ", ".join(args[1:])
             plan_obj = {
-                "path": os.path.abspath(path),
+                "path": abs_path,
                 "emoji": EMOJI_TODO,
                 "title": title,
                 "depends_on": deps,
@@ -1299,15 +1359,216 @@ def _execute_batch_step(cmd, args, path, plan_holder):
                 "phases": [],
                 "raw_checksum": None,
             }
+            plan_cache[abs_path] = plan_obj
             write_plan(plan_obj)
-            return {"status": "success", "command": cmd, "message": f"Created plan: {title}", "_mutation": True, "__plan": plan_obj}
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Created plan: {title}", "_mutation": True}
 
-        # For batch mode, we operate on the in-memory plan directly
-        plan = plan_holder[0]
-        if plan is None:
-            plan = parse_plan(path)
-            plan_holder[0] = plan
+        # ── All other commands need an existing plan ───────────────────
+        plan = _get_plan(path, plan_cache)
 
+        # ── Header reads (read-only, no mutation) ─────────────────────
+        if cmd == "get-plan-title":
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": plan["title"], "value": plan["title"]}
+        if cmd == "get-plan-depends-on":
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": plan["depends_on"], "value": plan["depends_on"]}
+        if cmd == "get-plan-created":
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": plan["created"], "value": plan["created"]}
+        if cmd == "get-plan-updated":
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": plan["updated"], "value": plan["updated"]}
+        if cmd == "get-plan-current-phase":
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": plan["current_phase"], "value": plan["current_phase"]}
+        if cmd == "get-plan-current-task":
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": plan["current_task"], "value": plan["current_task"]}
+
+        # ── Status reads (read-only) ──────────────────────────────────
+        if cmd == "get-plan-status":
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": plan["emoji"], "value": plan["emoji"]}
+        if cmd == "get-phase-status":
+            phase = find_phase(plan, args[0]) if args else None
+            if not phase:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Phase not found: {args[0] if args else '?'}"}
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": phase["emoji"], "value": phase["emoji"], "phase": phase["id"]}
+        if cmd == "get-task-status":
+            if len(args) < 2:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id or task_id"}
+            task = find_task(plan, args[0], args[1])
+            if not task:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Task not found: {args[0]} / {args[1]}"}
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": task["emoji"], "value": task["emoji"],
+                    "phase": args[0], "task": task["id"]}
+
+        # ── Header writes ─────────────────────────────────────────────
+        if cmd == "set-plan-title":
+            new_title = args[0] if args else ""
+            ok, msg = validate_title(new_title)
+            if not ok:
+                return {**result_base, "status": "error", "command": cmd, "message": msg}
+            plan["title"] = new_title
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Title set to: {new_title}", "_mutation": True}
+
+        if cmd == "set-plan-depends-on":
+            deps = args if args else ["NONE"]
+            if deps == ["NONE"]:
+                plan["depends_on"] = "NONE"
+            else:
+                # Self-reference check
+                for dep_path in deps:
+                    if os.path.abspath(dep_path) == abs_path:
+                        return {**result_base, "status": "error", "command": cmd,
+                                "message": "Cannot depend on itself"}
+                plan["depends_on"] = ", ".join(deps)
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Dependencies set to: {plan['depends_on']}", "_mutation": True}
+
+        if cmd == "set-plan-created":
+            val = args[0] if args else "__NOW__"
+            if val == "__NOW__":
+                val = now_iso()
+            plan["created"] = val
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Created set to: {val}", "_mutation": True}
+
+        if cmd == "set-plan-updated":
+            val = args[0] if args else "__NOW__"
+            if val == "__NOW__":
+                val = now_iso()
+            plan["updated"] = val
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Updated set to: {val}", "_mutation": True}
+
+        if cmd == "set-plan-current-phase":
+            if not args:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id"}
+            phase = find_phase(plan, args[0])
+            if not phase:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Phase not found: {args[0]}"}
+            plan["current_phase"] = f"{phase['emoji']} {phase['id']}"
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Current phase set to: {plan['current_phase']}", "_mutation": True}
+
+        if cmd == "set-plan-current-task":
+            if len(args) < 2:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id or task_id"}
+            task = find_task(plan, args[0], args[1])
+            if not task:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Task not found: {args[0]} / {args[1]}"}
+            plan["current_task"] = f"{task['emoji']} {task['id']}"
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Current task set to: {plan['current_task']}", "_mutation": True}
+
+        # ── Status writes ─────────────────────────────────────────────
+        if cmd == "set-all-statuses":
+            emoji = args[0] if args else EMOJI_TODO
+            if emoji not in ALL_EMOJI:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Invalid emoji: {emoji}"}
+            plan["emoji"] = emoji
+            for phase in plan["phases"]:
+                phase["emoji"] = emoji
+                for task in phase["tasks"]:
+                    task["emoji"] = emoji
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"All statuses set to {emoji}", "_mutation": True}
+
+        if cmd == "set-plan-status":
+            emoji = args[0] if args else EMOJI_DOING
+            if emoji not in ALL_EMOJI:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Invalid emoji: {emoji}"}
+            old = plan["emoji"]
+            if old != emoji and (old, emoji) not in VALID_PLAN_TRANSITIONS:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Invalid transition: {old} -> {emoji}"}
+            plan["emoji"] = emoji
+            rederive_all(plan)
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Plan -> {emoji}", "_mutation": True}
+
+        if cmd == "set-phase-status":
+            if not args:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id"}
+            phase = find_phase(plan, args[0])
+            if not phase:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Phase not found: {args[0]}"}
+            emoji = args[1] if len(args) > 1 else EMOJI_DOING
+            if emoji not in ALL_EMOJI:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Invalid emoji: {emoji}"}
+            old = phase["emoji"]
+            if old != emoji and (old, emoji) not in VALID_TASK_TRANSITIONS:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Invalid transition: {old} -> {emoji}"}
+            phase["emoji"] = emoji
+            rederive_all(plan)
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Phase {phase['id']} -> {emoji}", "_mutation": True}
+
+        if cmd == "set-task-status":
+            if len(args) < 2:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id or task_id"}
+            task = find_task(plan, args[0], args[1])
+            if not task:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Task not found: {args[0]} / {args[1]}"}
+            emoji = args[2] if len(args) > 2 else EMOJI_DOING
+            if emoji not in ALL_EMOJI:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Invalid emoji: {emoji}"}
+            old = task["emoji"]
+            if old != emoji and (old, emoji) not in VALID_TASK_TRANSITIONS:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Invalid transition: {old} -> {emoji}"}
+            # Check dependencies before ⚙️
+            if emoji == EMOJI_DOING:
+                unsatisfied = []
+                for dep in task["dependencies"]:
+                    dep_task = _resolve_dep_task(plan, task, dep)
+                    if dep_task and dep_task["emoji"] != EMOJI_DONE:
+                        unsatisfied.append(dep)
+                if unsatisfied:
+                    return {**result_base, "status": "error", "command": cmd,
+                            "message": f"Unmet dependencies: {', '.join(unsatisfied)}"}
+            task["emoji"] = emoji
+            rederive_all(plan)
+            # Update current tracking after rederive
+            if emoji == EMOJI_DOING:
+                phase = find_phase(plan, args[0])
+                plan["current_phase"] = f"{phase['emoji']} {phase['id']}" if phase else args[0]
+                plan["current_task"] = f"{emoji} {task['id']}"
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Task {task['id']} -> {emoji}", "_mutation": True}
+
+        # ── Phase CRUD ────────────────────────────────────────────────
         if cmd == "add-phase":
             phase_id = args[0] if args else ""
             title = args[1] if len(args) > 1 else ""
@@ -1317,207 +1578,245 @@ def _execute_batch_step(cmd, args, path, plan_holder):
                 phase_id = f"Phase {next_phase_number(plan)}"
             elif not title:
                 title = phase_id
+            ok, msg = validate_title(title)
+            if not ok:
+                return {**result_base, "status": "error", "command": cmd, "message": msg}
             for p in plan["phases"]:
                 if p["id"] == phase_id:
-                    return {"status": "error", "command": cmd, "message": f"Phase already exists: {phase_id}"}
+                    return {**result_base, "status": "error", "command": cmd,
+                            "message": f"Phase already exists: {phase_id}"}
             plan["phases"].append({
-                "emoji": EMOJI_TODO,
-                "id": phase_id,
-                "title": title,
-                "tasks": [],
+                "emoji": EMOJI_TODO, "id": phase_id, "title": title, "tasks": []
             })
             rederive_all(plan)
             plan["updated"] = now_iso()
-            return {"status": "success", "command": cmd, "message": f"Added {phase_id}: {title}", "_mutation": True}
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Added {phase_id}: {title}", "_mutation": True}
 
-        elif cmd == "add-task":
-            phase_ref = args[0] if args else ""
+        if cmd == "update-phase":
+            phase = find_phase(plan, args[0]) if args else None
+            if not phase:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Phase not found: {args[0] if args else '?'}"}
+            if len(args) > 1:
+                ok, msg = validate_title(args[1])
+                if not ok:
+                    return {**result_base, "status": "error", "command": cmd, "message": msg}
+                phase["title"] = args[1]
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Updated {phase['id']}", "_mutation": True}
+
+        if cmd == "remove-phase":
+            phase = find_phase(plan, args[0]) if args else None
+            if not phase:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Phase not found: {args[0] if args else '?'}"}
+            # Remove cross-phase deps pointing to this phase's tasks
+            for p in plan["phases"]:
+                if p["id"] == phase["id"]:
+                    continue
+                for t in p["tasks"]:
+                    t["dependencies"] = [
+                        d for d in t["dependencies"]
+                        if not re.match(rf"{re.escape(phase['id'])}\s*-\s*", d)
+                    ]
+            plan["phases"].remove(phase)
+            if plan["current_phase"].startswith(phase["id"]):
+                plan["current_phase"] = "NONE"
+            for t in phase["tasks"]:
+                if plan["current_task"].startswith(t["id"]):
+                    plan["current_task"] = "NONE"
+            rederive_all(plan)
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Removed {phase['id']}", "_mutation": True}
+
+        # ── Task CRUD ─────────────────────────────────────────────────
+        if cmd == "add-task":
+            if not args:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id"}
+            phase = find_phase(plan, args[0])
+            if not phase:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Phase not found: {args[0]}"}
             task_id = args[1] if len(args) > 1 else None
             title = args[2] if len(args) > 2 else ""
-            phase = find_phase(plan, phase_ref)
-            if not phase:
-                return {"status": "error", "command": cmd, "message": f"Phase not found: {phase_ref}"}
             if task_id:
-                tnum = parse_task_id(task_id)
-                if tnum[0] is None:
+                tn = parse_task_id(task_id)
+                if tn[0] is None:
                     title = f"{task_id} {title}".strip()
                     task_id = None
             if not task_id:
                 pn = parse_phase_id(phase["id"])
                 tn = next_task_number(phase)
                 task_id = f"Task {pn}.{tn}"
+            ok, msg = validate_title(title)
+            if not ok:
+                return {**result_base, "status": "error", "command": cmd, "message": msg}
+            for t in phase["tasks"]:
+                if t["id"] == task_id:
+                    return {**result_base, "status": "error", "command": cmd,
+                            "message": f"Task already exists: {task_id}"}
             phase["tasks"].append({
-                "emoji": EMOJI_TODO,
-                "id": task_id,
-                "title": title.strip(),
-                "dependencies": [],
-                "sub_bullets": [],
+                "emoji": EMOJI_TODO, "id": task_id, "title": title.strip(),
+                "dependencies": [], "sub_bullets": []
             })
             rederive_all(plan)
             plan["updated"] = now_iso()
-            return {"status": "success", "command": cmd, "message": f"Added {task_id}: {title}", "_mutation": True}
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Added {task_id}: {title.strip()}", "_mutation": True}
 
-        elif cmd == "set-task-status":
-            phase_ref = args[0] if args else ""
-            task_ref = args[1] if len(args) > 1 else ""
-            emoji = args[2] if len(args) > 2 else EMOJI_DOING
-            task = find_task(plan, phase_ref, task_ref)
+        if cmd == "update-task":
+            if len(args) < 2:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id or task_id"}
+            task = find_task(plan, args[0], args[1])
             if not task:
-                return {"status": "error", "command": cmd, "message": f"Task not found: {phase_ref} / {task_ref}"}
-            old = task["emoji"]
-            if old != emoji and (old, emoji) not in VALID_TASK_TRANSITIONS:
-                return {"status": "error", "command": cmd, "message": f"Invalid transition: {old} -> {emoji}"}
-            task["emoji"] = emoji
-            rederive_all(plan)
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Task not found: {args[0]} / {args[1]}"}
+            if len(args) > 2:
+                ok, msg = validate_title(args[2])
+                if not ok:
+                    return {**result_base, "status": "error", "command": cmd, "message": msg}
+                task["title"] = args[2]
             plan["updated"] = now_iso()
-            return {"status": "success", "command": cmd, "message": f"Task {task['id']} -> {emoji}", "_mutation": True}
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Updated {task['id']}", "_mutation": True}
 
-        elif cmd == "set-phase-status":
-            phase_ref = args[0] if args else ""
-            emoji = args[1] if len(args) > 1 else EMOJI_DOING
-            phase = find_phase(plan, phase_ref)
+        if cmd == "remove-task":
+            if len(args) < 2:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id or task_id"}
+            phase = find_phase(plan, args[0])
             if not phase:
-                return {"status": "error", "command": cmd, "message": f"Phase not found: {phase_ref}"}
-            phase["emoji"] = emoji
-            rederive_all(plan)
-            plan["updated"] = now_iso()
-            return {"status": "success", "command": cmd, "message": f"Phase {phase['id']} -> {emoji}", "_mutation": True}
-
-        elif cmd == "set-plan-status":
-            emoji = args[0] if args else EMOJI_DOING
-            plan["emoji"] = emoji
-            plan["updated"] = now_iso()
-            return {"status": "success", "command": cmd, "message": f"Plan -> {emoji}", "_mutation": True}
-
-        elif cmd == "add-task-dependency":
-            phase_ref = args[0] if args else ""
-            task_ref = args[1] if len(args) > 1 else ""
-            dep = args[2] if len(args) > 2 else ""
-            task = find_task(plan, phase_ref, task_ref)
-            if not task:
-                return {"status": "error", "command": cmd, "message": f"Task not found: {phase_ref} / {task_ref}"}
-            if dep not in task["dependencies"]:
-                task["dependencies"].append(dep)
-            rederive_all(plan)
-            plan["updated"] = now_iso()
-            return {"status": "success", "command": cmd, "message": f"Added dep '{dep}' to {task['id']}", "_mutation": True}
-
-        elif cmd == "remove-task-dependency":
-            phase_ref = args[0] if args else ""
-            task_ref = args[1] if len(args) > 1 else ""
-            dep = args[2] if len(args) > 2 else ""
-            task = find_task(plan, phase_ref, task_ref)
-            if not task:
-                return {"status": "error", "command": cmd, "message": f"Task not found: {phase_ref} / {task_ref}"}
-            if dep in task["dependencies"]:
-                task["dependencies"].remove(dep)
-            rederive_all(plan)
-            plan["updated"] = now_iso()
-            return {"status": "success", "command": cmd, "message": f"Removed dep '{dep}' from {task['id']}", "_mutation": True}
-
-        elif cmd == "remove-phase":
-            phase_ref = args[0] if args else ""
-            phase = find_phase(plan, phase_ref)
-            if not phase:
-                return {"status": "error", "command": cmd, "message": f"Phase not found: {phase_ref}"}
-            plan["phases"].remove(phase)
-            rederive_all(plan)
-            plan["updated"] = now_iso()
-            return {"status": "success", "command": cmd, "message": f"Removed {phase['id']}", "_mutation": True}
-
-        elif cmd == "remove-task":
-            phase_ref = args[0] if args else ""
-            task_ref = args[1] if len(args) > 1 else ""
-            phase = find_phase(plan, phase_ref)
-            if not phase:
-                return {"status": "error", "command": cmd, "message": f"Phase not found: {phase_ref}"}
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Phase not found: {args[0]}"}
             task = None
             for t in phase["tasks"]:
-                if t["id"] == task_ref:
+                if t["id"] == args[1]:
                     task = t
                     break
             if not task:
-                return {"status": "error", "command": cmd, "message": f"Task not found: {phase_ref} / {task_ref}"}
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Task not found: {args[0]} / {args[1]}"}
+            # Remove deps pointing to this task
+            for p in plan["phases"]:
+                for t in p["tasks"]:
+                    t["dependencies"] = [
+                        d for d in t["dependencies"]
+                        if d != task["id"] and d != f"{phase['id']} - {task['id']}"
+                    ]
             phase["tasks"].remove(task)
+            if plan["current_task"].startswith(task["id"]):
+                plan["current_task"] = "NONE"
             rederive_all(plan)
             plan["updated"] = now_iso()
-            return {"status": "success", "command": cmd, "message": f"Removed {task['id']}", "_mutation": True}
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Removed {task['id']}", "_mutation": True}
 
-        elif cmd == "sort":
+        # ── Task Dependencies ─────────────────────────────────────────
+        if cmd == "add-task-dependency":
+            if len(args) < 3:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id, task_id, or dependency"}
+            task = find_task(plan, args[0], args[1])
+            if not task:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Task not found: {args[0]} / {args[1]}"}
+            dep = args[2]
+            if dep in task["dependencies"]:
+                return {**result_base, "status": "warning", "command": cmd,
+                        "message": f"Dependency already exists: {dep}"}
+            # Cycle detection
+            if detect_cycle(plan, args[0], args[1], dep):
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Adding dependency '{dep}' would create a cycle"}
+            task["dependencies"].append(dep)
+            rederive_all(plan)
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Added dependency '{dep}' to {task['id']}", "_mutation": True}
+
+        if cmd == "remove-task-dependency":
+            if len(args) < 3:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": "Missing phase_id, task_id, or dependency"}
+            task = find_task(plan, args[0], args[1])
+            if not task:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Task not found: {args[0]} / {args[1]}"}
+            dep = args[2]
+            if dep not in task["dependencies"]:
+                return {**result_base, "status": "error", "command": cmd,
+                        "message": f"Dependency not found: {dep}"}
+            task["dependencies"].remove(dep)
+            rederive_all(plan)
+            plan["updated"] = now_iso()
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Removed dependency '{dep}' from {task['id']}", "_mutation": True}
+
+        # ── Utility commands ──────────────────────────────────────────
+        if cmd == "sort":
             plan["phases"].sort(key=lambda p: parse_phase_id(p["id"]) or 0)
             for phase in plan["phases"]:
                 phase["tasks"].sort(key=lambda t: parse_task_id(t["id"])[1] or 0)
             rederive_all(plan)
             plan["updated"] = now_iso()
-            return {"status": "success", "command": cmd, "message": "Sorted", "_mutation": True}
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": "Phases and tasks sorted", "_mutation": True}
 
-        elif cmd == "check":
+        if cmd == "check":
             issues = []
+            # Emoji derivation
             for phase in plan["phases"]:
                 expected = derive_phase_emoji(phase["tasks"])
                 if phase["emoji"] != expected:
                     issues.append(("warning", f"Phase {phase['id']} emoji mismatch"))
-            return {"status": "success" if not issues else "warning", "command": cmd, "message": f"{len(issues)} issue(s)", "issues": issues}
-
-        elif cmd == "update-phase":
-            phase_ref = args[0] if args else ""
-            new_title = args[1] if len(args) > 1 else None
-            phase = find_phase(plan, phase_ref)
-            if not phase:
-                return {"status": "error", "command": cmd, "message": f"Phase not found: {phase_ref}"}
-            if new_title:
-                phase["title"] = new_title
-            plan["updated"] = now_iso()
-            return {"status": "success", "command": cmd, "message": f"Updated {phase['id']}", "_mutation": True}
-
-        elif cmd == "update-task":
-            phase_ref = args[0] if args else ""
-            task_ref = args[1] if len(args) > 1 else ""
-            new_title = args[2] if len(args) > 2 else None
-            task = find_task(plan, phase_ref, task_ref)
-            if not task:
-                return {"status": "error", "command": cmd, "message": f"Task not found: {phase_ref} / {task_ref}"}
-            if new_title:
-                task["title"] = new_title
-            plan["updated"] = now_iso()
-            return {"status": "success", "command": cmd, "message": f"Updated {task['id']}", "_mutation": True}
-
-        elif cmd == "set-plan-title":
-            new_title = args[0] if args else ""
-            plan["title"] = new_title
-            plan["updated"] = now_iso()
-            return {"status": "success", "command": cmd, "message": f"Title set to: {new_title}", "_mutation": True}
-
-        elif cmd == "set-plan-depends-on":
-            deps = args if args else ["NONE"]
-            plan["depends_on"] = ", ".join(deps)
-            plan["updated"] = now_iso()
-            return {"status": "success", "command": cmd, "message": f"Dependencies set to: {plan['depends_on']}", "_mutation": True}
-
-        elif cmd == "set-all-statuses":
-            emoji = args[0] if args else EMOJI_TODO
-            plan["emoji"] = emoji
+            expected_plan = derive_plan_emoji(plan["phases"])
+            if plan["emoji"] != expected_plan:
+                issues.append(("warning", "Plan emoji mismatch"))
+            # Numbering gaps
+            phase_nums = [parse_phase_id(p["id"]) for p in plan["phases"]]
+            for i, n in enumerate(phase_nums):
+                if n and n != i + 1:
+                    issues.append(("warning", f"Phase numbering gap: expected Phase {i+1}, found {plan['phases'][i]['id']}"))
             for phase in plan["phases"]:
-                phase["emoji"] = emoji
+                pnum = parse_phase_id(phase["id"])
+                task_nums = [parse_task_id(t["id"])[1] for t in phase["tasks"]]
+                for i, n in enumerate(task_nums):
+                    if n and n != i + 1:
+                        issues.append(("warning", f"Task numbering gap in {phase['id']}"))
+            # Dangling deps
+            for phase in plan["phases"]:
                 for task in phase["tasks"]:
-                    task["emoji"] = emoji
-            plan["updated"] = now_iso()
-            return {"status": "success", "command": cmd, "message": f"All statuses set to {emoji}", "_mutation": True}
+                    for dep in task["dependencies"]:
+                        if _resolve_dep_task(plan, task, dep) is None:
+                            issues.append(("warning", f"Dangling dependency '{dep}' on {task['id']}"))
+            # Empty phases
+            for phase in plan["phases"]:
+                if not phase["tasks"]:
+                    issues.append(("warning", f"Empty phase: {phase['id']}"))
+            status = "success" if not issues else ("error" if any(i[0] == "error" for i in issues) else "warning")
+            return {**result_base, "status": status, "command": cmd,
+                    "message": f"{len(issues)} issue(s) found" if issues else "No issues found",
+                    "issues": issues}
 
-        else:
-            return {"status": "error", "command": cmd, "message": f"Unknown command: {cmd}"}
+        # ── Unknown command ───────────────────────────────────────────
+        return {**result_base, "status": "error", "command": cmd,
+                "message": f"Unknown command: {cmd}"}
 
     except Exception as e:
-        return {"status": "error", "command": cmd, "message": str(e)}
+        return {**result_base, "status": "error", "command": cmd, "message": str(e)}
 
 
-def _mark_task_error(plan, args, path):
+def _mark_task_error_batch(args, path, plan_cache):
     """If set-task-status failed, mark the task as ❌."""
     if len(args) < 2:
         return
-    phase_ref = args[0]
-    task_ref = args[1]
-    task = find_task(plan, phase_ref, task_ref)
+    plan = _get_plan(path, plan_cache)
+    task = find_task(plan, args[0], args[1])
     if task and task["emoji"] != EMOJI_ERROR:
         task["emoji"] = EMOJI_ERROR
         rederive_all(plan)
