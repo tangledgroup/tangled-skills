@@ -932,8 +932,8 @@ def cmd_add_task(args):
             task_id = candidate
             title = " ".join(rest[1:])
         else:
-            # Not a task ID, treat all as title
-            title = " ".join(rest)
+            # Not a task ID, treat first arg as title (ignore extras)
+            title = rest[0]
     else:
         die("add-task", "Missing title")
 
@@ -1210,8 +1210,8 @@ def cmd_check(args):
         msg = f"{len(issues)} issue(s) found" if issues else "No issues found"
         issues_out = issues
 
-        json_out(status, "check", msg,
-             path=plan["path"], issues=issues_out, fixed=args.fix)
+    json_out(status, "check", msg,
+         path=plan["path"], issues=issues_out, fixed=args.fix)
 
     if status == "error":
         sys.exit(1)
@@ -1306,7 +1306,9 @@ def _to_yaml(obj, indent=0):
     prefix = "  " * indent
     if isinstance(obj, dict):
         for k, v in obj.items():
-            if isinstance(v, (dict, list)):
+            if isinstance(v, list) and not v:
+                lines.append(f"{prefix}{k}: []")
+            elif isinstance(v, (dict, list)):
                 lines.append(f"{prefix}{k}:")
                 lines.append(_to_yaml(v, indent + 1))
             elif isinstance(v, str):
@@ -1319,14 +1321,18 @@ def _to_yaml(obj, indent=0):
                 first = True
                 for k, v in item.items():
                     if first:
-                        if isinstance(v, (dict, list)):
+                        if isinstance(v, list) and not v:
+                            lines.append(f"{prefix}- {k}: []")
+                        elif isinstance(v, (dict, list)):
                             lines.append(f"{prefix}- {k}:")
                             lines.append(_to_yaml(v, indent + 2))
                         else:
                             lines.append(f"{prefix}- {k}: {v if isinstance(v, str) else json.dumps(v)}")
                         first = False
                     else:
-                        if isinstance(v, (dict, list)):
+                        if isinstance(v, list) and not v:
+                            lines.append(f"{prefix}  {k}: []")
+                        elif isinstance(v, (dict, list)):
                             lines.append(f"{prefix}  {k}:")
                             lines.append(_to_yaml(v, indent + 2))
                         else:
@@ -1847,7 +1853,8 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans, default_dir=No
             if task_id:
                 tn = parse_task_id(task_id)
                 if tn[0] is None:
-                    title = f"{task_id} {title}".strip()
+                    # Not a valid Task X.Y format — treat as title, ignore extras
+                    title = task_id
                     task_id = None
             if not task_id:
                 pn = parse_phase_id(phase["id"])
