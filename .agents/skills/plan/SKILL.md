@@ -14,6 +14,30 @@ Phase/task based workflow system with `PLAN.md` as single source of truth.
 
 Structured planning system using phases and tasks, tracked in `PLAN.md` files.
 
+## Statuses
+
+Five status emojis are used across plan, phase, and task levels:
+
+- ☐ **Todo** — backlog / not yet started
+- ❓ **Question** — needs clarification before work can begin
+- ⚙️ **Doing** — in progress
+- ❌ **Error** — blocked by failure or critical issue
+- ☑ **Done** — completed successfully
+
+**Transitions (tasks and phases):**
+- `☐ → ⚙️` — start working · `☐ → ❓` — need clarification first
+- `⚙️ → ☑` — completed · `⚙️ → ❓` — unexpected question arose
+- `⚙️ → ❌` — error blocked progress
+- `❓ → ⚙️` — resolved, resume · `❌ → ⚙️` — retry · `❌ → ❓` — need help
+
+**Plan-level transitions** include all above plus:
+- `☐ → ❓` — scope unclear at creation
+- `❓ → ❌` — blocker discovered during clarification (bypasses ⚙️)
+
+⚙️ is always required before ☑ — you cannot skip directly to Done.
+
+**Derivation:** plan status derives from phases, phase status derives from tasks. `check --fix` restores auto-derived values after manual overrides. See [02-plan-structure](references/02-plan-structure.md) for derivation rules and error propagation details.
+
 ## Usage
 
 Use `plan.sh` for every PLAN.md operation. Never edit PLAN.md directly — not even to fix a typo or add a comment. The script is the only valid way to interact with plan files.
@@ -21,11 +45,12 @@ Use `plan.sh` for every PLAN.md operation. Never edit PLAN.md directly — not e
 ### JSON Output
 
 Every subcommand outputs valid JSON to stdout with these fields:
-- **`status`** — one of: `"success"`, `"warning"`, `"error"`, or `"skipped"`
-- **`command`** — the subcommand name (e.g., `"add-phase"`)
-- **`message`** — human-readable description
-- Additional fields vary by command (e.g., `path`, `value`, `data`, `issues`)
-- On error, exit code is 1. On success or warning, exit code is 0.
+- `status` — one of: `"success"`, `"warning"`, `"error"`, or `"skipped"`
+- `command` — the subcommand name (e.g., `"add-phase"`)
+- `message` — human-readable description
+
+Additional fields vary by command (e.g., `path`, `value`, `data`, `issues`).
+On error, exit code is 1. On success or warning, exit code is 0.
 
 ### Individual Mode
 
