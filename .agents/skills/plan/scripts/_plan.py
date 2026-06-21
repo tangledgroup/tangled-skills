@@ -61,6 +61,17 @@ def die(command, message):
     sys.exit(1)
 
 
+class JsonArgumentParser(argparse.ArgumentParser):
+    """ArgumentParser that outputs JSON on error instead of raw text."""
+
+    def error(self, message):
+        cmd = getattr(self._subparsers._group_actions[0], 'dest', None) if hasattr(self, '_subparsers') else None
+        # Try to determine which subparser triggered the error
+        prog = self.prog.replace("plan.sh ", "") if self.prog.startswith("plan.sh ") else self.prog
+        json_out("error", prog, message)
+        sys.exit(1)
+
+
 # Checksum
 
 def compute_checksum(content):
@@ -80,10 +91,11 @@ def strip_checksum(raw):
 
 # Parsing
 
-def parse_plan(path):
-    """Parse a PLAN.md file into a dict structure."""
+def _try_parse_plan(path):
+    """Parse a PLAN.md file. Returns (plan_dict, None) on success or (None, error_message) on failure.
+    Does NOT call die() — suitable for batch mode where errors must not print extra JSON."""
     if not os.path.exists(path):
-        die("parse", f"File not found: {path}")
+        return None, f"File not found: {path}"
 
     with open(path, encoding="utf-8") as f:
         raw = f.read()
@@ -105,17 +117,16 @@ def parse_plan(path):
 
     # Parse H1 title line
     if not lines or not lines[0].startswith("# "):
-        die("parse", "Missing H1 title line")
+        return None, "Missing H1 title line"
 
     h1 = lines[0]
-    # Match emoji (may include variation selector \ufe0f)
     m = re.match(r'#\s*(?:(' + _EMOJI_PAT + r')?\s*)Plan\s*' + re.escape(SEPARATOR) + r'\s*(.*)', h1)
     if not m:
-        die("parse", f"Invalid H1 format: {h1}")
+        return None, f"Invalid H1 format: {h1}"
     plan["emoji"] = m.group(1) or EMOJI_TODO
     plan["title"] = m.group(2).strip()
 
-    # Parse header fields (lines starting with "- Key: Value")
+    # Parse header fields
     i = 1
     while i < len(lines):
         line = lines[i]
@@ -140,7 +151,6 @@ def parse_plan(path):
     while i < len(lines):
         line = lines[i]
 
-        # Phase heading
         pm = re.match(r'^##\s*(' + _EMOJI_PAT + r')?\s*(Phase\s+\d+)\s*' + re.escape(SEPARATOR) + r'\s*(.*)', line)
         if pm:
             phase_emoji = pm.group(1) or EMOJI_TODO
@@ -156,10 +166,7 @@ def parse_plan(path):
             i += 1
             continue
 
-        # Task line
         if current_phase and line.startswith("- "):
-            # Match task line: emoji, Task ID, separator, title, optional deps after ⚓
-            # Use non-greedy title match; ⚓ only splits when followed by Task/Phase reference
             tm = re.match(
                 r'^-\s*(' + _EMOJI_PAT + r')?\s*(Task\s+\d+\.\d+)\s*'
                 + re.escape(SEPARATOR) + r'\s*(.+?)'
@@ -180,7 +187,6 @@ def parse_plan(path):
                 current_phase["tasks"].append(task)
                 i += 1
 
-                # Collect sub-bullets
                 while i < len(lines) and lines[i].startswith("  - "):
                     task["sub_bullets"].append(lines[i][4:].strip())
                     i += 1
@@ -188,6 +194,14 @@ def parse_plan(path):
 
         i += 1
 
+    return plan, None
+
+
+def parse_plan(path):
+    """Parse a PLAN.md file into a dict structure."""
+    plan, err = _try_parse_plan(path)
+    if err:
+        die("parse", err)
     return plan
 
 
@@ -1416,6 +1430,8 @@ def cmd_batch(args):
     overall = "success" if not has_mutation_error else "error"
     out = {"status": overall, "command": "batch", "results": results, "path": default_path}
     print(json.dumps(out, ensure_ascii=False), flush=True)
+    if has_mutation_error:
+        sys.exit(1)
 
 
 def _parse_line_batch(raw):
@@ -1485,11 +1501,19 @@ def shlex_split(line):
     return parts
 
 
-def _get_plan(path, plan_cache):
-    """Get or load a plan from cache."""
+def _get_plan(path, plan_cache, batch_mode=False):
+    """Get or load a plan from cache.
+    In batch_mode, returns (plan, error_msg) tuple instead of calling die()."""
     abs_p = os.path.abspath(path)
     if abs_p not in plan_cache:
-        plan_cache[abs_p] = parse_plan(path)
+        plan, err = _try_parse_plan(path)
+        if err:
+            if batch_mode:
+                return None, err
+            die("parse", err)
+        plan_cache[abs_p] = plan
+    if batch_mode:
+        return plan_cache[abs_p], None
     return plan_cache[abs_p]
 
 
@@ -1527,7 +1551,9 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans, default_dir=No
                     "message": f"Created plan: {title}", "_mutation": True}
 
         # All other commands need an existing plan
-        plan = _get_plan(path, plan_cache)
+        plan, err = _get_plan(path, plan_cache, batch_mode=True)
+        if err:
+            return {**result_base, "status": "error", "command": cmd, "message": err}
 
         # Header reads (read-only, no mutation)
         if cmd == "get-plan-title":
@@ -1937,51 +1963,74 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans, default_dir=No
                     "message": "Phases and tasks sorted", "_mutation": True}
 
         if cmd == "check":
-            issues = []
-            # Checksum verification
-            ok, msg = verify_checksum(plan)
-            if not ok:
-                issues.append(("error", f"Checksum: {msg}"))
-            # Emoji derivation
-            for phase in plan["phases"]:
-                expected = derive_phase_emoji(phase["tasks"])
-                if phase["emoji"] != expected:
-                    issues.append(("warning", f"Phase {phase['id']} emoji mismatch"))
-            expected_plan = derive_plan_emoji(plan["phases"])
-            if plan["emoji"] != expected_plan:
-                issues.append(("warning", "Plan emoji mismatch"))
-            # Numbering gaps
-            phase_nums = [parse_phase_id(p["id"]) for p in plan["phases"]]
-            for i, n in enumerate(phase_nums):
-                if n and n != i + 1:
-                    issues.append(("warning", f"Phase numbering gap: expected Phase {i+1}, found {plan['phases'][i]['id']}"))
-            for phase in plan["phases"]:
-                pnum = parse_phase_id(phase["id"])
-                task_nums = [parse_task_id(t["id"])[1] for t in phase["tasks"]]
-                for i, n in enumerate(task_nums):
-                    if n and n != i + 1:
-                        issues.append(("warning", f"Task numbering gap in {phase['id']}"))
-            # Dangling deps
-            for phase in plan["phases"]:
-                for task in phase["tasks"]:
-                    for dep in task["dependencies"]:
-                        if _resolve_dep_task(plan, task, dep) is None:
-                            issues.append(("warning", f"Dangling dependency '{dep}' on {task['id']}"))
-            # Ordering
-            for phase in plan["phases"]:
-                for i in range(1, len(phase["tasks"])):
-                    _, a = parse_task_id(phase["tasks"][i - 1]["id"])
-                    _, b = parse_task_id(phase["tasks"][i]["id"])
-                    if a and b and a > b:
-                        issues.append(("warning", f"Tasks out of order in {phase['id']}: {phase['tasks'][i-1]['id']} before {phase['tasks'][i]['id']}"))
-            # Empty phases
-            for phase in plan["phases"]:
-                if not phase["tasks"]:
-                    issues.append(("warning", f"Empty phase: {phase['id']}"))
-            status = "success" if not issues else ("error" if any(i[0] == "error" for i in issues) else "warning")
+            do_fix = "--fix" in args
+            issues = _check_plan(plan)
+
+            if do_fix:
+                # Fix 1: Emoji derivation
+                for phase in plan["phases"]:
+                    phase["emoji"] = derive_phase_emoji(phase["tasks"])
+                plan["emoji"] = derive_plan_emoji(plan["phases"])
+
+                # Fix 2: Renumber phases sequentially
+                for i, phase in enumerate(plan["phases"]):
+                    old_id = phase["id"]
+                    new_id = f"Phase {i + 1}"
+                    if old_id != new_id:
+                        phase["id"] = new_id
+                        for p in plan["phases"]:
+                            for t in p["tasks"]:
+                                t["dependencies"] = [
+                                    d.replace(old_id, new_id) for d in t["dependencies"]
+                                ]
+
+                # Fix 3: Renumber tasks within each phase sequentially
+                for phase in plan["phases"]:
+                    pnum = parse_phase_id(phase["id"])
+                    phase["tasks"].sort(key=lambda t: parse_task_id(t["id"])[1] or 0)
+                    for i, task in enumerate(phase["tasks"]):
+                        old_id = task["id"]
+                        new_id = f"Task {pnum}.{i + 1}"
+                        if old_id != new_id:
+                            task["id"] = new_id
+                            for p in plan["phases"]:
+                                for t in p["tasks"]:
+                                    t["dependencies"] = [
+                                        d.replace(old_id, new_id) for d in t["dependencies"]
+                                    ]
+                            task["dependencies"] = [
+                                d for d in task["dependencies"]
+                                if d != new_id and d != f"{phase['id']} - {new_id}"
+                            ]
+
+                # Fix 4: Remove dangling dependencies
+                for phase in plan["phases"]:
+                    for task in phase["tasks"]:
+                        task["dependencies"] = [
+                            d for d in task["dependencies"]
+                            if _resolve_dep_task(plan, task, d) is not None
+                        ]
+
+                plan["updated"] = now_iso()
+                dirty_plans.add(abs_path)
+
+                # Re-check after fix
+                remaining = _check_plan(plan)
+                if not remaining:
+                    status = "success"
+                    msg = f"Fixed {len(issues)} issue(s)"
+                    issues_out = issues
+                else:
+                    status = "error" if any(i[0] == "error" for i in remaining) else "warning"
+                    msg = f"Fixed some issues; {len(remaining)} remaining"
+                    issues_out = remaining
+            else:
+                status = "success" if not issues else ("error" if any(i[0] == "error" for i in issues) else "warning")
+                msg = f"{len(issues)} issue(s) found" if issues else "No issues found"
+                issues_out = issues
+
             return {**result_base, "status": status, "command": cmd,
-                    "message": f"{len(issues)} issue(s) found" if issues else "No issues found",
-                    "issues": issues}
+                    "message": msg, "issues": issues_out, "fixed": do_fix}
 
         # get-plan (structured output, read-only)
         if cmd == "get-plan":
@@ -2003,7 +2052,9 @@ def _mark_task_error_batch(args, path, plan_cache):
     """If set-task-status failed, mark the task as ❌."""
     if len(args) < 2:
         return
-    plan = _get_plan(path, plan_cache)
+    plan, err = _get_plan(path, plan_cache, batch_mode=True)
+    if err:
+        return
     task = find_task(plan, args[0], args[1])
     if task and task["emoji"] != EMOJI_ERROR:
         task["emoji"] = EMOJI_ERROR
@@ -2013,7 +2064,7 @@ def _mark_task_error_batch(args, path, plan_cache):
 # CLI Parser
 
 def build_parser():
-    parser = argparse.ArgumentParser(
+    parser = JsonArgumentParser(
         prog="plan.sh",
         description="Phase/task workflow manager for PLAN.md files",
     )
@@ -2127,7 +2178,7 @@ def build_parser():
     p = subs.add_parser("add-task", help="Add a task")
     p.add_argument("path")
     p.add_argument("phase_id")
-    p.add_argument("rest", nargs="+")
+    p.add_argument("rest", nargs="*")
 
     # update-phase
     p = subs.add_parser("update-phase", help="Update phase title")
