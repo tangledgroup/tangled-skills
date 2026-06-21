@@ -1462,12 +1462,14 @@ def check_dependency_cycle(plan_path: str, depends_on: list[str]) -> None:
 
     Walks from each dependency transitively and checks if we can reach back
     to plan_path.
+
+    All dependency paths are resolved relative to CWD — both the initial deps
+    from CLI arguments and transitive deps read from other PLAN.md files.
     """
     base_resolved = str(Path(plan_path).resolve())
-    plan_dir = os.path.dirname(base_resolved)
     visited = set()
-    # Resolve initial deps relative to the plan file's directory, not CWD
-    stack = [str(Path(plan_dir, d).resolve()) for d in depends_on]
+    # Resolve initial deps relative to CWD (they come from CLI arguments)
+    stack = [str(Path(d).resolve()) for d in depends_on]
 
     while stack:
         current_resolved = stack.pop()
@@ -1478,9 +1480,8 @@ def check_dependency_cycle(plan_path: str, depends_on: list[str]) -> None:
             continue
         visited.add(current_resolved)
 
-        # Resolve the original path for reading
-        # We need to find a path that resolves to current_resolved
-        # Read from the resolved path directly
+        # Read the dependency file and follow its own depends_on chain.
+        # Stored paths are resolved relative to CWD (same as CLI arguments).
         try:
             dep_content = Path(current_resolved).read_text(encoding="utf-8")
             dep_header = _parse_header("", dep_content.splitlines())
@@ -1488,10 +1489,8 @@ def check_dependency_cycle(plan_path: str, depends_on: list[str]) -> None:
             if deps_str and deps_str != "NONE":
                 deps = [d.strip() for d in deps_str.split(",")]
                 for d in deps:
-                    # Resolve relative to the directory of the dependency file,
-                    # not the current working directory
-                    dep_dir = os.path.dirname(current_resolved)
-                    resolved_d = str(Path(dep_dir, d).resolve())
+                    # Resolve relative to CWD (paths are always CWD-relative)
+                    resolved_d = str(Path(d).resolve())
                     stack.append(resolved_d)
         except (FileNotFoundError, SystemExit, PermissionError):
             pass  # plan doesn't exist, skip
@@ -1909,14 +1908,14 @@ def cmd_create(args: argparse.Namespace) -> None:
 - Current Phase: NONE
 - Current Task: NONE
 """
+    # Check for dependency cycles before writing
+    if depends:
+        check_dependency_cycle(path, depends)
+
     # Atomically write the new file (no lock needed — file doesn't exist yet)
     final = _add_checksum(content)
     write_plan_atomic(path, final)
     print(f"Created {path}")
-
-    # Check for dependency cycles
-    if depends:
-        check_dependency_cycle(path, depends)
 
 
 # ---------------------------------------------------------------------------
@@ -1999,6 +1998,10 @@ def cmd_set_plan_depends_on(args: argparse.Namespace) -> None:
     deps = getattr(args, "deps", []) or []
     deps_str = "NONE" if not deps else " , ".join(deps)
 
+    # Check for cycles before writing
+    if deps:
+        check_dependency_cycle(args.path, deps)
+
     def _transform(content: str) -> str:
         lines = content.splitlines()
         lines = _update_header_field(lines, "Depends On", deps_str)
@@ -2007,10 +2010,6 @@ def cmd_set_plan_depends_on(args: argparse.Namespace) -> None:
         return content
 
     _safe_edit(args.path, _transform)
-
-    # Check for cycles (after write is committed)
-    if deps:
-        check_dependency_cycle(args.path, deps)
     print(f"Set depends on to: {deps_str}")
 
 
