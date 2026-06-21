@@ -211,19 +211,6 @@ Manage dependencies incrementally as you identify them using `plan.sh add-task-d
 
 There is no bulk command — call `add-task-dependency` for each individual edge.
 
-## Gotchas
-
-- **Never generate PLAN.md content with the LLM** — do not write, edit, or append to PLAN.md using text generation. Always use `plan.sh` commands. The script enforces status transitions, auto-derives emojis, checks dependency cycles, and maintains a SHA-256 checksum. Any direct edit will cause checksum failures and silent corruption.
-- **Do not guess PLAN.md format** — if you are unsure of a command, read the Usage section below or run `plan.sh --help`. Smaller models are especially prone to hallucinating file content. Resist this impulse.
-- **Never remove-and-re-add phases or tasks** — use update commands (`update-phase`, `update-task`, `set-task-status`, `add-task-dependency`). Removing and re-adding loses numbering continuity, breaks dependencies, and resets statuses. Only remove when the item is genuinely no longer part of the plan.
-- **Updating a plan usually means changing statuses** — most "updates" are status transitions (`set-task-status`, `set-phase-status`). Title/description changes via `update-phase` / `update-task` are rare and should only happen when scope changes. Use sub-bullets for added details.
-- **Run `plan.sh check PLAN.md --fix` after any plan update** — validates checksum integrity, emoji derivation, numbering gaps, ordering, and dependency references. The `--fix` flag auto-repairs recoverable issues (wrong emojis, numbering gaps, out-of-order items, dangling dependency references). When tasks are renumbered, self-dependencies created by the rename are automatically removed.
-- **Titles must be non-empty and single-line** — empty titles, titles with newlines, or titles exceeding 2048 characters are rejected. This prevents file format corruption from multi-line entries.
-- **All subcommands output JSON** — parse the `status` field to determine success/error. Use `"success"`, `"warning"`, `"error"`, or `"skipped"` (in batch mode when a previous step failed).
-- **Batch mode preserves successful mutations on error** — if any step fails, PLAN.md IS written with all successful changes applied up to that point. If the failed command is `set-task-status`, the task is marked ❌ (Error) so you can see what happened. Remaining steps are marked `"skipped"` and not executed.
-- **Error propagates up through the hierarchy** — a single task at ❌ causes its phase to derive as ❌, which can cause the entire plan to derive as ❌. To unblock the plan, resolve the error task (`❌ → ⚙️ → ☑`) or mark it as done if the error was a false alarm.
-- **Direct status overrides require valid transitions** — `set-plan-status` and `set-phase-status` follow transition rules. Tasks and phases cannot jump from ☐ to ❌ (must go through ⚙️ first: `☐ → ⚙️ → ❌`). Plan-level transitions additionally allow ❓ → ❌ (discovered a blocker during clarification). Use `check --fix` to restore auto-derived values.
-
 ## Dependencies
 
 Scripts require: `python3` 3.10+ with only built-in modules, and no third-party packages needed.
@@ -399,3 +386,16 @@ plan.sh get-plan PLAN.md --tree --yaml   # nested tree, YAML
 # PLAN.md IS written with all successful mutations applied.
 # If the failed step is set-task-status, the task is marked ❌ (Error).
 ```
+
+## Gotchas
+
+- **Never generate PLAN.md content with the LLM** — do not write, edit, or append to PLAN.md using text generation. Always use `plan.sh` commands. The script enforces status transitions, auto-derives emojis, checks dependency cycles, and maintains a SHA-256 checksum. Any direct edit will cause checksum failures and silent corruption.
+- **Do not guess PLAN.md format** — if you are unsure of a command, read the Usage section below or run `plan.sh --help`. Smaller models are especially prone to hallucinating file content. Resist this impulse.
+- **Never remove-and-re-add phases or tasks** — use update commands (`update-phase`, `update-task`, `set-task-status`, `add-task-dependency`). Removing and re-adding loses numbering continuity, breaks dependencies, and resets statuses. Only remove when the item is genuinely no longer part of the plan.
+- **Updating a plan usually means changing statuses** — most "updates" are status transitions (`set-task-status`, `set-phase-status`). Title/description changes via `update-phase` / `update-task` are rare and should only happen when scope changes. Use sub-bullets for added details.
+- **Run `plan.sh check PLAN.md --fix` after any plan update** — validates checksum integrity, emoji derivation, numbering gaps, ordering, and dependency references. The `--fix` flag auto-repairs recoverable issues (wrong emojis, numbering gaps, out-of-order items, dangling dependency references). When tasks are renumbered, self-dependencies created by the rename are automatically removed.
+- **Titles must be non-empty and single-line** — empty titles, titles with newlines, or titles exceeding 2048 characters are rejected. This prevents file format corruption from multi-line entries.
+- **All subcommands output JSON** — parse the `status` field to determine success/error. Use `"success"`, `"warning"`, `"error"`, or `"skipped"` (in batch mode when a previous step failed).
+- **Batch mode preserves successful mutations on error** — if any step fails, PLAN.md IS written with all successful changes applied up to that point. If the failed command is `set-task-status`, the task is marked ❌ (Error) so you can see what happened. Remaining steps are marked `"skipped"` and not executed.
+- **Error propagates up through the hierarchy** — a single task at ❌ causes its phase to derive as ❌, which can cause the entire plan to derive as ❌. To unblock the plan, resolve the error task (`❌ → ⚙️ → ☑`) or mark it as done if the error was a false alarm.
+- **Direct status overrides require valid transitions** — `set-plan-status` and `set-phase-status` follow transition rules. Tasks and phases cannot jump from ☐ to ❌ (must go through ⚙️ first: `☐ → ⚙️ → ❌`). Plan-level transitions additionally allow ❓ → ❌ (discovered a blocker during clarification). Use `check --fix` to restore auto-derived values.
