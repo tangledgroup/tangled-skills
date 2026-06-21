@@ -9,15 +9,21 @@ import re
 import sys
 from datetime import datetime, timezone
 
-# ── Constants ────────────────────────────────────────────────────────────────
 
-EMOJI_TODO = "\u2610"       # ☐
-EMOJI_QUESTION = "\u2753"   # ❓
-EMOJI_DOING = "\u2699\ufe0f"  # ⚙️
-EMOJI_ERROR = "\u274c"      # ❌
-EMOJI_DONE = "\u2611"       # ☑
+# Constants
+EMOJI_TODO = "\u2610"               # ☐ todo
+EMOJI_QUESTION = "\u2753"           # ❓ question
+EMOJI_DOING = "\u2699\ufe0f"        # ⚙️ doing
+EMOJI_ERROR = "\u274c"              # ❌ error
+EMOJI_DONE = "\u2611"               # ☑ done
 
-ALL_EMOJI = {EMOJI_TODO, EMOJI_QUESTION, EMOJI_DOING, EMOJI_ERROR, EMOJI_DONE}
+ALL_EMOJI = {
+    EMOJI_TODO,
+    EMOJI_QUESTION,
+    EMOJI_DOING,
+    EMOJI_ERROR,
+    EMOJI_DONE,
+}
 
 VALID_TASK_TRANSITIONS = {
     (EMOJI_TODO, EMOJI_DOING),
@@ -40,7 +46,7 @@ ANCHOR = "\u2693"     # ⚓
 _EMOJI_PAT = r'(?:[\u2610\u2753\u274c\u2611]|\u2699\ufe0f)'
 
 
-# ── JSON Output Helpers ─────────────────────────────────────────────────────
+# JSON Output Helpers
 
 def json_out(status, command, message, **extra):
     """Print a JSON result and return it."""
@@ -55,7 +61,7 @@ def die(command, message):
     sys.exit(1)
 
 
-# ── Checksum ────────────────────────────────────────────────────────────────
+# Checksum
 
 def compute_checksum(content):
     """SHA-256 of content, truncated to 16 hex chars."""
@@ -72,7 +78,7 @@ def strip_checksum(raw):
     return raw.rstrip(), None
 
 
-# ── Parsing ─────────────────────────────────────────────────────────────────
+# Parsing
 
 def parse_plan(path):
     """Parse a PLAN.md file into a dict structure."""
@@ -152,10 +158,12 @@ def parse_plan(path):
 
         # Task line
         if current_phase and line.startswith("- "):
+            # Match task line: emoji, Task ID, separator, title, optional deps after ⚓
+            # Use non-greedy title match; ⚓ only splits when followed by Task/Phase reference
             tm = re.match(
                 r'^-\s*(' + _EMOJI_PAT + r')?\s*(Task\s+\d+\.\d+)\s*'
-                + re.escape(SEPARATOR) + r'\s*([^\u26a3]*?)'
-                r'(?:\s*' + re.escape(ANCHOR) + r'\s*([\s\S]*?))?\s*$',
+                + re.escape(SEPARATOR) + r'\s*(.+?)'
+                r'(?:\s+' + re.escape(ANCHOR) + r'\s+((?:Task|Phase).+))?\s*$',
                 line,
             )
             if tm:
@@ -183,7 +191,7 @@ def parse_plan(path):
     return plan
 
 
-# ── Writing ─────────────────────────────────────────────────────────────────
+# Writing
 
 def write_plan(plan):
     """Write a PLAN.md file from the parsed dict."""
@@ -220,7 +228,7 @@ def write_plan(plan):
         f.write(content + f"\n<!-- checksum: {checksum} -->\n")
 
 
-# ── Status Derivation ───────────────────────────────────────────────────────
+# Status Derivation
 
 def derive_phase_emoji(tasks):
     """Derive phase emoji from its tasks."""
@@ -261,7 +269,7 @@ def rederive_all(plan):
     plan["emoji"] = derive_plan_emoji(plan["phases"])
 
 
-# ── Helpers ─────────────────────────────────────────────────────────────────
+# Helpers
 
 def find_phase(plan, ref):
     """Find a phase by ID or emoji+ID."""
@@ -338,7 +346,7 @@ def validate_emoji(emoji):
     return True
 
 
-# ── Dependency Cycle Detection ──────────────────────────────────────────────
+# Dependency Cycle Detection
 
 def resolve_task_ref(plan, ref):
     """Resolve a dependency reference to (phase_id, task_id)."""
@@ -396,7 +404,7 @@ def detect_cycle(plan, phase_id, task_id, new_dep):
     return False
 
 
-# ── Checksum Validation ─────────────────────────────────────────────────────
+# Checksum Validation
 
 def verify_checksum(plan):
     """Verify stored checksum matches computed one."""
@@ -412,7 +420,7 @@ def verify_checksum(plan):
     return True, "OK"
 
 
-# ── Subcommands ─────────────────────────────────────────────────────────────
+# Subcommands
 
 def cmd_create(args):
     path = args.path
@@ -491,46 +499,75 @@ def cmd_set_plan_depends_on(args):
         plan["depends_on"] = "NONE"
     else:
         plan["depends_on"] = ", ".join(args.depends_on)
-        # Cycle detection
+        # Resolve dep paths relative to the plan file's directory
+        plan_dir = os.path.dirname(plan["path"])
+        resolved_deps = []
         for dep_path in args.depends_on:
-            abs_dep = os.path.abspath(dep_path)
+            abs_dep = os.path.abspath(os.path.join(plan_dir, dep_path))
             if abs_dep == plan["path"]:
                 die("set-plan-depends-on", "Cannot depend on itself")
-        # Check transitive cycles
-        _check_plan_cycles(plan)
+            resolved_deps.append(abs_dep)
+        # Check transitive cycles with resolved paths
+        _check_plan_cycles(plan, resolved_deps)
     plan["updated"] = now_iso()
     write_plan(plan)
     json_out("success", "set-plan-depends-on", f"Dependencies set to: {plan['depends_on']}", value=plan["depends_on"], path=plan["path"])
 
 
-def _check_plan_cycles(plan):
-    """Check for cycles in the plan dependency graph."""
+def _check_plan_cycles(plan, resolved_deps=None):
+    """Check for cycles in the plan dependency graph.
+    resolved_deps: optional list of already-resolved absolute paths for the current plan's deps."""
     visited = set()
     rec_stack = set()
 
-    def dfs(p_path, deps):
-        abs_p = os.path.abspath(p_path)
-        if abs_p in rec_stack:
-            die("set-plan-depends-on", f"Dependency cycle detected involving {p_path}")
-        if abs_p in visited:
+    def resolve_dep_path(dep_str, base_dir):
+        """Resolve a dependency path relative to base_dir."""
+        return os.path.abspath(os.path.join(base_dir, dep_str.strip()))
+
+    def dfs(p_abs, deps_str):
+        if p_abs in rec_stack:
+            die("set-plan-depends-on", f"Dependency cycle detected involving {p_abs}")
+        if p_abs in visited:
             return
-        visited.add(abs_p)
-        rec_stack.add(abs_p)
-        if deps != "NONE":
-            for dep in [d.strip() for d in deps.split(",")]:
-                dep_abs = os.path.abspath(dep)
+        visited.add(p_abs)
+        rec_stack.add(p_abs)
+        if deps_str != "NONE":
+            base_dir = os.path.dirname(p_abs)
+            for dep in [d.strip() for d in deps_str.split(",")]:
+                dep_abs = resolve_dep_path(dep, base_dir)
                 if os.path.exists(dep_abs):
                     dep_plan = parse_plan(dep_abs)
                     dfs(dep_abs, dep_plan["depends_on"])
-        rec_stack.discard(abs_p)
+        rec_stack.discard(p_abs)
 
-    dfs(plan["path"], plan["depends_on"])
+    start_abs = plan["path"]
+    # If resolved_deps provided, use them directly for the first level
+    if resolved_deps:
+        for dep_abs in resolved_deps:
+            visited.clear()
+            rec_stack.clear()
+            rec_stack.add(start_abs)
+            if dep_abs in rec_stack:
+                die("set-plan-depends-on", f"Dependency cycle detected involving {start_abs}")
+            if os.path.exists(dep_abs):
+                dep_plan = parse_plan(dep_abs)
+                dfs(dep_abs, dep_plan["depends_on"])
+    else:
+        dfs(start_abs, plan["depends_on"])
 
 
-def _check_batch_plan_cycles(start_path, new_deps, plan_cache):
+def _check_batch_plan_cycles(start_path, new_deps, plan_cache, default_dir=None):
     """Check for cycles in the plan dependency graph (batch mode, multi-plan aware).
     Uses plan_cache to resolve depends_on for plans already loaded.
+    default_dir: directory to resolve relative paths against (defaults to CWD).
     Returns True if a cycle is detected."""
+    if default_dir is None:
+        default_dir = os.getcwd()
+
+    def resolve_dep_path(dep_str, base_dir):
+        """Resolve a dependency path relative to base_dir."""
+        return os.path.abspath(os.path.join(base_dir, dep_str.strip()))
+
     visited = set()
     rec_stack = set()
 
@@ -553,18 +590,19 @@ def _check_batch_plan_cycles(start_path, new_deps, plan_cache):
         rec_stack.add(p_abs)
         deps = get_depends_on(p_abs)
         if deps != "NONE":
+            base_dir = os.path.dirname(p_abs)
             for dep in [d.strip() for d in deps.split(",")]:
-                dep_abs = os.path.abspath(dep)
+                dep_abs = resolve_dep_path(dep, base_dir)
                 if dfs(dep_abs):
                     return True
         rec_stack.discard(p_abs)
         return False
 
     # Temporarily add proposed deps to check
-    start_abs = os.path.abspath(start_path)
+    start_abs = os.path.abspath(os.path.join(default_dir, start_path))
     if new_deps:
         for dep in new_deps:
-            dep_abs = os.path.abspath(dep)
+            dep_abs = os.path.abspath(os.path.join(default_dir, dep))
             visited.clear()
             rec_stack.clear()
             # Start DFS from the dependency target, see if we reach back to start
@@ -617,7 +655,7 @@ def cmd_set_plan_current_task(args):
     json_out("success", "set-plan-current-task", f"Current task set to: {plan['current_task']}", value=plan["current_task"], path=plan["path"])
 
 
-# ── Status reads ────────────────────────────────────────────────────────────
+# Status reads
 
 def cmd_get_plan_status(args):
     plan = parse_plan(args.path)
@@ -640,7 +678,7 @@ def cmd_get_task_status(args):
     json_out("success", "get-task-status", task["emoji"], value=task["emoji"], path=plan["path"], phase=args.phase_id, task=task["id"])
 
 
-# ── Status writes ───────────────────────────────────────────────────────────
+# Status writes
 
 def cmd_set_all_statuses(args):
     plan = parse_plan(args.path)
@@ -652,6 +690,8 @@ def cmd_set_all_statuses(args):
         phase["emoji"] = emoji
         for task in phase["tasks"]:
             task["emoji"] = emoji
+    plan["current_phase"] = "NONE"
+    plan["current_task"] = "NONE"
     plan["updated"] = now_iso()
     write_plan(plan)
     json_out("success", "set-all-statuses", f"All statuses set to {emoji}", value=emoji, path=plan["path"])
@@ -753,7 +793,7 @@ def _resolve_dep_task(plan, source_task, dep_ref):
     return None
 
 
-# ── Phase CRUD ──────────────────────────────────────────────────────────────
+# Phase CRUD
 
 def cmd_add_phase(args):
     plan = parse_plan(args.path)
@@ -839,10 +879,13 @@ def cmd_remove_phase(args):
     plan["phases"].remove(phase)
 
     # Clear current tracking if it pointed to removed phase/task
-    if plan["current_phase"].startswith(phase["id"]):
+    # Strip emoji prefix before comparison (e.g., "⚙️ Phase 1" → check for "Phase 1")
+    cp = plan["current_phase"]
+    if phase["id"] in cp:
         plan["current_phase"] = "NONE"
     for t in phase["tasks"]:
-        if plan["current_task"].startswith(t["id"]):
+        ct = plan["current_task"]
+        if t["id"] in ct:
             plan["current_task"] = "NONE"
 
     rederive_all(plan)
@@ -851,7 +894,7 @@ def cmd_remove_phase(args):
     json_out("success", "remove-phase", f"Removed {phase['id']}", path=plan["path"], phase=phase["id"])
 
 
-# ── Task CRUD ───────────────────────────────────────────────────────────────
+# Task CRUD
 
 def cmd_add_task(args):
     plan = parse_plan(args.path)
@@ -953,7 +996,7 @@ def cmd_remove_task(args):
     json_out("success", "remove-task", f"Removed {task['id']}", path=plan["path"], phase=args.phase_id, task=task["id"])
 
 
-# ── Task Dependencies ───────────────────────────────────────────────────────
+# Task Dependencies
 
 def cmd_add_task_dependency(args):
     plan = parse_plan(args.path)
@@ -994,7 +1037,7 @@ def cmd_remove_task_dependency(args):
     json_out("success", "remove-task-dependency", f"Removed dependency '{dep}' from {task['id']}", path=plan["path"], phase=args.phase_id, task=task["id"])
 
 
-# ── Sort ────────────────────────────────────────────────────────────────────
+# Sort
 
 def cmd_sort(args):
     plan = parse_plan(args.path)
@@ -1010,7 +1053,7 @@ def cmd_sort(args):
     json_out("success", "sort", "Phases and tasks sorted", path=plan["path"])
 
 
-# ── Check ───────────────────────────────────────────────────────────────────
+# Check
 
 def _check_plan(plan):
     """Run all checks on a parsed plan dict. Returns list of (severity, message) tuples."""
@@ -1154,15 +1197,33 @@ def cmd_check(args):
              path=plan["path"], issues=issues_out, fixed=args.fix)
 
 
-# ── Get Plan (structured output) ────────────────────────────────────────────
+# Get Plan (structured output)
 
 def cmd_get_plan(args):
     plan = parse_plan(args.path)
     mode = getattr(args, "mode", "list")
     fmt = getattr(args, "format", "json")
 
+    data = _build_plan_data(plan, mode)
+
+    # Wrap in standard JSON output format (status/command/message + data payload)
+    out = {
+        "status": "success",
+        "command": "get-plan",
+        "message": f"Plan: {plan['title']}",
+        "path": plan["path"],
+        "data": data,
+    }
+    if fmt == "yaml":
+        print(_to_yaml(out), flush=True)
+    else:
+        print(json.dumps(out, ensure_ascii=False, indent=2), flush=True)
+
+
+def _build_plan_data(plan, mode="list"):
+    """Build structured plan data dict for get-plan output."""
     if mode == "tree":
-        data = {
+        return {
             "title": plan["title"],
             "emoji": plan["emoji"],
             "depends_on": plan["depends_on"],
@@ -1216,19 +1277,7 @@ def cmd_get_plan(args):
                     "title": t["title"],
                     "dependencies": t["dependencies"],
                 })
-
-    # Wrap in standard JSON output format (status/command/message + data payload)
-    out = {
-        "status": "success",
-        "command": "get-plan",
-        "message": f"Plan: {plan['title']}",
-        "path": plan["path"],
-        "data": data,
-    }
-    if fmt == "yaml":
-        print(_to_yaml(out), flush=True)
-    else:
-        print(json.dumps(out, ensure_ascii=False, indent=2), flush=True)
+        return data
 
 
 def _to_yaml(obj, indent=0):
@@ -1267,26 +1316,32 @@ def _to_yaml(obj, indent=0):
     return "\n".join(lines)
 
 
-# ── Batch Mode ──────────────────────────────────────────────────────────────
+# Batch Mode
 # Multi-plan aware: each step can target a different PLAN.md.
 # JSON mode: {"command": "...", "args": [...], "plan_path": "..."}
 # Line mode:  command arg1 arg2 ... [@path]   — trailing @path overrides default
 
 def cmd_batch(args):
     default_path = args.path
-    use_json = getattr(args, "json_mode", False)
+    force_json = getattr(args, "json_mode", False)
     input_file = getattr(args, "input", None)
 
     # Read commands
     if input_file:
         with open(input_file, encoding="utf-8") as f:
             raw = f.read()
-        if not use_json and input_file.endswith(".json"):
-            use_json = True
+        if not force_json and input_file.endswith(".json"):
+            force_json = True
     else:
         raw = sys.stdin.read()
 
-    if use_json or raw.strip().startswith("["):
+    # Determine mode: auto-detect from content, with --json flag for file override.
+    raw_stripped = raw.strip()
+    looks_like_json = raw_stripped.startswith("[")
+    # --json flag overrides file extension auto-detect, but only if content looks like JSON
+    use_json = looks_like_json or (force_json and input_file and not input_file.endswith(".json"))
+
+    if use_json:
         steps = _parse_json_batch(raw)
     else:
         steps = _parse_line_batch(raw)
@@ -1296,38 +1351,57 @@ def cmd_batch(args):
     # Set of abs_paths that have mutations pending write
     dirty_plans = set()
 
+    # Resolve default path to absolute and get its directory for relative @path resolution
+    default_abs = os.path.abspath(default_path)
+    default_dir = os.path.dirname(default_abs)
+
+    # Commands that are read-only (don't mutate the plan file)
+    READ_ONLY_CMDS = {
+        "get-plan-title", "get-plan-depends-on", "get-plan-created",
+        "get-plan-updated", "get-plan-current-phase", "get-plan-current-task",
+        "get-plan-status", "get-phase-status", "get-task-status",
+        "check", "get-plan",
+    }
+
     results = []
-    has_error = False
+    has_mutation_error = False  # Only mutation errors stop the batch
 
     for step in steps:
-        if has_error:
+        if has_mutation_error:
             results.append({
                 "status": "skipped",
                 "command": step.get("command", "?"),
-                "message": "Skipped due to previous error",
+                "message": "Skipped due to previous mutation error",
             })
             continue
 
         cmd = step["command"]
         cmd_args = step.get("args", [])
-        step_path = step.get("plan_path") or default_path
+        raw_step_path = step.get("plan_path") or default_path
+        # Resolve relative @path against default plan's directory
+        if step.get("plan_path"):
+            step_path = os.path.abspath(os.path.join(default_dir, raw_step_path))
+        else:
+            step_path = raw_step_path
 
         try:
-            result = _execute_batch_step(cmd, cmd_args, step_path, plan_cache, dirty_plans)
+            result = _execute_batch_step(cmd, cmd_args, step_path, plan_cache, dirty_plans, default_dir)
             is_mutation = result.pop("_mutation", False)
             results.append(result)
             if result["status"] == "error":
-                has_error = True
-                # If failed step is set-task-status, mark task as ❌
-                if cmd == "set-task-status":
-                    _mark_task_error_batch(cmd_args, step_path, plan_cache)
-                    # Ensure the plan is written even if set-task-status was the only mutation
-                    dirty_plans.add(os.path.abspath(step_path))
+                # Only mutation errors stop the batch; read-only errors are reported but don't halt
+                if cmd not in READ_ONLY_CMDS:
+                    has_mutation_error = True
+                    # If failed step is set-task-status, mark task as ❌
+                    if cmd == "set-task-status":
+                        _mark_task_error_batch(cmd_args, step_path, plan_cache)
+                        dirty_plans.add(os.path.abspath(step_path))
             elif is_mutation:
                 abs_p = os.path.abspath(step_path)
                 dirty_plans.add(abs_p)
         except SystemExit:
-            has_error = True
+            if cmd not in READ_ONLY_CMDS:
+                has_mutation_error = True
             results.append({
                 "status": "error",
                 "command": cmd,
@@ -1339,7 +1413,7 @@ def cmd_batch(args):
         if abs_p in plan_cache:
             write_plan(plan_cache[abs_p])
 
-    overall = "success" if not has_error else "error"
+    overall = "success" if not has_mutation_error else "error"
     out = {"status": overall, "command": "batch", "results": results, "path": default_path}
     print(json.dumps(out, ensure_ascii=False), flush=True)
 
@@ -1367,7 +1441,12 @@ def _parse_line_batch(raw):
 
 def _parse_json_batch(raw):
     """Parse JSON-mode batch input. Optional 'plan_path' per step."""
-    data = json.loads(raw)
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as e:
+        die("batch", f"Invalid JSON input: {e}")
+    if not isinstance(data, list):
+        die("batch", "JSON input must be an array of step objects")
     steps = []
     for item in data:
         cmd = item.get("command", "")
@@ -1414,13 +1493,14 @@ def _get_plan(path, plan_cache):
     return plan_cache[abs_p]
 
 
-def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
-    """Execute a single batch step with multi-plan support."""
+def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans, default_dir=None):
+    """Execute a single batch step with multi-plan support.
+    default_dir: directory for resolving relative plan dependency paths."""
     abs_path = os.path.abspath(path)
     result_base = {"path": abs_path}
 
     try:
-        # ── create: doesn't need existing plan ─────────────────────────
+        # create: doesn't need existing plan
         if cmd == "create":
             title = args[0] if args else ""
             ok, msg = validate_title(title)
@@ -1446,10 +1526,10 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
             return {**result_base, "status": "success", "command": cmd,
                     "message": f"Created plan: {title}", "_mutation": True}
 
-        # ── All other commands need an existing plan ───────────────────
+        # All other commands need an existing plan
         plan = _get_plan(path, plan_cache)
 
-        # ── Header reads (read-only, no mutation) ─────────────────────
+        # Header reads (read-only, no mutation)
         if cmd == "get-plan-title":
             return {**result_base, "status": "success", "command": cmd,
                     "message": plan["title"], "value": plan["title"]}
@@ -1469,7 +1549,7 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
             return {**result_base, "status": "success", "command": cmd,
                     "message": plan["current_task"], "value": plan["current_task"]}
 
-        # ── Status reads (read-only) ──────────────────────────────────
+        # Status reads (read-only)
         if cmd == "get-plan-status":
             return {**result_base, "status": "success", "command": cmd,
                     "message": plan["emoji"], "value": plan["emoji"]}
@@ -1492,7 +1572,7 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
                     "message": task["emoji"], "value": task["emoji"],
                     "phase": args[0], "task": task["id"]}
 
-        # ── Header writes ─────────────────────────────────────────────
+        # Header writes
         if cmd == "set-plan-title":
             new_title = args[0] if args else ""
             ok, msg = validate_title(new_title)
@@ -1508,13 +1588,14 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
             if deps == ["NONE"]:
                 plan["depends_on"] = "NONE"
             else:
-                # Self-reference check
+                # Self-reference check (resolve relative to default_dir)
                 for dep_path in deps:
-                    if os.path.abspath(dep_path) == abs_path:
+                    resolved = os.path.abspath(os.path.join(default_dir or os.getcwd(), dep_path))
+                    if resolved == abs_path:
                         return {**result_base, "status": "error", "command": cmd,
                                 "message": "Cannot depend on itself"}
                 # Transitive cycle detection
-                if _check_batch_plan_cycles(abs_path, deps, plan_cache):
+                if _check_batch_plan_cycles(abs_path, deps, plan_cache, default_dir):
                     return {**result_base, "status": "error", "command": cmd,
                             "message": f"Dependency cycle detected involving {path}"}
                 plan["depends_on"] = ", ".join(deps)
@@ -1565,7 +1646,7 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
             return {**result_base, "status": "success", "command": cmd,
                     "message": f"Current task set to: {plan['current_task']}", "_mutation": True}
 
-        # ── Status writes ─────────────────────────────────────────────
+        # Status writes
         if cmd == "set-all-statuses":
             emoji = args[0] if args else EMOJI_TODO
             if emoji not in ALL_EMOJI:
@@ -1654,7 +1735,7 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
             return {**result_base, "status": "success", "command": cmd,
                     "message": f"Task {task['id']} -> {emoji}", "_mutation": True}
 
-        # ── Phase CRUD ────────────────────────────────────────────────
+        # Phase CRUD
         if cmd == "add-phase":
             phase_id = args[0] if args else ""
             title = args[1] if len(args) > 1 else ""
@@ -1718,7 +1799,7 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
             return {**result_base, "status": "success", "command": cmd,
                     "message": f"Removed {phase['id']}", "_mutation": True}
 
-        # ── Task CRUD ─────────────────────────────────────────────────
+        # Task CRUD
         if cmd == "add-task":
             if not args:
                 return {**result_base, "status": "error", "command": cmd,
@@ -1795,14 +1876,16 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
                         if d != task["id"] and d != f"{phase['id']} - {task['id']}"
                     ]
             phase["tasks"].remove(task)
-            if plan["current_task"].startswith(task["id"]):
+            # Clear current tracking (strip emoji prefix for comparison)
+            ct = plan["current_task"]
+            if task["id"] in ct:
                 plan["current_task"] = "NONE"
             rederive_all(plan)
             plan["updated"] = now_iso()
             return {**result_base, "status": "success", "command": cmd,
                     "message": f"Removed {task['id']}", "_mutation": True}
 
-        # ── Task Dependencies ─────────────────────────────────────────
+        # Task Dependencies
         if cmd == "add-task-dependency":
             if len(args) < 3:
                 return {**result_base, "status": "error", "command": cmd,
@@ -1843,7 +1926,7 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
             return {**result_base, "status": "success", "command": cmd,
                     "message": f"Removed dependency '{dep}' from {task['id']}", "_mutation": True}
 
-        # ── Utility commands ──────────────────────────────────────────
+        # Utility commands
         if cmd == "sort":
             plan["phases"].sort(key=lambda p: parse_phase_id(p["id"]) or 0)
             for phase in plan["phases"]:
@@ -1900,7 +1983,15 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans):
                     "message": f"{len(issues)} issue(s) found" if issues else "No issues found",
                     "issues": issues}
 
-        # ── Unknown command ───────────────────────────────────────────
+        # get-plan (structured output, read-only)
+        if cmd == "get-plan":
+            mode = args[0] if args else "list"
+            fmt = args[1] if len(args) > 1 else "json"
+            data = _build_plan_data(plan, mode)
+            return {**result_base, "status": "success", "command": cmd,
+                    "message": f"Plan: {plan['title']}", "data": data}
+
+        # Unknown command
         return {**result_base, "status": "error", "command": cmd,
                 "message": f"Unknown command: {cmd}"}
 
@@ -1919,7 +2010,7 @@ def _mark_task_error_batch(args, path, plan_cache):
         rederive_all(plan)
 
 
-# ── CLI Parser ──────────────────────────────────────────────────────────────
+# CLI Parser
 
 def build_parser():
     parser = argparse.ArgumentParser(
@@ -2102,7 +2193,7 @@ def build_parser():
     return parser
 
 
-# ── Dispatch ────────────────────────────────────────────────────────────────
+# Dispatch
 
 COMMAND_MAP = {
     "create": cmd_create,
