@@ -1,241 +1,190 @@
 ---
 name: ruff-0-4-10
-description: Extremely fast Python linter and formatter written in Rust, replacing Flake8, Black, isort, and more with 10x-100x faster performance. Use when linting Python code for style and correctness, formatting code consistently, configuring rule selection across 800+ rules, or needing fast incremental analysis in CI/CD pipelines.
-license: MIT
-author: Tangled <noreply@tangledgroup.com>
-version: "0.1.0"
-tags:
-  - python
-  - linter
-  - formatter
-  - code-quality
-  - flake8
-  - black
-  - isort
-  - pyupgrade
-category: tooling
-external_references:
-  - https://docs.astral.sh/ruff
-  - https://github.com/astral-sh/ruff
+description: >
+  Lint, format, and configure Python code with Ruff (v0.4+). Use when the user mentions
+  ruff, python linting, python formatting, code quality, replacing flake8/black/isort/pyupgrade,
+  pyproject.toml ruff config, ruff check, ruff format, or needs help setting up Python linting
+  and formatting. Also triggers for import sorting (isort replacement), docstring checks,
+  auto-fixing lint violations, pre-commit hooks with ruff, CI/CD linting pipelines, and
+  migrating from flake8 + black + isort to a single tool.
 ---
 
-# Ruff 0.4.10
+# ruff 0.4.10
+
+Ruff is an extremely fast Python linter and code formatter written in Rust. It replaces Flake8 (plus dozens of plugins), Black, isort, pydocstyle, pyupgrade, autoflake, and more — all in one binary executing 10–100× faster.
 
 ## Overview
 
-Ruff is an extremely fast Python linter and code formatter, written in Rust. It aims to be orders of magnitude faster than alternative tools while integrating more functionality behind a single, common interface.
+Ruff provides two main capabilities:
 
-Ruff can replace Flake8 (plus dozens of plugins), Black, isort, pydocstyle, pyupgrade, autoflake, and more — all while executing tens or hundreds of times faster than any individual tool.
+- **Linter** (`ruff check`) — Over 800 rules across 50+ rule categories (Pyflakes, pycodestyle, isort, pyupgrade, flake8-bugbear, etc.). Default rules: `E4`, `E7`, `E9`, `F`.
+- **Formatter** (`ruff format`) — Black-compatible code formatter with near-identical output (>99.9% line parity on Black-formatted projects).
 
-Key features:
+Both share the same configuration strategy via `pyproject.toml`, `ruff.toml`, or `.ruff.toml`.
 
-- 10-100x faster than existing linters (like Flake8) and formatters (like Black)
-- Installable via `pip`, `uv`, `pipx`, Homebrew, Conda, or standalone installers
-- `pyproject.toml`, `ruff.toml`, or `.ruff.toml` configuration support
-- Drop-in parity with Flake8, isort, and Black
-- Built-in caching to avoid re-analyzing unchanged files
-- Automatic fix support for error correction (e.g., remove unused imports)
-- Over 800 built-in rules, with native re-implementations of popular Flake8 plugins like flake8-bugbear
-- First-party editor integrations for VS Code and more
-- Monorepo-friendly, with hierarchical and cascading configuration
+## Usage
 
-## When to Use
-
-Use Ruff when:
-
-- Linting Python code for style and correctness issues
-- Formatting Python code consistently (Black-compatible)
-- Replacing multiple tools (Flake8 + plugins, Black, isort, pydocstyle, pyupgrade, autoflake) with a single fast tool
-- Configuring rule selection across 800+ lint rules
-- Suppressing violations with `noqa` comments
-- Setting up fast CI/CD pipeline analysis
-- Integrating with editors via the Ruff language server
-- Working with Jupyter Notebooks (`.ipynb`) alongside regular Python files
-
-## Core Concepts
-
-### Two Subcommands
-
-Ruff provides two primary subcommands:
-
-- **`ruff check`** — The linter. Analyzes Python files for rule violations and optionally auto-fixes them.
-- **`ruff format`** — The formatter. Reformats Python code to a consistent style (Black-compatible).
-
-### Rule Codes
-
-Ruff mirrors Flake8's rule code system: each rule has a one-to-three letter prefix followed by three digits (e.g., `F401`). The prefix indicates the rule source:
-
-- `F` — Pyflakes (unused imports, undefined names, etc.)
-- `E` — pycodestyle (indentation, whitespace, line length, etc.)
-- `W` — pycodestyle warnings
-- `UP` — pyupgrade (modernize Python syntax)
-- `B` — flake8-bugbear (common bugs and design issues)
-- `I` — isort (import sorting)
-- `D` — pydocstyle (docstring conventions)
-- `SIM` — flake8-simplify (code simplification)
-- And many more (50+ rule categories)
-
-### Default Rule Set
-
-By default, Ruff enables Pyflakes (`F`) rules and a subset of pycodestyle (`E4`, `E7`, `E9`) codes, omitting stylistic rules that overlap with formatters.
-
-## Installation / Setup
-
-Install via `uv` (recommended), `pip`, `pipx`, Homebrew, Conda, or standalone installers:
+### Installation
 
 ```bash
-# With uv (recommended).
-uv tool install ruff@latest   # Install globally.
-uv add --dev ruff             # Or add to your project.
-
-# With pip.
-pip install ruff
-
-# With pipx.
-pipx install ruff
-
-# Standalone installer (macOS/Linux).
-curl -LsSf https://astral.sh/ruff/install.sh | sh
-
-# Homebrew.
-brew install ruff
-
-# Conda.
-conda install -c conda-forge ruff
+pip install ruff          # PyPI (any platform, no Rust needed)
+brew install ruff         # macOS/Linux Homebrew
+conda install -c conda-forge ruff  # Conda
 ```
 
-Invoke directly with `uvx`:
+### Linting
 
 ```bash
-uvx ruff check    # Lint all files in the current directory.
-uvx ruff format   # Format all files in the current directory.
+ruff check                        # Current directory
+ruff check path/to/code/          # Specific directory
+ruff check --fix                  # Auto-fix safe violations
+ruff check --fix --unsafe-fixes   # Include unsafe fixes
+ruff check --select F401,B        # Enable specific rules only
+ruff check --add-noqa .           # Add noqa to existing violations (migration)
+ruff check --show-files            # See which files will be checked
+ruff check --show-settings         # Debug resolved config for a file
 ```
 
-## Usage Examples
-
-### Basic Linting
+### Formatting
 
 ```bash
-ruff check                          # Lint files in the current directory.
-ruff check --fix                    # Lint and auto-fix.
-ruff check --watch                  # Lint and re-lint on file changes.
-ruff check path/to/code/            # Lint a specific directory.
-ruff check path/to/file.py          # Lint a single file.
+ruff format                       # Current directory
+ruff format path/to/code/         # Specific directory
+ruff format --check               # Dry-run (exit 1 if changes needed)
+ruff format --diff                # Show diff without writing
 ```
 
-### Basic Formatting
+### Sorting Imports
+
+Ruff's formatter does not sort imports. Use the linter for that:
 
 ```bash
-ruff format                         # Format all files in the current directory.
-ruff format --check                 # Check without writing (CI-friendly).
-ruff format --diff                  # Show diff of what would change.
-ruff format path/to/code/           # Format a specific directory.
+ruff check --select I --fix   # Sort imports via isort rules
+ruff format                   # Then format
 ```
 
-### Rule Selection
+### Common Workflows
 
+**Quick lint and fix:**
 ```bash
-# Enable specific rules.
-ruff check --select F401,F403 --quiet
-
-# Extend default rules with additional categories.
-ruff check --extend-select B
-
-# Show all files Ruff will analyze.
-ruff check --show-files
-
-# Inspect effective settings for a file.
-ruff check --show-settings path/to/file.py
+ruff check --fix . && ruff format .
 ```
 
-### Configuration via `pyproject.toml`
+**CI check (fail on violations):**
+```bash
+ruff check . && ruff format --check .
+```
+
+**Migrate a codebase incrementally:**
+```bash
+ruff check --select UP --add-noqa .   # Suppress existing pyupgrade violations
+# Then gradually remove noqa comments as you fix them
+```
+
+### Configuration Files
+
+Ruff reads config from `pyproject.toml`, `ruff.toml`, or `.ruff.toml` (in that precedence order). Config is hierarchical — the closest file to a given source file wins. Ruff does not merge parent configs; use `extend` for inheritance:
+
+```toml
+# ruff.toml
+extend = "../ruff.toml"    # Inherit from parent
+line-length = 100           # Override specific setting
+```
+
+In `pyproject.toml`, prefix sections with `tool.ruff`:
 
 ```toml
 [tool.ruff]
 line-length = 88
-target-version = "py310"
 
 [tool.ruff.lint]
-select = ["E4", "E7", "E9", "F", "B", "UP", "I"]
-ignore = ["E501"]
-
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["E402"]
+select = ["E", "F", "I", "UP", "B"]
 
 [tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
+quote-style = "single"
 ```
 
-### Configuration via `ruff.toml`
+### Key Configuration Settings
 
-```toml
-line-length = 88
-target-version = "py310"
+| Setting | Default | Description |
+|---|---|---|
+| `line-length` | 88 | Max line length (same as Black) |
+| `target-version` | py38 | Minimum Python version (`py37`–`py313`) |
+| `src` | `["."]` | Directories for first-party import detection |
+| `exclude` | `.git`, `.venv`, etc. | Paths to skip discovery |
+| `lint.select` | `["E4","E7","E9","F"]` | Rule codes to enable |
+| `lint.ignore` | `[]` | Rule codes to disable |
+| `lint.per-file-ignores` | `{}` | File-pattern → rule ignores map |
+| `preview` | false | Enable unstable rules/features |
 
-[lint]
-select = ["E4", "E7", "E9", "F", "B", "UP", "I"]
-ignore = ["E501"]
+### CLI Config Overrides
 
-[lint.per-file-ignores]
-"__init__.py" = ["E402"]
+Some settings have dedicated flags; others use `--config "key = value"`:
 
-[format]
-quote-style = "double"
-indent-style = "space"
+```bash
+ruff check --select F401 --line-length=100 .
+ruff check --config "lint.dummy-variable-rgx = '__.*'" .
+ruff format --line-length=120 .
 ```
 
-### Suppressing Violations
+### Error Suppression
 
 ```python
-# Inline noqa — ignore specific rule on this line.
+# Inline: ignore specific rules on a line
 x = 1  # noqa: F841
 
-# Ignore multiple rules on one line.
-i = 1  # noqa: E741, F841
-
-# Ignore all violations on a line.
+# Inline: ignore all rules on a line
 x = 1  # noqa
 
-# File-level suppression (place near top of file).
+# File-level: ignore specific rule everywhere in file
 # ruff: noqa: F841
 
-# Block-level suppression.
-# ruff: disable[E501]
-long_string = "Lorem ipsum dolor sit amet ..."
-# ruff: enable[E501]
+# File-level: ignore all rules
+# ruff: noqa
 ```
 
-### Pre-commit Integration
+### Format Suppression
 
-```yaml
-- repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.4.10
-  hooks:
-    - id: ruff-check
-      args: [--fix]
-    - id: ruff-format
+```python
+# fmt: off
+not_formatted = 3
+also_not_formatted = 4
+# fmt: on
+
+# Single-statement skip
+a = [1, 2, 3, 4, 5]  # fmt: skip
 ```
 
-### GitHub Actions
+## Gotchas
 
-```yaml
-name: Ruff
-on: [push, pull_request]
-jobs:
-  ruff:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/ruff-action@v3
-```
+- **`select` replaces, `extend-select` adds** — Using `--select F` on CLI replaces the config's select entirely. Use `--extend-select F` to add on top of existing rules. Same applies in config files: prefer `select` for explicit rule sets, `extend-select` to add categories.
 
-## Advanced Topics
+- **`ALL` enables everything including future rules** — Enabling `select = ["ALL"]` means new rules automatically trigger on upgrade. Pin your Ruff version or use explicit `select` lists instead.
 
-**Linter Deep Dive**: Rule selection, fix safety, error suppression mechanisms → [The Ruff Linter](reference/01-the-ruff-linter.md)
+- **Formatter-linter conflicts** — Running both linter and formatter can clash on rules like `E501` (line-too-long), `W191` (tab-indentation), `COM812`/`COM819` (trailing commas), `ISC001`/`ISC002` (implicit string concatenation). Ruff's defaults avoid these, but if you enable such rules, add them to `lint.ignore`.
 
-**Formatter Deep Dive**: Black compatibility, configuration options, docstring formatting, f-string handling, format suppression → [The Ruff Formatter](reference/02-the-ruff-formatter.md)
+- **Unsafe fixes can change semantics** — By default only safe fixes apply with `--fix`. Some fixes (e.g., `list(x)[0]` → `next(iter(x))`) change exception types. Use `--unsafe-fixes` explicitly when needed.
 
-**Configuration Reference**: File discovery, hierarchical config, CLI flags, per-file-ignores, plugin settings → [Configuring Ruff](reference/03-configuring-ruff.md)
+- **Config discovery is closest-wins, not merged** — Unlike ESLint, Ruff does not cascade settings from parent configs. The nearest config file is used entirely. Use `extend = "../ruff.toml"` for inheritance.
 
-**Rules and Settings**: Rule categories, key settings, preview mode, versioning policy → [Rules and Settings](reference/04-rules-and-settings.md)
+- **`.ruff.toml` > `ruff.toml` > `pyproject.toml`** — If multiple config files exist in the same directory, `.ruff.toml` takes highest precedence.
+
+- **Import sorting requires the linter, not formatter** — `ruff format` does not sort imports. Run `ruff check --select I --fix` then `ruff format`.
+
+- **Preview rules need `preview = true` AND explicit selection** — Even with preview enabled, a preview rule is only active if its code/category is in `select`/`extend-select`. Preview mode alone doesn't auto-enable all preview rules.
+
+- **`src` matters for first-party imports** — If your code lives under `src/`, set `src = ["src"]` or isort will misclassify your imports as third-party.
+
+- **Jupyter notebooks need explicit opt-in** — Add `extend-include = ["*.ipynb"]` to lint/format `.ipynb` files, or pass them directly on the CLI.
+
+- **Exit codes**: `0` = success/no violations, `1` = violations found, `2` = abnormal termination (bad config/CLI). Use `--exit-zero` to always return 0, or `--exit-non-zero-on-fix` to signal when fixes were applied.
+
+## References
+
+Detailed reference material loaded on demand:
+
+- [01-rule-categories.md](references/01-rule-categories.md) — Rule code prefixes (E, F, I, UP, B, etc.) with descriptions and popular rule examples
+- [02-configuration.md](references/02-configuration.md) — Complete configuration reference: settings tables, hierarchical config, per-file ignores, isort options, pydocstyle conventions
+- [03-linter-deep-dive.md](references/03-linter-deep-dive.md) — Rule selection resolution, fix safety model, noqa system, action comments, output formats, caching
+- [04-formatter-deep-dive.md](references/04-formatter-deep-dive.md) — Black compatibility, known deviations, docstring formatting, format suppression pragmas, conflicting lint rules
+- [05-integrations.md](references/05-integrations.md) — VS Code, pre-commit, LSP, Neovim, Emacs, GitHub Actions, Docker
