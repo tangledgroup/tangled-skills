@@ -1683,8 +1683,15 @@ def _make_namespace(cmd_name: str, args: list[str], path: str) -> argparse.Names
     """Build an argparse.Namespace from batch-parsed command + positional args."""
     d = {"path": path}
     attr_names = _BATCH_CMD_ATTRS.get(cmd_name, [])
+    # Optional title fields: None when not provided (matches argparse nargs="?" default)
+    _OPTIONAL_TITLE_FIELDS = {"phase_title", "task_title"}
     for i, name in enumerate(attr_names):
-        val = args[i] if i < len(args) else ""
+        if i < len(args):
+            val = args[i]
+        elif name in _OPTIONAL_TITLE_FIELDS:
+            val = None  # Missing optional title → None (legacy form)
+        else:
+            val = ""
         if name == "value" and val == "":
             val = "__NOW__"
         if name == "deps_raw":
@@ -2333,10 +2340,10 @@ def cmd_add_phase(args: argparse.Namespace) -> None:
     phase_title_arg = args.phase_title
 
     # Determine explicit_num and title from arguments
-    # Empty string (from batch mode) treated as None → legacy form
-    if phase_title_arg:
+    # None (missing arg) → legacy form; empty string → new form (rejected by validate_title)
+    if phase_title_arg is not None:
         # New form: separate ID + title
-        explicit_num, _ = parse_phase_add_arg(phase_ref)
+        explicit_num = parse_phase_arg(phase_ref) if "Phase" in phase_ref else 0
         raw_title = phase_title_arg
     else:
         # Legacy form: combined string in phase_ref (e.g. "Phase 2 ➖ Desc")
@@ -2506,10 +2513,10 @@ def cmd_add_task(args: argparse.Namespace) -> None:
 
     target_phase = parse_phase_arg(phase_ref)
 
-    # Empty string (from batch mode) treated as None → legacy form
-    if task_title_arg:
+    # None (missing arg) → legacy form; empty string → new form (rejected by validate_title)
+    if task_title_arg is not None:
         # New form: separate ID + title
-        explicit_p, explicit_t, _ = parse_task_add_arg(task_ref_arg)
+        explicit_p, explicit_t = parse_task_arg(task_ref_arg) if "Task" in task_ref_arg else (0, 0)
         raw_title = task_title_arg
         # Strip any ⚓ anchor suffix — deps must be added via add-task-dependency
         clean_title, _ = parse_task_deps(raw_title)
