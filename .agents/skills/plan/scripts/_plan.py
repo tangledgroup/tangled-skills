@@ -1012,8 +1012,8 @@ def cmd_sort(args):
 
 # ── Check ───────────────────────────────────────────────────────────────────
 
-def cmd_check(args):
-    plan = parse_plan(args.path)
+def _check_plan(plan):
+    """Run all checks on a parsed plan dict. Returns list of (severity, message) tuples."""
     issues = []
 
     # 1. Checksum
@@ -1072,6 +1072,13 @@ def cmd_check(args):
         if not phase["tasks"]:
             issues.append(("warning", f"Empty phase: {phase['id']} (no tasks)"))
 
+    return issues
+
+
+def cmd_check(args):
+    plan = parse_plan(args.path)
+    issues = _check_plan(plan)
+
     # Auto-fix
     if args.fix:
         # Fix 1: Emoji derivation
@@ -1124,9 +1131,27 @@ def cmd_check(args):
         plan["updated"] = now_iso()
         write_plan(plan)
 
-    status = "success" if not issues else ("error" if any(i[0] == "error" for i in issues) else "warning")
-    json_out(status, "check", f"{len(issues)} issue(s) found" if issues else "No issues found",
-             path=plan["path"], issues=issues, fixed=args.fix)
+    # After fixing, re-check to determine post-fix status
+    if args.fix and issues:
+        # Re-parse the written file to get post-fix state
+        plan_fixed = parse_plan(args.path)
+        remaining_issues = _check_plan(plan_fixed)
+        if not remaining_issues:
+            status = "success"
+            msg = f"Fixed {len(issues)} issue(s)"
+            issues_out = issues
+        else:
+            # Some issues remain (e.g., checksum errors that can't be auto-fixed)
+            status = "error" if any(i[0] == "error" for i in remaining_issues) else "warning"
+            msg = f"Fixed some issues; {len(remaining_issues)} remaining"
+            issues_out = remaining_issues
+    else:
+        status = "success" if not issues else ("error" if any(i[0] == "error" for i in issues) else "warning")
+        msg = f"{len(issues)} issue(s) found" if issues else "No issues found"
+        issues_out = issues
+
+    json_out(status, "check", msg,
+             path=plan["path"], issues=issues_out, fixed=args.fix)
 
 
 # ── Get Plan (structured output) ────────────────────────────────────────────
@@ -1192,10 +1217,18 @@ def cmd_get_plan(args):
                     "dependencies": t["dependencies"],
                 })
 
+    # Wrap in standard JSON output format (status/command/message + data payload)
+    out = {
+        "status": "success",
+        "command": "get-plan",
+        "message": f"Plan: {plan['title']}",
+        "path": plan["path"],
+        "data": data,
+    }
     if fmt == "yaml":
-        print(_to_yaml(data), flush=True)
+        print(_to_yaml(out), flush=True)
     else:
-        print(json.dumps(data, ensure_ascii=False, indent=2), flush=True)
+        print(json.dumps(out, ensure_ascii=False, indent=2), flush=True)
 
 
 def _to_yaml(obj, indent=0):

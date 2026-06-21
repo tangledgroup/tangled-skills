@@ -24,15 +24,12 @@ Five status emojis are used across plan, phase, and task levels:
 - ❌ **Error** — blocked by failure or critical issue
 - ☑ **Done** — completed successfully
 
-**Transitions (tasks and phases):**
+**Transitions (tasks, phases, and plans):**
 - `☐ → ⚙️` — start working · `☐ → ❓` — need clarification first
 - `⚙️ → ☑` — completed · `⚙️ → ❓` — unexpected question arose
 - `⚙️ → ❌` — error blocked progress
-- `❓ → ⚙️` — resolved, resume · `❌ → ⚙️` — retry · `❌ → ❓` — need help
-
-**Plan-level transitions** include all above plus:
-- `☐ → ❓` — scope unclear at creation
-- `❓ → ❌` — blocker discovered during clarification (bypasses ⚙️)
+- `❓ → ⚙️` — resolved, resume · `❓ → ❌` — blocker discovered (bypasses ⚙️)
+- `❌ → ⚙️` — retry · `❌ → ❓` — need help
 
 ⚙️ is always required before ☑ — you cannot skip directly to Done.
 
@@ -44,12 +41,14 @@ Use `plan.sh` for every PLAN.md operation. Never edit PLAN.md directly — not e
 
 ### JSON Output
 
+
 Every subcommand outputs valid JSON to stdout with these fields:
 - `status` — one of: `"success"`, `"warning"`, `"error"`, or `"skipped"`
 - `command` — the subcommand name (e.g., `"add-phase"`)
 - `message` — human-readable description
 
-Additional fields vary by command (e.g., `path`, `value`, `data`, `issues`).
+Additional fields vary by command (e.g., `path`, `value`, `issues`).
+`get-plan` wraps the full plan structure inside a `data` field.
 On error, exit code is 1. On success or warning, exit code is 0.
 
 ### Individual Mode
@@ -84,7 +83,8 @@ plan.sh set-plan-created PLAN.md $(date -u +"%Y-%m-%dT%H:%M:%SZ")
 plan.sh set-plan-updated PLAN.md --now # UTC ISO format "%Y-%m-%dT%H:%M:%SZ"
 plan.sh set-plan-updated PLAN.md $(date -u +"%Y-%m-%dT%H:%M:%SZ")
 plan.sh set-plan-current-phase PLAN.md "Phase 2" # copies `[emoji-of-phase]` of "Phase 2"
-plan.sh set-plan-current-task PLAN.md "Task 2.3" # copies `[emoji-of-task]` of "Task 2.3"
+
+plan.sh set-plan-current-task PLAN.md "Phase 2" "Task 2.3" # copies `[emoji-of-task]` of "Task 2.3"
 
 #
 # Status reads
@@ -255,4 +255,4 @@ All mutating and read-only commands are supported in batch mode.
 - **Batch mode preserves successful mutations on error** — if any step fails, all affected PLAN.md files are written with successful changes applied up to that point. If the failed command is `set-task-status`, the task is marked ❌ (Error) so you can see what happened. Remaining steps are marked `"skipped"` and not executed.
 - **Batch mode supports multi-plan workflows** — each step can target a different PLAN.md. In JSON mode use `"plan_path"` per step; in line mode append `@path` at end of the line. Each result includes a `"path"` field showing which plan was operated on.
 - **Error propagates up through the hierarchy** — a single task at ❌ causes its phase to derive as ❌, which can cause the entire plan to derive as ❌. To unblock the plan, resolve the error task (`❌ → ⚙️ → ☑`) or mark it as done if the error was a false alarm.
-- **Direct status overrides require valid transitions** — `set-plan-status` and `set-phase-status` follow transition rules. Tasks and phases cannot jump from ☐ to ❌ (must go through ⚙️ first: `☐ → ⚙️ → ❌`). Plan-level transitions additionally allow ❓ → ❌ (discovered a blocker during clarification). Use `check --fix` to restore auto-derived values.
+- **Direct status overrides require valid transitions** — `set-plan-status`, `set-phase-status`, and `set-task-status` follow transition rules. Cannot jump from ☐ to ❌ or ☑ (must go through ⚙️ first: `☐ → ⚙️ → ❌`). The `❓ → ❌` transition is allowed at all levels (blocker discovered during clarification bypasses ⚙️). Use `check --fix` to restore auto-derived values.

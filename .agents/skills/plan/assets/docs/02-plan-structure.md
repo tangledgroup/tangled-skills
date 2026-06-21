@@ -54,7 +54,7 @@ The plan emoji is **derived from its phases**, not set independently:
 
 When a plan transitions to ☑, it means every single task in every single phase is ☑. The script auto-derives the plan emoji after every edit. Do not mark the plan as completed until this condition is met.
 
-**Manual override:** `set-plan-status` and `set-phase-status` allow temporary manual overrides (e.g. marking a plan as ❓ when scope is unclear). Plan-level overrides additionally allow ❓ → ❌ (blocker discovered during clarification). Run `check --fix` to restore derived values from actual task/phase states.
+**Manual override:** `set-plan-status` and `set-phase-status` allow temporary manual overrides (e.g. marking a plan as ❓ when scope is unclear). Run `check --fix` to restore derived values from actual task/phase states.
 
 ## Phase Status Derivation
 
@@ -89,5 +89,6 @@ These are valid state transitions:
 - ⚙️ → ❌ — during work, critical error or blocker stopped progress
 - ⚙️ → ☑ — during work, successfully completed
 - ❓ → ⚙️ — question resolved, resume working
+- ❓ → ❌ — blocker discovered during clarification (bypasses ⚙️)
 - ❌ → ⚙️ — error state, decide to retry based on experience
 - ❌ → ❓ — error state, need clarification to proceed
