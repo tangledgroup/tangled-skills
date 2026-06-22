@@ -284,7 +284,7 @@ def parse_plan_data(content: str, mode: str = "list", status_type: str = "emoji"
                      "TEXT" (uppercase name). "symbol" is alias for "emoji".
 
     Returns:
-        tree mode  -> dict with title, emoji, depends_on, created, updated,
+        tree mode  -> dict with title, status, depends_on, created, updated,
                        current_phase, current_task, phases (each with tasks).
         list mode  -> list[dict] of flat items alternating phase/task entries.
     """
@@ -389,7 +389,7 @@ def parse_plan_data(content: str, mode: str = "list", status_type: str = "emoji"
             items.append({
                 "type": "phase",
                 "id": p["id"],
-                "emoji": format_status(p["emoji"], status_type),
+                "status": format_status(p["emoji"], status_type),
                 "title": p["title"],
             })
             for t in p["tasks"]:
@@ -397,7 +397,7 @@ def parse_plan_data(content: str, mode: str = "list", status_type: str = "emoji"
                     "type": "task",
                     "phase_id": p["id"],
                     "id": t["id"],
-                    "emoji": format_status(t["emoji"], status_type),
+                    "status": format_status(t["emoji"], status_type),
                     "title": t["title"],
                     "dependencies": t["dependencies"],
                 })
@@ -406,7 +406,7 @@ def parse_plan_data(content: str, mode: str = "list", status_type: str = "emoji"
     # tree mode (default)
     return {
         "title": title,
-        "emoji": format_status(emoji, status_type),
+        "status": format_status(emoji, status_type),
         "depends_on": depends_on,
         "created": created,
         "updated": updated,
@@ -415,12 +415,12 @@ def parse_plan_data(content: str, mode: str = "list", status_type: str = "emoji"
         "phases": [
             {
                 "id": p["id"],
-                "emoji": format_status(p["emoji"], status_type),
+                "status": format_status(p["emoji"], status_type),
                 "title": p["title"],
                 "tasks": [
                     {
                         "id": t["id"],
-                        "emoji": format_status(t["emoji"], status_type),
+                        "status": format_status(t["emoji"], status_type),
                         "title": t["title"],
                         "dependencies": t["dependencies"],
                         "sub_bullets": t["sub_bullets"],
