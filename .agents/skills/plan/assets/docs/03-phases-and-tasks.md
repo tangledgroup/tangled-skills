@@ -6,7 +6,7 @@ Add phases with `plan.sh add-phase`. Each phase has a unique ID in the format `P
 
 Phases are inserted in ascending numeric order — adding Phase 3 after Phase 1 places it correctly. Use `plan.sh sort PLAN.md` to reorder if phases become out of order.
 
-A phase with zero tasks can never reach ☑ (Done) and is likely a mistake — the script will warn.
+A phase with zero tasks can never reach ✅ (Done) and is likely a mistake — the script will warn.
 
 ## Tasks
 
@@ -29,12 +29,12 @@ Each task should be small enough to complete in one focused work session and lar
 
 ### Task Dependencies
 
-Dependencies are managed with `plan.sh add-task-dependency` and `plan.sh remove-task-dependency`. Dependent tasks must reach ☑ before the current task can proceed.
+Dependencies are managed with `plan.sh add-task-dependency` and `plan.sh remove-task-dependency`. Dependent tasks must reach ✅ before the current task can proceed.
 
 For **phase-bound** dependencies (same phase), reference by task ID: `Task X.Y`.
 For **cross-phase** dependencies, use full form: `Phase X - Task X.Y`.
 
-`plan.sh` enforces dependency satisfaction: it will **reject** transitioning a task to ⚙️ if any dependency is not ☑.
+`plan.sh` enforces dependency satisfaction: it will **reject** transitioning a task to ⚙️ if any dependency is not ✅.
 
 ## Argument Convention
 

@@ -8,7 +8,7 @@ stateDiagram-v2
     state "❓ Question\nquestion or clarification" as question
     state "⚙️ Doing\nin progress / wip" as doing
     state "❌ Error\nerror / failure" as error
-    state "☑ Done\ncompleted / done" as done
+    state "✅ Done\ncompleted / done" as done
 
     todo --> doing
     todo --> question

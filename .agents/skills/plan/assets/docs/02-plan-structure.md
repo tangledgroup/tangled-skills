@@ -6,8 +6,10 @@
 
 ## Universal Emoji-Coded Statuses
 
-Strictly use only the following emojis for statuses: ☐ ❓ ⚙️ ❌ ☑
-⚙️ (Doing) is always required before reaching ☑ (Done).
+Strictly use only the following emojis for statuses: ☐ ❓ ⚙️ ❌ ✅
+⚙️ (Doing) is always required before reaching ✅ (Done).
+
+**Emoji aliases:** `plan.sh` accepts `⚙` (plain) as alias for `⚙️`, and `☑` / `☑️` as aliases for `✅`. All are normalized to canonical forms internally. PLAN.md always stores `⚙️` and `✅`.
 
 ## Plan Statuses
 
@@ -22,7 +24,7 @@ Strictly use following emojis for `[emoji-of-plan]` status:
 - ❓ **Question** — plan exists but requirements or scope need clarification before work can begin
 - ⚙️ **Doing** — at least one phase or task is in progress
 - ❌ **Error** — cannot proceed due to dependency cycles, unresolved external blockers, or critical failures across the plan
-- ☑ **Done** — all phases and all tasks within them have reached ☑
+- ✅ **Done** — all phases and all tasks within them have reached ✅
 
 ### Plan Status Transitions
 
@@ -32,13 +34,13 @@ These are valid state transitions for `[emoji-of-plan]`:
 - ☐ → ❓ — plan created but scope or requirements need clarification before starting
 - ⚙️ → ❓ — during work, something unexpected happened, need clarification
 - ⚙️ → ❌ — critical error or blocker stops all progress across the plan
-- ⚙️ → ☑ — all phases and tasks completed successfully
+- ⚙️ → ✅ — all phases and tasks completed successfully
 - ❓ → ⚙️ — question resolved, begin work
 - ❓ → ❌ — during clarification, a critical blocker was discovered that makes the plan unactionable (e.g., required infrastructure unavailable, budget cut, technology incompatible). Marking ❌ signals "cannot proceed until this blocker is resolved" without requiring ⚙️ first. Run `check --fix` to restore the derived value from actual task states.
 - ❌ → ⚙️ — error resolved, resume work
 - ❌ → ❓ — need clarification to proceed
 
-⚙️ (Doing) is always required before reaching ☑ (Done). You cannot skip to Done from Todo or Error states.
+⚙️ (Doing) is always required before reaching ✅ (Done). You cannot skip to Done from Todo or Error states.
 
 These transitions are **enforced by `plan.sh`** — calling `plan.sh set-task-status` with an invalid transition will error. Do not manually set emojis in PLAN.md.
 
@@ -46,13 +48,13 @@ These transitions are **enforced by `plan.sh`** — calling `plan.sh set-task-st
 
 The plan emoji is **derived from its phases**, not set independently:
 
-- ☑ **Done** — only when **all** phases have reached ☑
+- ✅ **Done** — only when **all** phases have reached ✅
 - ⚙️ **Doing** — when at least one phase is ⚙️ or has a task that is ⚙️
-- ❓ **Question** — when no phase is ⚙️/☑ but at least one is ❓
-- ❌ **Error** — when no phase is ⚙️/☑ but at least one is ❌
+- ❓ **Question** — when no phase is ⚙️/✅ but at least one is ❓
+- ❌ **Error** — when no phase is ⚙️/✅ but at least one is ❌
 - ☐ **Todo** — fallback (all phases are ☐, or mixed with no active status)
 
-When a plan transitions to ☑, it means every single task in every single phase is ☑. The script auto-derives the plan emoji after every edit. Do not mark the plan as completed until this condition is met.
+When a plan transitions to ✅, it means every single task in every single phase is ✅. The script auto-derives the plan emoji after every edit. Do not mark the plan as completed until this condition is met.
 
 **Manual override:** `set-plan-status` and `set-phase-status` allow temporary manual overrides (e.g. marking a plan as ❓ when scope is unclear). Run `check --fix` to restore derived values from actual task/phase states.
 
@@ -60,15 +62,15 @@ When a plan transitions to ☑, it means every single task in every single phase
 
 A phase emoji is **derived from its tasks**, not set independently:
 
-- ☑ **Done** — only when **all** tasks within the phase have reached ☑
+- ✅ **Done** — only when **all** tasks within the phase have reached ✅
 - ⚙️ **Doing** — when at least one task is ⚙️ (Doing)
-- ❓ **Question** — when no task is ⚙️ or ☑ but at least one is ❓
-- ❌ **Error** — when no task is ⚙️ or ☑ but at least one is ❌
-- ☐ **Todo** — fallback (all tasks are ☐, or mixed ☑+☐ with no active status)
+- ❓ **Question** — when no task is ⚙️ or ✅ but at least one is ❓
+- ❌ **Error** — when no task is ⚙️ or ✅ but at least one is ❌
+- ☐ **Todo** — fallback (all tasks are ☐, or mixed ✅+☐ with no active status)
 
 The script auto-derives phase and plan emojis after every mutation. You can temporarily override with `set-plan-status` or `set-phase-status`, but `check --fix` will restore derived values.
 
-**Error propagation:** When a task reaches ❌ (Error), its phase derives to ❌, and the plan derives to ❌ if no other phase is ⚙️ or ☑. Error cascades up: Task ❌ → Phase ❌ → Plan ❌. This means a single failed task can block the entire plan status from reaching ☑.
+**Error propagation:** When a task reaches ❌ (Error), its phase derives to ❌, and the plan derives to ❌ if no other phase is ⚙️ or ✅. Error cascades up: Task ❌ → Phase ❌ → Plan ❌. This means a single failed task can block the entire plan status from reaching ✅.
 
 ## Phase and Task Statuses
 
@@ -78,7 +80,7 @@ Strictly use following emojis for `[emoji-of-phase]` and `[emoji-of-task]` statu
 - ❓ **Question** – question or clarification
 - ⚙️ **Doing** – in progress / wip
 - ❌ **Error** – error / failure
-- ☑ **Done** – completed / done
+- ✅ **Done** – completed / done
 
 ## Phase and Task Status Transitions
 
@@ -87,7 +89,7 @@ These are valid state transitions:
 - ☐ → ❓ — new item, something is unclear, ask for clarification
 - ⚙️ → ❓ — during work, something unexpected happened, need clarification
 - ⚙️ → ❌ — during work, critical error or blocker stopped progress
-- ⚙️ → ☑ — during work, successfully completed
+- ⚙️ → ✅ — during work, successfully completed
 - ❓ → ⚙️ — question resolved, resume working
 - ❓ → ❌ — blocker discovered during clarification (bypasses ⚙️)
 - ❌ → ⚙️ — error state, decide to retry based on experience

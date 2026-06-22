@@ -15,7 +15,7 @@ EMOJI_TODO = "\u2610"               # ☐ todo
 EMOJI_QUESTION = "\u2753"           # ❓ question
 EMOJI_DOING = "\u2699\ufe0f"        # ⚙️ doing
 EMOJI_ERROR = "\u274c"              # ❌ error
-EMOJI_DONE = "\u2611"               # ☑ done
+EMOJI_DONE = "\u2705"               # ✅ done
 
 ALL_EMOJI = {
     EMOJI_TODO,
@@ -24,6 +24,24 @@ ALL_EMOJI = {
     EMOJI_ERROR,
     EMOJI_DONE,
 }
+
+# Alias map: input variants → canonical emoji
+# Users may type ⚙ instead of ⚙️, or ☑/☑️ instead of ✅
+_EMOJI_ALIASES = {
+    "\u2699": EMOJI_DOING,              # ⚙ (plain) → ⚙️
+    "\u2611": EMOJI_DONE,               # ☑ (plain) → ✅
+    "\u2611\ufe0f": EMOJI_DONE,        # ☑️ (with VS) → ✅
+}
+
+
+def normalize_emoji(raw):
+    """Normalize user input emoji to canonical form.
+
+    Accepts aliases (⚙, ☑, ☑️) and maps them to canonical
+    representations (⚙️, ✅). Returns the raw value unchanged
+    if it is already canonical.
+    """
+    return _EMOJI_ALIASES.get(raw, raw)
 
 VALID_TASK_TRANSITIONS = {
     (EMOJI_TODO, EMOJI_DOING),
@@ -42,8 +60,10 @@ VALID_PLAN_TRANSITIONS = VALID_TASK_TRANSITIONS.copy()
 SEPARATOR = "\u2796"  # ➖
 ANCHOR = "\u2693"     # ⚓
 
-# Regex-safe emoji pattern (⚙️ is two codepoints)
-_EMOJI_PAT = r'(?:[\u2610\u2753\u274c\u2611]|\u2699\ufe0f)'
+# Regex-safe emoji pattern — matches all canonical emojis plus aliases
+# Canonical: ☐ ❓ ⚙️(2cp) ❌ ✅
+# Aliases:  ⚙ (plain gear), ☑ / ☑️(2cp)
+_EMOJI_PAT = r'(?:[\u2610\u2753\u274c\u2705\u2611]|⚙\ufe0f|\u2611\ufe0f)'
 
 
 # JSON Output Helpers
@@ -122,7 +142,7 @@ def _try_parse_plan(path):
     m = re.match(r'#\s*(?:(' + _EMOJI_PAT + r')?\s*)Plan\s*' + re.escape(SEPARATOR) + r'\s*(.*)', h1)
     if not m:
         return None, f"Invalid H1 format: {h1}"
-    plan["emoji"] = m.group(1) or EMOJI_TODO
+    plan["emoji"] = normalize_emoji(m.group(1)) if m.group(1) else EMOJI_TODO
     plan["title"] = m.group(2).strip()
 
     # Parse header fields
@@ -152,7 +172,7 @@ def _try_parse_plan(path):
 
         pm = re.match(r'^##\s*(' + _EMOJI_PAT + r')?\s*(Phase\s+\d+)\s*' + re.escape(SEPARATOR) + r'\s*(.*)', line)
         if pm:
-            phase_emoji = pm.group(1) or EMOJI_TODO
+            phase_emoji = normalize_emoji(pm.group(1)) if pm.group(1) else EMOJI_TODO
             phase_id = pm.group(2)
             phase_title = pm.group(3).strip()
             current_phase = {
@@ -174,7 +194,7 @@ def _try_parse_plan(path):
             )
             if tm:
                 task = {
-                    "emoji": tm.group(1) or EMOJI_TODO,
+                    "emoji": normalize_emoji(tm.group(1)) if tm.group(1) else EMOJI_TODO,
                     "id": tm.group(2),
                     "title": tm.group(3).strip(),
                     "dependencies": [],
@@ -240,7 +260,7 @@ def parse_plan_data(content: str, mode: str = "list") -> list[dict] | dict:
     m = re.match(r'#\s*(?:(' + _EMOJI_PAT + r')?\s*)Plan\s*' + re.escape(SEPARATOR) + r'\s*(.*)', h1)
     if not m:
         raise ValueError(f"Invalid H1 format: {h1}")
-    emoji = m.group(1) or EMOJI_TODO
+    emoji = normalize_emoji(m.group(1)) if m.group(1) else EMOJI_TODO
     title = m.group(2).strip()
 
     # Parse header fields
@@ -271,7 +291,7 @@ def parse_plan_data(content: str, mode: str = "list") -> list[dict] | dict:
         pm = re.match(r'^##\s*(' + _EMOJI_PAT + r')?\s*(Phase\s+\d+)\s*' + re.escape(SEPARATOR) + r'\s*(.*)', line)
         if pm:
             current_phase_obj = {
-                "emoji": pm.group(1) or EMOJI_TODO,
+                "emoji": normalize_emoji(pm.group(1)) if pm.group(1) else EMOJI_TODO,
                 "id": pm.group(2),
                 "title": pm.group(3).strip(),
                 "tasks": [],
@@ -289,7 +309,7 @@ def parse_plan_data(content: str, mode: str = "list") -> list[dict] | dict:
             )
             if tm:
                 task: dict = {
-                    "emoji": tm.group(1) or EMOJI_TODO,
+                    "emoji": normalize_emoji(tm.group(1)) if tm.group(1) else EMOJI_TODO,
                     "id": tm.group(2),
                     "title": tm.group(3).strip(),
                     "dependencies": [],
@@ -853,7 +873,7 @@ def cmd_get_task_status(args):
 
 def cmd_set_all_statuses(args):
     plan = parse_plan(args.path)
-    emoji = args.emoji
+    emoji = normalize_emoji(args.emoji)
     if not validate_emoji(emoji):
         die("set-all-statuses", f"Invalid emoji: {emoji}")
     plan["emoji"] = emoji
@@ -870,7 +890,7 @@ def cmd_set_all_statuses(args):
 
 def cmd_set_plan_status(args):
     plan = parse_plan(args.path)
-    new = args.emoji
+    new = normalize_emoji(args.emoji)
     if not validate_emoji(new):
         die("set-plan-status", f"Invalid emoji: {new}")
     old = plan["emoji"]
@@ -887,7 +907,7 @@ def cmd_set_phase_status(args):
     phase = find_phase(plan, args.phase_id)
     if not phase:
         die("set-phase-status", f"Phase not found: {args.phase_id}")
-    new = args.emoji
+    new = normalize_emoji(args.emoji)
     if not validate_emoji(new):
         die("set-phase-status", f"Invalid emoji: {new}")
     old = phase["emoji"]
@@ -905,7 +925,7 @@ def cmd_set_task_status(args):
     if not task:
         die("set-task-status", f"Task not found: {args.phase_id} / {args.task_id}")
 
-    new = args.emoji
+    new = normalize_emoji(args.emoji)
     if not validate_emoji(new):
         die("set-task-status", f"Invalid emoji: {new}")
     old = task["emoji"]
@@ -1844,7 +1864,7 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans, default_dir=No
 
         # Status writes
         if cmd == "set-all-statuses":
-            emoji = args[0] if args else EMOJI_TODO
+            emoji = normalize_emoji(args[0]) if args else EMOJI_TODO
             if emoji not in ALL_EMOJI:
                 return {**result_base, "status": "error", "command": cmd,
                         "message": f"Invalid emoji: {emoji}"}
@@ -1858,7 +1878,7 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans, default_dir=No
                     "message": f"All statuses set to {emoji}", "_mutation": True}
 
         if cmd == "set-plan-status":
-            emoji = args[0] if args else EMOJI_DOING
+            emoji = normalize_emoji(args[0]) if args else EMOJI_DOING
             if emoji not in ALL_EMOJI:
                 return {**result_base, "status": "error", "command": cmd,
                         "message": f"Invalid emoji: {emoji}"}
@@ -1880,7 +1900,7 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans, default_dir=No
             if not phase:
                 return {**result_base, "status": "error", "command": cmd,
                         "message": f"Phase not found: {args[0]}"}
-            emoji = args[1] if len(args) > 1 else EMOJI_DOING
+            emoji = normalize_emoji(args[1]) if len(args) > 1 else EMOJI_DOING
             if emoji not in ALL_EMOJI:
                 return {**result_base, "status": "error", "command": cmd,
                         "message": f"Invalid emoji: {emoji}"}
@@ -1902,7 +1922,7 @@ def _execute_batch_step(cmd, args, path, plan_cache, dirty_plans, default_dir=No
             if not task:
                 return {**result_base, "status": "error", "command": cmd,
                         "message": f"Task not found: {args[0]} / {args[1]}"}
-            emoji = args[2] if len(args) > 2 else EMOJI_DOING
+            emoji = normalize_emoji(args[2]) if len(args) > 2 else EMOJI_DOING
             if emoji not in ALL_EMOJI:
                 return {**result_base, "status": "error", "command": cmd,
                         "message": f"Invalid emoji: {emoji}"}

@@ -22,12 +22,12 @@ Five status emojis are used across plan, phase, and task levels:
 - ❓ **Question** — needs clarification before work can begin
 - ⚙️ **Doing** — in progress
 - ❌ **Error** — blocked by failure or critical issue
-- ☑ **Done** — completed successfully
+- ✅ **Done** — completed successfully
 
 **Transitions (tasks, phases, and plans):**
 - `☐ → ⚙️` — start working
 - `☐ → ❓` — need clarification first
-- `⚙️ → ☑` — completed 
+- `⚙️ → ✅` — completed 
 - `⚙️ → ❓` — unexpected question arose
 - `⚙️ → ❌` — error blocked progress
 - `❓ → ⚙️` — resolved, resume
@@ -35,7 +35,7 @@ Five status emojis are used across plan, phase, and task levels:
 - `❌ → ⚙️` — retry
 - `❌ → ❓` — need help
 
-⚙️ is always required before ☑ — you cannot skip directly to Done.
+⚙️ is always required before ✅ — you cannot skip directly to Done.
 
 **Derivation:** plan status derives from phases, phase status derives from tasks. `check --fix` restores auto-derived values after manual overrides.
 
@@ -248,6 +248,7 @@ All mutating and read-only commands are supported in batch mode.
 ## Gotchas
 
 - **Scripts require:** — `python3` 3.10+ with only built-in modules, and no third-party packages needed.
+- **Emoji aliases are accepted** — `⚙` (plain) is treated as `⚙️` (Doing), and `☑` / `☑️` are treated as `✅` (Done). All variants are normalized to canonical forms internally. PLAN.md always stores `⚙️` and `✅`.
 - **Never generate PLAN.md content with the LLM** — do not write, edit, or append to PLAN.md using text generation. Always use `plan.sh` commands. The script enforces status transitions, auto-derives emojis, checks dependency cycles, and maintains a SHA-256 checksum. Any direct edit will cause checksum failures and silent corruption.
 - **Do not guess PLAN.md format** — if you are unsure of a command, read the Usage section below or run `plan.sh --help`. Smaller models are especially prone to hallucinating file content. Resist this impulse.
 - **Never remove-and-re-add phases or tasks** — use update commands (`update-phase`, `update-task`, `set-task-status`, `add-task-dependency`). Removing and re-adding loses numbering continuity, breaks dependencies, and resets statuses. Only remove when the item is genuinely no longer part of the plan.
@@ -257,5 +258,5 @@ All mutating and read-only commands are supported in batch mode.
 - **All subcommands output JSON** — parse the `status` field to determine success/error. Use `"success"`, `"warning"`, `"error"`, or `"skipped"` (in batch mode when a previous step failed).
 - **Batch mode preserves successful mutations on error** — if any step fails, all affected PLAN.md files are written with successful changes applied up to that point. If the failed command is `set-task-status`, the task is marked ❌ (Error) so you can see what happened. Remaining steps are marked `"skipped"` and not executed.
 - **Batch mode supports multi-plan workflows** — each step can target a different PLAN.md. In JSON mode use `"plan_path"` per step; in line mode append `@path` at end of the line. Each result includes a `"path"` field showing which plan was operated on.
-- **Error propagates up through the hierarchy** — a single task at ❌ causes its phase to derive as ❌, which can cause the entire plan to derive as ❌. To unblock the plan, resolve the error task (`❌ → ⚙️ → ☑`) or mark it as done if the error was a false alarm.
-- **Direct status overrides require valid transitions** — `set-plan-status`, `set-phase-status`, and `set-task-status` follow transition rules. Cannot jump from ☐ to ❌ or ☑ (must go through ⚙️ first: `☐ → ⚙️ → ❌`). The `❓ → ❌` transition is allowed at all levels (blocker discovered during clarification bypasses ⚙️). Use `check --fix` to restore auto-derived values.
+- **Error propagates up through the hierarchy** — a single task at ❌ causes its phase to derive as ❌, which can cause the entire plan to derive as ❌. To unblock the plan, resolve the error task (`❌ → ⚙️ → ✅`) or mark it as done if the error was a false alarm.
+- **Direct status overrides require valid transitions** — `set-plan-status`, `set-phase-status`, and `set-task-status` follow transition rules. Cannot jump from ☐ to ❌ or ✅ (must go through ⚙️ first: `☐ → ⚙️ → ❌`). The `❓ → ❌` transition is allowed at all levels (blocker discovered during clarification bypasses ⚙️). Use `check --fix` to restore auto-derived values.
