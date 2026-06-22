@@ -206,6 +206,162 @@ def parse_plan(path):
     return plan
 
 
+def parse_plan_data(content: str, mode: str = "list") -> list[dict] | dict:
+    """Parse PLAN.md content string into structured data.
+    NOTE: Used by 3rd party code. Do not touch it.
+
+    Args:
+        content: Raw PLAN.md file content (with or without checksum line).
+        mode: "tree" returns nested dict, "list" returns flat list[dict].
+
+    Returns:
+        tree mode  -> dict with title, emoji, depends_on, created, updated,
+                       current_phase, current_task, phases (each with tasks).
+        list mode  -> list[dict] of flat items alternating phase/task entries.
+    """
+    content, _ = strip_checksum(content)
+    lines = content.split("\n")
+
+    # Defaults
+    title = ""
+    emoji = EMOJI_TODO
+    depends_on = "NONE"
+    created = ""
+    updated = ""
+    current_phase = "NONE"
+    current_task = "NONE"
+    phases: list[dict] = []
+
+    # Parse H1 title line
+    if not lines or not lines[0].startswith("# "):
+        raise ValueError("Missing H1 title line")
+
+    h1 = lines[0]
+    m = re.match(r'#\s*(?:(' + _EMOJI_PAT + r')?\s*)Plan\s*' + re.escape(SEPARATOR) + r'\s*(.*)', h1)
+    if not m:
+        raise ValueError(f"Invalid H1 format: {h1}")
+    emoji = m.group(1) or EMOJI_TODO
+    title = m.group(2).strip()
+
+    # Parse header fields
+    i = 1
+    while i < len(lines):
+        line = lines[i]
+        hm = re.match(r'^-\s+(Depends On|Created|Updated|Current Phase|Current Task):\s*(.*)', line)
+        if not hm:
+            break
+        key, val = hm.group(1), hm.group(2).strip()
+        if key == "Depends On":
+            depends_on = val
+        elif key == "Created":
+            created = val
+        elif key == "Updated":
+            updated = val
+        elif key == "Current Phase":
+            current_phase = val
+        elif key == "Current Task":
+            current_task = val
+        i += 1
+
+    # Parse phases and tasks
+    current_phase_obj: dict | None = None
+    while i < len(lines):
+        line = lines[i]
+
+        pm = re.match(r'^##\s*(' + _EMOJI_PAT + r')?\s*(Phase\s+\d+)\s*' + re.escape(SEPARATOR) + r'\s*(.*)', line)
+        if pm:
+            current_phase_obj = {
+                "emoji": pm.group(1) or EMOJI_TODO,
+                "id": pm.group(2),
+                "title": pm.group(3).strip(),
+                "tasks": [],
+            }
+            phases.append(current_phase_obj)
+            i += 1
+            continue
+
+        if current_phase_obj is not None and line.startswith("- "):
+            tm = re.match(
+                r'^-\s*(' + _EMOJI_PAT + r')?\s*(Task\s+\d+\.\d+)\s*'
+                + re.escape(SEPARATOR) + r'\s*(.+?)'
+                r'(?:\s+' + re.escape(ANCHOR) + r'\s+((?:Task|Phase).+))?\s*$',
+                line,
+            )
+            if tm:
+                task: dict = {
+                    "emoji": tm.group(1) or EMOJI_TODO,
+                    "id": tm.group(2),
+                    "title": tm.group(3).strip(),
+                    "dependencies": [],
+                    "sub_bullets": [],
+                }
+                if tm.group(4):
+                    task["dependencies"] = [d.strip() for d in tm.group(4).split(",") if d.strip()]
+                current_phase_obj["tasks"].append(task)
+                i += 1
+
+                while i < len(lines) and lines[i].startswith("  - "):
+                    task["sub_bullets"].append(lines[i][4:].strip())
+                    i += 1
+                continue
+
+        i += 1
+
+    # Derive emojis bottom-up
+    for phase in phases:
+        phase["emoji"] = derive_phase_emoji(phase["tasks"])
+    emoji = derive_plan_emoji(phases)
+
+    if mode == "list":
+        items: list[dict] = []
+        for p in phases:
+            items.append({
+                "type": "phase",
+                "id": p["id"],
+                "emoji": p["emoji"],
+                "title": p["title"],
+            })
+            for t in p["tasks"]:
+                items.append({
+                    "type": "task",
+                    "phase_id": p["id"],
+                    "id": t["id"],
+                    "emoji": t["emoji"],
+                    "title": t["title"],
+                    "dependencies": t["dependencies"],
+                })
+        return items
+
+    # tree mode (default)
+    return {
+        "title": title,
+        "emoji": emoji,
+        "depends_on": depends_on,
+        "created": created,
+        "updated": updated,
+        "current_phase": current_phase,
+        "current_task": current_task,
+        "phases": [
+            {
+                "id": p["id"],
+                "emoji": p["emoji"],
+                "title": p["title"],
+                "tasks": [
+                    {
+                        "id": t["id"],
+                        "emoji": t["emoji"],
+                        "title": t["title"],
+                        "dependencies": t["dependencies"],
+                        "sub_bullets": t["sub_bullets"],
+                    }
+                    for t in p["tasks"]
+                ],
+            }
+            for p in phases
+        ],
+    }
+
+
 # Writing
 
 def write_plan(plan):
