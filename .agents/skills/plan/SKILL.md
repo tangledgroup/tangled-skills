@@ -16,13 +16,15 @@ Structured planning system using phases and tasks, tracked in `PLAN.md` files.
 
 ## Statuses
 
-Five status emojis are used across plan, phase, and task levels:
+Five statuses are used across plan, phase, and task levels:
 
 - ☐ **Todo** — backlog / not yet started
 - ❓ **Question** — needs clarification before work can begin
 - ⚙️ **Doing** — in progress
 - ❌ **Error** — blocked by failure or critical issue
 - ✅ **Done** — completed successfully
+
+**Text aliases:** statuses can be set using text names (case-insensitive): `TODO`, `QUESTION`, `DOING`, `ERROR`, `DONE` (or lowercase). Internally, values are always stored as emojis in PLAN.md.
 
 **Transitions (tasks, phases, and plans):**
 - `☐ → ⚙️` — start working
@@ -90,19 +92,24 @@ plan.sh set-plan-current-phase PLAN.md "Phase 2" # copies `[emoji-of-phase]` of 
 plan.sh set-plan-current-task PLAN.md "Phase 2" "Task 2.3" # copies `[emoji-of-task]` of "Task 2.3"
 
 #
-# Status reads
+# Status reads — default returns emoji, use --type for text output
 #
-plan.sh get-plan-status PLAN.md # returns `[emoji-of-plan]` of plan
-plan.sh get-phase-status PLAN.md "Phase 2" # returns `[emoji-of-phase]` of "Phase 2"
-plan.sh get-task-status PLAN.md "Task 2.3" # returns `[emoji-of-task]` of "Task 2.3"
+plan.sh get-plan-status PLAN.md # returns emoji (e.g., ⚙️)
+plan.sh get-plan-status PLAN.md --type text # returns lowercase name (e.g., "doing")
+plan.sh get-plan-status PLAN.md --type TEXT # returns uppercase name (e.g., "DOING")
+plan.sh get-phase-status PLAN.md "Phase 2" # returns emoji
+plan.sh get-phase-status PLAN.md "Phase 2" --type text # returns lowercase
+plan.sh get-task-status PLAN.md "Task 2.3" --type TEXT # returns uppercase
 
 #
-# Status writes
+# Status writes — accept emojis or text aliases (case-insensitive)
 #
 plan.sh set-all-statuses PLAN.md ☐ # set plan, all phases, and all tasks status to be the same - use with caution
+plan.sh set-all-statuses PLAN.md TODO # same as above using text alias
 plan.sh set-plan-status PLAN.md ⚙️ # manual override — `check --fix` re-derives from phases
-plan.sh set-phase-status PLAN.md "Phase 2" ⚙️ # manual override — `check --fix` re-derives from tasks
-plan.sh set-task-status PLAN.md "Task 2.3" ⚙️ # sets `[emoji-of-task]` for "Task 2.3"
+plan.sh set-plan-status PLAN.md doing # same as above using text alias
+plan.sh set-phase-status PLAN.md "Phase 2" DOING # manual override — `check --fix` re-derives from tasks
+plan.sh set-task-status PLAN.md "Task 2.3" error # sets ❌ for "Task 2.3" using text alias
 
 #
 # add-phase — ID and title as separate arguments
@@ -171,12 +178,15 @@ plan.sh check PLAN.md --fix        # report + auto-fix recoverable issues
 #
 # View modes: --list (flat) or --tree (nested). Default: --list.
 # Output formats: --json or --yaml. Default: --json.
+# Status types: --type emoji|text|TEXT. Default: emoji.
 #
 plan.sh get-plan PLAN.md                 # default: --list --json
 plan.sh get-plan PLAN.md --list --json   # flat list, JSON (same as default)
 plan.sh get-plan PLAN.md --list --yaml   # flat list, YAML
 plan.sh get-plan PLAN.md --tree --json   # nested tree, JSON
 plan.sh get-plan PLAN.md --tree --yaml   # nested tree, YAML
+plan.sh get-plan PLAN.md --type text     # statuses as lowercase names ("doing", "done")
+plan.sh get-plan PLAN.md --type TEXT     # statuses as uppercase names ("DOING", "DONE")
 ```
 
 ### Batch Mode
@@ -248,7 +258,8 @@ All mutating and read-only commands are supported in batch mode.
 ## Gotchas
 
 - **Scripts require:** — `python3` 3.10+ with only built-in modules, and no third-party packages needed.
-- **Emoji aliases are accepted** — `⚙` (plain) is treated as `⚙️` (Doing), and `☑` / `☑️` are treated as `✅` (Done). All variants are normalized to canonical forms internally. PLAN.md always stores `⚙️` and `✅`.
+- **Emoji and text aliases are accepted** — emoji aliases: `⚙` (plain) → `⚙️`, `☑` / `☑️` → `✅`. Text aliases (case-insensitive): `TODO`, `QUESTION`, `DOING`, `ERROR`, `DONE` (or lowercase). All variants are normalized to canonical emojis internally. PLAN.md always stores emoji forms.
+- **Use `--type` on get-status commands** — by default, status reads return emojis. Use `--type text` for lowercase names ("doing") or `--type TEXT` for uppercase ("DOING"). Available on `get-plan-status`, `get-phase-status`, `get-task-status`, and `get-plan`.
 - **Never generate PLAN.md content with the LLM** — do not write, edit, or append to PLAN.md using text generation. Always use `plan.sh` commands. The script enforces status transitions, auto-derives emojis, checks dependency cycles, and maintains a SHA-256 checksum. Any direct edit will cause checksum failures and silent corruption.
 - **Do not guess PLAN.md format** — if you are unsure of a command, read the Usage section below or run `plan.sh --help`. Smaller models are especially prone to hallucinating file content. Resist this impulse.
 - **Never remove-and-re-add phases or tasks** — use update commands (`update-phase`, `update-task`, `set-task-status`, `add-task-dependency`). Removing and re-adding loses numbering continuity, breaks dependencies, and resets statuses. Only remove when the item is genuinely no longer part of the plan.

@@ -25,7 +25,7 @@ ALL_EMOJI = {
     EMOJI_DONE,
 }
 
-# Alias map: input variants → canonical emoji
+# Alias map: input emoji variants → canonical emoji
 # Users may type ⚙ instead of ⚙️, or ☑/☑️ instead of ✅
 _EMOJI_ALIASES = {
     "\u2699": EMOJI_DOING,              # ⚙ (plain) → ⚙️
@@ -33,15 +33,62 @@ _EMOJI_ALIASES = {
     "\u2611\ufe0f": EMOJI_DONE,        # ☑️ (with VS) → ✅
 }
 
+# Text aliases: text input → canonical emoji (case-insensitive lookup)
+_TEXT_ALIASES = {
+    "todo": EMOJI_TODO,
+    "question": EMOJI_QUESTION,
+    "doing": EMOJI_DOING,
+    "error": EMOJI_ERROR,
+    "done": EMOJI_DONE,
+}
+
+# Reverse map: canonical emoji → status name
+_EMOJI_TO_STATUS = {
+    EMOJI_TODO: "todo",
+    EMOJI_QUESTION: "question",
+    EMOJI_DOING: "doing",
+    EMOJI_ERROR: "error",
+    EMOJI_DONE: "done",
+}
+
 
 def normalize_emoji(raw):
-    """Normalize user input emoji to canonical form.
+    """Normalize user input to canonical emoji.
 
-    Accepts aliases (⚙, ☑, ☑️) and maps them to canonical
-    representations (⚙️, ✅). Returns the raw value unchanged
-    if it is already canonical.
+    Accepts:
+    - Emoji aliases (⚙, ☑, ☑️) → canonical forms (⚙️, ✅)
+    - Text aliases (TODO, doing, Error, etc.) → canonical emoji
+    - Already-canonical emojis passed through unchanged.
     """
+    # Check text alias first (case-insensitive)
+    lower = raw.lower()
+    if lower in _TEXT_ALIASES:
+        return _TEXT_ALIASES[lower]
+    # Check emoji alias
     return _EMOJI_ALIASES.get(raw, raw)
+
+
+def format_status(emoji: str, status_type: str = "emoji") -> str:
+    """Format an emoji status according to the requested type.
+
+    Args:
+        emoji: Canonical emoji (e.g., EMOJI_DOING).
+        status_type: "emoji" (default), "text" (lowercase name),
+                     "TEXT" (uppercase name). "symbol" is alias for "emoji".
+
+    Returns:
+        Formatted status string.
+    """
+    if status_type == "symbol":
+        status_type = "emoji"
+    if status_type == "emoji":
+        return emoji
+    name = _EMOJI_TO_STATUS.get(emoji)
+    if name is None:
+        return emoji  # fallback for unknown emoji
+    if status_type == "TEXT":
+        return name.upper()
+    return name  # "text" = lowercase
 
 VALID_TASK_TRANSITIONS = {
     (EMOJI_TODO, EMOJI_DOING),
@@ -226,19 +273,23 @@ def parse_plan(path):
     return plan
 
 
-def parse_plan_data(content: str, mode: str = "list") -> list[dict] | dict:
+def parse_plan_data(content: str, mode: str = "list", status_type: str = "emoji") -> list[dict] | dict:
     """Parse PLAN.md content string into structured data.
     NOTE: Used by 3rd party code. Do not touch it.
 
     Args:
         content: Raw PLAN.md file content (with or without checksum line).
         mode: "tree" returns nested dict, "list" returns flat list[dict].
+        status_type: "emoji" (default), "text" (lowercase name),
+                     "TEXT" (uppercase name). "symbol" is alias for "emoji".
 
     Returns:
         tree mode  -> dict with title, emoji, depends_on, created, updated,
                        current_phase, current_task, phases (each with tasks).
         list mode  -> list[dict] of flat items alternating phase/task entries.
     """
+    if status_type == "symbol":
+        status_type = "emoji"
     content, _ = strip_checksum(content)
     lines = content.split("\n")
 
@@ -338,7 +389,7 @@ def parse_plan_data(content: str, mode: str = "list") -> list[dict] | dict:
             items.append({
                 "type": "phase",
                 "id": p["id"],
-                "emoji": p["emoji"],
+                "emoji": format_status(p["emoji"], status_type),
                 "title": p["title"],
             })
             for t in p["tasks"]:
@@ -346,7 +397,7 @@ def parse_plan_data(content: str, mode: str = "list") -> list[dict] | dict:
                     "type": "task",
                     "phase_id": p["id"],
                     "id": t["id"],
-                    "emoji": t["emoji"],
+                    "emoji": format_status(t["emoji"], status_type),
                     "title": t["title"],
                     "dependencies": t["dependencies"],
                 })
@@ -355,7 +406,7 @@ def parse_plan_data(content: str, mode: str = "list") -> list[dict] | dict:
     # tree mode (default)
     return {
         "title": title,
-        "emoji": emoji,
+        "emoji": format_status(emoji, status_type),
         "depends_on": depends_on,
         "created": created,
         "updated": updated,
@@ -364,12 +415,12 @@ def parse_plan_data(content: str, mode: str = "list") -> list[dict] | dict:
         "phases": [
             {
                 "id": p["id"],
-                "emoji": p["emoji"],
+                "emoji": format_status(p["emoji"], status_type),
                 "title": p["title"],
                 "tasks": [
                     {
                         "id": t["id"],
-                        "emoji": t["emoji"],
+                        "emoji": format_status(t["emoji"], status_type),
                         "title": t["title"],
                         "dependencies": t["dependencies"],
                         "sub_bullets": t["sub_bullets"],
@@ -850,7 +901,9 @@ def cmd_set_plan_current_task(args):
 
 def cmd_get_plan_status(args):
     plan = parse_plan(args.path)
-    json_out("success", "get-plan-status", plan["emoji"], value=plan["emoji"], path=plan["path"])
+    stype = getattr(args, "status_type", "emoji")
+    val = format_status(plan["emoji"], stype)
+    json_out("success", "get-plan-status", val, value=val, path=plan["path"])
 
 
 def cmd_get_phase_status(args):
@@ -858,7 +911,9 @@ def cmd_get_phase_status(args):
     phase = find_phase(plan, args.phase_id)
     if not phase:
         die("get-phase-status", f"Phase not found: {args.phase_id}")
-    json_out("success", "get-phase-status", phase["emoji"], value=phase["emoji"], path=plan["path"], phase=phase["id"])
+    stype = getattr(args, "status_type", "emoji")
+    val = format_status(phase["emoji"], stype)
+    json_out("success", "get-phase-status", val, value=val, path=plan["path"], phase=phase["id"])
 
 
 def cmd_get_task_status(args):
@@ -866,7 +921,9 @@ def cmd_get_task_status(args):
     task = find_task(plan, args.phase_id, args.task_id)
     if not task:
         die("get-task-status", f"Task not found: {args.phase_id} / {args.task_id}")
-    json_out("success", "get-task-status", task["emoji"], value=task["emoji"], path=plan["path"], phase=args.phase_id, task=task["id"])
+    stype = getattr(args, "status_type", "emoji")
+    val = format_status(task["emoji"], stype)
+    json_out("success", "get-task-status", val, value=val, path=plan["path"], phase=args.phase_id, task=task["id"])
 
 
 # Status writes
@@ -1399,8 +1456,9 @@ def cmd_get_plan(args):
     plan = parse_plan(args.path)
     mode = getattr(args, "mode", "list")
     fmt = getattr(args, "format", "json")
+    stype = getattr(args, "status_type", "emoji")
 
-    data = _build_plan_data(plan, mode)
+    data = _build_plan_data(plan, mode, stype)
 
     # Wrap in standard JSON output format (status/command/message + data payload)
     out = {
@@ -1416,12 +1474,14 @@ def cmd_get_plan(args):
         print(json.dumps(out, ensure_ascii=False, indent=2), flush=True)
 
 
-def _build_plan_data(plan, mode="list"):
+def _build_plan_data(plan, mode="list", status_type="emoji"):
     """Build structured plan data dict for get-plan output."""
+    if status_type == "symbol":
+        status_type = "emoji"
     if mode == "tree":
         return {
             "title": plan["title"],
-            "emoji": plan["emoji"],
+            "emoji": format_status(plan["emoji"], status_type),
             "depends_on": plan["depends_on"],
             "created": plan["created"],
             "updated": plan["updated"],
@@ -1430,12 +1490,12 @@ def _build_plan_data(plan, mode="list"):
             "phases": [
                 {
                     "id": p["id"],
-                    "emoji": p["emoji"],
+                    "emoji": format_status(p["emoji"], status_type),
                     "title": p["title"],
                     "tasks": [
                         {
                             "id": t["id"],
-                            "emoji": t["emoji"],
+                            "emoji": format_status(t["emoji"], status_type),
                             "title": t["title"],
                             "dependencies": t["dependencies"],
                             "sub_bullets": t["sub_bullets"],
@@ -1449,7 +1509,7 @@ def _build_plan_data(plan, mode="list"):
     else:
         data = {
             "title": plan["title"],
-            "emoji": plan["emoji"],
+            "emoji": format_status(plan["emoji"], status_type),
             "depends_on": plan["depends_on"],
             "created": plan["created"],
             "updated": plan["updated"],
@@ -1461,7 +1521,7 @@ def _build_plan_data(plan, mode="list"):
             data["items"].append({
                 "type": "phase",
                 "id": p["id"],
-                "emoji": p["emoji"],
+                "emoji": format_status(p["emoji"], status_type),
                 "title": p["title"],
             })
             for t in p["tasks"]:
@@ -1469,7 +1529,7 @@ def _build_plan_data(plan, mode="list"):
                     "type": "task",
                     "phase_id": p["id"],
                     "id": t["id"],
-                    "emoji": t["emoji"],
+                    "emoji": format_status(t["emoji"], status_type),
                     "title": t["title"],
                     "dependencies": t["dependencies"],
                 })
@@ -2322,19 +2382,28 @@ def build_parser():
     p.add_argument("task_id")
 
     # get-plan-status
-    p = subs.add_parser("get-plan-status", help="Get plan status emoji")
+    p = subs.add_parser("get-plan-status", help="Get plan status")
     p.add_argument("path")
+    p.add_argument("--type", dest="status_type", default="emoji",
+                   choices=["emoji", "text", "TEXT"],
+                   help='Output format: emoji (default), text (lowercase), TEXT (uppercase)')
 
     # get-phase-status
-    p = subs.add_parser("get-phase-status", help="Get phase status emoji")
+    p = subs.add_parser("get-phase-status", help="Get phase status")
     p.add_argument("path")
     p.add_argument("phase_id")
+    p.add_argument("--type", dest="status_type", default="emoji",
+                   choices=["emoji", "text", "TEXT"],
+                   help='Output format: emoji (default), text (lowercase), TEXT (uppercase)')
 
     # get-task-status
-    p = subs.add_parser("get-task-status", help="Get task status emoji")
+    p = subs.add_parser("get-task-status", help="Get task status")
     p.add_argument("path")
     p.add_argument("phase_id")
     p.add_argument("task_id")
+    p.add_argument("--type", dest="status_type", default="emoji",
+                   choices=["emoji", "text", "TEXT"],
+                   help='Output format: emoji (default), text (lowercase), TEXT (uppercase)')
 
     # set-all-statuses
     p = subs.add_parser("set-all-statuses", help="Set all statuses to same emoji")
@@ -2424,6 +2493,9 @@ def build_parser():
     p.add_argument("--tree", dest="mode", action="store_const", const="tree")
     p.add_argument("--json", dest="format", action="store_const", const="json", default="json")
     p.add_argument("--yaml", dest="format", action="store_const", const="yaml")
+    p.add_argument("--type", dest="status_type", default="emoji",
+                   choices=["emoji", "text", "TEXT"],
+                   help='Status output format: emoji (default), text (lowercase), TEXT (uppercase)')
 
     # batch
     p = subs.add_parser("batch", help="Batch mode")
