@@ -2408,25 +2408,29 @@ def build_parser():
     # set-all-statuses
     p = subs.add_parser("set-all-statuses", help="Set all statuses to same emoji")
     p.add_argument("path")
-    p.add_argument("emoji")
+    p.add_argument("emoji",
+                   help="Status: ☐ (TODO), ❓ (QUESTION), ⚙️ (DOING), ❌ (ERROR), ✅ (DONE). Accepts emojis or text aliases (case-insensitive).")
 
     # set-plan-status
     p = subs.add_parser("set-plan-status", help="Set plan status emoji")
     p.add_argument("path")
-    p.add_argument("emoji")
+    p.add_argument("emoji",
+                   help="Status: ☐ (TODO), ❓ (QUESTION), ⚙️ (DOING), ❌ (ERROR), ✅ (DONE). Accepts emojis or text aliases (case-insensitive).")
 
     # set-phase-status
     p = subs.add_parser("set-phase-status", help="Set phase status emoji")
     p.add_argument("path")
     p.add_argument("phase_id")
-    p.add_argument("emoji")
+    p.add_argument("emoji",
+                   help="Status: ☐ (TODO), ❓ (QUESTION), ⚙️ (DOING), ❌ (ERROR), ✅ (DONE). Accepts emojis or text aliases (case-insensitive).")
 
     # set-task-status
     p = subs.add_parser("set-task-status", help="Set task status emoji")
     p.add_argument("path")
     p.add_argument("phase_id")
     p.add_argument("task_id")
-    p.add_argument("emoji")
+    p.add_argument("emoji",
+                   help="Status: ☐ (TODO), ❓ (QUESTION), ⚙️ (DOING), ❌ (ERROR), ✅ (DONE). Accepts emojis or text aliases (case-insensitive).")
 
     # add-phase
     p = subs.add_parser("add-phase", help="Add a phase")
