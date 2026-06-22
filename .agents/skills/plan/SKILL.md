@@ -45,7 +45,6 @@ Use `plan.sh` for every PLAN.md operation. Never edit PLAN.md directly — not e
 
 ### JSON Output
 
-
 Every subcommand outputs valid JSON to stdout with these fields:
 - `status` — one of: `"success"`, `"warning"`, `"error"`, or `"skipped"`
 - `command` — the subcommand name (e.g., `"add-phase"`)
@@ -55,7 +54,7 @@ Additional fields vary by command (e.g., `path`, `value`, `issues`).
 `get-plan` wraps the full plan structure inside a `data` field.
 On error, exit code is 1. On success or warning, exit code is 0.
 
-### Individual Mode
+### Immediate Mode
 
 ```bash
 #
