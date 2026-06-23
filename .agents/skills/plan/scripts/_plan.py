@@ -511,6 +511,176 @@ def rederive_all(plan):
     plan["emoji"] = derive_plan_emoji(plan["phases"])
 
 
+# Content-string helpers (no file I/O)
+
+def _try_parse_plan_data(content: str):
+    """Parse PLAN.md content string into a plan dict. Returns (plan_dict, None) on success or (None, error_message)."""
+    raw = content
+    content_body, stored_checksum = strip_checksum(raw)
+    lines = content_body.split("\n")
+
+    plan = {
+        "title": "",
+        "depends_on": "NONE",
+        "created": "",
+        "updated": "",
+        "current_phase": "NONE",
+        "current_task": "NONE",
+        "phases": [],
+        "raw_checksum": stored_checksum,
+    }
+
+    # Parse H1 title line
+    if not lines or not lines[0].startswith("# "):
+        return None, "Missing H1 title line"
+
+    h1 = lines[0]
+    m = re.match(r'#\s*(?:(' + _EMOJI_PAT + r')?\s*)Plan\s*' + re.escape(SEPARATOR) + r'\s*(.*)', h1)
+    if not m:
+        return None, f"Invalid H1 format: {h1}"
+    plan["emoji"] = normalize_emoji(m.group(1)) if m.group(1) else EMOJI_TODO
+    plan["title"] = m.group(2).strip()
+
+    # Parse header fields
+    i = 1
+    while i < len(lines):
+        line = lines[i]
+        hm = re.match(r'^-\s+(Depends On|Created|Updated|Current Phase|Current Task):\s*(.*)', line)
+        if not hm:
+            break
+        key, val = hm.group(1), hm.group(2).strip()
+        if key == "Depends On":
+            plan["depends_on"] = val
+        elif key == "Created":
+            plan["created"] = val
+        elif key == "Updated":
+            plan["updated"] = val
+        elif key == "Current Phase":
+            plan["current_phase"] = val
+        elif key == "Current Task":
+            plan["current_task"] = val
+        i += 1
+
+    # Parse phases and tasks
+    current_phase = None
+    while i < len(lines):
+        line = lines[i]
+
+        pm = re.match(r'^##\s*(' + _EMOJI_PAT + r')?\s*(Phase\s+\d+)\s*' + re.escape(SEPARATOR) + r'\s*(.*)', line)
+        if pm:
+            phase_emoji = normalize_emoji(pm.group(1)) if pm.group(1) else EMOJI_TODO
+            phase_id = pm.group(2)
+            phase_title = pm.group(3).strip()
+            current_phase = {
+                "emoji": phase_emoji,
+                "id": phase_id,
+                "title": phase_title,
+                "tasks": [],
+            }
+            plan["phases"].append(current_phase)
+            i += 1
+            continue
+
+        if current_phase and line.startswith("- "):
+            tm = re.match(
+                r'^-\s*(' + _EMOJI_PAT + r')?\s*(Task\s+\d+\.\d+)\s*'
+                + re.escape(SEPARATOR) + r'\s*(.+?)'
+                r'(?:\s+' + re.escape(ANCHOR) + r'\s+((?:Task|Phase).+))?\s*$',
+                line,
+            )
+            if tm:
+                task = {
+                    "emoji": normalize_emoji(tm.group(1)) if tm.group(1) else EMOJI_TODO,
+                    "id": tm.group(2),
+                    "title": tm.group(3).strip(),
+                    "dependencies": [],
+                    "sub_bullets": [],
+                }
+                if tm.group(4):
+                    deps = [d.strip() for d in tm.group(4).split(",") if d.strip()]
+                    task["dependencies"] = deps
+                current_phase["tasks"].append(task)
+                i += 1
+
+                while i < len(lines) and lines[i].startswith("  - "):
+                    task["sub_bullets"].append(lines[i][4:].strip())
+                    i += 1
+                continue
+
+        i += 1
+
+    return plan, None
+
+
+def _write_plan_to_string(plan: dict) -> str:
+    """Serialize a plan dict to PLAN.md content string (with checksum). No file I/O."""
+    lines = []
+
+    # H1
+    lines.append(f"# {plan['emoji']} Plan {SEPARATOR} {plan['title']}")
+
+    # Header fields
+    lines.append(f"- Depends On: {plan['depends_on']}")
+    lines.append(f"- Created: {plan['created']}")
+    lines.append(f"- Updated: {plan['updated']}")
+    lines.append(f"- Current Phase: {plan['current_phase']}")
+    lines.append(f"- Current Task: {plan['current_task']}")
+    lines.append("")
+
+    # Phases
+    for phase in plan["phases"]:
+        lines.append(f"## {phase['emoji']} {phase['id']} {SEPARATOR} {phase['title']}")
+        lines.append("")
+        for task in phase["tasks"]:
+            dep_str = ""
+            if task["dependencies"]:
+                dep_str = f" {ANCHOR} " + ", ".join(task["dependencies"])
+            lines.append(f"- {task['emoji']} {task['id']} {SEPARATOR} {task['title']}{dep_str}")
+            for sb in task["sub_bullets"]:
+                lines.append(f"  - {sb}")
+        lines.append("")
+
+    content = "\n".join(lines).rstrip("\n")
+    checksum = compute_checksum(content)
+    return content + f"\n<!-- checksum: {checksum} -->\n"
+
+
+def set_all_statuses_for_plan_data(content: str, status: str) -> str:
+    """Set all statuses (plan, phases, tasks) to the given status in PLAN.md content.
+
+    NOTE: Used by 3rd party code. Do not touch it.
+
+    Args:
+        content: Raw PLAN.md file content (with or without checksum line).
+        status: Target status — accepts emoji (☐, ❓, ⚙️, ❌, ✅),
+                text aliases (TODO, QUESTION, DOING, ERROR, DONE),
+                or lowercase variants. Normalized to canonical emoji internally.
+
+    Returns:
+        New PLAN.md content string with all statuses set and checksum updated.
+
+    Raises:
+        ValueError: If content is not valid PLAN.md format or status is invalid.
+    """
+    plan, err = _try_parse_plan_data(content)
+    if err:
+        raise ValueError(err)
+
+    emoji = normalize_emoji(status)
+    if not validate_emoji(emoji):
+        raise ValueError(f"Invalid status: {status}")
+
+    plan["emoji"] = emoji
+    for phase in plan["phases"]:
+        phase["emoji"] = emoji
+        for task in phase["tasks"]:
+            task["emoji"] = emoji
+    plan["current_phase"] = "NONE"
+    plan["current_task"] = "NONE"
+
+    return _write_plan_to_string(plan)
+
+
 # Helpers
 
 def find_phase(plan, ref):
